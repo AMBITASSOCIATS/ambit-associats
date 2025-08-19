@@ -25,6 +25,7 @@ const languages = [
 
 // Traduccions
 const translations = {
+  // Actualització manual per forçar desplegament a Vercel
   ca: {
     tagline: "Assegurant el teu èxit empresarial",
     services: "Serveis que oferim",
@@ -700,60 +701,50 @@ const [showCookieBanner, setShowCookieBanner] = useState(() => {
               <h2 className="text-3xl font-bold text-center mb-8">{t.contact}</h2>
               <p className="text-center text-lg mb-10">{t.contactInfo}</p>
               <div className="max-w-lg mx-auto space-y-4">
-                <form onSubmit={handleFormSubmit} className="space-y-4">
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder={t.form.name}
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full p-3 rounded bg-white text-gray-800"
-                    required
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder={t.form.email}
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full p-3 rounded bg-white text-gray-800"
-                    required
-                  />
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder={t.form.phone}
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full p-3 rounded bg-white text-gray-800"
-                  />
-                  <textarea
-                    name="message"
-                    placeholder={t.form.message}
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    className="w-full p-3 rounded bg-white text-gray-800"
-                    rows="4"
-                    required
-                  ></textarea>
-                  <button
-                    type="submit"
-                    className="w-full bg-[#006667] text-white py-3 rounded-lg hover:bg-white hover:text-[#006667] transition"
-                  >
-                    {t.form.send}
-                  </button>
-                  <a
-                    href="https://wa.me/376650042"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full bg-[#00C8C9] hover:bg-[#00A8A9] text-white py-3 rounded-lg text-center font-semibold transition"
-                  >
-                    {t.whatsapp}
-                  </a>
-                </form>
-                {formSubmitted && (
-                  <p className="text-green-200 font-semibold text-center">{t.form.success}</p>
-                )}
+                <form action="https://formspree.io/f/mdkdrkze" method="POST" className="space-y-4">
+  <input
+    type="text"
+    name="name"
+    placeholder={t.form.name}
+    className="w-full p-3 rounded bg-white text-gray-800"
+    required
+  />
+  <input
+    type="email"
+    name="email"
+    placeholder={t.form.email}
+    className="w-full p-3 rounded bg-white text-gray-800"
+    required
+  />
+  <input
+    type="tel"
+    name="phone"
+    placeholder={t.form.phone}
+    className="w-full p-3 rounded bg-white text-gray-800"
+  />
+  <textarea
+    name="message"
+    placeholder={t.form.message}
+    className="w-full p-3 rounded bg-white text-gray-800"
+    rows="4"
+    required
+  ></textarea>
+  <button
+    type="submit"
+    className="w-full bg-[#006667] text-white py-3 rounded-lg hover:bg-white hover:text-[#006667] transition"
+  >
+    {t.form.send}
+  </button>
+  <a
+    href="https://wa.me/376650042"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="block w-full bg-[#00C8C9] hover:bg-[#00A8A9] text-white py-3 rounded-lg text-center font-semibold transition"
+  >
+    {t.whatsapp}
+  </a>
+</form>
+                
               </div>
             </div>
           </section>
