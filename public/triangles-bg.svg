@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 400" fill="#009B9C" opacity="0.15">
+  <defs>
+    <pattern id="triangles" patternUnits="userSpaceOnUse" width="40" height="40" patternTransform="rotate(45)">
+      <path d="M 0 40 L 40 40 L 40 0 Z" />
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#triangles)" />
+</svg>

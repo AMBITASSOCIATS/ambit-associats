@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import izquierdaImg from './izquierda.png';
+import derechaImg from './derecha.png';
+import legalBottomLeftImg from './legal-bottom-left.png';
+import legalBottomRightImg from './legal-bottom-right.png';
 
-// Logo – más grande
+
+// Logo – més gran i centrat
 const Logo = () => (
   <img
-    src="/ÀMBIT Associats.png"
-    alt="ÀMBIT Associats"
-    className="h-36 md:h-48 mx-auto mb-2"
-  />
+  src="/ÀMBIT Associats.png"
+  alt="ÀMBIT Associats"
+  className="h-32 md:h-40 mx-auto mb-2 rounded-xl"
+/>
 );
 
-// Idiomas
+// Selector d'idiomes
 const languages = [
   { code: "ca", name: "Català" },
   { code: "es", name: "Español" },
@@ -18,7 +23,7 @@ const languages = [
   { code: "fr", name: "Français" },
 ];
 
-// Traducciones
+// Traduccions
 const translations = {
   ca: {
     tagline: "Assegurant el teu èxit empresarial",
@@ -118,407 +123,207 @@ const translations = {
   },
 };
 
-// Textos legals actualitzats amb Llei 29/2021 i Llei 35/2014
-const legalTexts = {
+// Contingut legal actualitzat amb Llei 29/2021 i Llei 35/2014
+const legalContent = {
   ca: {
     aviso: `
       <h3>Avís legal</h3>
-      <p>Aquest lloc web és propietat de DEL SOTO-PALEARI & Associats, SL, amb domicili a Av. Fiter i Rossell, núm. 78, 2n B, Edifici Carlemany, AD700 Andorra i NRT L-720543-P. L'ús d'aquest lloc web implica l'acceptació de les condicions generals d'ús. Tots els drets reservats.</p>
+      <p>En compliment del que disposa la <strong>Llei 35/2014, de 27 de novembre, de certificació i confiança electrònica del Principat d’Andorra</strong>, així com la normativa europea aplicable en matèria de protecció de dades i comerç electrònic, es posa a disposició dels usuaris la següent informació legal corresponent al titular del lloc web:</p>
+
+      <h4>Dades identificatives del titular</h4>
+      <p><strong>Nom o raó social:</strong> DEL SOTO – PALEARI & Associats, S.L.</p>
+      <p><strong>NRT:</strong> L-720543-P</p>
+      <p><strong>Domicili social:</strong> Av. Fiter i Rossell, núm. 78, Edifici Carlemany, 2n B, Escaldes-Engordany (Principat d’Andorra)</p>
+      <p><strong>Telèfon de contacte:</strong> +376 650 042</p>
+      <p><strong>Correu electrònic de contacte:</strong> <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a></p>
+      <p><strong>Nom de domini:</strong> www.ambit.ad</p>
+
+      <h4>Condicions d’ús</h4>
+      <p>L’accés i ús del lloc web www.ambit.ad atribueix la condició d’usuari i implica l’acceptació plena i sense reserves de les presents condicions d’ús, sense perjudici de les condicions particulars que poguessin aplicar-se a determinats serveis concrets.</p>
+      <p>L’usuari es compromet a fer un ús adequat dels continguts i serveis del lloc web, abstenint-se de realitzar activitats il·lícites o contràries a la bona fe, a l’ordre públic o als drets de tercers.</p>
+      <p>DEL SOTO – PALEARI & Associats, S.L. es reserva el dret de modificar en qualsevol moment i sense previ avís la present informació legal, així com la configuració, presentació i contingut del lloc web.</p>
+
+      <h4>Propietat intel·lectual i industrial</h4>
+      <p>Tots els continguts d’aquest lloc web (textos, imatges, logotips, marques, estructures, dissenys, etc.) són titularitat de DEL SOTO – PALEARI & Associats, S.L. o de tercers que n’han autoritzat l’ús, i estan protegits per la normativa andorrana i internacional sobre propietat intel·lectual i industrial.</p>
+      <p>Queda prohibida la reproducció, distribució, comunicació pública o transformació d’aquests continguts sense l’autorització expressa i per escrit del titular.</p>
+
+      <h4>Protecció de dades personals</h4>
+      <p>Les dades personals recollides a través d’aquest lloc web seran tractades d’acord amb la <strong>Llei 29/2021, del 28 d’octubre, qualificada de protecció de dades personals del Principat d’Andorra</strong>, i en compliment del <strong>Reglament (UE) 2016/679</strong> del Parlament Europeu i del Consell (RGPD).</p>
+      <p>Per a més informació sobre el tractament de dades, els drets dels usuaris i les finalitats concretes, podeu consultar la Política de privacitat.</p>
+
+      <h4>Exclusió de responsabilitat</h4>
+      <p>DEL SOTO – PALEARI & Associats, S.L. no es responsabilitza dels danys o perjudicis que es puguin derivar de l’accés, ús o mala utilització dels continguts del lloc web, ni tampoc dels errors o omissions que poguessin existir.</p>
+      <p>Aquest lloc web pot contenir enllaços a pàgines externes sobre les quals no es té cap control, i per tant DEL SOTO – PALEARI & Associats, S.L. no assumeix cap responsabilitat sobre el seu contingut, funcionament o disponibilitat.</p>
+
+      <h4>Legislació i jurisdicció aplicables</h4>
+      <p>Aquest lloc web, les seves condicions d’ús i les relacions entre l’usuari i el titular es regeixen per la legislació vigent del Principat d’Andorra.</p>
+      <p>Per a qualsevol controvèrsia que pogués sorgir en relació amb l’accés o ús d’aquest lloc web, ambdues parts se sotmeten expressament a la jurisdicció dels tribunals andorrans, amb renúncia a qualsevol altre fur que els pogués correspondre.</p>
     `,
     privacidad: `
-      <h3>Política de Privacitat</h3>
-      <p><em>(Actualitzada segons la Llei qualificada 29/2021, del 28 d’octubre, de protecció de dades personals del Principat d’Andorra)</em></p>
-      <p>En compliment de la Llei qualificada 29/2021, del 28 d’octubre, de protecció de dades personals i de la Llei 35/2014, del 27 de novembre, de serveis de confiança electrònica, DEL SOTO-PALEARI & Associats, S.L. informa als usuaris del lloc web <strong>www.ambit.ad</strong> sobre el tractament de les seves dades de caràcter personal.</p>
-
-      <h4>1. Responsable del tractament</h4>
-      <p><strong>Identitat:</strong> DEL SOTO-PALEARI & Associats, S.L.<br>
-      <strong>Domicili:</strong> Avinguda Fiter i Rossell, número 78, Edifici Carlemany, 2n B, AD500 Andorra la Vella, Principat d’Andorra<br>
-      <strong>NRT:</strong> L-720543-P<br>
-      <strong>Correu electrònic de contacte:</strong> <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a></p>
-
-      <h4>2. Finalitats del tractament i bases legals</h4>
-      <p>Les dades de caràcter personal facilitades pels usuaris (per exemple, a través del formulari de contacte o correu electrònic) es tracten amb les següents finalitats:</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Gestionar i respondre a consultes o sol·licituds d’informació</strong> enviades a través del lloc web.<br><em>Base legal:</em> Consentiment del titular (article 6.1.a del RGPD / article 6.1.a de la Llei 29/2021).</li>
-        <li><strong>Mantenir una relació professional</strong> amb clients, col·laboradors o interessats.<br><em>Base legal:</em> Interès legítim del responsable (article 6.1.f del RGPD / article 6.1.f de la Llei 29/2021).</li>
-        <li><strong>Enviar informació comercial o institucional</strong> (només si s’ha obtingut el consentiment explícit i revocable del titular).<br><em>Base legal:</em> Consentiment del titular.</li>
-      </ul>
-
-      <h4>3. Legitimació i consentiment</h4>
-      <p>Conformement amb l’article 6 de la Llei 29/2021, el tractament de dades es realitza sempre amb una base legal vàlida. En el cas del consentiment, aquest és lliure, específic, informat i inequívoc, i pot ser retirat en qualsevol moment sense que afecti la legalitat del tractament realitzat amb anterioritat.</p>
-
-      <h4>4. Destinataris de les dades</h4>
-      <p>Les dades no es cediran a tercers, llevat dels següents supòsits:</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Encarregats del tractament:</strong> Proveïdors de serveis externs (hosting, gestió de correu, còpia de seguretat, etc.) que actuen en nom i per compte de DEL SOTO-PALEARI & Associats, S.L. Aquests estan subjectes a contracte segons l’article 28 del RGPD o equivalent segons la Llei 29/2021.</li>
-        <li><strong>Obligació legal:</strong> Quan una autoritat judicial, administrativa o reguladora competent exigeixi la comunicació de dades.</li>
-      </ul>
-      <p>Si es fan transferències internacionals de dades, es garantirà un nivell adequat de protecció mitjançant clàusules contractals estàndard o altres mesures de seguretat reconegudes.</p>
-
-      <h4>5. Drets de les persones interessades</h4>
-      <p>D’acord amb la Llei 29/2021, les persones interessades tenen els següents drets:</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li>Accés a les seves dades tractades.</li>
-        <li>Rectificació de dades inexactes o incompletes.</li>
-        <li>Supressió ("dret a l’oblit") en determinades circumstàncies.</li>
-        <li>Limitació del tractament en casos concrets.</li>
-        <li>Oposició al tractament, especialment amb finalitats de màrqueting directe.</li>
-        <li>Portabilitat de les dades, quan el tractament es basi en el consentiment o en l’execució d’un contracte.</li>
-      </ul>
-      <p>Per exercir aquests drets, cal enviar una sol·licitud per escrit o per correu electrònic a <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a>, acreditant la vostra identitat.</p>
-      <p>També teniu dret a presentar una reclamació davant de l’Autoritat de Protecció de Dades personals del Principat d’Andorra si considereu que el tractament de les vostres dades vulnera la Llei 29/2021.</p>
-
-      <h4>6. Mesures de seguretat</h4>
-      <p>DEL SOTO-PALEARI & Associats, S.L. ha adoptat les mesures tècniques i organitzatives apropiades per garantir un nivell de seguretat adequat al risc, tal com exigeix l’article 32 de la Llei 29/2021. Això inclou protecció contra la destrucció, pèrdua, alteració, divulgació o accés no autoritzat a les dades.</p>
-
-      <h4>7. Període de conservació de les dades</h4>
-      <p>Les dades es conservaran durant el temps estrictament necessari per a les finalitats per a les quals van ser recollides, i en tot cas, durant els terminis legalment establerts (per exemple, per complir amb obligacions fiscals, civils o administratives). Un cop es compleixi aquest termini, les dades s’esborraran de forma segura.</p>
-
-      <h4>8. Canvis en aquesta política</h4>
-      <p>Aquesta Política de Privacitat pot ser modificada per adaptar-se a futurs canvis legislatius, jurisprudencials o tècnics. Es recomana revisar-la periòdicament a través del lloc web <a href="https://www.ambit.ad" style="color:#009B9C">www.ambit.ad</a>.</p>
-      <p><strong>Data de la darrera actualització:</strong> 5 d’abril de 2025</p>
+      <h3>Política de privacitat</h3>
+      <p>En compliment de la <strong>Llei 29/2021</strong>, del 28 d’octubre, qualificada de protecció de dades personals del Principat d’Andorra, i en virtut del <strong>Reglament (UE) 2016/679</strong> (RGPD), informem que les dades personals recollides a través d’aquest lloc web es tractaran amb la finalitat de gestionar la seva consulta, mantenir una relació professional i, si escau, enviar informació sobre serveis relacionats.</p>
+      <p>El fundamento del tractament és el consentiment del titular. Les dades es conservaran durant el temps necessari per atendre la sol·licitud i, posteriorment, durant els terminis exigits per la normativa fiscal, comptable i administrativa.</p>
+      <p>Podeu exercir els drets d'accés, rectificació, supressió, limitació del tractament, oposició i portabilitat enviant un correu electrònic a <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a>.</p>
+      <p>Les dades no es cediran a tercers fora del Principat d’Andorra, llevat de col·laboradors professionals amb els quals es manté un acord de confidencialitat i necessaris per al correcte desenvolupament del servei.</p>
+      <p>Implementem mesures tècniques i organitzatives per garantir la seguretat de les dades i prevenir el seu tractament il·lícit, pèrdua, alteració, divulgació o accés no autoritzat.</p>
     `,
     cookies: `
-      <h3>🍪 Avis de Cookies</h3>
-      <p><em>(Adaptat a la Llei 35/2014 i a la Llei 29/2021 sobre protecció de dades)</em></p>
-
-      <h4>1. Què són les cookies?</h4>
-      <p>Les cookies són petits fitxers que es desen al dispositiu de l’usuari (ordinador, mòbil, tauleta) quan visita un lloc web. Tenen com a finalitat millorar l’experiència d’usuari, facilitar la navegació, analitzar el comportament dels usuaris i oferir continguts adaptats.</p>
-      <p>Aquest lloc web, <strong>www.ambit.ad</strong>, utilitza cookies d’acord amb la Llei 35/2014, del 27 de novembre, de serveis de confiança electrònica, i amb els principis de transparència i consentiment de la Llei 29/2021.</p>
-
-      <h4>2. Tipus de cookies utilitzades</h4>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Cookies tècniques</strong><br>
-        Necessàries per al funcionament bàsic del lloc web.<br>
-        Gestió de sessió, compatibilitat, accés.</li>
-        <li><strong>Cookies d’anàlisi</strong><br>
-        Mesuren i analitzen l’ús del lloc web per millorar-ne el rendiment.<br>
-        Google Analytics (en mode anònim, sense emmagatzemar IP completa).</li>
-        <li><strong>Cookies de tercers</strong><br>
-        Integrades per serveis externs (xarxes socials, mapes, etc.).<br>
-        Botons d’"emprar" o "compartir" de xarxes socials.</li>
-      </ul>
-      <p><strong>⚠️ Nota:</strong> En aquest moment, no s’utilitzen cookies de perfilatge ni de publicitat comportamental.</p>
-
-      <h4>3. Consentiment de l’usuari</h4>
-      <p>Conformement amb la Llei 35/2014 i la jurisprudència del TJUE, el lloc web mostra un bàner informatiu de cookies que permet a l’usuari donar el seu consentiment informat, lliure i revocable abans que es desin una cookie no essencial.</p>
-      <p>En continuar navegant per aquest lloc web, l’usuari accepta expressament l’ús de cookies. El consentiment pot retirar-se en qualsevol moment a través de la configuració del navegador o posant-se en contacte amb nosaltres.</p>
-
-      <h4>4. Gestió de cookies</h4>
-      <p>L’usuari pot gestionar, bloquejar o eliminar les cookies mitjançant les opcions del seu navegador:</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Google Chrome:</strong> Configuració > Privacitat i seguretat > Cookies</li>
-        <li><strong>Mozilla Firefox:</strong> Opcions > Privacitat i seguretat > Cookies i dades de llocs</li>
-        <li><strong>Safari:</strong> Preferències > Privacitat > Bloquejar cookies de tercers</li>
-        <li><strong>Microsoft Edge:</strong> Configuració > Cookies i permisos del lloc</li>
-      </ul>
-      <p>També podeu desactivar les cookies analítiques de Google Analytics des de: <a href="https://tools.google.com/dlpage/gaoptout" style="color:#009B9C">https://tools.google.com/dlpage/gaoptout</a></p>
-
-      <h4>5. Actualitzacions</h4>
-      <p>Aquest Avis de Cookies pot actualitzar-se per adaptar-se a canvis en les eines utilitzades o en la normativa vigent.</p>
-      <p><strong>Data de la darrera actualització:</strong> 5 d’abril de 2025</p>
-    `
+      <h3>Política de cookies</h3>
+      <p>En virtut de la <strong>Llei 29/2021</strong>, de 23 de desembre, de serveis de la societat de la informació i comerç electrònic, informem que aquest lloc web utilitza <strong>cookies tècniques</strong> necessàries per al correcte funcionament del lloc (com ara gestió de sessió i preferències).</p>
+      <p>No utilitzem cookies de rastreig, publicitàries ni de tercers. Les cookies són fitxers petits que el navegador emmagatzema per millorar l'experiència d'usuari.</p>
+      <p>Podeu gestionar o desactivar les cookies des del vostre navegador en qualsevol moment. La negació de cookies tècniques pot afectar el correcte funcionament de la web.</p>
+    `,
   },
   es: {
     aviso: `
       <h3>Aviso legal</h3>
-      <p>Este sitio web es propiedad de DEL SOTO-PALEARI & Associats, SL, con domicilio en Av. Fiter i Rossel, núm. 78, 2n B, Edifici Carlemany, AD700 Andorra y NRT L-720543-P. El uso de este sitio web implica la aceptación de las condiciones generales de uso. Todos los derechos reservados.</p>
+      <p>En cumplimiento de lo dispuesto por la <strong>Ley 35/2014, de 27 de noviembre, de certificación y confianza electrónica del Principado de Andorra</strong>, así como la normativa europea aplicable en materia de protección de datos y comercio electrónico, se pone a disposición de los usuarios la siguiente información legal correspondiente al titular del sitio web:</p>
+
+      <h4>Datos identificativos del titular</h4>
+      <p><strong>Nombre o razón social:</strong> DEL SOTO – PALEARI & Associats, S.L.</p>
+      <p><strong>NRT:</strong> L-720543-P</p>
+      <p><strong>Domicilio social:</strong> Av. Fiter i Rossell, núm. 78, Edificio Carlemany, 2n B, Escaldes-Engordany (Principado de Andorra)</p>
+      <p><strong>Teléfono de contacto:</strong> +376 650 042</p>
+      <p><strong>Correo electrónico de contacto:</strong> <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a></p>
+      <p><strong>Nombre de dominio:</strong> www.ambit.ad</p>
+
+      <h4>Condiciones de uso</h4>
+      <p>El acceso y uso del sitio web www.ambit.ad atribuye la condición de usuario e implica la aceptación plena y sin reservas de las presentes condiciones de uso, sin perjuicio de las condiciones particulares que pudieran aplicarse a determinados servicios concretos.</p>
+      <p>El usuario se compromete a hacer un uso adecuado de los contenidos y servicios del sitio web, absteniéndose de realizar actividades ilícitas o contrarias a la buena fe, al orden público o a los derechos de terceros.</p>
+      <p>DEL SOTO – PALEARI & Associats, S.L. se reserva el derecho de modificar en cualquier momento y sin previo aviso la presente información legal, así como la configuración, presentación y contenido del sitio web.</p>
+
+      <h4>Propiedad intelectual e industrial</h4>
+      <p>Todos los contenidos de este sitio web (textos, imágenes, logotipos, marcas, estructuras, diseños, etc.) son titularidad de DEL SOTO – PALEARI & Associats, S.L. o de terceros que han autorizado su uso, y están protegidos por la normativa andorrana e internacional sobre propiedad intelectual e industrial.</p>
+      <p>Queda prohibida la reproducción, distribución, comunicación pública o transformación de estos contenidos sin la autorización expresa y por escrito del titular.</p>
+
+      <h4>Protección de datos personales</h4>
+      <p>Los datos personales recogidos a través de este sitio web serán tratados de acuerdo con la <strong>Ley 29/2021, del 28 de octubre, calificada de protección de datos personales del Principado de Andorra</strong>, y en cumplimiento del <strong>Reglamento (UE) 2016/679</strong> del Parlamento Europeo y del Consejo (RGPD).</p>
+      <p>Para más información sobre el tratamiento de datos, los derechos de los usuarios y las finalidades concretas, puede consultar la Política de privacidad.</p>
+
+      <h4>Exclusión de responsabilidad</h4>
+      <p>DEL SOTO – PALEARI & Associats, S.L. no se responsabiliza de los daños o perjuicios que puedan derivarse del acceso, uso o mala utilización de los contenidos del sitio web, ni tampoco de los errores u omisiones que pudieran existir.</p>
+      <p>Este sitio web puede contener enlaces a páginas externas sobre las que no se tiene ningún control, y por tanto DEL SOTO – PALEARI & Associats, S.L. no asume ninguna responsabilidad sobre su contenido, funcionamiento o disponibilidad.</p>
+
+      <h4>Legislación y jurisdicción aplicables</h4>
+      <p>Este sitio web, sus condiciones de uso y las relaciones entre el usuario y el titular se rigen por la legislación vigente del Principado de Andorra.</p>
+      <p>Para cualquier controversia que pudiera surgir en relación con el acceso o uso de este sitio web, ambas partes se someten expresamente a la jurisdicción de los tribunales andorranos, con renuncia a cualquier otro fuero que les pudiera corresponder.</p>
     `,
     privacidad: `
-      <h3>Política de Privacidad</h3>
-      <p><em>(Actualizada según la Ley calificada 29/2021, del 28 de octubre, de protección de datos personales del Principado de Andorra)</em></p>
-      <p>En cumplimiento de la Ley calificada 29/2021, del 28 de octubre, de protección de datos personales y de la Ley 35/2014, del 27 de noviembre, de servicios de confianza electrónica, DEL SOTO-PALEARI & Associats, S.L. informa a los usuarios del sitio web <strong>www.ambit.ad</strong> sobre el tratamiento de sus datos de carácter personal.</p>
-
-      <h4>1. Responsable del tratamiento</h4>
-      <p><strong>Identidad:</strong> DEL SOTO-PALEARI & Associats, S.L.<br>
-      <strong>Domicilio:</strong> Avenida Fiter i Rossell, número 78, Edificio Carlemany, 2n B, AD500 Andorra la Vella, Principado de Andorra<br>
-      <strong>NRT:</strong> L-720543-P<br>
-      <strong>Correo electrónico de contacto:</strong> <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a></p>
-
-      <h4>2. Finalidades del tratamiento y bases legales</h4>
-      <p>Los datos de carácter personal facilitados por los usuarios (por ejemplo, a través del formulario de contacto o correo electrónico) se tratan con las siguientes finalidades:</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Gestionar y responder a consultas o solicitudes de información</strong> enviadas a través del sitio web.<br><em>Base legal:</em> Consentimiento del titular (artículo 6.1.a del RGPD / artículo 6.1.a de la Ley 29/2021).</li>
-        <li><strong>Mantener una relación profesional</strong> con clientes, colaboradores o interesados.<br><em>Base legal:</em> Interés legítimo del responsable (artículo 6.1.f del RGPD / artículo 6.1.f de la Ley 29/2021).</li>
-        <li><strong>Enviar información comercial o institucional</strong> (solo si se ha obtenido el consentimiento explícito y revocable del titular).<br><em>Base legal:</em> Consentimiento del titular.</li>
-      </ul>
-
-      <h4>3. Legitimación y consentimiento</h4>
-      <p>Conforme al artículo 6 de la Ley 29/2021, el tratamiento de datos se realiza siempre con una base legal válida. En caso de consentimiento, este es libre, específico, informado e inequívoco, y puede retirarse en cualquier momento sin que afecte a la legalidad del tratamiento realizado con anterioridad.</p>
-
-      <h4>4. Destinatarios de los datos</h4>
-      <p>Los datos no se cederán a terceros, salvo en los siguientes supuestos:</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Encargados del tratamiento:</strong> Proveedores de servicios externos (alojamiento, gestión de correo, copia de seguridad, etc.) que actúan en nombre y por cuenta de DEL SOTO-PALEARI & Associats, S.L. Están sujetos a contrato según el artículo 28 del RGPD o equivalente según la Ley 29/2021.</li>
-        <li><strong>Obligación legal:</strong> Cuando una autoridad judicial, administrativa o reguladora competente exija la comunicación de datos.</li>
-      </ul>
-      <p>Si se realizan transferencias internacionales de datos, se garantizará un nivel adecuado de protección mediante cláusulas contractuales estándar u otras medidas de seguridad reconocidas.</p>
-
-      <h4>5. Derechos de las personas interesadas</h4>
-      <p>De acuerdo con la Ley 29/2021, las personas interesadas tienen los siguientes derechos:</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li>Acceso a sus datos tratados.</li>
-        <li>Rectificación de datos inexactos o incompletos.</li>
-        <li>Supresión ("derecho al olvido") en determinadas circunstancias.</li>
-        <li>Limitación del tratamiento en casos concretos.</li>
-        <li>Oposición al tratamiento, especialmente con fines de marketing directo.</li>
-        <li>Portabilidad de los datos, cuando el tratamiento se base en el consentimiento o en la ejecución de un contrato.</li>
-      </ul>
-      <p>Para ejercer estos derechos, debe enviarse una solicitud por escrito o por correo electrónico a <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a>, acreditando su identidad.</p>
-      <p>También tiene derecho a presentar una reclamación ante la Autoridad de Protección de Datos personales del Principado de Andorra si considera que el tratamiento de sus datos vulnera la Ley 29/2021.</p>
-
-      <h4>6. Medidas de seguridad</h4>
-      <p>DEL SOTO-PALEARI & Associats, S.L. ha adoptado las medidas técnicas y organizativas apropiadas para garantizar un nivel de seguridad adecuado al riesgo, tal como exige el artículo 32 de la Ley 29/2021. Esto incluye protección contra la destrucción, pérdida, alteración, divulgación o acceso no autorizado a los datos.</p>
-
-      <h4>7. Periodo de conservación de los datos</h4>
-      <p>Los datos se conservarán durante el tiempo estrictamente necesario para las finalidades para las que fueron recopilados, y en todo caso, durante los plazos legalmente establecidos (por ejemplo, para cumplir con obligaciones fiscales, civiles o administrativas). Una vez transcurrido este plazo, los datos se eliminarán de forma segura.</p>
-
-      <h4>8. Cambios en esta política</h4>
-      <p>Esta Política de Privacidad puede modificarse para adaptarse a futuros cambios legislativos, jurisprudenciales o técnicos. Se recomienda revisarla periódicamente a través del sitio web <a href="https://www.ambit.ad" style="color:#009B9C">www.ambit.ad</a>.</p>
-      <p><strong>Fecha de la última actualización:</strong> 5 de abril de 2025</p>
+      <h3>Política de privacidad</h3>
+      <p>En cumplimiento de la <strong>Ley 29/2021</strong>, del 28 de octubre, calificada de protección de datos personales del Principado de Andorra, y en virtud del <strong>Reglamento (UE) 2016/679</strong> (RGPD), informamos que los datos personales recogidos a través de este sitio web se tratarán con la finalidad de gestionar su consulta, mantener una relación profesional y, en su caso, enviar información sobre servicios relacionados.</p>
+      <p>El fundamento del tratamiento es el consentimiento del titular. Los datos se conservarán durante el tiempo necesario para atender la solicitud y, posteriormente, durante los plazos exigidos por la normativa fiscal, contable y administrativa.</p>
+      <p>Puede ejercer los derechos de acceso, rectificación, supresión, limitación del tratamiento, oposición y portabilidad enviando un correo electrónico a <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a>.</p>
+      <p>Los datos no se cederán a terceros fuera del Principado de Andorra, salvo colaboradores profesionales con los que se mantiene un acuerdo de confidencialidad y necesarios para el correcto desarrollo del servicio.</p>
+      <p>Implementamos medidas técnicas y organizativas para garantizar la seguridad de los datos y prevenir su tratamiento ilícito, pérdida, alteración, divulgación o acceso no autorizado.</p>
     `,
     cookies: `
-      <h3>🍪 Aviso de Cookies</h3>
-      <p><em>(Adaptado a la Ley 35/2014 y a la Ley 29/2021 sobre protección de datos)</em></p>
-
-      <h4>1. ¿Qué son las cookies?</h4>
-      <p>Las cookies son pequeños archivos que se almacenan en el dispositivo del usuario (ordenador, móvil, tableta) cuando visita un sitio web. Tienen como finalidad mejorar la experiencia de usuario, facilitar la navegación, analizar el comportamiento de los usuarios y ofrecer contenidos adaptados.</p>
-      <p>Este sitio web, <strong>www.ambit.ad</strong>, utiliza cookies de acuerdo con la Ley 35/2014, del 27 de noviembre, de servicios de confianza electrónica, y con los principios de transparencia y consentimiento de la Ley 29/2021.</p>
-
-      <h4>2. Tipos de cookies utilizadas</h4>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Cookies técnicas</strong><br>
-        Necesarias para el funcionamiento básico del sitio web.<br>
-        Gestión de sesión, compatibilidad, acceso.</li>
-        <li><strong>Cookies de análisis</strong><br>
-        Miden y analizan el uso del sitio web para mejorar su rendimiento.<br>
-        Google Analytics (en modo anónimo, sin almacenar IP completa).</li>
-        <li><strong>Cookies de terceros</strong><br>
-        Integradas por servicios externos (redes sociales, mapas, etc.).<br>
-        Botones de "Me gusta" o "Compartir" de redes sociales.</li>
-      </ul>
-      <p><strong>⚠️ Nota:</strong> En este momento, no se utilizan cookies de perfilado ni de publicidad conductual.</p>
-
-      <h4>3. Consentimiento del usuario</h4>
-      <p>Conforme a la Ley 35/2014 y la jurisprudencia del TJUE, el sitio web muestra un banner informativo de cookies que permite al usuario dar su consentimiento informado, libre y revocable antes de que se almacene una cookie no esencial.</p>
-      <p>Al continuar navegando por este sitio web, el usuario acepta expresamente el uso de cookies. El consentimiento puede retirarse en cualquier momento a través de la configuración del navegador o poniéndose en contacto con nosotros.</p>
-
-      <h4>4. Gestión de cookies</h4>
-      <p>El usuario puede gestionar, bloquear o eliminar las cookies mediante las opciones de su navegador:</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Google Chrome:</strong> Configuración > Privacidad y seguridad > Cookies</li>
-        <li><strong>Mozilla Firefox:</strong> Opciones > Privacidad y seguridad > Cookies y datos de sitios</li>
-        <li><strong>Safari:</strong> Preferencias > Privacidad > Bloquear cookies de terceros</li>
-        <li><strong>Microsoft Edge:</strong> Configuración > Cookies y permisos del sitio</li>
-      </ul>
-      <p>También puede desactivar las cookies analíticas de Google Analytics desde: <a href="https://tools.google.com/dlpage/gaoptout" style="color:#009B9C">https://tools.google.com/dlpage/gaoptout</a></p>
-
-      <h4>5. Actualizaciones</h4>
-      <p>Este Aviso de Cookies puede actualizarse para adaptarse a cambios en las herramientas utilizadas o en la normativa vigente.</p>
-      <p><strong>Fecha de la última actualización:</strong> 5 de abril de 2025</p>
-    `
+      <h3>Política de cookies</h3>
+      <p>En virtud de la <strong>Ley 29/2021</strong>, de 23 de diciembre, de servicios de la sociedad de la información y comercio electrónico, informamos que este sitio web utiliza <strong>cookies técnicas</strong> necesarias para el correcto funcionamiento del sitio (como gestión de sesión y preferencias).</p>
+      <p>No utilizamos cookies de seguimiento, publicitarias ni de terceros. Las cookies son archivos pequeños que el navegador almacena para mejorar la experiencia de usuario.</p>
+      <p>Puede gestionar o desactivar las cookies desde su navegador en cualquier momento. La negación de cookies técnicas puede afectar al correcto funcionamiento de la web.</p>
+    `,
   },
   en: {
     aviso: `
       <h3>Legal notice</h3>
-      <p>This website is owned by DEL SOTO-PALEARI & Associats, SL, with address at Av. Fiter i Rossel, 78, 2n B, Edifici Carlemany, AD700 Andorra and NRT L-720543-P. Use of this website implies acceptance of the general terms of use. All rights reserved.</p>
+      <p>In compliance with <strong>Law 35/2014, of 27 November, on electronic certification and trust in the Principality of Andorra</strong>, as well as applicable European regulations on data protection and electronic commerce, the following legal information regarding the website owner is provided to users:</p>
+
+      <h4>Identifying details of the owner</h4>
+      <p><strong>Name or legal entity:</strong> DEL SOTO – PALEARI & Associats, S.L.</p>
+      <p><strong>NRT:</strong> L-720543-P</p>
+      <p><strong>Registered office:</strong> Av. Fiter i Rossell, No. 78, Edifici Carlemany, 2n B, Escaldes-Engordany (Principality of Andorra)</p>
+      <p><strong>Contact phone:</strong> +376 650 042</p>
+      <p><strong>Contact email:</strong> <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a></p>
+      <p><strong>Domain name:</strong> www.ambit.ad</p>
+
+      <h4>Terms of use</h4>
+      <p>Accessing and using the website www.ambit.ad grants you the status of user and implies full and unconditional acceptance of these terms of use, without prejudice to specific conditions that may apply to particular services.</p>
+      <p>The user agrees to use the website's contents and services appropriately, refraining from carrying out illegal activities or those contrary to good faith, public order, or third-party rights.</p>
+      <p>DEL SOTO – PALEARI & Associats, S.L. reserves the right to modify this legal information, as well as the website's configuration, presentation, and content, at any time and without prior notice.</p>
+
+      <h4>Intellectual and industrial property</h4>
+      <p>All content on this website (texts, images, logos, trademarks, structures, designs, etc.) is owned by DEL SOTO – PALEARI & Associats, S.L. or third parties who have authorized its use, and is protected by Andorran and international intellectual and industrial property laws.</p>
+      <p>Reproduction, distribution, public communication, or transformation of this content is prohibited without the express written authorization of the owner.</p>
+
+      <h4>Personal data protection</h4>
+      <p>Personal data collected through this website will be processed in accordance with <strong>Law 29/2021, of 28 October, on personal data protection in the Principality of Andorra</strong>, and in compliance with the <strong>General Data Protection Regulation (GDPR) (EU) 2016/679</strong>.</p>
+      <p>For more information on data processing, user rights, and specific purposes, please consult the Privacy Policy.</p>
+
+      <h4>Liability disclaimer</h4>
+      <p>DEL SOTO – PALEARI & Associats, S.L. is not liable for any damages or losses arising from access, use, or misuse of the website's content, nor for any errors or omissions that may exist.</p>
+      <p>This website may contain links to external pages over which no control is exercised, and therefore DEL SOTO – PALEARI & Associats, S.L. assumes no responsibility for their content, operation, or availability.</p>
+
+      <h4>Governing law and jurisdiction</h4>
+      <p>This website, its terms of use, and the relationship between the user and the owner are governed by the laws of the Principality of Andorra.</p>
+      <p>Any dispute arising in connection with access or use of this website shall be subject to the jurisdiction of the Andorran courts, with express waiver of any other jurisdiction that may apply.</p>
     `,
     privacidad: `
-      <h3>Privacy Policy</h3>
-      <p><em>(Updated according to Qualified Law 29/2021, of 28 October, on personal data protection of the Principality of Andorra)</em></p>
-      <p>In compliance with Qualified Law 29/2021, of 28 October, on personal data protection, and Law 35/2014, of 27 November, on electronic trust services, DEL SOTO-PALEARI & Associats, S.L. informs users of the website <strong>www.ambit.ad</strong> about the processing of their personal data.</p>
-
-      <h4>1. Data Controller</h4>
-      <p><strong>Identity:</strong> DEL SOTO-PALEARI & Associats, S.L.<br>
-      <strong>Address:</strong> Avinguda Fiter i Rossell, 78, Edifici Carlemany, 2n B, AD500 Andorra la Vella, Principality of Andorra<br>
-      <strong>NRT:</strong> L-720543-P<br>
-      <strong>Contact email:</strong> <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a></p>
-
-      <h4>2. Purposes of Processing and Legal Basis</h4>
-      <p>Personal data provided by users (e.g., via contact form or email) are processed for the following purposes:</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Manage and respond to inquiries or information requests</strong> sent via the website.<br><em>Legal basis:</em> Consent of the data subject (Article 6.1.a GDPR / Article 6.1.a Law 29/2021).</li>
-        <li><strong>Maintain a professional relationship</strong> with clients, collaborators or interested parties.<br><em>Legal basis:</em> Legitimate interest of the controller (Article 6.1.f GDPR / Article 6.1.f Law 29/2021).</li>
-        <li><strong>Send commercial or institutional information</strong> (only if explicit and revocable consent has been obtained).<br><em>Legal basis:</em> Consent of the data subject.</li>
-      </ul>
-
-      <h4>3. Legal Basis and Consent</h4>
-      <p>In accordance with Article 6 of Law 29/2021, data processing is always based on a valid legal ground. Where consent is the basis, it is freely given, specific, informed, and unambiguous, and may be withdrawn at any time without affecting the lawfulness of processing carried out previously.</p>
-
-      <h4>4. Recipients of the Data</h4>
-      <p>Data will not be disclosed to third parties except in the following cases:</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Processors:</strong> External service providers (hosting, email management, backup, etc.) acting on behalf and for DEL SOTO-PALEARI & Associats, S.L. These are bound by contract under Article 28 GDPR or equivalent under Law 29/2021.</li>
-        <li><strong>Legal obligation:</strong> When a competent judicial, administrative, or regulatory authority requires data disclosure.</li>
-      </ul>
-      <p>If international data transfers occur, an adequate level of protection will be ensured through standard contractual clauses or other recognized security measures.</p>
-
-      <h4>5. Data Subject Rights</h4>
-      <p>Under Law 29/2021, data subjects have the following rights:</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li>Access to their processed data.</li>
-        <li>Rectification of inaccurate or incomplete data.</li>
-        <li>Erasure ("right to be forgotten") under certain circumstances.</li>
-        <li>Restriction of processing in specific cases.</li>
-        <li>Objection to processing, especially for direct marketing purposes.</li>
-        <li>Data portability, where processing is based on consent or contract performance.</li>
-      </ul>
-      <p>To exercise these rights, please send a written request or email to <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a>, verifying your identity.</p>
-      <p>You also have the right to lodge a complaint with the Personal Data Protection Authority of the Principality of Andorra if you believe your data processing violates Law 29/2021.</p>
-
-      <h4>6. Security Measures</h4>
-      <p>DEL SOTO-PALEARI & Associats, S.L. has implemented appropriate technical and organizational measures to ensure a level of security appropriate to the risk, as required by Article 32 of Law 29/2021. This includes protection against destruction, loss, alteration, disclosure, or unauthorized access to data.</p>
-
-      <h4>7. Data Retention Period</h4>
-      <p>Data will be retained only for as long as necessary for the purposes for which it was collected, and in any case, for the legally established periods (e.g., to comply with tax, civil, or administrative obligations). After this period, data will be securely deleted.</p>
-
-      <h4>8. Changes to this Policy</h4>
-      <p>This Privacy Policy may be updated to adapt to future legislative, judicial, or technical changes. We recommend reviewing it periodically on the website <a href="https://www.ambit.ad" style="color:#009B9C">www.ambit.ad</a>.</p>
-      <p><strong>Last updated:</strong> April 5, 2025</p>
+      <h3>Privacy policy</h3>
+      <p>In compliance with <strong>Law 29/2021</strong>, of 28 October, on personal data protection in the Principality of Andorra, and under the <strong>General Data Protection Regulation (GDPR) (EU) 2016/679</strong>, we inform you that personal data collected through this website will be processed to manage your inquiry, maintain a professional relationship, and, if applicable, send information about related services.</p>
+      <p>The legal basis for processing is your consent. Data will be kept for the time necessary to address your request and subsequently for the periods required by tax, accounting, and administrative regulations.</p>
+      <p>You may exercise your rights of access, rectification, erasure, restriction of processing, objection, and data portability by sending an email to <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a>.</p>
+      <p>Data will not be shared with third parties outside the Principality of Andorra, except with professional collaborators bound by confidentiality agreements and necessary for service delivery.</p>
+      <p>We implement technical and organizational measures to ensure data security and prevent unlawful processing, loss, alteration, disclosure, or unauthorized access.</p>
     `,
     cookies: `
-      <h3>🍪 Cookie Notice</h3>
-      <p><em>(Adapted to Law 35/2014 and Law 29/2021 on data protection)</em></p>
-
-      <h4>1. What are cookies?</h4>
-      <p>Cookies are small files stored on the user’s device (computer, mobile, tablet) when visiting a website. They aim to improve user experience, facilitate navigation, analyze user behavior, and provide tailored content.</p>
-      <p>This website, <strong>www.ambit.ad</strong>, uses cookies in accordance with Law 35/2014, of November 27, on electronic trust services, and the transparency and consent principles of Law 29/2021.</p>
-
-      <h4>2. Types of cookies used</h4>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Technical cookies</strong><br>
-        Necessary for basic website functionality.<br>
-        Session management, compatibility, access.</li>
-        <li><strong>Analytical cookies</strong><br>
-        Measure and analyze website usage to improve performance.<br>
-        Google Analytics (in anonymous mode, without storing full IP).</li>
-        <li><strong>Third-party cookies</strong><br>
-        Integrated from external services (social networks, maps, etc.).<br>
-        "Like" or "Share" buttons from social networks.</li>
-      </ul>
-      <p><strong>⚠️ Note:</strong> Currently, no profiling or behavioral advertising cookies are used.</p>
-
-      <h4>3. User Consent</h4>
-      <p>In compliance with Law 35/2014 and CJEU jurisprudence, the website displays an informative cookie banner allowing users to give informed, free, and revocable consent before non-essential cookies are stored.</p>
-      <p>By continuing to browse this website, you expressly accept the use of cookies. Consent can be withdrawn at any time via browser settings or by contacting us.</p>
-
-      <h4>4. Managing Cookies</h4>
-      <p>You can manage, block, or delete cookies via your browser settings:</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Google Chrome:</strong> Settings > Privacy and Security > Cookies</li>
-        <li><strong>Mozilla Firefox:</strong> Options > Privacy & Security > Cookies and Site Data</li>
-        <li><strong>Safari:</strong> Preferences > Privacy > Block third-party cookies</li>
-        <li><strong>Microsoft Edge:</strong> Settings > Cookies and site permissions</li>
-      </ul>
-      <p>You can also disable Google Analytics cookies at: <a href="https://tools.google.com/dlpage/gaoptout" style="color:#009B9C">https://tools.google.com/dlpage/gaoptout</a></p>
-
-      <h4>5. Updates</h4>
-      <p>This Cookie Notice may be updated to reflect changes in tools used or applicable regulations.</p>
-      <p><strong>Last updated:</strong> April 5, 2025</p>
-    `
+      <h3>Cookie policy</h3>
+      <p>In accordance with <strong>Law 29/2021</strong>, of 23 December, on information society services and electronic commerce, we inform you that this website uses <strong>technical cookies</strong> essential for its proper functioning (such as session management and preferences).</p>
+      <p>We do not use tracking, advertising, or third-party cookies. Cookies are small files stored by your browser to enhance user experience.</p>
+      <p>You can manage or disable cookies through your browser settings at any time. Disabling technical cookies may affect the website's functionality.</p>
+    `,
   },
   fr: {
     aviso: `
       <h3>Avis légal</h3>
-      <p>Ce site web appartient à DEL SOTO-PALEARI & Associats, SL, dont le siège est situé à l’Av. Fiter i Rossel, 78, 2n B, Edifici Carlemany, AD700 Andorre, NRT L-720543-P. L’utilisation de ce site implique l’acceptation des conditions générales d’utilisation. Tous droits réservés.</p>
+      <p>Conformément à la <strong>Loi 35/2014, du 27 novembre, relative à la certification et à la confiance électroniques au sein du Principauté d’Andorre</strong>, ainsi qu'à la réglementation européenne applicable en matière de protection des données et de commerce électronique, les informations juridiques suivantes concernant le propriétaire du site web sont mises à disposition des utilisateurs :</p>
+
+      <h4>Coordonnées du propriétaire</h4>
+      <p><strong>Nom ou raison sociale :</strong> DEL SOTO – PALEARI & Associats, S.L.</p>
+      <p><strong>NRT :</strong> L-720543-P</p>
+      <p><strong>Siège social :</strong> Av. Fiter i Rossell, n° 78, Édifice Carlemany, 2e B, Escaldes-Engordany (Principauté d’Andorre)</p>
+      <p><strong>Téléphone de contact :</strong> +376 650 042</p>
+      <p><strong>Adresse e-mail :</strong> <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a></p>
+      <p><strong>Nom de domaine :</strong> www.ambit.ad</p>
+
+      <h4>Conditions d'utilisation</h4>
+      <p>L'accès et l'utilisation du site web www.ambit.ad attribuent la qualité d'utilisateur et impliquent l'acceptation pleine et entière des présentes conditions d'utilisation, sans préjudice des conditions particulières pouvant s'appliquer à certains services spécifiques.</p>
+      <p>L'utilisateur s'engage à faire un usage adéquat des contenus et services du site web, en s'abstenant de toute activité illégale ou contraire à la bonne foi, à l'ordre public ou aux droits de tiers.</p>
+      <p>DEL SOTO – PALEARI & Associats, S.L. se réserve le droit de modifier à tout moment et sans préavis la présente information juridique, ainsi que la configuration, la présentation et le contenu du site web.</p>
+
+      <h4>Propriété intellectuelle et industrielle</h4>
+      <p>Tous les contenus de ce site web (textes, images, logos, marques, structures, designs, etc.) sont la propriété de DEL SOTO – PALEARI & Associats, S.L. ou de tiers ayant autorisé leur utilisation, et sont protégés par la législation andorrane et internationale en matière de propriété intellectuelle et industrielle.</p>
+      <p>Toute reproduction, distribution, communication publique ou transformation de ces contenus est interdite sans l'autorisation expresse et écrite du titulaire.</p>
+
+      <h4>Protection des données personnelles</h4>
+      <p>Les données personnelles collectées via ce site web seront traitées conformément à la <strong>Loi 29/2021, du 28 octobre, relative à la protection des données à caractère personnel au sein du Principauté d’Andorre</strong>, et en application du <strong>Règlement (UE) 2016/679</strong> du Parlement européen et du Conseil (RGPD).</p>
+      <p>Pour plus d'informations sur le traitement des données, les droits des utilisateurs et les finalités spécifiques, veuillez consulter la Politique de confidentialité.</p>
+
+      <h4>Exclusion de responsabilité</h4>
+      <p>DEL SOTO – PALEARI & Associats, S.L. n'est pas responsable des dommages ou préjudices pouvant découler de l'accès, de l'utilisation ou d'une mauvaise utilisation des contenus du site web, ni des erreurs ou omissions éventuelles.</p>
+      <p>Ce site web peut contenir des liens vers des pages externes sur lesquelles aucun contrôle n'est exercé, et par conséquent DEL SOTO – PALEARI & Associats, S.L. n'assume aucune responsabilité quant à leur contenu, leur fonctionnement ou leur disponibilité.</p>
+
+      <h4>Droit applicable et juridiction</h4>
+      <p>Le présent site web, ses conditions d'utilisation et les relations entre l'utilisateur et le propriétaire sont régis par la législation en vigueur au sein du Principauté d’Andorre.</p>
+      <p>Toute contestation relative à l'accès ou à l'utilisation de ce site web sera soumise à la juridiction exclusive des tribunaux andorrans, avec renonciation expresse à tout autre droit de juridiction.</p>
     `,
     privacidad: `
       <h3>Politique de confidentialité</h3>
-      <p><em>(Mise à jour conformément à la loi qualifiée 29/2021, du 28 octobre, relative à la protection des données à caractère personnel du Principauté d’Andorre)</em></p>
-      <p>Conformément à la loi qualifiée 29/2021, du 28 octobre, relative à la protection des données à caractère personnel, et à la loi 35/2014, du 27 novembre, relative aux services de confiance électronique, DEL SOTO-PALEARI & Associats, S.L. informe les utilisateurs du site web <strong>www.ambit.ad</strong> sur le traitement de leurs données à caractère personnel.</p>
-
-      <h4>1. Responsable du traitement</h4>
-      <p><strong>Identité :</strong> DEL SOTO-PALEARI & Associats, S.L.<br>
-      <strong>Adresse :</strong> Avinguda Fiter i Rossell, 78, Edifici Carlemany, 2n B, AD500 Andorre-la-Vieille, Principauté d’Andorre<br>
-      <strong>NRT :</strong> L-720543-P<br>
-      <strong>Adresse e-mail de contact :</strong> <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a></p>
-
-      <h4>2. Finalités du traitement et bases juridiques</h4>
-      <p>Les données à caractère personnel fournies par les utilisateurs (par exemple via le formulaire de contact ou un courriel) sont traitées aux fins suivantes :</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Gérer et répondre aux demandes d’informations</strong> envoyées via le site web.<br><em>Base juridique :</em> Consentement du titulaire (article 6.1.a du RGPD / article 6.1.a de la loi 29/2021).</li>
-        <li><strong>Maintenir une relation professionnelle</strong> avec les clients, collaborateurs ou intéressés.<br><em>Base juridique :</em> Intérêt légitime du responsable (article 6.1.f du RGPD / article 6.1.f de la loi 29/2021).</li>
-        <li><strong>Envoyer des informations commerciales ou institutionnelles</strong> (uniquement si le consentement explicite et révocable du titulaire a été obtenu).<br><em>Base juridique :</em> Consentement du titulaire.</li>
-      </ul>
-
-      <h4>3. Légitimation et consentement</h4>
-      <p>Conformément à l’article 6 de la loi 29/2021, le traitement des données s’effectue toujours sur une base juridique valide. En cas de consentement, celui-ci est libre, spécifique, informé et sans équivoque, et peut être retiré à tout moment sans affecter la licéité du traitement effectué antérieurement.</p>
-
-      <h4>4. Destinataires des données</h4>
-      <p>Les données ne seront pas cédées à des tiers, sauf dans les cas suivants :</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Sous-traitants :</strong> Prestataires de services externes (hébergement, gestion de courrier, sauvegarde, etc.) agissant pour le compte de DEL SOTO-PALEARI & Associats, S.L. Ils sont soumis à contrat conformément à l’article 28 du RGPD ou équivalent selon la loi 29/2021.</li>
-        <li><strong>Obligation légale :</strong> Lorsqu’une autorité judiciaire, administrative ou réglementaire compétente exige la communication des données.</li>
-      </ul>
-      <p>En cas de transferts internationaux de données, un niveau adéquat de protection sera garanti par des clauses contractuelles types ou d'autres mesures de sécurité reconnues.</p>
-
-      <h4>5. Droits des personnes concernées</h4>
-      <p>Conformément à la loi 29/2021, les personnes concernées disposent des droits suivants :</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li>Accès à leurs données traitées.</li>
-        <li>Rectification des données inexactes ou incomplètes.</li>
-        <li>Suppression (« droit à l’oubli ») dans certaines circonstances.</li>
-        <li>Limitation du traitement dans des cas spécifiques.</li>
-        <li>Opposition au traitement, notamment à des fins de marketing direct.</li>
-        <li>Portabilité des données, lorsque le traitement repose sur le consentement ou sur l’exécution d’un contrat.</li>
-      </ul>
-      <p>Pour exercer ces droits, veuillez envoyer une demande écrite ou par courriel à <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a>, en justifiant votre identité.</p>
-      <p>Vous avez également le droit d’introduire une réclamation auprès de l’Autorité de protection des données à caractère personnel du Principauté d’Andorre si vous estimez que le traitement de vos données viole la loi 29/2021.</p>
-
-      <h4>6. Mesures de sécurité</h4>
-      <p>DEL SOTO-PALEARI & Associats, S.L. a adopté des mesures techniques et organisationnelles appropriées pour garantir un niveau de sécurité adapté au risque, conformément à l’article 32 de la loi 29/2021. Cela inclut la protection contre la destruction, la perte, l’altération, la divulgation ou l’accès non autorisé aux données.</p>
-
-      <h4>7. Durée de conservation des données</h4>
-      <p>Les données sont conservées pendant le temps strictement nécessaire aux finalités pour lesquelles elles ont été collectées, et en tout état de cause, pendant les délais légalement prévus (par exemple, pour respecter les obligations fiscales, civiles ou administratives). Une fois ce délai expiré, les données sont supprimées de manière sécurisée.</p>
-
-      <h4>8. Modifications de cette politique</h4>
-      <p>La présente Politique de confidentialité peut être modifiée afin de s’adapter à d’éventuels changements législatifs, jurisprudentiels ou techniques. Nous vous recommandons de la consulter périodiquement sur le site web <a href="https://www.ambit.ad" style="color:#009B9C">www.ambit.ad</a>.</p>
-      <p><strong>Date de la dernière mise à jour :</strong> 5 avril 2025</p>
+      <p>Conformément à la <strong>Loi 29/2021</strong>, du 28 octobre, relative à la protection des données à caractère personnel au sein du Principauté d’Andorre, et en vertu du <strong>Règlement (UE) 2016/679</strong> (RGPD), nous informons que les données personnelles collectées via ce site web seront traitées afin de gérer votre demande, maintenir une relation professionnelle et, le cas échéant, vous envoyer des informations sur des services connexes.</p>
+      <p>La base légale du traitement est votre consentement. Les données seront conservées pendant la durée nécessaire à l’analyse de votre demande, puis conformément aux délais imposés par la réglementation fiscale, comptable et administrative.</p>
+      <p>Vous pouvez exercer vos droits d'accès, de rectification, d'effacement, de limitation du traitement, d'opposition et de portabilité en envoyant un e-mail à <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a>.</p>
+      <p>Les données ne seront pas transférées à des tiers en dehors du Principauté d’Andorre, sauf aux collaborateurs professionnels liés par un accord de confidentialité et nécessaires à la prestation du service.</p>
+      <p>Nous mettons en œuvre des mesures techniques et organisationnelles pour garantir la sécurité des données et prévenir tout traitement illicite, perte, altération, divulgation ou accès non autorisé.</p>
     `,
     cookies: `
-      <h3>🍪 Politique de cookies</h3>
-      <p><em>(Adaptée à la loi 35/2014 et à la loi 29/2021 sur la protection des données)</em></p>
-
-      <h4>1. Qu’est-ce qu’un cookie ?</h4>
-      <p>Les cookies sont de petits fichiers stockés sur le dispositif de l’utilisateur (ordinateur, téléphone, tablette) lorsqu’il visite un site web. Ils ont pour but d’améliorer l’expérience utilisateur, de faciliter la navigation, d’analyser le comportement des utilisateurs et d’offrir des contenus adaptés.</p>
-      <p>Ce site web, <strong>www.ambit.ad</strong>, utilise des cookies conformément à la loi 35/2014, du 27 novembre, relative aux services de confiance électronique, et aux principes de transparence et de consentement de la loi 29/2021.</p>
-
-      <h4>2. Types de cookies utilisés</h4>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Cookies techniques</strong><br>
-        Nécessaires au fonctionnement de base du site web.<br>
-        Gestion de session, compatibilité, accès.</li>
-        <li><strong>Cookies d’analyse</strong><br>
-        Mesurent et analysent l’utilisation du site pour en améliorer les performances.<br>
-        Google Analytics (en mode anonyme, sans enregistrement complet de l’IP).</li>
-        <li><strong>Cookies de tiers</strong><br>
-        Intégrés par des services externes (réseaux sociaux, cartes, etc.).<br>
-        Boutons « J’aime » ou « Partager » de réseaux sociaux.</li>
-      </ul>
-      <p><strong>⚠️ Remarque :</strong> Actuellement, aucun cookie de profilage ou de publicité comportementale n’est utilisé.</p>
-
-      <h4>3. Consentement de l’utilisateur</h4>
-      <p>Conformément à la loi 35/2014 et à la jurisprudence de la CJUE, le site affiche une bannière informative sur les cookies permettant à l’utilisateur de donner son consentement éclairé, libre et révocable avant le dépôt d’un cookie non essentiel.</p>
-      <p>En continuant à naviguer sur ce site, vous acceptez expressément l’utilisation des cookies. Le consentement peut être retiré à tout moment via les paramètres du navigateur ou en nous contactant.</p>
-
-      <h4>4. Gestion des cookies</h4>
-      <p>Vous pouvez gérer, bloquer ou supprimer les cookies via les options de votre navigateur :</p>
-      <ul class="list-disc list-inside space-y-2">
-        <li><strong>Google Chrome :</strong> Paramètres > Confidentialité et sécurité > Cookies</li>
-        <li><strong>Mozilla Firefox :</strong> Options > Confidentialité et sécurité > Cookies et données de sites</li>
-        <li><strong>Safari :</strong> Préférences > Confidentialité > Bloquer les cookies de tiers</li>
-        <li><strong>Microsoft Edge :</strong> Paramètres > Cookies et autorisations des sites</li>
-      </ul>
-      <p>Vous pouvez également désactiver les cookies analytiques de Google Analytics depuis : <a href="https://tools.google.com/dlpage/gaoptout" style="color:#009B9C">https://tools.google.com/dlpage/gaoptout</a></p>
-
-      <h4>5. Mises à jour</h4>
-      <p>La présente Politique de cookies peut être mise à jour pour s’adapter aux changements d’outils utilisés ou à la réglementation en vigueur.</p>
-      <p><strong>Date de la dernière mise à jour :</strong> 5 avril 2025</p>
-    `
+      <h3>Politique de cookies</h3>
+      <p>Conformément à la <strong>Loi 29/2021</strong>, du 23 décembre, relative aux services de la société de l'information et au commerce électronique, nous informons que ce site web utilise des <strong>cookies techniques</strong> nécessaires à son bon fonctionnement (gestion de session, préférences, etc.).</p>
+      <p>Nous n'utilisons pas de cookies de suivi, publicitaires ou de tiers. Les cookies sont de petits fichiers stockés par votre navigateur pour améliorer votre expérience utilisateur.</p>
+      <p>Vous pouvez gérer ou désactiver les cookies via les paramètres de votre navigateur à tout moment. Le refus des cookies techniques peut affecter le bon fonctionnement du site.</p>
+    `,
   }
 };
 
-// Serveis principals
+// Serveis
 const mainServices = {
   ca: [
     { id: "comptable", title: "Comptabilitat i Fiscalitat" },
@@ -787,7 +592,10 @@ const App = () => {
   const [currentService, setCurrentService] = useState(null);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
   const [formSubmitted, setFormSubmitted] = useState(false);
-
+const [showCookieBanner, setShowCookieBanner] = useState(() => {
+  const savedConsent = localStorage.getItem('cookieConsent');
+  return savedConsent === null;
+});
   const t = translations[language];
   const services = mainServices[language];
   const details = serviceDetails[language];
@@ -846,39 +654,48 @@ const App = () => {
 
       {!currentService ? (
         <>
-          {/* Serveis */}
-          <section id="services" className="py-16 bg-gray-50">
-            <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">{t.services}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {services.map((service) => (
-                  <motion.button
-                    key={service.id}
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="bg-white p-6 rounded-xl shadow-lg text-left"
-                    onClick={() => openService(service.id)}
-                  >
-                    <h3 className="text-xl font-bold mb-3 text-[#009B9C]">{service.title}</h3>
-                    <p className="text-gray-600">Clica per veure tots els serveis</p>
-                  </motion.button>
-                ))}
-              </div>
-            </div>
-          </section>
+{/* Serveis */}
+<section id="services" className="py-16 bg-white border border-white relative overflow-hidden">
+  {/* Imatge esquerra (triangle) */}
+  <div className="absolute top-0 left-0 w-1/5 h-full pointer-events-none z-0 flex items-start">
+    <img
+      src={izquierdaImg}
+      alt="Triangle esquerre decoratiu"
+      className="max-h-full max-w-full object-contain object-left opacity-100"
+    />
+  </div>
 
-          {/* Qui som */}
-          <section id="about" className="py-16">
-            <div className="container mx-auto px-4 max-w-3xl text-center">
-              <h2 className="text-3xl font-bold mb-6">{t.about}</h2>
-              <p className="text-lg text-gray-700 leading-relaxed">
-                ÀMBIT Associats és una entitat professional formada per experts amb àmplia experiència en àrees fiscal, comptable, laboral i mercantil al Principat d’Andorra. El nostre compromís és oferir un assessorament personalitzat, rigorós i eficient per a particulars i empreses.
-              </p>
-            </div>
-          </section>
+  {/* Imatge dreta (línies) */}
+  <div className="absolute top-0 right-0 w-1/4 h-full pointer-events-none z-0 flex items-start">
+    <img
+      src={derechaImg}
+      alt="Línies diagonals dreta"
+      className="max-h-full max-w-full object-contain object-right opacity-100"
+    />
+  </div>
+
+  {/* Contingut principal */}
+  <div className="container mx-auto px-4 relative z-10">
+    <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">{t.services}</h2>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {services.map((service) => (
+        <motion.button
+          key={service.id}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.98 }}
+          className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-left border border-gray-100"
+          onClick={() => openService(service.id)}
+        >
+          <h3 className="text-xl font-bold mb-3 text-[#009B9C]">{service.title}</h3>
+          <p className="text-gray-600">Clica per veure tots els serveis</p>
+        </motion.button>
+      ))}
+    </div>
+  </div>
+</section>
 
           {/* Contacte */}
-          <section id="contact" className="py-16 bg-[#009B9C] text-white">
+          <section id="contact" className="py-20 bg-[#009B9C] text-white">
             <div className="container mx-auto px-4">
               <h2 className="text-3xl font-bold text-center mb-8">{t.contact}</h2>
               <p className="text-center text-lg mb-10">{t.contactInfo}</p>
@@ -929,7 +746,7 @@ const App = () => {
                     href="https://wa.me/376650042"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg text-center font-semibold transition"
+                    className="block w-full bg-[#00C8C9] hover:bg-[#00A8A9] text-white py-3 rounded-lg text-center font-semibold transition"
                   >
                     {t.whatsapp}
                   </a>
@@ -941,53 +758,71 @@ const App = () => {
             </div>
           </section>
 
-          {/* Nota Legal */}
-          <section id="legal" className="py-16 bg-gray-100">
-            <div className="container mx-auto px-4 text-center">
-              <h2 className="text-3xl font-bold mb-8">{t.legal}</h2>
-              <div className="flex flex-wrap justify-center gap-6">
-                {Object.keys(t.legalTabs).map((key) => (
-                  <button
-                    key={key}
-                    onClick={() => {
-                      const win = window.open("", "_blank");
-                      win.document.write(`
-                        <!DOCTYPE html>
-                        <html lang="${language}">
-                        <head>
-                          <meta charset="UTF-8" />
-                          <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-                          <title>${t.legalTabs[key]} - ÀMBIT Associats</title>
-                          <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-                          <style>
-                            body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; padding: 2rem; }
-                            h3, h4 { color: #009B9C; }
-                            a { color: #009B9C; text-decoration: underline; }
-                            .container { max-width: 900px; margin: 0 auto; }
-                          </style>
-                        </head>
-                        <body>
-                          <div class="container">
-                            ${legalTexts[language][key]}
-                            <p><br><a href="javascript:window.close()" style="color:#006667">Tancar aquesta finestra</a></p>
-                          </div>
-                        </body>
-                        </html>
-                      `);
-                      win.document.close();
-                    }}
-                    className="text-[#009B9C] hover:underline text-lg font-medium"
-                  >
-                    {t.legalTabs[key]}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
+         {/* Nota Legal */}
+<section id="legal" className="py-20 bg-white relative">
+  {/* Imatge inferior esquerra */}
+  <div className="absolute bottom-0 left-0 w-1/3 h-260 pointer-events-none z-0 flex items-end justify-start">
+    <img
+      src={legalBottomLeftImg}
+      alt="Decoració inferior esquerra"
+      className="max-h-full max-w-full object-contain opacity-100"
+    />
+  </div>
+
+  {/* Imatge inferior dreta */}
+  <div className="absolute bottom-0 right-0 w-1/3 h-180 pointer-events-none z-0 flex items-end justify-end">
+    <img
+      src={legalBottomRightImg}
+      alt="Decoració inferior dreta"
+      className="max-h-full max-w-full object-contain opacity-100"
+    />
+  </div>
+
+  <div className="container mx-auto px-4 relative z-10">
+    <h2 className="text-3xl font-bold text-center mb-8">{t.legal}</h2>
+    <div className="flex flex-wrap justify-center gap-6">
+      {Object.keys(t.legalTabs).map((key) => (
+        <button
+          key={key}
+          onClick={() => {
+            const win = window.open("", "_blank");
+            win.document.write(`
+              <!DOCTYPE html>
+              <html lang="${language}">
+              <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <title>${t.legalTabs[key]} - ÀMBIT Associats</title>
+                <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+                <style>
+                  body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; padding: 2rem; }
+                  h3, h4 { color: #009B9C; }
+                  a { color: #009B9C; text-decoration: underline; }
+                  .container { max-width: 900px; margin: 0 auto; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  ${legalContent[language][key]}
+                  <p><br><a href="javascript:window.close()" style="color:#006667">Tancar aquesta finestra</a></p>
+                </div>
+              </body>
+              </html>
+            `);
+            win.document.close();
+          }}
+          className="text-[#009B9C] hover:underline text-lg font-medium"
+        >
+          {t.legalTabs[key]}
+        </button>
+      ))}
+    </div>
+  </div>
+</section>
         </>
       ) : (
         /* Vista detallada del servei */
-        <section className="py-16 flex-1">
+        <section className="py-20 flex-1">
           <div className="container mx-auto px-4">
             <button
               onClick={goBack}
@@ -1007,7 +842,45 @@ const App = () => {
           </div>
         </section>
       )}
-
+{/* Cookie Consent Banner */}
+{showCookieBanner && (
+  <div className="fixed bottom-0 left-0 right-0 bg-white text-gray-800 p-4 shadow-lg border-t border-gray-200 z-50">
+    <div className="container mx-auto px-4 text-center">
+      <p className="mb-3 text-sm">
+        Aquesta web utilitza cookies per millorar l'experiència d'usuari. En continuar navegant, acceptes el seu ús.
+      </p>
+      <div className="flex flex-wrap justify-center gap-3">
+        <button
+          onClick={() => {
+            localStorage.setItem('cookieConsent', 'rejected');
+            setShowCookieBanner(false);
+          }}
+          className="text-[#009B9C] hover:underline text-sm font-medium"
+        >
+          Rebutjar
+        </button>
+        <button
+          onClick={() => {
+            localStorage.setItem('cookieConsent', 'accepted');
+            setShowCookieBanner(false);
+          }}
+          className="bg-[#009B9C] text-white px-5 py-1 rounded-lg text-sm font-semibold hover:bg-[#006667] transition"
+        >
+          Acceptar
+        </button>
+      </div>
+      <p className="mt-2 text-xs text-gray-500">
+        <a
+          href="#legal"
+          onClick={() => setShowCookieBanner(false)}
+          className="hover:underline"
+        >
+          Més informació a Política de cookies
+        </a>
+      </p>
+    </div>
+  </div>
+)}
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-6 text-center text-sm">
         <div className="container mx-auto px-4">
