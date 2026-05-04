@@ -4,6 +4,7 @@ import izquierdaImg from './izquierda.png';
 import derechaImg from './derecha.png';
 import legalBottomLeftImg from './legal-bottom-left.png';
 import legalBottomRightImg from './legal-bottom-right.png';
+import IrpfCalculadora from './irpf/IrpfCalculadora';
 
 
 // Logo – més gran i centrat
@@ -591,6 +592,7 @@ const serviceDetails = {
 const App = () => {
   const [language, setLanguage] = useState("ca");
   const [currentService, setCurrentService] = useState(null);
+  const [showIrpf, setShowIrpf] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
   const [formSubmitted, setFormSubmitted] = useState(false);
 const [showCookieBanner, setShowCookieBanner] = useState(() => {
@@ -604,6 +606,7 @@ const [showCookieBanner, setShowCookieBanner] = useState(() => {
   const handleLanguageChange = (langCode) => {
     setLanguage(langCode);
     setCurrentService(null);
+    setShowIrpf(false);
     setFormSubmitted(false);
   };
 
@@ -626,25 +629,37 @@ const [showCookieBanner, setShowCookieBanner] = useState(() => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  if (showIrpf) {
+    return <IrpfCalculadora onBack={() => setShowIrpf(false)} />;
+  }
+
   return (
     <div className="bg-white text-gray-800 min-h-screen flex flex-col">
       {/* Header */}
       <header className="bg-[#009B9C] text-white py-6">
         <div className="container mx-auto px-4">
-          <div className="flex justify-end mb-4 space-x-4">
-            {languages.map((lang) => (
-              <button
-                key={lang.code}
-                onClick={() => handleLanguageChange(lang.code)}
-                className={`px-3 py-1 rounded-md text-sm ${
-                  lang.code === language
-                    ? "bg-white text-[#009B9C] font-semibold"
-                    : "bg-opacity-20 hover:bg-white"
-                }`}
-              >
-                {lang.name}
-              </button>
-            ))}
+          <div className="flex justify-between items-center mb-4">
+            <button
+              onClick={() => setShowIrpf(true)}
+              className="bg-white text-[#009B9C] font-semibold px-4 py-1.5 rounded-lg text-sm hover:bg-[#006667] hover:text-white transition flex items-center gap-1.5"
+            >
+              🧮 Calculadora IRPF 2025
+            </button>
+            <div className="flex space-x-4">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => handleLanguageChange(lang.code)}
+                  className={`px-3 py-1 rounded-md text-sm ${
+                    lang.code === language
+                      ? "bg-white text-[#009B9C] font-semibold"
+                      : "bg-opacity-20 hover:bg-white"
+                  }`}
+                >
+                  {lang.name}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="flex flex-col items-center">
             <Logo />
