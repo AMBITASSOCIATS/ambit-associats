@@ -42,6 +42,13 @@ const translations = {
       cookies: "Política de cookies",
     },
     back: "Torna als serveis",
+    irpfBanner: {
+      badge: "Eina gratuïta",
+      title: "Calculadora IRPF Andorra 2025",
+      desc: "Calcula la teva quota de l'Impost sobre la Renda de les Persones Físiques d'Andorra de forma ràpida i precisa, seguint la Llei 5/2014 i la Guia pràctica 2025.",
+      features: ["Tipus únic del 10%", "Mínim personal i familiar", "Informe 300-L"],
+      cta: "Obrir la calculadora",
+    },
     form: {
       name: "Nom",
       email: "Correu electrònic",
@@ -66,6 +73,13 @@ const translations = {
       cookies: "Política de cookies",
     },
     back: "Volver a servicios",
+    irpfBanner: {
+      badge: "Herramienta gratuita",
+      title: "Calculadora IRPF Andorra 2025",
+      desc: "Calcula tu cuota del Impuesto sobre la Renta de las Personas Físicas de Andorra de forma rápida y precisa, siguiendo la Ley 5/2014 y la Guía práctica 2025.",
+      features: ["Tipo único del 10%", "Mínimo personal y familiar", "Informe 300-L"],
+      cta: "Abrir la calculadora",
+    },
     form: {
       name: "Nombre",
       email: "Correo electrónico",
@@ -90,6 +104,13 @@ const translations = {
       cookies: "Cookie policy",
     },
     back: "Back to services",
+    irpfBanner: {
+      badge: "Free tool",
+      title: "Andorra IRPF Calculator 2025",
+      desc: "Calculate your Andorran personal income tax liability quickly and accurately, following Law 5/2014 and the 2025 Practical Guide.",
+      features: ["Flat rate of 10%", "Personal & family allowances", "Form 300-L report"],
+      cta: "Open the calculator",
+    },
     form: {
       name: "Name",
       email: "Email",
@@ -114,6 +135,13 @@ const translations = {
       cookies: "Politique de cookies",
     },
     back: "Retour aux services",
+    irpfBanner: {
+      badge: "Outil gratuit",
+      title: "Calculatrice IRPF Andorre 2025",
+      desc: "Calculez votre impôt sur le revenu des personnes physiques en Andorre rapidement et avec précision, selon la Loi 5/2014 et le Guide pratique 2025.",
+      features: ["Taux unique de 10%", "Minimum personnel et familial", "Rapport 300-L"],
+      cta: "Ouvrir la calculatrice",
+    },
     form: {
       name: "Nom",
       email: "Email",
@@ -695,6 +723,64 @@ const App = () => {
     </div>
   </div>
 </section>
+
+          {/* Banner IRPF */}
+          <section className="py-16 bg-gradient-to-r from-[#009B9C] to-[#007A7B] text-white">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-10">
+                {/* Text */}
+                <div className="flex-1">
+                  <span className="inline-block bg-white bg-opacity-20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
+                    {t.irpfBanner.badge}
+                  </span>
+                  <h2 className="text-3xl font-bold mb-3">{t.irpfBanner.title}</h2>
+                  <p className="text-white text-opacity-90 mb-5 leading-relaxed">{t.irpfBanner.desc}</p>
+                  <ul className="space-y-1 mb-7">
+                    {t.irpfBanner.features.map((f, i) => (
+                      <li key={i} className="flex items-center gap-2 text-sm">
+                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white opacity-80 flex-shrink-0">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                        </svg>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    onClick={() => setShowIrpf(true)}
+                    className="bg-white text-[#007A7B] font-bold px-6 py-3 rounded-xl hover:bg-[#e6f7f7] transition shadow-md"
+                  >
+                    {t.irpfBanner.cta} →
+                  </button>
+                </div>
+                {/* Mini preview card */}
+                <div className="flex-shrink-0 w-64 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-2xl p-5 shadow-xl backdrop-blur-sm">
+                  <div className="text-xs font-semibold opacity-70 uppercase tracking-wide mb-3">Exemple de càlcul</div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="opacity-80">Salari brut</span>
+                      <span className="font-semibold">48.000 €</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="opacity-80">Mínim personal</span>
+                      <span className="font-semibold">24.000 €</span>
+                    </div>
+                    <div className="border-t border-white border-opacity-30 pt-2 flex justify-between">
+                      <span className="opacity-80">BLG</span>
+                      <span className="font-semibold">~22.560 €</span>
+                    </div>
+                    <div className="flex justify-between text-base">
+                      <span className="font-bold">Quota final</span>
+                      <span className="font-bold text-yellow-300">~1.456 €</span>
+                    </div>
+                    <div className="flex justify-between text-xs opacity-70">
+                      <span>Tipus efectiu</span>
+                      <span>~3,0%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* Contacte */}
           <section id="contact" className="py-20 bg-[#009B9C] text-white">
