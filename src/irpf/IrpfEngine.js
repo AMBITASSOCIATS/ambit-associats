@@ -55,6 +55,7 @@ export function calcularIRPF(input) {
     rendaMobiliaria = 0,
     guanysCapital = 0,
     conjugeACarrec = false,
+    rendesConjuge = 0,
     obligatDiscapacitat = false,
     numDescendents = 0,
     numAscendents = 0,
@@ -90,7 +91,7 @@ export function calcularIRPF(input) {
 
   // PAS 3 — Mínim personal (Guia §13.5: per bonif. sempre usar base, no l'incrementat per cònjuge)
   let minimPersonal;
-  if (conjugeACarrec) {
+  if (conjugeACarrec && rendesConjuge < IRPF.MINIM_PERSONAL) {
     minimPersonal = IRPF.MINIM_PERSONAL_CONJU;
   } else if (obligatDiscapacitat) {
     minimPersonal = IRPF.MINIM_PERSONAL_DISCAP;
@@ -177,7 +178,7 @@ export function calcularIRPF(input) {
     tipusEfectiu,
     rendaTotal,
     pagamentFraccionat,
-    obligacioDeclarar: rendaTotal > IRPF.MINIM_PERSONAL,
+    obligacioDeclarar: rendaTotal > minimPersonal,
   };
 }
 
