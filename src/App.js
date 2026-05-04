@@ -652,13 +652,7 @@ const App = () => {
       {/* Header */}
       <header className="bg-[#009B9C] text-white py-6">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-4">
-            <button
-              onClick={() => setShowIrpf(true)}
-              className="bg-white text-[#009B9C] font-semibold px-4 py-1.5 rounded-lg text-sm hover:bg-[#006667] hover:text-white transition flex items-center gap-1.5"
-            >
-              🧮 Calculadora IRPF 2025
-            </button>
+          <div className="flex justify-end items-center mb-4">
             <div className="flex space-x-4">
               {languages.map((lang) => (
                 <button
@@ -684,6 +678,62 @@ const App = () => {
 
       {!currentService ? (
         <>
+          {/* Banner IRPF — entre logo i serveis */}
+          <section className="py-16 bg-gradient-to-r from-[#009B9C] to-[#007A7B] text-white">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-10">
+                <div className="flex-1">
+                  <span className="inline-block bg-white bg-opacity-20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
+                    {t.irpfBanner.badge}
+                  </span>
+                  <h2 className="text-3xl font-bold mb-3">{t.irpfBanner.title}</h2>
+                  <p className="text-white text-opacity-90 mb-5 leading-relaxed">{t.irpfBanner.desc}</p>
+                  <ul className="space-y-1 mb-7">
+                    {t.irpfBanner.features.map((f, i) => (
+                      <li key={i} className="flex items-center gap-2 text-sm">
+                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white opacity-80 flex-shrink-0">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                        </svg>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    onClick={() => setShowIrpf(true)}
+                    className="bg-white text-[#007A7B] font-bold px-6 py-3 rounded-xl hover:bg-[#e6f7f7] transition shadow-md"
+                  >
+                    {t.irpfBanner.cta} →
+                  </button>
+                </div>
+                <div className="flex-shrink-0 w-64 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-2xl p-5 shadow-xl backdrop-blur-sm">
+                  <div className="text-xs font-semibold opacity-70 uppercase tracking-wide mb-3">Exemple de càlcul</div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="opacity-80">Salari brut</span>
+                      <span className="font-semibold">48.000 €</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="opacity-80">Mínim personal</span>
+                      <span className="font-semibold">24.000 €</span>
+                    </div>
+                    <div className="border-t border-white border-opacity-30 pt-2 flex justify-between">
+                      <span className="opacity-80">BLG</span>
+                      <span className="font-semibold">~22.560 €</span>
+                    </div>
+                    <div className="flex justify-between text-base">
+                      <span className="font-bold">Quota final</span>
+                      <span className="font-bold text-yellow-300">~1.456 €</span>
+                    </div>
+                    <div className="flex justify-between text-xs opacity-70">
+                      <span>Tipus efectiu</span>
+                      <span>~3,0%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
 {/* Serveis */}
 <section id="services" className="py-16 bg-white border border-white relative overflow-hidden">
   {/* Imatge esquerra (triangle) */}
@@ -723,64 +773,6 @@ const App = () => {
     </div>
   </div>
 </section>
-
-          {/* Banner IRPF */}
-          <section className="py-16 bg-gradient-to-r from-[#009B9C] to-[#007A7B] text-white">
-            <div className="container mx-auto px-4">
-              <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-10">
-                {/* Text */}
-                <div className="flex-1">
-                  <span className="inline-block bg-white bg-opacity-20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
-                    {t.irpfBanner.badge}
-                  </span>
-                  <h2 className="text-3xl font-bold mb-3">{t.irpfBanner.title}</h2>
-                  <p className="text-white text-opacity-90 mb-5 leading-relaxed">{t.irpfBanner.desc}</p>
-                  <ul className="space-y-1 mb-7">
-                    {t.irpfBanner.features.map((f, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm">
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white opacity-80 flex-shrink-0">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                        </svg>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    onClick={() => setShowIrpf(true)}
-                    className="bg-white text-[#007A7B] font-bold px-6 py-3 rounded-xl hover:bg-[#e6f7f7] transition shadow-md"
-                  >
-                    {t.irpfBanner.cta} →
-                  </button>
-                </div>
-                {/* Mini preview card */}
-                <div className="flex-shrink-0 w-64 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-2xl p-5 shadow-xl backdrop-blur-sm">
-                  <div className="text-xs font-semibold opacity-70 uppercase tracking-wide mb-3">Exemple de càlcul</div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="opacity-80">Salari brut</span>
-                      <span className="font-semibold">48.000 €</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="opacity-80">Mínim personal</span>
-                      <span className="font-semibold">24.000 €</span>
-                    </div>
-                    <div className="border-t border-white border-opacity-30 pt-2 flex justify-between">
-                      <span className="opacity-80">BLG</span>
-                      <span className="font-semibold">~22.560 €</span>
-                    </div>
-                    <div className="flex justify-between text-base">
-                      <span className="font-bold">Quota final</span>
-                      <span className="font-bold text-yellow-300">~1.456 €</span>
-                    </div>
-                    <div className="flex justify-between text-xs opacity-70">
-                      <span>Tipus efectiu</span>
-                      <span>~3,0%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
 
           {/* Contacte */}
           <section id="contact" className="py-20 bg-[#009B9C] text-white">
