@@ -188,6 +188,22 @@ const makeTreballador = () => ({ id: uid(), descripcio: "", rendaBruta: "", coti
 const makeActivitat = () => ({ id: uid(), descripcio: "", ingressos: "", despeses: "" });
 const makeImmoble = () => ({ id: uid(), descripcio: "", ingressos: "", despeses: "" });
 const makeOperacio = () => ({ id: uid(), descripcio: "", preuVenda: "", preuCompra: "", despeses: "" });
+const makeRendaMobiliaria = () => ({ id: uid(), tipus: "dividends", descripcio: "", ingressos: "", despeses: "" });
+const makeRetencio = () => ({ id: uid(), descripcio: "", tipus: "treball", import: "" });
+
+const TIPUS_MOBILIARI = [
+  { value: "dividends", label: "Dividends" },
+  { value: "interessos", label: "Interessos de dipòsit/bons" },
+  { value: "altres", label: "Altres rendes del capital" },
+];
+
+const TIPUS_RETENCIO = [
+  { value: "treball", label: "Retenció sobre rendes del treball" },
+  { value: "mobiliari", label: "Retenció capital mobiliari" },
+  { value: "immobiliari", label: "Retenció capital immobiliari" },
+  { value: "activitat", label: "Retenció activitats econòmiques" },
+  { value: "fraccionat", label: "Pagament fraccionat a compte" },
+];
 
 const defaultForm = {
   // Personal
@@ -208,14 +224,16 @@ const defaultForm = {
   // Immobiliari (array)
   immobles: [makeImmoble()],
   impostComunal: "",
-  // Mobiliari (simple)
-  rendaMobiliaria: "",
+  // Mobiliari (array)
+  rendesMobiliaries: [makeRendaMobiliaria()],
   // Capital (array)
   operacionsCapital: [makeOperacio()],
   // Reduccions
   quotesHabitatge: "",
   aportacioPensions: "",
   pensionsCompensatories: "",
+  // Retencions i pagaments a compte
+  retencions: [makeRetencio()],
 };
 
 // ── Component principal ────────────────────────────────────────────────────────
@@ -230,6 +248,7 @@ const IrpfCalculadora = ({ onBack }) => {
     mobiliari: false,
     capital: false,
     reduccions: false,
+    retencions: false,
     informe: false,
     exempcions: false,
   });
@@ -258,13 +277,15 @@ const IrpfCalculadora = ({ onBack }) => {
     setForm((prev) => ({ ...prev, [arrayName]: prev[arrayName].filter((_, i) => i !== index) }));
   };
 
-  // Totals (Millora E)
+  // Totals
   const totRendaBruta = form.treballadors.reduce((s, t) => s + num(t.rendaBruta), 0);
   const totCASS = form.treballadors.reduce((s, t) => s + num(t.cotitzacionsCASS), 0);
   const altresDespesesCalc = Math.min(totRendaBruta * IRPF.ALTRES_DESPESES_PCT, IRPF.ALTRES_DESPESES_MAX);
   const totActivitat = form.activitats.reduce((s, a) => s + Math.max(0, num(a.ingressos) - num(a.despeses)), 0);
   const totImmobiliari = form.immobles.reduce((s, i) => s + Math.max(0, num(i.ingressos) - num(i.despeses)), 0);
   const totCapital = form.operacionsCapital.reduce((s, o) => s + (num(o.preuVenda) - num(o.preuCompra) - num(o.despeses)), 0);
+  const totRendaMobiliaria = form.rendesMobiliaries.reduce((s, rm) => s + Math.max(0, num(rm.ingressos) - num(rm.despeses)), 0);
+  const totRetencions = form.retencions.reduce((s, r) => s + num(r.import), 0);
 
   const engineInput = {
     rendaTreballIntegra: totRendaBruta,
@@ -273,7 +294,7 @@ const IrpfCalculadora = ({ onBack }) => {
     anysCotitzats: num(form.anysCotitzats),
     rendaActivitat: totActivitat,
     rendaImmobiliaria: totImmobiliari,
-    rendaMobiliaria: num(form.rendaMobiliaria),
+    rendaMobiliaria: totRendaMobiliaria,
     guanysCapital: totCapital,
     conjugeACarrec: form.conjugeACarrec,
     rendesConjuge: num(form.rendesConjuge),
@@ -291,12 +312,15 @@ const IrpfCalculadora = ({ onBack }) => {
 
   const r = calcularIRPF(engineInput);
   const quota0 = r.rendaTotal <= 0 || r.baseLiquidacioGeneral + r.baseLiquidacioEstalvi <= 0;
+  const aIngressar = r.quotaFinal - totRetencions;
 
   // Badges per seccions (mostra total si > 0)
   const badgeTreball = totRendaBruta > 0 ? fmt(totRendaBruta) : null;
   const badgeActivitat = totActivitat > 0 ? fmt(totActivitat) : null;
   const badgeImmobiliari = totImmobiliari > 0 ? fmt(totImmobiliari) : null;
   const badgeCapital = totCapital !== 0 ? fmt(totCapital) : null;
+  const badgeMobiliari = totRendaMobiliaria > 0 ? fmt(totRendaMobiliaria) : null;
+  const badgeRetencions = totRetencions > 0 ? `− ${fmt(totRetencions)}` : null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -542,22 +566,80 @@ const IrpfCalculadora = ({ onBack }) => {
             </Section>
 
             {/* 5. Capital mobiliari */}
-            <Section title="5. Capital mobiliari" Icon={IconMobiliari} open={open.mobiliari} onToggle={() => toggle("mobiliari")}>
-              <Field label="Interessos, dividends i altres rendes del capital" name="rendaMobiliaria" value={form.rendaMobiliaria} onChange={handleChange}
-                tooltip="Inclou interessos de dipòsits bancaris, dividends d'accions i altres rendiments del capital mobiliari. Tributen com a Renda de l'Estalvi." />
-              {num(form.rendaMobiliaria) > 0 && num(form.rendaMobiliaria) <= 3000 && (
+            <Section title="5. Capital mobiliari" Icon={IconMobiliari} open={open.mobiliari} onToggle={() => toggle("mobiliari")} badge={badgeMobiliari}>
+              {form.rendesMobiliaries.map((rm, i) => (
+                <RowCard key={rm.id} index={i} total={form.rendesMobiliaries.length} onRemove={() => removeRow("rendesMobiliaries", i)}>
+                  <div className="mb-2">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Tipus de renda</label>
+                    <select
+                      value={rm.tipus}
+                      onChange={(e) => handleArrayChange("rendesMobiliaries", i, "tipus", e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C] bg-white"
+                    >
+                      {TIPUS_MOBILIARI.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                    </select>
+                  </div>
+                  <div className="mb-2">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Descripció (opcional)</label>
+                    <input
+                      type="text"
+                      value={rm.descripcio}
+                      onChange={(e) => handleArrayChange("rendesMobiliaries", i, "descripcio", e.target.value)}
+                      placeholder="p. ex. Dividends Empresa SA, Dipòsit Banc Sabadell..."
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">Ingressos bruts (€)</label>
+                      <input
+                        type="number"
+                        value={rm.ingressos}
+                        onChange={(e) => handleArrayChange("rendesMobiliaries", i, "ingressos", e.target.value)}
+                        placeholder="0"
+                        min="0"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                        Despeses deduïbles (€)
+                        <Tooltip text="Despeses de gestió i administració directament vinculades a l'obtenció dels rendiments (comissions de custòdia, gestió de cartera, etc.)." />
+                      </label>
+                      <input
+                        type="number"
+                        value={rm.despeses}
+                        onChange={(e) => handleArrayChange("rendesMobiliaries", i, "despeses", e.target.value)}
+                        placeholder="0"
+                        min="0"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                      />
+                    </div>
+                  </div>
+                  {(num(rm.ingressos) > 0 || num(rm.despeses) > 0) && (
+                    <div className="mt-2 text-xs text-gray-500">
+                      Renda neta: {fmt(Math.max(0, num(rm.ingressos) - num(rm.despeses)))}
+                    </div>
+                  )}
+                </RowCard>
+              ))}
+              <AddRowBtn onClick={() => addRow("rendesMobiliaries", makeRendaMobiliaria)} label="Afegir altra font de capital mobiliari" />
+              {form.rendesMobiliaries.length > 1 && (
+                <Subtotal label="Renda neta mobiliari total" value={fmt(totRendaMobiliaria)} />
+              )}
+              {totRendaMobiliaria > 0 && totRendaMobiliaria <= 3000 && (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-1">
                   <p className="text-sm text-green-800 font-medium">Rendes dins del mínim exempt de l'estalvi</p>
                   <p className="text-xs text-green-700 mt-1">
-                    Total renda neta mobiliari ({fmt(num(form.rendaMobiliaria))}) ≤ 3.000 €. Mínim exempt Art. 37 — Quota de l'estalvi = 0 €.
+                    Total renda neta mobiliari ({fmt(totRendaMobiliaria)}) ≤ 3.000 €. Mínim exempt Art. 37 — Quota de l'estalvi = 0 €.
                   </p>
                 </div>
               )}
-              {num(form.rendaMobiliaria) > 3000 && (
+              {totRendaMobiliaria > 3000 && (
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mt-1">
                   <p className="text-sm text-amber-800 font-medium">Part de les rendes mobiliari tributen</p>
                   <p className="text-xs text-amber-700 mt-1">
-                    Import exempt (Art. 37): 3.000 € · Import subjecte: {fmt(num(form.rendaMobiliaria) - 3000)}
+                    Import exempt (Art. 37): 3.000 € · Import subjecte: {fmt(totRendaMobiliaria - 3000)}
                   </p>
                 </div>
               )}
@@ -650,6 +732,65 @@ const IrpfCalculadora = ({ onBack }) => {
                 tooltip="Pensions compensatòries pagades a l'ex-cònjuge per sentència judicial. Es dedueixen íntegrament de la BTG." />
             </Section>
 
+            {/* 8. Retencions i pagaments a compte */}
+            <Section title="8. Retencions i pagaments a compte" Icon={IconReduccions} open={open.retencions} onToggle={() => toggle("retencions")} badge={badgeRetencions}>
+              <p className="text-xs text-gray-500 mb-3">
+                Imports retinguts o pagats a compte durant l'any. Es dedueixen de la quota final per obtenir l'import a ingressar o a retornar.
+              </p>
+              {form.retencions.map((ret, i) => (
+                <RowCard key={ret.id} index={i} total={form.retencions.length} onRemove={() => removeRow("retencions", i)}>
+                  <div className="mb-2">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Tipus</label>
+                    <select
+                      value={ret.tipus}
+                      onChange={(e) => handleArrayChange("retencions", i, "tipus", e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C] bg-white"
+                    >
+                      {TIPUS_RETENCIO.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                    </select>
+                  </div>
+                  <div className="mb-2">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Descripció (opcional)</label>
+                    <input
+                      type="text"
+                      value={ret.descripcio}
+                      onChange={(e) => handleArrayChange("retencions", i, "descripcio", e.target.value)}
+                      placeholder="p. ex. Empresa SL - certificat de retencions 2025"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Import retingut / pagat (€)</label>
+                    <input
+                      type="number"
+                      value={ret.import}
+                      onChange={(e) => handleArrayChange("retencions", i, "import", e.target.value)}
+                      placeholder="0"
+                      min="0"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                    />
+                  </div>
+                </RowCard>
+              ))}
+              <AddRowBtn onClick={() => addRow("retencions", makeRetencio)} label="Afegir altra retenció o pagament a compte" />
+              {totRetencions > 0 && (
+                <div className={`rounded-xl px-4 py-3 mt-2 border-2 ${aIngressar > 0 ? "bg-orange-50 border-orange-200" : aIngressar < 0 ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-200"}`}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-gray-600">Quota final IRPF</span>
+                    <span className="font-mono font-semibold">{fmt(r.quotaFinal)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-gray-600">Total retencions i pagaments a compte</span>
+                    <span className="font-mono font-semibold text-green-700">− {fmt(totRetencions)}</span>
+                  </div>
+                  <div className={`flex justify-between text-base font-bold border-t pt-2 ${aIngressar > 0 ? "text-orange-700 border-orange-200" : aIngressar < 0 ? "text-green-700 border-green-200" : "text-gray-700 border-gray-200"}`}>
+                    <span>{aIngressar > 0 ? "A INGRESSAR" : aIngressar < 0 ? "A RETORNAR" : "RESULTAT ZERO"}</span>
+                    <span className="font-mono">{fmt(Math.abs(aIngressar))}</span>
+                  </div>
+                </div>
+              )}
+            </Section>
+
             {/* Botó informe */}
             <button
               type="button"
@@ -706,7 +847,28 @@ const IrpfCalculadora = ({ onBack }) => {
                   <InformeRow casella="(13)" descripcio="Bonificació Art. 46 (−)" valor={r.bonificacio > 0 ? `− ${fmt(r.bonificacio)}` : fmt(0)} />
                   <InformeRow descripcio="Quota de liquidació" valor={fmt(r.quotaLiquidacio)} />
                   <InformeRow casella="Art.47" descripcio="Deducció impost comunal (−)" valor={r.deduccioDobleImpInterna > 0 ? `− ${fmt(r.deduccioDobleImpInterna)}` : fmt(0)} />
-                  <InformeRow casella="(15)" descripcio="RESULTAT DE LA DECLARACIÓ" valor={fmt(r.quotaFinal)} bold separator />
+                  <InformeRow casella="(15)" descripcio="Quota final IRPF" valor={fmt(r.quotaFinal)} bold separator />
+
+                  {totRetencions > 0 && (
+                    <>
+                      <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 mt-4">Retencions i pagaments a compte</div>
+                      {form.retencions.filter(ret => num(ret.import) > 0).map((ret, i) => (
+                        <InformeRow
+                          key={ret.id}
+                          casella={`R${i + 1}`}
+                          descripcio={`${TIPUS_RETENCIO.find(t => t.value === ret.tipus)?.label || ret.tipus}${ret.descripcio ? ` — ${ret.descripcio}` : ""}`}
+                          valor={`− ${fmt(num(ret.import))}`}
+                        />
+                      ))}
+                      <InformeRow descripcio="Total retencions i pagaments a compte" valor={`− ${fmt(totRetencions)}`} bold separator />
+                      <InformeRow
+                        casella="(16)"
+                        descripcio={aIngressar >= 0 ? "A INGRESSAR" : "A RETORNAR"}
+                        valor={fmt(Math.abs(aIngressar))}
+                        bold
+                      />
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -767,6 +929,20 @@ const IrpfCalculadora = ({ onBack }) => {
                     />
                   </div>
 
+                  {/* Retencions i resultat net */}
+                  {totRetencions > 0 && (
+                    <div className={`rounded-xl px-4 py-3 mt-3 border-2 ${aIngressar > 0.005 ? "bg-orange-50 border-orange-300" : aIngressar < -0.005 ? "bg-green-50 border-green-300" : "bg-gray-50 border-gray-200"}`}>
+                      <div className="flex justify-between text-xs text-gray-500 mb-1">
+                        <span>Retencions i pagaments a compte</span>
+                        <span className="font-mono text-green-700 font-semibold">− {fmt(totRetencions)}</span>
+                      </div>
+                      <div className={`flex justify-between font-bold text-sm pt-1 border-t ${aIngressar > 0.005 ? "text-orange-700 border-orange-200" : aIngressar < -0.005 ? "text-green-700 border-green-200" : "text-gray-700 border-gray-200"}`}>
+                        <span>{aIngressar > 0.005 ? "▲ A INGRESSAR" : aIngressar < -0.005 ? "▼ A RETORNAR" : "RESULTAT ZERO"}</span>
+                        <span className="font-mono">{fmt(Math.abs(aIngressar))}</span>
+                      </div>
+                    </div>
+                  )}
+
                   {(engineInput.rendaActivitat > 0 || engineInput.rendaTreballIntegra > 50000) && (
                     <div className="bg-blue-50 rounded-lg p-3 mt-3">
                       <div className="text-xs text-blue-700 font-medium">Pagament fraccionat (setembre 2026)</div>
@@ -792,7 +968,7 @@ const IrpfCalculadora = ({ onBack }) => {
                   )}
 
                   <div className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400 space-y-1">
-                    <p>* Resultat aproximat. No inclou retencions practicades ni situacions especials.</p>
+                    <p>* Resultat aproximat. No inclou situacions especials no previstes al formulari.</p>
                     <p>* Exercici fiscal 2025.</p>
                     <p className="pt-1">
                       <a href="https://www.impostos.ad" target="_blank" rel="noopener noreferrer" className="text-[#009B9C] underline">impostos.ad</a>
