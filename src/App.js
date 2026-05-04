@@ -57,6 +57,8 @@ const translations = {
       send: "Enviar missatge",
       success: "Missatge enviat. T'hi respondrem aviat.",
     },
+    blogTitle: "Recursos i articles",
+    seoTitle: "Assessoria fiscal i IRPF a Andorra",
   },
   es: {
     tagline: "Garantizando tu éxito empresarial",
@@ -88,6 +90,8 @@ const translations = {
       send: "Enviar mensaje",
       success: "Mensaje enviado. Te responderemos pronto.",
     },
+    blogTitle: "Recursos y artículos",
+    seoTitle: "Asesoría fiscal e IRPF en Andorra",
   },
   en: {
     tagline: "Ensuring your business success",
@@ -119,6 +123,8 @@ const translations = {
       send: "Send message",
       success: "Message sent. We'll get back to you soon!",
     },
+    blogTitle: "Resources and articles",
+    seoTitle: "Tax advisory and IRPF in Andorra",
   },
   fr: {
     tagline: "Assurant votre succès entrepreneurial",
@@ -150,6 +156,8 @@ const translations = {
       send: "Envoyer le message",
       success: "Message envoyé. Nous vous répondrons bientôt !",
     },
+    blogTitle: "Ressources et articles",
+    seoTitle: "Conseil fiscal et IRPF en Andorre",
   },
 };
 
@@ -617,9 +625,118 @@ const serviceDetails = {
   }
 };
 
+// ── Blog posts (SEO) ─────────────────────────────────────────────────────────
+const blogPosts = {
+  es: [
+    {
+      slug: "irpf-andorra-2025",
+      title: "Guía completa del IRPF en Andorra 2025",
+      category: "IRPF",
+      date: "Mayo 2025",
+      excerpt: "Todo lo que necesitas saber sobre el impuesto sobre la renta en Andorra: tramos, plazos, reducciones y cómo presentar la declaración.",
+      content: `<h2>El IRPF en Andorra: guía completa 2025</h2><p>El Impuesto sobre la Renta de las Personas Físicas (IRPF) en Andorra grava los ingresos obtenidos por los residentes fiscales en el Principado. Con un tipo máximo del <strong>10%</strong>, es uno de los más bajos de Europa.</p><h3>¿Quién tiene que declarar?</h3><p>Están obligados a presentar la declaración del IRPF en Andorra las personas físicas que hayan residido en Andorra más de 183 días durante el año natural, o que tengan en Andorra el núcleo principal de sus actividades económicas o intereses patrimoniales.</p><h3>Tramos y tipos impositivos</h3><p>El IRPF andorrano aplica un sistema progresivo: los primeros 24.000 € están exentos (tipo 0%), de 24.001 € a 40.000 € se aplica el 5% efectivo, y a partir de 40.000 € el tipo es del 10%. Además, existe una bonificación del Art. 46 de hasta 800 € anuales.</p><h3>Plazos de presentación</h3><p>La declaración del IRPF correspondiente al ejercicio 2025 debe presentarse entre el <strong>1 de abril y el 30 de septiembre de 2026</strong> telemáticamente en <a href="https://www.e-tramits.ad" target="_blank" rel="noopener noreferrer">e-tramits.ad</a>.</p><h3>Principales reducciones</h3><p>El mínimo personal exento es de 24.000 € (40.000 € si el cónyuge está a cargo y 30.000 € con discapacidad reconocida). Adicionalmente, existen reducciones familiares de 1.000 € por descendiente, reducción del 50% de las cuotas hipotecarias (máx. 5.000 €/año) y aportaciones a planes de pensiones (máx. 5.000 €/año).</p><p>En <strong>ÀMBIT Associats</strong> te ayudamos a preparar tu declaración del IRPF en Andorra con total seguridad y sin errores. Contacta con nosotros.</p>`
+    },
+    {
+      slug: "autonomos-irpf-andorra",
+      title: "Autónomos e IRPF en Andorra: actividades económicas y deducciones",
+      category: "Autónomos",
+      date: "Abril 2025",
+      excerpt: "Si eres autónomo en Andorra, descubre cómo tributan tus actividades económicas en el IRPF: gastos deducibles, métodos de determinación y el formulario 300-C.",
+      content: `<h2>Autónomos e IRPF en Andorra</h2><p>Los autónomos y profesionales que ejercen actividades económicas en Andorra deben declarar sus rentas empresariales o profesionales en el IRPF. La renta neta se calcula como ingresos menos gastos fiscalmente deducibles.</p><h3>Gastos deducibles para autónomos en Andorra</h3><p>Los principales gastos deducibles incluyen: consumo de mercaderías y materiales, gastos de personal, amortizaciones, arrendamientos y cánones, suministros, servicios exteriores (asesoría, publicidad) y gastos financieros directamente vinculados a la actividad.</p><h3>Métodos de determinación</h3><p>El método habitual es la <strong>determinación directa</strong>: ingresos reales menos gastos reales justificados con factura. También existe la estimación objetiva para ciertas actividades, donde la renta se determina por módulos.</p><h3>Pagament fraccionat</h3><p>Los autónomos y empresarios deben efectuar un <strong>pago fraccionado en septiembre</strong> equivalente al 50% de la cuota de liquidación del ejercicio anterior.</p><p>En <strong>ÀMBIT Associats</strong> gestionamos la contabilidad y la declaración del IRPF de autónomos y empresarios en Andorra. Contacta con nosotros.</p>`
+    },
+    {
+      slug: "declaracion-irpf-andorra-2026",
+      title: "Cómo hacer la declaración del IRPF en Andorra 2026: guía paso a paso",
+      category: "Declaración",
+      date: "Marzo 2025",
+      excerpt: "Guía práctica para presentar la declaración del IRPF 2025 en el Portal Tributario de Andorra. Plazos, formularios y errores más comunes.",
+      content: `<h2>Declaración del IRPF en Andorra 2026</h2><p>La campaña del IRPF correspondiente al ejercicio fiscal 2025 se desarrolla entre el <strong>1 de abril y el 30 de septiembre de 2026</strong>. Se presenta obligatoriamente de forma telemática en el Portal Tributario del Gobierno de Andorra (<a href="https://www.e-tramits.ad" target="_blank" rel="noopener noreferrer">e-tramits.ad</a>).</p><h3>Formularios necesarios</h3><p>El formulario principal es el <strong>300 (declaración general) y el 300-L (liquidació)</strong>. Según tu situación, puede ser necesario también: 300-A (situación personal y familiar), 300-B (rentas del trabajo e inmobiliarias), 300-C (actividades económicas), 300-D (capital mobiliario) y 300-E (ganancias y pérdidas de capital).</p><h3>Errores más comunes</h3><p>Los errores más frecuentes son: no aplicar correctamente el mínimo personal cuando el cónyuge está a cargo (40.000 € en lugar de 24.000 €), olvidar la deducción del impuesto comunal sobre arrendamientos (Art. 47), y no incluir las reducciones por hijos u otros dependientes a cargo.</p><p>En <strong>ÀMBIT Associats</strong> preparamos y presentamos tu declaración del IRPF en Andorra garantizando el máximo ahorro fiscal dentro de la legalidad. Contacta con nosotros.</p>`
+    },
+  ],
+  ca: [
+    {
+      slug: "irpf-andorra-2025",
+      title: "Guia completa de l'IRPF a Andorra 2025",
+      category: "IRPF",
+      date: "Maig 2025",
+      excerpt: "Tot el que has de saber sobre l'impost sobre la renda a Andorra: trams, terminis, reduccions i com presentar la declaració.",
+      content: `<h2>L'IRPF a Andorra: guia completa 2025</h2><p>L'Impost sobre la Renda de les Persones Físiques (IRPF) a Andorra grava les rendes obtingudes pels residents fiscals al Principat. Amb un tipus màxim del <strong>10%</strong>, és un dels més baixos d'Europa.</p><h3>Qui ha de declarar?</h3><p>Estan obligades a presentar la declaració de l'IRPF a Andorra les persones físiques que hagin residit al Principat més de 183 dies durant l'any natural, o que tinguin a Andorra el nucli principal de les seves activitats econòmiques o interessos patrimonials.</p><h3>Trams i tipus impositius</h3><p>L'IRPF andorrà aplica un sistema progressiu: els primers 24.000 € estan exempts (tipus 0%), de 24.001 € a 40.000 € s'aplica el 5% efectiu, i a partir de 40.000 € el tipus és del 10%. A més, existeix una bonificació de l'Art. 46 de fins a 800 € anuals.</p><h3>Terminis de presentació</h3><p>La declaració de l'IRPF corresponent a l'exercici 2025 s'ha de presentar entre l'<strong>1 d'abril i el 30 de setembre del 2026</strong> telemàticament a <a href="https://www.e-tramits.ad" target="_blank" rel="noopener noreferrer">e-tramits.ad</a>.</p><h3>Principals reduccions</h3><p>El mínim personal exempt és de 24.000 € (40.000 € si el cònjuge és a càrrec i 30.000 € amb discapacitat reconeguda). A més, hi ha reduccions familiars de 1.000 € per descendent, reducció del 50% de les quotes hipotecàries (màx. 5.000 €/any) i aportacions a plans de pensions (màx. 5.000 €/any).</p><p>A <strong>ÀMBIT Associats</strong> t'ajudem a preparar la teva declaració de l'IRPF a Andorra amb total seguretat i sense errors. Contacta'ns.</p>`
+    },
+    {
+      slug: "autonomos-irpf-andorra",
+      title: "Autònoms i IRPF a Andorra: activitats econòmiques i deduccions",
+      category: "Autònoms",
+      date: "Abril 2025",
+      excerpt: "Si ets autònom a Andorra, descobreix com tributen les teves activitats econòmiques a l'IRPF: despeses deduïbles, mètodes de determinació i el formulari 300-C.",
+      content: `<h2>Autònoms i IRPF a Andorra</h2><p>Els autònoms i professionals que exerceixen activitats econòmiques a Andorra han de declarar les seves rendes empresarials o professionals a l'IRPF. La renda neta es calcula com a ingressos menys despeses fiscalment deduïbles.</p><h3>Despeses deduïbles per a autònoms a Andorra</h3><p>Les principals despeses deduïbles inclouen: consum de mercaderies i materials, despeses de personal, amortitzacions, arrendaments i cànons, subministraments, serveis exteriors (assessoria, publicitat) i despeses financeres directament vinculades a l'activitat.</p><h3>Mètodes de determinació</h3><p>El mètode habitual és la <strong>determinació directa</strong>: ingressos reals menys despeses reals justificades amb factura. També existeix l'estimació objectiva per a certes activitats, on la renda es determina per mòduls.</p><h3>Pagament fraccionat</h3><p>Els autònoms i empresaris han d'efectuar un <strong>pagament fraccionat al setembre</strong> equivalent al 50% de la quota de liquidació de l'exercici anterior.</p><p>A <strong>ÀMBIT Associats</strong> gestionem la comptabilitat i la declaració de l'IRPF d'autònoms i empresaris a Andorra. Contacta'ns.</p>`
+    },
+    {
+      slug: "declaracion-irpf-andorra-2026",
+      title: "Com fer la declaració de l'IRPF a Andorra 2026: guia pas a pas",
+      category: "Declaració",
+      date: "Març 2025",
+      excerpt: "Guia pràctica per presentar la declaració de l'IRPF 2025 al Portal Tributari d'Andorra. Terminis, formularis i errors més comuns.",
+      content: `<h2>Declaració de l'IRPF a Andorra 2026</h2><p>La campanya de l'IRPF corresponent a l'exercici fiscal 2025 es desenvolupa entre l'<strong>1 d'abril i el 30 de setembre del 2026</strong>. Es presenta obligatòriament de forma telemàtica al Portal Tributari del Govern d'Andorra (<a href="https://www.e-tramits.ad" target="_blank" rel="noopener noreferrer">e-tramits.ad</a>).</p><h3>Formularis necessaris</h3><p>El formulari principal és el <strong>300 (declaració general) i el 300-L (liquidació)</strong>. Segons la teva situació, pot ser necessari també: 300-A (situació personal i familiar), 300-B (rendes del treball i immobiliàries), 300-C (activitats econòmiques), 300-D (capital mobiliari) i 300-E (guanys i pèrdues de capital).</p><h3>Errors més comuns</h3><p>Els errors més freqüents són: no aplicar correctament el mínim personal quan el cònjuge és a càrrec (40.000 € en lloc de 24.000 €), oblidar la deducció de l'impost comunal sobre arrendaments (Art. 47), i no incloure les reduccions per fills o altres dependents a càrrec.</p><p>A <strong>ÀMBIT Associats</strong> preparem i presentem la teva declaració de l'IRPF a Andorra garantint el màxim estalvi fiscal dins de la legalitat. Contacta'ns.</p>`
+    },
+  ],
+  en: [
+    {
+      slug: "irpf-andorra-2025",
+      title: "Complete guide to IRPF in Andorra 2025",
+      category: "IRPF",
+      date: "May 2025",
+      excerpt: "Everything you need to know about personal income tax in Andorra: brackets, deadlines, deductions and how to file your return.",
+      content: `<h2>IRPF in Andorra: complete guide 2025</h2><p>The Personal Income Tax (IRPF) in Andorra taxes income obtained by fiscal residents in the Principality. With a maximum rate of <strong>10%</strong>, it is one of the lowest in Europe.</p><h3>Who must file?</h3><p>Individuals who have resided in Andorra for more than 183 days during the calendar year, or whose main economic activities or assets are based in Andorra, are required to file an IRPF return.</p><h3>Tax brackets</h3><p>Andorra's IRPF uses a progressive system: the first €24,000 are exempt (0%), from €24,001 to €40,000 the effective rate is 5%, and above €40,000 the rate is 10%. Additionally, there is an Art. 46 allowance of up to €800 per year.</p><h3>Filing deadlines</h3><p>The IRPF return for fiscal year 2025 must be filed between <strong>1 April and 30 September 2026</strong> electronically at <a href="https://www.e-tramits.ad" target="_blank" rel="noopener noreferrer">e-tramits.ad</a>.</p><h3>Main deductions</h3><p>The personal allowance is €24,000 (€40,000 if the spouse is a dependent, €30,000 with recognised disability). Additional deductions: €1,000 per dependent child, 50% of mortgage payments (max. €5,000/year) and pension contributions (max. €5,000/year).</p><p><strong>ÀMBIT Associats</strong> helps you prepare your Andorra IRPF return accurately and safely. Contact us.</p>`
+    },
+    {
+      slug: "autonomos-irpf-andorra",
+      title: "Self-employed and IRPF in Andorra: economic activities and deductions",
+      category: "Self-employed",
+      date: "April 2025",
+      excerpt: "If you are self-employed in Andorra, find out how your economic activities are taxed under IRPF: deductible expenses, calculation methods and form 300-C.",
+      content: `<h2>Self-employed and IRPF in Andorra</h2><p>Self-employed individuals and professionals carrying out economic activities in Andorra must declare their business or professional income under IRPF. Net income is calculated as revenue minus fiscally deductible expenses.</p><h3>Deductible expenses for self-employed in Andorra</h3><p>Main deductible expenses include: goods and materials consumed, staff costs, depreciation, rent and royalties, utilities, external services (advisory, advertising) and financial expenses directly linked to the activity.</p><h3>Calculation methods</h3><p>The standard method is <strong>direct assessment</strong>: actual income minus actual expenses evidenced by invoices. Objective estimation based on modules is also available for certain activities.</p><h3>Advance payment</h3><p>Self-employed and business owners must make an <strong>advance payment in September</strong> equal to 50% of the previous year's settlement quota.</p><p><strong>ÀMBIT Associats</strong> manages accounting and IRPF returns for self-employed and entrepreneurs in Andorra. Contact us.</p>`
+    },
+    {
+      slug: "declaracion-irpf-andorra-2026",
+      title: "How to file your Andorra IRPF return in 2026: step-by-step guide",
+      category: "Tax return",
+      date: "March 2025",
+      excerpt: "Practical guide to filing the 2025 IRPF return through Andorra's Tax Portal. Deadlines, forms and most common mistakes.",
+      content: `<h2>Andorra IRPF return 2026</h2><p>The IRPF campaign for fiscal year 2025 runs from <strong>1 April to 30 September 2026</strong>. Filing is mandatory electronically via the Andorran Government's Tax Portal (<a href="https://www.e-tramits.ad" target="_blank" rel="noopener noreferrer">e-tramits.ad</a>).</p><h3>Required forms</h3><p>The main form is <strong>300 (general declaration) and 300-L (settlement)</strong>. Depending on your situation, you may also need: 300-A (personal and family situation), 300-B (employment and property income), 300-C (economic activities), 300-D (capital income) and 300-E (capital gains and losses).</p><h3>Most common mistakes</h3><p>The most frequent errors are: not correctly applying the personal allowance when a spouse is a dependent (€40,000 instead of €24,000), missing the deduction for the communal rental tax (Art. 47), and omitting reductions for children or other dependents.</p><p><strong>ÀMBIT Associats</strong> prepares and files your Andorra IRPF return, ensuring maximum legal tax savings. Contact us.</p>`
+    },
+  ],
+  fr: [
+    {
+      slug: "irpf-andorra-2025",
+      title: "Guide complet de l'IRPF en Andorre 2025",
+      category: "IRPF",
+      date: "Mai 2025",
+      excerpt: "Tout ce que vous devez savoir sur l'impôt sur le revenu en Andorre : tranches, délais, réductions et comment déposer votre déclaration.",
+      content: `<h2>L'IRPF en Andorre : guide complet 2025</h2><p>L'Impôt sur le Revenu des Personnes Physiques (IRPF) en Andorre impose les revenus obtenus par les résidents fiscaux en Principauté. Avec un taux maximum de <strong>10%</strong>, c'est l'un des plus bas d'Europe.</p><h3>Qui doit déclarer ?</h3><p>Les personnes physiques ayant résidé en Andorre plus de 183 jours pendant l'année civile, ou dont le centre principal d'activités économiques ou d'intérêts patrimoniaux est situé en Andorre, sont tenues de déposer une déclaration IRPF.</p><h3>Tranches et taux d'imposition</h3><p>L'IRPF andorran applique un système progressif : les premiers 24 000 € sont exonérés (taux 0 %), de 24 001 € à 40 000 € le taux effectif est de 5 %, et au-delà de 40 000 € le taux est de 10 %. Il existe également une bonification de l'Art. 46 allant jusqu'à 800 € par an.</p><h3>Délais de dépôt</h3><p>La déclaration IRPF de l'exercice 2025 doit être déposée entre le <strong>1er avril et le 30 septembre 2026</strong> par voie électronique sur <a href="https://www.e-tramits.ad" target="_blank" rel="noopener noreferrer">e-tramits.ad</a>.</p><h3>Principales réductions</h3><p>Le minimum personnel exonéré est de 24 000 € (40 000 € si le conjoint est à charge et 30 000 € avec handicap reconnu). Il existe également des réductions familiales de 1 000 € par descendant, une réduction de 50 % des mensualités hypothécaires (max. 5 000 €/an) et les cotisations aux plans de retraite (max. 5 000 €/an).</p><p><strong>ÀMBIT Associats</strong> vous aide à préparer votre déclaration IRPF en Andorre en toute sécurité et sans erreurs. Contactez-nous.</p>`
+    },
+    {
+      slug: "autonomos-irpf-andorra",
+      title: "Indépendants et IRPF en Andorre : activités économiques et déductions",
+      category: "Indépendants",
+      date: "Avril 2025",
+      excerpt: "Si vous êtes indépendant en Andorre, découvrez comment vos activités économiques sont imposées à l'IRPF : charges déductibles, méthodes de calcul et formulaire 300-C.",
+      content: `<h2>Indépendants et IRPF en Andorre</h2><p>Les travailleurs indépendants et professionnels exerçant des activités économiques en Andorre doivent déclarer leurs revenus professionnels à l'IRPF. Le revenu net est calculé comme les recettes moins les charges fiscalement déductibles.</p><h3>Charges déductibles pour les indépendants en Andorre</h3><p>Les principales charges déductibles comprennent : consommation de marchandises et matériaux, charges de personnel, amortissements, loyers et redevances, charges d'exploitation, services externes (conseil, publicité) et charges financières directement liées à l'activité.</p><h3>Méthodes de détermination</h3><p>La méthode habituelle est la <strong>détermination directe</strong> : recettes réelles moins charges réelles justifiées par factures. L'estimation objective par modules est également disponible pour certaines activités.</p><h3>Versement anticipé</h3><p>Les indépendants et entrepreneurs doivent effectuer un <strong>versement anticipé en septembre</strong> équivalant à 50 % du quota de liquidation de l'exercice précédent.</p><p><strong>ÀMBIT Associats</strong> gère la comptabilité et les déclarations IRPF des indépendants et entrepreneurs en Andorre. Contactez-nous.</p>`
+    },
+    {
+      slug: "declaracion-irpf-andorra-2026",
+      title: "Comment faire sa déclaration IRPF en Andorre 2026 : guide étape par étape",
+      category: "Déclaration",
+      date: "Mars 2025",
+      excerpt: "Guide pratique pour déposer la déclaration IRPF 2025 sur le Portail Tributaire d'Andorre. Délais, formulaires et erreurs les plus fréquentes.",
+      content: `<h2>Déclaration IRPF en Andorre 2026</h2><p>La campagne IRPF correspondant à l'exercice fiscal 2025 se déroule du <strong>1er avril au 30 septembre 2026</strong>. Le dépôt est obligatoirement effectué par voie électronique sur le Portail Tributaire du Gouvernement d'Andorre (<a href="https://www.e-tramits.ad" target="_blank" rel="noopener noreferrer">e-tramits.ad</a>).</p><h3>Formulaires nécessaires</h3><p>Le formulaire principal est le <strong>300 (déclaration générale) et le 300-L (liquidation)</strong>. Selon votre situation, il peut également être nécessaire : 300-A (situation personnelle et familiale), 300-B (revenus du travail et immobiliers), 300-C (activités économiques), 300-D (capital mobilier) et 300-E (plus et moins-values de capital).</p><h3>Erreurs les plus fréquentes</h3><p>Les erreurs les plus courantes sont : ne pas appliquer correctement le minimum personnel lorsque le conjoint est à charge (40 000 € au lieu de 24 000 €), oublier la déduction de l'impôt communal sur les locations (Art. 47), et ne pas inclure les réductions pour enfants ou autres personnes à charge.</p><p><strong>ÀMBIT Associats</strong> prépare et dépose votre déclaration IRPF en Andorre en garantissant l'économie fiscale maximale dans la légalité. Contactez-nous.</p>`
+    },
+  ],
+};
+
 const App = () => {
   const [language, setLanguage] = useState("ca");
   const [currentService, setCurrentService] = useState(null);
+  const [currentBlogPost, setCurrentBlogPost] = useState(null);
   const [showIrpf, setShowIrpf] = useState(false);
   const [showCookieBanner, setShowCookieBanner] = useState(() => {
     const savedConsent = localStorage.getItem('cookieConsent');
@@ -632,6 +749,7 @@ const App = () => {
   const handleLanguageChange = (langCode) => {
     setLanguage(langCode);
     setCurrentService(null);
+    setCurrentBlogPost(null);
     setShowIrpf(false);
   };
 
@@ -676,7 +794,7 @@ const App = () => {
         </div>
       </header>
 
-      {!currentService ? (
+      {!currentService && !currentBlogPost ? (
         <>
           {/* Banner IRPF — entre logo i serveis */}
           <section className="py-16 bg-gradient-to-r from-[#009B9C] to-[#007A7B] text-white">
@@ -773,6 +891,79 @@ const App = () => {
     </div>
   </div>
 </section>
+
+          {/* Blog / Articles SEO */}
+          <section className="py-16 bg-gray-50">
+            <div className="container mx-auto px-4">
+              <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">{t.blogTitle}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                {(blogPosts[language] || blogPosts.ca).map((post) => (
+                  <article
+                    key={post.slug}
+                    className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col cursor-pointer hover:shadow-lg transition"
+                    onClick={() => setCurrentBlogPost(post)}
+                  >
+                    <div className="p-6 flex flex-col flex-1">
+                      <span className="text-xs font-semibold text-[#009B9C] uppercase tracking-wide mb-2">{post.category}</span>
+                      <h3 className="text-lg font-bold text-gray-800 mb-3 leading-snug">{post.title}</h3>
+                      <p className="text-sm text-gray-600 flex-1 mb-4">{post.excerpt}</p>
+                      <span className="text-xs text-gray-400">{post.date}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Secció SEO — text estàtic indexable per Google */}
+          <section className="py-16 bg-white">
+            <div className="container mx-auto px-4 max-w-4xl">
+              <h2 className="text-2xl font-bold mb-6 text-gray-800">{t.seoTitle}</h2>
+              {language === "ca" && (
+                <>
+                  <p className="text-gray-600 mb-4">ÀMBIT Associats és l'assessoria fiscal i comptable de referència al Principat d'Andorra. Oferim serveis especialitzats en declaració de l'IRPF andorrà, comptabilitat d'empreses, IGI (Impost General Indirecte), constitució de societats i obtenció de la residència a Andorra.</p>
+                  <p className="text-gray-600 mb-6">Amb seu a Escaldes-Engordany, el nostre equip d'experts fiscalistes andorrans acompanya tant als particulars com a les empreses en totes les seves obligacions tributàries, garantint el màxim estalvi fiscal dins del marc legal vigent.</p>
+                  <h3 className="text-xl font-semibold mb-4 text-gray-800">Trams de l'IRPF a Andorra 2025</h3>
+                </>
+              )}
+              {language === "es" && (
+                <>
+                  <p className="text-gray-600 mb-4">ÀMBIT Associats es la asesoría fiscal y contable de referencia en el Principado de Andorra. Ofrecemos servicios especializados en declaración del IRPF andorrano, contabilidad de empresas, IGI (Impuesto General Indirecto), constitución de sociedades y obtención de la residencia en Andorra.</p>
+                  <p className="text-gray-600 mb-6">Con sede en Escaldes-Engordany, nuestro equipo de expertos fiscalistas andorranos acompaña tanto a particulares como a empresas en todas sus obligaciones tributarias, garantizando el máximo ahorro fiscal dentro del marco legal vigente.</p>
+                  <h3 className="text-xl font-semibold mb-4 text-gray-800">Tramos del IRPF en Andorra 2025</h3>
+                </>
+              )}
+              {language === "en" && (
+                <>
+                  <p className="text-gray-600 mb-4">ÀMBIT Associats is the leading tax and accounting advisory firm in the Principality of Andorra. We provide specialist services in Andorran IRPF tax returns, company accounting, IGI (indirect tax), company formation and obtaining Andorran residence.</p>
+                  <p className="text-gray-600 mb-6">Based in Escaldes-Engordany, our team of Andorran tax experts supports both individuals and companies with all their tax obligations, ensuring maximum legal tax savings.</p>
+                  <h3 className="text-xl font-semibold mb-4 text-gray-800">Andorra IRPF 2025 tax brackets</h3>
+                </>
+              )}
+              {language === "fr" && (
+                <>
+                  <p className="text-gray-600 mb-4">ÀMBIT Associats est le cabinet de conseil fiscal et comptable de référence en Principauté d'Andorre. Nous proposons des services spécialisés en déclaration IRPF andorrane, comptabilité des entreprises, IGI (taxe indirecte générale), constitution de sociétés et obtention de la résidence en Andorre.</p>
+                  <p className="text-gray-600 mb-6">Basé à Escaldes-Engordany, notre équipe d'experts fiscalistes andorrans accompagne particuliers et entreprises dans toutes leurs obligations fiscales, en garantissant l'économie fiscale maximale dans le cadre légal en vigueur.</p>
+                  <h3 className="text-xl font-semibold mb-4 text-gray-800">Tranches IRPF Andorre 2025</h3>
+                </>
+              )}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-[#009B9C] text-white">
+                      <th className="p-3 text-left">{language === "en" ? "Taxable base" : language === "fr" ? "Base imposable" : "Base liquidable"}</th>
+                      <th className="p-3 text-left">{language === "en" ? "Rate" : language === "fr" ? "Taux" : "Tipus"}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b"><td className="p-3">{language === "en" ? "€0 – €24,000" : language === "fr" ? "0 – 24 000 €" : "0 – 24.000 €"}</td><td className="p-3">0%</td></tr>
+                    <tr className="border-b bg-gray-50"><td className="p-3">{language === "en" ? "€24,001 – €40,000" : language === "fr" ? "24 001 – 40 000 €" : "24.001 – 40.000 €"}</td><td className="p-3">5%</td></tr>
+                    <tr className="border-b"><td className="p-3">{language === "en" ? "Above €40,000" : language === "fr" ? "Plus de 40 000 €" : language === "es" ? "Más de 40.000 €" : "Més de 40.000 €"}</td><td className="p-3">10%</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
 
           {/* Contacte */}
           <section id="contact" className="py-20 bg-[#009B9C] text-white">
@@ -890,6 +1081,33 @@ const App = () => {
   </div>
 </section>
         </>
+      ) : currentBlogPost ? (
+        /* Vista detallada d'un article del blog */
+        <section className="py-16 flex-1">
+          <div className="container mx-auto px-4 max-w-3xl">
+            <button
+              onClick={() => setCurrentBlogPost(null)}
+              className="mb-6 text-[#009B9C] hover:underline flex items-center"
+            >
+              ← {t.back}
+            </button>
+            <span className="text-xs font-semibold text-[#009B9C] uppercase tracking-wide">{currentBlogPost.category}</span>
+            <h1 className="text-3xl font-bold mb-2 mt-1 text-gray-800">{currentBlogPost.title}</h1>
+            <p className="text-sm text-gray-500 mb-8">{currentBlogPost.date}</p>
+            <div
+              className="text-gray-700 leading-relaxed space-y-4 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-gray-800 [&_h2]:mt-6 [&_h2]:mb-3 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-gray-800 [&_h3]:mt-5 [&_h3]:mb-2 [&_a]:text-[#009B9C] [&_a]:underline [&_strong]:font-semibold"
+              dangerouslySetInnerHTML={{ __html: currentBlogPost.content }}
+            />
+            <div className="mt-10 p-6 bg-[#e6f7f7] rounded-xl border border-[#009B9C] border-opacity-30">
+              <p className="font-semibold text-[#009B9C] mb-1">ÀMBIT Associats</p>
+              <p className="text-sm text-gray-700">
+                <a href="mailto:info@ambit.ad" className="text-[#009B9C] underline">info@ambit.ad</a>
+                {" · "}
+                <a href="tel:+376650042" className="text-[#009B9C] underline">+376 650 042</a>
+              </p>
+            </div>
+          </div>
+        </section>
       ) : (
         /* Vista detallada del servei */
         <section className="py-20 flex-1">
