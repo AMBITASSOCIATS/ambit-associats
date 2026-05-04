@@ -593,8 +593,7 @@ const App = () => {
   const [language, setLanguage] = useState("ca");
   const [currentService, setCurrentService] = useState(null);
   const [showIrpf, setShowIrpf] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" }); // eslint-disable-line no-unused-vars
 const [showCookieBanner, setShowCookieBanner] = useState(() => {
   const savedConsent = localStorage.getItem('cookieConsent');
   return savedConsent === null;
@@ -607,7 +606,6 @@ const [showCookieBanner, setShowCookieBanner] = useState(() => {
     setLanguage(langCode);
     setCurrentService(null);
     setShowIrpf(false);
-    setFormSubmitted(false);
   };
 
   const openService = (id) => {
@@ -618,13 +616,13 @@ const [showCookieBanner, setShowCookieBanner] = useState(() => {
     setCurrentService(null);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    setFormSubmitted(true);
     setFormData({ name: "", email: "", phone: "", message: "" });
-    setTimeout(() => setFormSubmitted(false), 3000);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
