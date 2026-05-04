@@ -593,11 +593,10 @@ const App = () => {
   const [language, setLanguage] = useState("ca");
   const [currentService, setCurrentService] = useState(null);
   const [showIrpf, setShowIrpf] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" }); // eslint-disable-line no-unused-vars
-const [showCookieBanner, setShowCookieBanner] = useState(() => {
-  const savedConsent = localStorage.getItem('cookieConsent');
-  return savedConsent === null;
-});
+  const [showCookieBanner, setShowCookieBanner] = useState(() => {
+    const savedConsent = localStorage.getItem('cookieConsent');
+    return savedConsent === null;
+  });
   const t = translations[language];
   const services = mainServices[language];
   const details = serviceDetails[language];
@@ -614,17 +613,6 @@ const [showCookieBanner, setShowCookieBanner] = useState(() => {
 
   const goBack = () => {
     setCurrentService(null);
-  };
-
-  // eslint-disable-next-line no-unused-vars
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    setFormData({ name: "", email: "", phone: "", message: "" });
-  };
-
-  // eslint-disable-next-line no-unused-vars
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   if (showIrpf) {
