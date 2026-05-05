@@ -5,6 +5,7 @@ import derechaImg from './derecha.png';
 import legalBottomLeftImg from './legal-bottom-left.png';
 import legalBottomRightImg from './legal-bottom-right.png';
 import IrpfCalculadora from './irpf/IrpfCalculadora';
+import EinaFiscal from './EinaFiscal/index';
 
 
 // Logo – més gran i centrat
@@ -63,6 +64,7 @@ const translations = {
       serveis: "Serveis",
       calculadora: "Calculadora IRPF",
       professionals: "Zona Professionals",
+      einaFiscal: "Eina Fiscal IRPF",
       blog: "Blog",
       contacte: "Contacte",
     },
@@ -73,11 +75,12 @@ const translations = {
       bretxaTitle: "Bretxa Professional de Gènere",
       bretxaDesc: "Calcula i genera l'informe de la bretxa salarial de gènere de la teva empresa segons la Llei 6/2022 d'Andorra.",
       bretxaCta: "Accedir a l'eina",
-      fiscalTitle: "Eina Fiscal Empresarial",
-      fiscalDesc: "Gestió d'obligacions fiscals, liquidacions d'IGI i Impost de Societats per a empreses andorranes.",
-      fiscalCta: "Pròximament",
+      fiscalTitle: "Eina Fiscal IRPF Andorra",
+      fiscalDesc: "Analitza i liquida l'IRPF andorrà amb referència legal de cada renda. Motor d'exempcions Art. 5 Llei 5/2014.",
+      fiscalCta: "Accedir a l'eina",
       available: "Disponible",
       comingSoon: "Pròximament",
+      fiscalNou: "Nou",
     },
   },
   es: {
@@ -116,6 +119,7 @@ const translations = {
       serveis: "Servicios",
       calculadora: "Calculadora IRPF",
       professionals: "Zona Profesionales",
+      einaFiscal: "Herramienta Fiscal IRPF",
       blog: "Blog",
       contacte: "Contacto",
     },
@@ -126,11 +130,12 @@ const translations = {
       bretxaTitle: "Brecha Profesional de Género",
       bretxaDesc: "Calcula y genera el informe de la brecha salarial de género de tu empresa según la Ley 6/2022 de Andorra.",
       bretxaCta: "Acceder a la herramienta",
-      fiscalTitle: "Herramienta Fiscal Empresarial",
-      fiscalDesc: "Gestión de obligaciones fiscales, liquidaciones de IGI e Impuesto de Sociedades para empresas andorranas.",
-      fiscalCta: "Próximamente",
+      fiscalTitle: "Herramienta Fiscal IRPF Andorra",
+      fiscalDesc: "Analiza y liquida el IRPF andorrano con referencia legal de cada renta. Motor de exenciones Art. 5 Ley 5/2014.",
+      fiscalCta: "Acceder a la herramienta",
       available: "Disponible",
       comingSoon: "Próximamente",
+      fiscalNou: "Nuevo",
     },
   },
   en: {
@@ -169,6 +174,7 @@ const translations = {
       serveis: "Services",
       calculadora: "IRPF Calculator",
       professionals: "Professional Area",
+      einaFiscal: "IRPF Tax Tool",
       blog: "Blog",
       contacte: "Contact",
     },
@@ -179,11 +185,12 @@ const translations = {
       bretxaTitle: "Gender Pay Gap Tool",
       bretxaDesc: "Calculate and generate the gender pay gap report for your company according to Andorra's Law 6/2022.",
       bretxaCta: "Access the tool",
-      fiscalTitle: "Business Tax Tool",
-      fiscalDesc: "Management of tax obligations, IGI settlements and Corporation Tax for Andorran companies.",
-      fiscalCta: "Coming soon",
+      fiscalTitle: "IRPF Tax Analysis Tool",
+      fiscalDesc: "Analyse and settle Andorran IRPF with legal reference for each income. Exemptions engine Art. 5 Law 5/2014.",
+      fiscalCta: "Access the tool",
       available: "Available",
       comingSoon: "Coming soon",
+      fiscalNou: "New",
     },
   },
   fr: {
@@ -222,6 +229,7 @@ const translations = {
       serveis: "Services",
       calculadora: "Calculatrice IRPF",
       professionals: "Espace Professionnels",
+      einaFiscal: "Outil Fiscal IRPF",
       blog: "Blog",
       contacte: "Contact",
     },
@@ -232,11 +240,12 @@ const translations = {
       bretxaTitle: "Écart de rémunération Femmes-Hommes",
       bretxaDesc: "Calculez et générez le rapport sur l'écart de rémunération de votre entreprise selon la Loi 6/2022 d'Andorre.",
       bretxaCta: "Accéder à l'outil",
-      fiscalTitle: "Outil Fiscal Entreprises",
-      fiscalDesc: "Gestion des obligations fiscales, liquidations IGI et Impôt sur les sociétés pour les entreprises andorranes.",
-      fiscalCta: "Prochainement",
+      fiscalTitle: "Outil Fiscal IRPF Andorre",
+      fiscalDesc: "Analysez et liquidez l'IRPF andorran avec référence légale pour chaque revenu. Moteur d'exemptions Art. 5 Loi 5/2014.",
+      fiscalCta: "Accéder à l'outil",
       available: "Disponible",
       comingSoon: "Prochainement",
+      fiscalNou: "Nouveau",
     },
   },
 };
@@ -882,6 +891,7 @@ const App = () => {
   const [currentService, setCurrentService] = useState(null);
   const [currentBlogPost, setCurrentBlogPost] = useState(null);
   const [showIrpf, setShowIrpf] = useState(false);
+  const [showEinaFiscal, setShowEinaFiscal] = useState(false);
   const [showCookieBanner, setShowCookieBanner] = useState(() => {
     const savedConsent = localStorage.getItem('cookieConsent');
     return savedConsent === null;
@@ -897,6 +907,7 @@ const App = () => {
     setCurrentService(null);
     setCurrentBlogPost(null);
     setShowIrpf(false);
+    setShowEinaFiscal(false);
     setMenuOpen(false);
     setServicesDropdown(false);
   };
@@ -911,6 +922,10 @@ const App = () => {
 
   if (showIrpf) {
     return <IrpfCalculadora onBack={() => setShowIrpf(false)} />;
+  }
+
+  if (showEinaFiscal) {
+    return <EinaFiscal onBack={() => { setShowEinaFiscal(false); }} />;
   }
 
   return (
@@ -972,6 +987,10 @@ const App = () => {
               <button onClick={() => document.getElementById("professionals")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-white hover:underline">
                 {t.nav?.professionals}
               </button>
+              <button onClick={() => setShowEinaFiscal(true)} className="hover:text-white hover:underline flex items-center gap-1">
+                {t.nav?.einaFiscal}
+                <span className="text-xs bg-teal-300 text-teal-900 font-semibold px-1.5 py-0.5 rounded-full">Nou</span>
+              </button>
               <button onClick={() => document.getElementById("blog")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-white hover:underline">
                 {t.nav?.blog}
               </button>
@@ -1002,6 +1021,7 @@ const App = () => {
                   </div>
                   <button onClick={() => { setShowIrpf(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.calculadora}</button>
                   <button onClick={() => { document.getElementById("professionals")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="hover:underline">{t.nav?.professionals}</button>
+                  <button onClick={() => { setShowEinaFiscal(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.einaFiscal}</button>
                   <button onClick={() => { document.getElementById("blog")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="hover:underline">{t.nav?.blog}</button>
                   <button onClick={() => { document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="bg-white/20 px-4 py-1.5 rounded-full font-semibold">{t.nav?.contacte}</button>
                 </div>
@@ -1222,22 +1242,28 @@ const App = () => {
                   </span>
                 </a>
 
-                {/* Eina Fiscal — pròximament */}
-                <div className="bg-gray-800 rounded-2xl p-7 border border-gray-700 opacity-50 flex flex-col cursor-not-allowed">
+                {/* Eina Fiscal IRPF — activa */}
+                <button
+                  onClick={() => setShowEinaFiscal(true)}
+                  className="bg-gray-800 rounded-2xl p-7 border border-gray-700 hover:border-[#009B9C] hover:bg-gray-750 transition-all duration-300 group flex flex-col text-left"
+                >
                   <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 bg-gray-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <div className="w-12 h-12 bg-[#009B9C] rounded-xl flex items-center justify-center flex-shrink-0">
+                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <span className="bg-gray-600 text-gray-300 text-xs font-semibold px-2.5 py-1 rounded-full">{t.professionals.comingSoon}</span>
+                    <span className="bg-teal-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">{t.professionals.fiscalNou}</span>
                   </div>
-                  <h3 className="text-lg font-bold mb-2 text-gray-300">{t.professionals.fiscalTitle}</h3>
-                  <p className="text-gray-500 text-sm flex-1 mb-5">{t.professionals.fiscalDesc}</p>
-                  <span className="inline-flex items-center gap-2 text-gray-500 font-semibold text-sm">
+                  <h3 className="text-lg font-bold mb-2 group-hover:text-[#009B9C] transition-colors">{t.professionals.fiscalTitle}</h3>
+                  <p className="text-gray-400 text-sm flex-1 mb-5">{t.professionals.fiscalDesc}</p>
+                  <span className="inline-flex items-center gap-2 text-[#009B9C] font-semibold text-sm">
                     {t.professionals.fiscalCta}
+                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
                   </span>
-                </div>
+                </button>
               </div>
             </div>
           </section>
