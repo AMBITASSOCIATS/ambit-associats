@@ -12,7 +12,7 @@ const Logo = () => (
   <img
   src="/ÀMBIT Associats.png"
   alt="ÀMBIT Associats"
-  className="h-32 md:h-40 mx-auto mb-2 rounded-xl"
+  className="h-32 md:h-40 mx-auto mb-2"
 />
 );
 
@@ -28,7 +28,7 @@ const languages = [
 const translations = {
   // Actualització manual per forçar desplegament a Vercel
   ca: {
-    tagline: "Assegurant el teu èxit empresarial",
+    tagline: "Despatx d'assessoria mercantil i fiscal · Escaldes-Engordany",
     services: "Serveis que oferim",
     about: "Qui som",
     contact: "Contacta'ns",
@@ -81,7 +81,7 @@ const translations = {
     },
   },
   es: {
-    tagline: "Garantizando tu éxito empresarial",
+    tagline: "Despacho de asesoría mercantil y fiscal · Escaldes-Engordany",
     services: "Servicios que ofrecemos",
     about: "¿Quiénes somos?",
     contact: "Contáctanos",
@@ -134,7 +134,7 @@ const translations = {
     },
   },
   en: {
-    tagline: "Ensuring your business success",
+    tagline: "Corporate & tax advisory firm · Escaldes-Engordany",
     services: "Services we offer",
     about: "About Us",
     contact: "Contact Us",
@@ -187,7 +187,7 @@ const translations = {
     },
   },
   fr: {
-    tagline: "Assurant votre succès entrepreneurial",
+    tagline: "Cabinet de conseil commercial et fiscal · Escaldes-Engordany",
     services: "Services proposés",
     about: "Qui sommes-nous ?",
     contact: "Contactez-nous",
@@ -1037,9 +1037,7 @@ const App = () => {
                   {language === "ca" && (
                     <>
                       {"Estructurem el teu "}
-                      <span className="text-white/80">patrimoni</span>
-                      {" i la teva "}
-                      <span className="text-white/80">empresa</span>
+                      <span className="text-white/80">patrimoni i la teva empresa</span>
                       <br className="hidden md:block" />
                       {" a Andorra"}
                     </>
@@ -1047,9 +1045,7 @@ const App = () => {
                   {language === "es" && (
                     <>
                       {"Estructuramos tu "}
-                      <span className="text-white/80">patrimonio</span>
-                      {" y tu "}
-                      <span className="text-white/80">empresa</span>
+                      <span className="text-white/80">patrimonio y tu empresa</span>
                       <br className="hidden md:block" />
                       {" en Andorra"}
                     </>
@@ -1057,9 +1053,7 @@ const App = () => {
                   {language === "en" && (
                     <>
                       {"We structure your "}
-                      <span className="text-white/80">wealth</span>
-                      {" and your "}
-                      <span className="text-white/80">company</span>
+                      <span className="text-white/80">wealth and your company</span>
                       <br className="hidden md:block" />
                       {" in Andorra"}
                     </>
@@ -1067,9 +1061,7 @@ const App = () => {
                   {language === "fr" && (
                     <>
                       {"Nous structurons votre "}
-                      <span className="text-white/80">patrimoine</span>
-                      {" et votre "}
-                      <span className="text-white/80">entreprise</span>
+                      <span className="text-white/80">patrimoine et votre entreprise</span>
                       <br className="hidden md:block" />
                       {" en Andorre"}
                     </>
@@ -1272,6 +1264,97 @@ const App = () => {
               </div>
             </div>
           </section>
+
+
+          {/* BANNER CALCULADORA IRPF — entre blog i secció SEO */}
+          <section className="py-14 bg-gradient-to-r from-[#009B9C] to-[#007A7B]">
+            <div className="container mx-auto px-4">
+              <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8">
+                <div className="flex-1 text-white">
+                  <span className="inline-block bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
+                    {language === "ca" && "Eina gratuïta"}
+                    {language === "es" && "Herramienta gratuita"}
+                    {language === "en" && "Free tool"}
+                    {language === "fr" && "Outil gratuit"}
+                  </span>
+                  <h2 className="text-2xl md:text-3xl font-bold mb-3">
+                    {language === "ca" && "Calculadora IRPF Andorra 2025"}
+                    {language === "es" && "Calculadora IRPF Andorra 2025"}
+                    {language === "en" && "Andorra IRPF Tax Calculator 2025"}
+                    {language === "fr" && "Calculatrice IRPF Andorre 2025"}
+                  </h2>
+                  <p className="text-white/85 mb-6 max-w-lg">
+                    {language === "ca" && "Estima la teva quota de l'IRPF en menys d'un minut. Actualitzada amb la Llei 5/2014, L2023005 i L2025005. Inclou mínim personal, familiar, habitatge i pensions."}
+                    {language === "es" && "Estima tu cuota del IRPF en menos de un minuto. Actualizada con la Ley 5/2014, L2023005 y L2025005. Incluye mínimo personal, familiar, vivienda y pensiones."}
+                    {language === "en" && "Estimate your IRPF tax in under a minute. Updated with Law 5/2014, L2023005 and L2025005. Includes personal, family, housing and pension allowances."}
+                    {language === "fr" && "Estimez votre impôt IRPF en moins d'une minute. Mise à jour avec la Loi 5/2014, L2023005 et L2025005. Inclut les réductions personnelles, familiales, logement et retraites."}
+                  </p>
+                  <button
+                    onClick={() => window.location.href = "/calculadora-irpf"}
+                    className="bg-white text-[#009B9C] font-bold px-7 py-3 rounded-xl hover:bg-gray-50 transition shadow-lg text-sm"
+                  >
+                    {language === "ca" && "Obrir la calculadora →"}
+                    {language === "es" && "Abrir la calculadora →"}
+                    {language === "en" && "Open calculator →"}
+                    {language === "fr" && "Ouvrir la calculatrice →"}
+                  </button>
+                </div>
+                <div className="md:w-72 bg-white/15 rounded-2xl p-6 text-white text-sm border border-white/20 flex-shrink-0">
+                  <div className="text-xs font-semibold text-white/70 uppercase tracking-wide mb-3">
+                    {language === "ca" && "Exemple de càlcul"}
+                    {language === "es" && "Ejemplo de cálculo"}
+                    {language === "en" && "Calculation example"}
+                    {language === "fr" && "Exemple de calcul"}
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-white/75">
+                        {language === "ca" && "Renda del treball"}
+                        {language === "es" && "Renta del trabajo"}
+                        {language === "en" && "Employment income"}
+                        {language === "fr" && "Revenu du travail"}
+                      </span>
+                      <span>30.000 €</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-white/75">
+                        {language === "ca" && "Mínim personal"}
+                        {language === "es" && "Mínimo personal"}
+                        {language === "en" && "Personal allowance"}
+                        {language === "fr" && "Minimum personnel"}
+                      </span>
+                      <span className="text-white/60">– 24.000 €</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-white/75">
+                        {language === "ca" && "Bonificació Art. 46"}
+                        {language === "es" && "Bonificación Art. 46"}
+                        {language === "en" && "Art. 46 allowance"}
+                        {language === "fr" && "Bonification Art. 46"}
+                      </span>
+                      <span className="text-white/60">– 300 €</span>
+                    </div>
+                    <div className="border-t border-white/20 pt-2 mt-1 flex justify-between font-bold text-base">
+                      <span>
+                        {language === "ca" && "Quota final"}
+                        {language === "es" && "Cuota final"}
+                        {language === "en" && "Final tax"}
+                        {language === "fr" && "Impôt final"}
+                      </span>
+                      <span>300 €</span>
+                    </div>
+                    <div className="text-right text-white/50 text-xs">
+                      {language === "ca" && "Tipus efectiu: 1,00%"}
+                      {language === "es" && "Tipo efectivo: 1,00%"}
+                      {language === "en" && "Effective rate: 1.00%"}
+                      {language === "fr" && "Taux effectif : 1,00 %"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          {/* FI BANNER CALCULADORA */}
 
           {/* Secció SEO — text estàtic indexable per Google */}
           <section className="py-16 bg-white">
