@@ -1013,61 +1013,146 @@ const App = () => {
 
       {!currentService && !currentBlogPost ? (
         <>
-          {/* Banner IRPF — entre logo i serveis */}
-          <section className="py-16 bg-gradient-to-r from-[#009B9C] to-[#007A7B] text-white">
-            <div className="container mx-auto px-4">
-              <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-10">
-                <div className="flex-1">
-                  <span className="inline-block bg-white bg-opacity-20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
-                    {t.irpfBanner.badge}
+          {/* HERO PRINCIPAL ÀMBIT ASSOCIATS */}
+          <section className="relative bg-gradient-to-br from-[#007A7B] via-[#009B9C] to-[#00B5B6] overflow-hidden py-20 md:py-28">
+            {/* Fons decoratiu subtil */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+            </div>
+            <div className="container mx-auto px-4 relative z-10">
+              <div className="max-w-5xl mx-auto">
+                {/* Etiqueta superior */}
+                <div className="flex justify-center mb-6">
+                  <span className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white text-xs font-semibold px-4 py-2 rounded-full border border-white/30">
+                    <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                    {language === "ca" && "Despatx d’assessoria a Escaldes-Engordany, Andorra"}
+                    {language === "es" && "Despacho de asesoría en Escaldes-Engordany, Andorra"}
+                    {language === "en" && "Advisory firm in Escaldes-Engordany, Andorra"}
+                    {language === "fr" && "Cabinet de conseil à Escaldes-Engordany, Andorre"}
                   </span>
-                  <h2 className="text-3xl font-bold mb-3">{t.irpfBanner.title}</h2>
-                  <p className="text-white text-opacity-90 mb-5 leading-relaxed">{t.irpfBanner.desc}</p>
-                  <ul className="space-y-1 mb-7">
-                    {t.irpfBanner.features.map((f, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm">
-                        <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white opacity-80 flex-shrink-0">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                        </svg>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
+                </div>
+                {/* Títol principal */}
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center leading-tight mb-6">
+                  {language === "ca" && (
+                    <>
+                      {"Estructurem el teu "}
+                      <span className="text-white/80">patrimoni</span>
+                      {" i la teva "}
+                      <span className="text-white/80">empresa</span>
+                      <br className="hidden md:block" />
+                      {" a Andorra"}
+                    </>
+                  )}
+                  {language === "es" && (
+                    <>
+                      {"Estructuramos tu "}
+                      <span className="text-white/80">patrimonio</span>
+                      {" y tu "}
+                      <span className="text-white/80">empresa</span>
+                      <br className="hidden md:block" />
+                      {" en Andorra"}
+                    </>
+                  )}
+                  {language === "en" && (
+                    <>
+                      {"We structure your "}
+                      <span className="text-white/80">wealth</span>
+                      {" and your "}
+                      <span className="text-white/80">company</span>
+                      <br className="hidden md:block" />
+                      {" in Andorra"}
+                    </>
+                  )}
+                  {language === "fr" && (
+                    <>
+                      {"Nous structurons votre "}
+                      <span className="text-white/80">patrimoine</span>
+                      {" et votre "}
+                      <span className="text-white/80">entreprise</span>
+                      <br className="hidden md:block" />
+                      {" en Andorre"}
+                    </>
+                  )}
+                </h1>
+                {/* Subtítol */}
+                <p className="text-white/85 text-lg md:text-xl text-center max-w-2xl mx-auto mb-10 leading-relaxed">
+                  {language === "ca" && "Constitució de societats, holdings, planificació patrimonial i successions. Comptabilitat i fiscalitat del dia a dia. Un únic despatx per a totes les necessitats de la teva empresa a Andorra."}
+                  {language === "es" && "Constitución de sociedades, holdings, planificación patrimonial y sucesiones. Contabilidad y fiscalidad del día a día. Un único despacho para todas las necesidades de tu empresa en Andorra."}
+                  {language === "en" && "Company incorporation, holdings, wealth planning and succession. Day-to-day accounting and tax compliance. One firm for all your business needs in Andorra."}
+                  {language === "fr" && "Constitution de sociétés, holdings, planification patrimoniale et successions. Comptabilité et fiscalité au quotidien. Un seul cabinet pour tous vos besoins en Andorre."}
+                </p>
+                {/* Botons CTA */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
                   <button
-                    onClick={() => setShowIrpf(true)}
-                    className="bg-white text-[#007A7B] font-bold px-6 py-3 rounded-xl hover:bg-[#e6f7f7] transition shadow-md"
+                    onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+                    className="bg-white text-[#009B9C] font-bold px-8 py-4 rounded-xl hover:bg-gray-50 transition shadow-lg text-base w-full sm:w-auto"
                   >
-                    {t.irpfBanner.cta} →
+                    {language === "ca" && "Sol·licita una consulta graïta →"}
+                    {language === "es" && "Solicitar consulta gratuita →"}
+                    {language === "en" && "Request a free consultation →"}
+                    {language === "fr" && "Demander une consultation gratuite →"}
+                  </button>
+                  <button
+                    onClick={() => document.getElementById("services")?.scrollIntoView({ behavior: "smooth" })}
+                    className="border-2 border-white/60 text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/10 transition text-base w-full sm:w-auto"
+                  >
+                    {language === "ca" && "Veure els nostres serveis"}
+                    {language === "es" && "Ver nuestros servicios"}
+                    {language === "en" && "See our services"}
+                    {language === "fr" && "Voir nos services"}
                   </button>
                 </div>
-                <div className="flex-shrink-0 w-64 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-2xl p-5 shadow-xl backdrop-blur-sm">
-                  <div className="text-xs font-semibold opacity-70 uppercase tracking-wide mb-3">Exemple de càlcul</div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="opacity-80">Salari brut</span>
-                      <span className="font-semibold">48.000 €</span>
+                {/* 4 pilars de servei */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    {
+                      icon: (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+                        </svg>
+                      ),
+                      label: { ca: "Constitució de societats", es: "Constitución de sociedades", en: "Company incorporation", fr: "Constitution de sociétés" }
+                    },
+                    {
+                      icon: (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5 0H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 00-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125V11.25c0-.621-.504-1.125-1.125-1.125H3.75" />
+                        </svg>
+                      ),
+                      label: { ca: "Planificació patrimonial", es: "Planificación patrimonial", en: "Wealth planning", fr: "Planification patrimoniale" }
+                    },
+                    {
+                      icon: (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185z" />
+                        </svg>
+                      ),
+                      label: { ca: "Fiscalitat andorrana", es: "Fiscalidad andorrana", en: "Andorran taxation", fr: "Fiscalité andorrane" }
+                    },
+                    {
+                      icon: (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        </svg>
+                      ),
+                      label: { ca: "Residència a Andorra", es: "Residencia en Andorra", en: "Andorra residency", fr: "Résidence en Andorre" }
+                    },
+                  ].map((item, i) => (
+                    <div key={i} className="bg-white/15 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20 hover:bg-white/25 transition">
+                      <div className="flex justify-center mb-2 text-white">
+                        {item.icon}
+                      </div>
+                      <p className="text-white text-xs font-semibold leading-tight">
+                        {item.label[language]}
+                      </p>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="opacity-80">Mínim personal</span>
-                      <span className="font-semibold">24.000 €</span>
-                    </div>
-                    <div className="border-t border-white border-opacity-30 pt-2 flex justify-between">
-                      <span className="opacity-80">BLG</span>
-                      <span className="font-semibold">~22.560 €</span>
-                    </div>
-                    <div className="flex justify-between text-base">
-                      <span className="font-bold">Quota final</span>
-                      <span className="font-bold text-yellow-300">~1.456 €</span>
-                    </div>
-                    <div className="flex justify-between text-xs opacity-70">
-                      <span>Tipus efectiu</span>
-                      <span>~3,0%</span>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           </section>
+          {/* FI HERO PRINCIPAL */}
 
 {/* Serveis */}
 <section id="services" className="py-16 bg-white border border-white relative overflow-hidden">
@@ -1194,29 +1279,29 @@ const App = () => {
               <h2 className="text-2xl font-bold mb-6 text-gray-800">{t.seoTitle}</h2>
               {language === "ca" && (
                 <>
-                  <p className="text-gray-600 mb-4">ÀMBIT Associats és l'assessoria fiscal i comptable de referència al Principat d'Andorra. Oferim serveis especialitzats en declaració de l'IRPF andorrà, comptabilitat d'empreses, IGI (Impost General Indirecte), constitució de societats i obtenció de la residència a Andorra.</p>
-                  <p className="text-gray-600 mb-6">Amb seu a Escaldes-Engordany, el nostre equip d'experts fiscalistes andorrans acompanya tant als particulars com a les empreses en totes les seves obligacions tributàries, garantint el màxim estalvi fiscal dins del marc legal vigent.</p>
+                  <p className="text-gray-600 mb-4">ÀMBIT Associats és un despatx d'assessoria fiscal, comptable i mercantil amb seu a Escaldes-Engordany. Acompanyem tant a particulars com a empreses en les seves obligacions tributàries i en l'estructuració societària i patrimonial al Principat d'Andorra.</p>
+                  <p className="text-gray-600 mb-6">Som especialistes en la constitució i estructuració de societats andorranes, en la planificació fiscal i patrimonial a llarg termini, i en la gestió comptable i laboral del dia a dia. Un únic despatx per a totes les necessitats de la teva empresa a Andorra.</p>
                   <h3 className="text-xl font-semibold mb-4 text-gray-800">Trams de l'IRPF a Andorra 2025</h3>
                 </>
               )}
               {language === "es" && (
                 <>
-                  <p className="text-gray-600 mb-4">ÀMBIT Associats es la asesoría fiscal y contable de referencia en el Principado de Andorra. Ofrecemos servicios especializados en declaración del IRPF andorrano, contabilidad de empresas, IGI (Impuesto General Indirecto), constitución de sociedades y obtención de la residencia en Andorra.</p>
-                  <p className="text-gray-600 mb-6">Con sede en Escaldes-Engordany, nuestro equipo de expertos fiscalistas andorranos acompaña tanto a particulares como a empresas en todas sus obligaciones tributarias, garantizando el máximo ahorro fiscal dentro del marco legal vigente.</p>
+                  <p className="text-gray-600 mb-4">ÀMBIT Associats es un despacho de asesoría fiscal, contable y mercantil con sede en Escaldes-Engordany. Acompañamos a particulares y empresas en sus obligaciones tributarias y en la estructuración societaria y patrimonial en el Principado de Andorra.</p>
+                  <p className="text-gray-600 mb-6">Somos especialistas en la constitución y estructuración de sociedades andorranas, en la planificación fiscal y patrimonial a largo plazo, y en la gestión contable y laboral del día a día. Un único despacho para todas las necesidades de tu empresa en Andorra.</p>
                   <h3 className="text-xl font-semibold mb-4 text-gray-800">Tramos del IRPF en Andorra 2025</h3>
                 </>
               )}
               {language === "en" && (
                 <>
-                  <p className="text-gray-600 mb-4">ÀMBIT Associats is the leading tax and accounting advisory firm in the Principality of Andorra. We provide specialist services in Andorran IRPF tax returns, company accounting, IGI (indirect tax), company formation and obtaining Andorran residence.</p>
-                  <p className="text-gray-600 mb-6">Based in Escaldes-Engordany, our team of Andorran tax experts supports both individuals and companies with all their tax obligations, ensuring maximum legal tax savings.</p>
+                  <p className="text-gray-600 mb-4">ÀMBIT Associats is a tax, accounting and corporate advisory firm based in Escaldes-Engordany. We support both individuals and companies in their tax obligations and in corporate and wealth structuring in the Principality of Andorra.</p>
+                  <p className="text-gray-600 mb-6">We specialise in the incorporation and structuring of Andorran companies, long-term tax and wealth planning, and day-to-day accounting and payroll management. One firm for all your business needs in Andorra.</p>
                   <h3 className="text-xl font-semibold mb-4 text-gray-800">Andorra IRPF 2025 tax brackets</h3>
                 </>
               )}
               {language === "fr" && (
                 <>
-                  <p className="text-gray-600 mb-4">ÀMBIT Associats est le cabinet de conseil fiscal et comptable de référence en Principauté d'Andorre. Nous proposons des services spécialisés en déclaration IRPF andorrane, comptabilité des entreprises, IGI (taxe indirecte générale), constitution de sociétés et obtention de la résidence en Andorre.</p>
-                  <p className="text-gray-600 mb-6">Basé à Escaldes-Engordany, notre équipe d'experts fiscalistes andorrans accompagne particuliers et entreprises dans toutes leurs obligations fiscales, en garantissant l'économie fiscale maximale dans le cadre légal en vigueur.</p>
+                  <p className="text-gray-600 mb-4">ÀMBIT Associats est un cabinet de conseil fiscal, comptable et mercantile basé à Escaldes-Engordany. Nous accompagnons particuliers et entreprises dans leurs obligations fiscales et dans la structuration sociétaire et patrimoniale en Principauté d'Andorre.</p>
+                  <p className="text-gray-600 mb-6">Nous sommes spécialisés dans la constitution et la structuration de sociétés andorranes, dans la planification fiscale et patrimoniale à long terme, et dans la gestion comptable et sociale au quotidien. Un seul cabinet pour tous vos besoins en Andorre.</p>
                   <h3 className="text-xl font-semibold mb-4 text-gray-800">Tranches IRPF Andorre 2025</h3>
                 </>
               )}
