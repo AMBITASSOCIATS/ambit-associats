@@ -1110,7 +1110,7 @@ const App = () => {
 </section>
 
           {/* Zona Professionals */}
-          <section id="professionals" className="py-20 bg-gray-900 text-white">
+          <section id="professionals" className="py-20 bg-gradient-to-r from-[#009B9C] to-[#007A7B] text-white">
             <div className="container mx-auto px-4">
               <div className="text-center mb-12">
                 <span className="inline-block bg-[#009B9C] text-white text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-widest">
