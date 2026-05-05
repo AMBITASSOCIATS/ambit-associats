@@ -59,6 +59,19 @@ const translations = {
     },
     blogTitle: "Recursos i articles",
     seoTitle: "Assessoria fiscal i IRPF a Andorra",
+    professionals: {
+      badge: "Accés exclusiu",
+      title: "Zona Professionals",
+      subtitle: "Eines avançades per a professionals de la gestió empresarial a Andorra",
+      bretxaTitle: "Bretxa Professional de Gènere",
+      bretxaDesc: "Calcula i genera l'informe de la bretxa salarial de gènere de la teva empresa segons la Llei 6/2022 d'Andorra.",
+      bretxaCta: "Accedir a l'eina",
+      fiscalTitle: "Eina Fiscal Empresarial",
+      fiscalDesc: "Gestió d'obligacions fiscals, liquidacions d'IGI i Impost de Societats per a empreses andorranes.",
+      fiscalCta: "Pròximament",
+      available: "Disponible",
+      comingSoon: "Pròximament",
+    },
   },
   es: {
     tagline: "Garantizando tu éxito empresarial",
@@ -92,6 +105,19 @@ const translations = {
     },
     blogTitle: "Recursos y artículos",
     seoTitle: "Asesoría fiscal e IRPF en Andorra",
+    professionals: {
+      badge: "Acceso exclusivo",
+      title: "Zona Profesionales",
+      subtitle: "Herramientas avanzadas para profesionales de la gestión empresarial en Andorra",
+      bretxaTitle: "Brecha Profesional de Género",
+      bretxaDesc: "Calcula y genera el informe de la brecha salarial de género de tu empresa según la Ley 6/2022 de Andorra.",
+      bretxaCta: "Acceder a la herramienta",
+      fiscalTitle: "Herramienta Fiscal Empresarial",
+      fiscalDesc: "Gestión de obligaciones fiscales, liquidaciones de IGI e Impuesto de Sociedades para empresas andorranas.",
+      fiscalCta: "Próximamente",
+      available: "Disponible",
+      comingSoon: "Próximamente",
+    },
   },
   en: {
     tagline: "Ensuring your business success",
@@ -125,6 +151,19 @@ const translations = {
     },
     blogTitle: "Resources and articles",
     seoTitle: "Tax advisory and IRPF in Andorra",
+    professionals: {
+      badge: "Exclusive access",
+      title: "Professional Area",
+      subtitle: "Advanced tools for business management professionals in Andorra",
+      bretxaTitle: "Gender Pay Gap Tool",
+      bretxaDesc: "Calculate and generate the gender pay gap report for your company according to Andorra's Law 6/2022.",
+      bretxaCta: "Access the tool",
+      fiscalTitle: "Business Tax Tool",
+      fiscalDesc: "Management of tax obligations, IGI settlements and Corporation Tax for Andorran companies.",
+      fiscalCta: "Coming soon",
+      available: "Available",
+      comingSoon: "Coming soon",
+    },
   },
   fr: {
     tagline: "Assurant votre succès entrepreneurial",
@@ -158,6 +197,19 @@ const translations = {
     },
     blogTitle: "Ressources et articles",
     seoTitle: "Conseil fiscal et IRPF en Andorre",
+    professionals: {
+      badge: "Accès exclusif",
+      title: "Espace Professionnels",
+      subtitle: "Outils avancés pour les professionnels de la gestion d'entreprise en Andorre",
+      bretxaTitle: "Écart de rémunération Femmes-Hommes",
+      bretxaDesc: "Calculez et générez le rapport sur l'écart de rémunération de votre entreprise selon la Loi 6/2022 d'Andorre.",
+      bretxaCta: "Accéder à l'outil",
+      fiscalTitle: "Outil Fiscal Entreprises",
+      fiscalDesc: "Gestion des obligations fiscales, liquidations IGI et Impôt sur les sociétés pour les entreprises andorranes.",
+      fiscalCta: "Prochainement",
+      available: "Disponible",
+      comingSoon: "Prochainement",
+    },
   },
 };
 
@@ -891,6 +943,62 @@ const App = () => {
     </div>
   </div>
 </section>
+
+          {/* Zona Professionals */}
+          <section className="py-20 bg-gray-900 text-white">
+            <div className="container mx-auto px-4">
+              <div className="text-center mb-12">
+                <span className="inline-block bg-[#009B9C] text-white text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-widest">
+                  {t.professionals.badge}
+                </span>
+                <h2 className="text-3xl font-bold mb-3">{t.professionals.title}</h2>
+                <p className="text-gray-400 max-w-xl mx-auto">{t.professionals.subtitle}</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                {/* Eina Bretxa — activa */}
+                <a
+                  href="https://bretxa-genere.onrender.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gray-800 rounded-2xl p-7 border border-gray-700 hover:border-[#009B9C] hover:bg-gray-750 transition-all duration-300 group flex flex-col"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-12 h-12 bg-[#009B9C] rounded-xl flex items-center justify-center flex-shrink-0">
+                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </div>
+                    <span className="bg-green-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">{t.professionals.available}</span>
+                  </div>
+                  <h3 className="text-lg font-bold mb-2 group-hover:text-[#009B9C] transition-colors">{t.professionals.bretxaTitle}</h3>
+                  <p className="text-gray-400 text-sm flex-1 mb-5">{t.professionals.bretxaDesc}</p>
+                  <span className="inline-flex items-center gap-2 text-[#009B9C] font-semibold text-sm">
+                    {t.professionals.bretxaCta}
+                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </span>
+                </a>
+
+                {/* Eina Fiscal — pròximament */}
+                <div className="bg-gray-800 rounded-2xl p-7 border border-gray-700 opacity-50 flex flex-col cursor-not-allowed">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-12 h-12 bg-gray-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <span className="bg-gray-600 text-gray-300 text-xs font-semibold px-2.5 py-1 rounded-full">{t.professionals.comingSoon}</span>
+                  </div>
+                  <h3 className="text-lg font-bold mb-2 text-gray-300">{t.professionals.fiscalTitle}</h3>
+                  <p className="text-gray-500 text-sm flex-1 mb-5">{t.professionals.fiscalDesc}</p>
+                  <span className="inline-flex items-center gap-2 text-gray-500 font-semibold text-sm">
+                    {t.professionals.fiscalCta}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* Blog / Articles SEO */}
           <section className="py-16 bg-gray-50">
