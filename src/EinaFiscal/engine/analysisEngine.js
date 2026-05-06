@@ -220,12 +220,12 @@ export function calcularIRPFDetallat(dades) {
   const baseTributacioEstalvi = bteRaw; // pot ser negatiu
 
   // PAS 3 — Mínim personal
-  const conjugeACarrec = estatCivil === 'casat' && conjugeRendesGenerals < IRPF.MINIM_PERSONAL;
+  // Art. 35.1: MAX(24.000, 40.000 − renda neta cònjuge) per a casats
   let minimPersonal;
-  if (conjugeACarrec) {
-    minimPersonal = IRPF.MINIM_PERSONAL_CONJU;
-  } else if (obligatDiscapacitat) {
+  if (obligatDiscapacitat) {
     minimPersonal = IRPF.MINIM_PERSONAL_DISCAP;
+  } else if (estatCivil === 'casat') {
+    minimPersonal = Math.max(IRPF.MINIM_PERSONAL, IRPF.MINIM_PERSONAL_CONJU - (conjugeRendesGenerals || 0));
   } else {
     minimPersonal = IRPF.MINIM_PERSONAL;
   }

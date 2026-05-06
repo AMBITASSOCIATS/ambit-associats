@@ -108,33 +108,151 @@ const Step1SituacioPersonal = ({ dades, update }) => {
 
         {/* Conjuge */}
         {dades.estatCivil === 'casat' && (
-          <div className="bg-blue-50 rounded-xl p-4 mb-6">
-            <h3 className="text-sm font-semibold text-blue-800 mb-3">Dades del conjuge / parella de fet</h3>
+          <div className="bg-blue-50 rounded-xl p-4 mb-6 space-y-4">
+            <h3 className="text-sm font-semibold text-blue-800">Dades del cònjuge / parella de fet</h3>
             <div className="grid grid-cols-2 gap-4">
               <InputText
-                label="Nom del conjuge"
+                label="Nom del cònjuge"
                 value={dades.conjugeNom}
                 onChange={v => update('conjugeNom', v)}
               />
               <InputText
-                label="NRT del conjuge"
+                label="NRT del cònjuge"
                 value={dades.conjugeNRT}
                 onChange={v => update('conjugeNRT', v)}
                 placeholder="F-XXXXXX-X"
               />
-              <div className="col-span-2">
-                <InputNum
-                  label="Rendes generals del conjuge (euros) — per verificar si aplica minim ampliat 40.000 euros"
-                  value={dades.conjugeRendesGenerals}
-                  onChange={v => update('conjugeRendesGenerals', v)}
-                />
-              </div>
             </div>
-            {dades.conjugeRendesGenerals < 24000 && (
-              <div className="mt-3 bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-xs text-green-700">
-                <strong>Minim personal ampliat:</strong> Com que les rendes del conjuge ({(dades.conjugeRendesGenerals || 0).toFixed(2)} euros) son inferiors al minim personal (24.000 euros), s'aplica el minim personal de 40.000 euros. Font: Art. 35.1 Llei 5/2014.
+
+            {/* Pregunta 1: percep rendes de la base general? */}
+            <div>
+              <p className="text-xs font-medium text-blue-800 mb-2">
+                El cònjuge percep rendes de la base general (treball, activitats o capital immobiliari)?
+              </p>
+              <div className="flex gap-3">
+                {[{ val: true, label: 'Sí' }, { val: false, label: 'No' }].map(opt => (
+                  <button
+                    key={String(opt.val)}
+                    onClick={() => {
+                      update('conjugePercepRendes', opt.val);
+                      if (!opt.val) {
+                        update('conjugeRendesGenerals', 0);
+                        update('conjugeRendesInf24k', null);
+                        update('conjugeBrut', 0);
+                        update('conjugeCASS', 0);
+                        update('conjugeAltresDespeses', 0);
+                      }
+                    }}
+                    className={`px-4 py-1.5 rounded-lg border text-xs font-semibold transition ${
+                      dades.conjugePercepRendes === opt.val
+                        ? 'border-blue-600 bg-blue-600 text-white'
+                        : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              {dades.conjugePercepRendes === false && (
+                <div className="mt-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-xs text-green-700">
+                  <strong>Mínim personal: 40.000 €</strong> — el cònjuge no percep rendes de la base general (Art. 35.1 Llei 5/2014).
+                </div>
+              )}
+            </div>
+
+            {/* Pregunta 2: rendes inferiors a 24.000 €? */}
+            {dades.conjugePercepRendes === true && (
+              <div>
+                <p className="text-xs font-medium text-blue-800 mb-2">
+                  Les rendes del cònjuge són inferiors a 24.000 € bruts?
+                </p>
+                <div className="flex gap-3">
+                  {[{ val: true, label: 'Sí' }, { val: false, label: 'No' }].map(opt => (
+                    <button
+                      key={String(opt.val)}
+                      onClick={() => {
+                        update('conjugeRendesInf24k', opt.val);
+                        if (!opt.val) {
+                          update('conjugeRendesGenerals', 24000);
+                          update('conjugeBrut', 0);
+                          update('conjugeCASS', 0);
+                          update('conjugeAltresDespeses', 0);
+                        }
+                      }}
+                      className={`px-4 py-1.5 rounded-lg border text-xs font-semibold transition ${
+                        dades.conjugeRendesInf24k === opt.val
+                          ? 'border-blue-600 bg-blue-600 text-white'
+                          : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                {dades.conjugeRendesInf24k === false && (
+                  <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700">
+                    <strong>Mínim personal: 24.000 €</strong> — les rendes del cònjuge superen el mínim personal (Art. 35.1 Llei 5/2014).
+                  </div>
+                )}
               </div>
             )}
+
+            {/* Formulari càlcul renda neta del cònjuge */}
+            {dades.conjugePercepRendes === true && dades.conjugeRendesInf24k === true && (() => {
+              const brut = dades.conjugeBrut || 0;
+              const cass = dades.conjugeCASS || 0;
+              const altres = dades.conjugeAltresDespeses || 0;
+              const rendaNeta = Math.max(0, brut - cass - altres);
+              const minimResultant = Math.max(24000, 40000 - rendaNeta);
+              return (
+                <div className="space-y-3">
+                  <InputNum
+                    label="Rendes íntegres (brut) del cònjuge (€)"
+                    value={brut}
+                    onChange={v => {
+                      const nouesAltres = Math.min(v * 0.03, 2500);
+                      const novaRenda = Math.max(0, v - cass - nouesAltres);
+                      update('conjugeBrut', v);
+                      update('conjugeAltresDespeses', nouesAltres);
+                      update('conjugeRendesGenerals', novaRenda);
+                    }}
+                    hint="Import brut de les rendes de la base general del cònjuge"
+                  />
+                  <InputNum
+                    label="Cotitzacions CASS a càrrec del cònjuge (€)"
+                    value={cass}
+                    onChange={v => {
+                      const novaRenda = Math.max(0, brut - v - altres);
+                      update('conjugeCASS', v);
+                      update('conjugeRendesGenerals', novaRenda);
+                    }}
+                    hint={`Orientació: 6,5% del brut = ${(brut * 0.065).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €`}
+                  />
+                  <InputNum
+                    label="Altres despeses (3% del brut, màx. 2.500 €)"
+                    value={altres}
+                    onChange={v => {
+                      const novaRenda = Math.max(0, brut - cass - v);
+                      update('conjugeAltresDespeses', v);
+                      update('conjugeRendesGenerals', novaRenda);
+                    }}
+                    hint="Calculat automàticament (3% brut, màx. 2.500 €) — editable"
+                  />
+                  <div className="bg-white border border-gray-200 rounded-lg p-3 text-xs space-y-1.5">
+                    <div className="flex justify-between text-gray-600">
+                      <span>Renda neta del cònjuge:</span>
+                      <span className="font-bold text-gray-800">
+                        {rendaNeta.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-[#009B9C] font-semibold border-t border-gray-100 pt-1.5">
+                      <span>Mínim personal exempt resultant:</span>
+                      <span>{minimResultant.toLocaleString('ca-AD')} €</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         )}
 
@@ -373,11 +491,11 @@ const Step1SituacioPersonal = ({ dades, update }) => {
         <h4 className="font-semibold text-[#009B9C] mb-2">Resum — Minim personal aplicable</h4>
         <div className="space-y-1 text-xs text-gray-700">
           {dades.obligatDiscapacitat ? (
-            <p>Minim personal: <strong>30.000 euros</strong> (discapacitat — Art. 35.1)</p>
-          ) : dades.estatCivil === 'casat' && (dades.conjugeRendesGenerals || 0) < 24000 ? (
-            <p>Minim personal: <strong>40.000 euros</strong> (conjuge a carrec — Art. 35.1)</p>
+            <p>Mínim personal: <strong>30.000 €</strong> (discapacitat — Art. 35.1)</p>
+          ) : dades.estatCivil === 'casat' ? (
+            <p>Mínim personal: <strong>{Math.max(24000, 40000 - (dades.conjugeRendesGenerals || 0)).toLocaleString('ca-AD')} €</strong> (MAX(24.000, 40.000 − renda neta cònjuge) — Art. 35.1)</p>
           ) : (
-            <p>Minim personal: <strong>24.000 euros</strong> (general — Art. 35.1)</p>
+            <p>Mínim personal: <strong>24.000 €</strong> (general — Art. 35.1)</p>
           )}
           {dades.descendents.length > 0 && (
             <p>Reduccions descendents: <strong>{(dades.descendents.length * 1000).toLocaleString('ca-AD')} euros</strong> ({dades.descendents.length} x 1.000 euros — Art. 35.2.a)</p>
