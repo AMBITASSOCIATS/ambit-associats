@@ -85,30 +85,39 @@ function calcularRendaNetaImmobiliaria(immobles) {
 }
 
 function calcularRendaNetaMobiliaria(mobiliaris) {
-  // Exemptes: DIVIDENDS_OIC (< 25% / >= 10 anys), ASSEGURANCA_VIDA_HIPOTECA
-  // La resta: gravades
-  let totalGravat = 0;
-  for (const m of mobiliaris) {
-    if (m.apartat === 'DIVIDENDS_OIC') {
-      if (m.participacioPct >= 25 && m.anysParticipacio < 10) {
-        totalGravat += m.importNet || 0;
-      }
-      // Si exemptes, no s'inclouen
-    } else if (m.apartat === 'ASSEGURANCA_VIDA_HIPOTECA') {
-      // exempta
-    } else {
-      totalGravat += m.importNet || 0;
+  // Nova estructura: array d'entitats, cada una amb partides a/b/c/d
+  let totalNet = 0;
+  for (const entitat of mobiliaris) {
+    if (!entitat.partides) continue;
+    const despesesCustodia = entitat.despesesCustodia || 0;
+    for (const partida of entitat.partides) {
+      const brut = partida.importBrut || 0;
+      const desp = partida.despeses || 0;
+      totalNet += brut - desp;
     }
+    totalNet -= despesesCustodia;
   }
-  return totalGravat;
+  return totalNet;
 }
 
-function calcularGuanysCapitalNet(transmissions, basesNegativesAnteriors) {
-  let totalGuanys = 0;
+function calcularRetencionsAndorraMobiliaris(mobiliaris) {
+  let total = 0;
+  for (const entitat of mobiliaris) {
+    if (!entitat.partides) continue;
+    for (const partida of entitat.partides) {
+      total += partida.retencioAndorra || 0;
+    }
+  }
+  return total;
+}
+
+function calcularGuanysCapitalNet(transmissions, guanysNoTransmissio, perduessNoTransmissio, basesNegativesAnteriors) {
+  let totalTransmissions = 0;
   for (const t of transmissions) {
     const anysPropieta = (t.anyTransmissio || 0) - (t.anyAdquisicio || 0);
     let valorAdqActualitzat = t.valorAdquisicio || 0;
-    if (t.tipusElement === 'IMMOBLE' && t.aplicarCoeficients) {
+    // IMM (antes IMMOBLE)
+    if ((t.tipusElement === 'IMM' || t.tipusElement === 'IMMOBLE') && t.aplicarCoeficients) {
       const coef = IRPF_EF.COEF_ACTUALITZACIO[anysPropieta] || IRPF_EF.COEF_ACTUALITZACIO.DEFAULT;
       valorAdqActualitzat = valorAdqActualitzat * coef;
     }
@@ -116,19 +125,23 @@ function calcularGuanysCapitalNet(transmissions, basesNegativesAnteriors) {
     const valorTransTotal = (t.valorTransmissio || 0) - (t.despesesTransmissio || 0);
     const guanyNet = valorTransTotal - valorAdqTotal;
 
-    // Exempció reinversió habitatge habitual
-    if (t.tipusElement === 'IMMOBLE' && t.esHabitatgeHabitual && t.reinverteix) {
+    // Exempcio reinversio habitatge habitual
+    if ((t.tipusElement === 'IMM' || t.tipusElement === 'IMMOBLE') && t.esHabitatgeHabitual && t.reinverteix) {
       continue; // exempt
     }
-    // Exempció OIC
-    if (t.tipusElement === 'VALORS_OIC') {
+    // Exempcio OIC
+    if (t.tipusElement === 'OIC' || t.tipusElement === 'VALORS_OIC') {
       const exemptPerParticipacio = (t.participacioPct || 0) < 25;
       const exemptPerAnys = (t.anysPropieta || anysPropieta) >= 10;
       if (exemptPerParticipacio || exemptPerAnys) continue;
     }
 
-    totalGuanys += guanyNet; // pot ser negatiu (pèrdua)
+    totalTransmissions += guanyNet; // pot ser negatiu (perdua)
   }
+
+  // Seccio 1 del 300-E: variacions no derivades de transmissio
+  const variacioSeccio1 = (guanysNoTransmissio || 0) - (perduessNoTransmissio || 0);
+  const totalGuanys = totalTransmissions + variacioSeccio1;
 
   // Compensar amb bases negatives d'anys anteriors
   const totalAmbCompensacio = totalGuanys - (basesNegativesAnteriors || 0);
@@ -139,7 +152,7 @@ function calcularGuanysCapitalNet(transmissions, basesNegativesAnteriors) {
 
 export function calcularIRPFDetallat(dades) {
   const {
-    // Situació personal
+    // Situacio personal
     estatCivil = 'altres',
     conjugeRendesGenerals = 0,
     obligatDiscapacitat = false,
@@ -152,15 +165,20 @@ export function calcularIRPFDetallat(dades) {
     immobles = [],
     mobiliaris = [],
     transmissions = [],
+    guanysNoTransmissio = 0,
+    perduessNoTransmissio = 0,
     basesNegativesAnteriors = 0,
     rendesExterior = [],
-    // Reduccions
+    // Reduccions (ara al pas 1)
     quotesHabitatge = 0,
     aportacioPensions = 0,
     contribucioPensions = 0,
     pensionsCompensatories = 0,
     anualitatAliments = 0,
-    basesNegativesGenerals = 0,
+    // 300-F: bases negatives arrays
+    basesNegGenerals = [],
+    basesNegEstalvi = [],
+    deduccionsAnteriors = [],
   } = dades;
 
   // PAS 1 — Rendes netes
@@ -168,7 +186,12 @@ export function calcularIRPFDetallat(dades) {
   const rendaActivitat = calcularRendaNetaActivitat(activitats);
   const rendaImmobiliaria = calcularRendaNetaImmobiliaria(immobles);
   const rendaMobiliaria = calcularRendaNetaMobiliaria(mobiliaris);
-  const guanysCapital = calcularGuanysCapitalNet(transmissions, basesNegativesAnteriors);
+  const guanysCapital = calcularGuanysCapitalNet(transmissions, guanysNoTransmissio, perduessNoTransmissio, basesNegativesAnteriors);
+
+  // Compensacio 300-F
+  const basesNegGeneralsAplicades = basesNegGenerals.reduce((a, f) => a + (f.aplicat || 0), 0);
+  const basesNegEstalviAplicades = basesNegEstalvi.reduce((a, f) => a + (f.aplicat || 0), 0);
+  const deduccionsAnteriorsAplicades = deduccionsAnteriors.reduce((a, f) => a + (f.aplicat || 0), 0);
 
   // PAS 2 — Bases de tributació
   const baseTributacioGeneral = rendaTreball + rendaActivitat + rendaImmobiliaria;
@@ -217,9 +240,9 @@ export function calcularIRPFDetallat(dades) {
   const totalReduccions = minimPersonal + redFamiliar + redHabitatge + redPensions +
                           pensionsCompensatories + anualitatAliments;
 
-  // BLG i BLE
-  const baseLiquidacioGeneral = Math.max(0, baseTributacioGeneral - basesNegativesGenerals - totalReduccions);
-  const btePositiu = Math.max(0, baseTributacioEstalvi);
+  // BLG i BLE (incloent compensacions 300-F)
+  const baseLiquidacioGeneral = Math.max(0, baseTributacioGeneral - basesNegGeneralsAplicades - totalReduccions);
+  const btePositiu = Math.max(0, baseTributacioEstalvi - basesNegEstalviAplicades);
   const baseLiquidacioEstalvi = Math.max(0, btePositiu - IRPF.MINIM_ESTALVI);
 
   // PAS 5 — Quota
@@ -243,8 +266,8 @@ export function calcularIRPFDetallat(dades) {
   const ddiTotal = ddiDetall.reduce((acc, r) => acc + r.ddi, 0);
   const ddi = Math.min(ddiTotal, Math.max(0, quotaLiquidacio - deduccioImpostComunal));
 
-  // Quota final
-  const quotaFinal = Math.max(0, quotaLiquidacio - deduccioImpostComunal - ddi);
+  // Quota final (incloent deduccions 300-F)
+  const quotaFinal = Math.max(0, quotaLiquidacio - deduccioImpostComunal - ddi - deduccionsAnteriorsAplicades);
 
   // Tipus efectiu
   const rendaTotal = baseTributacioGeneral + btePositiu;
@@ -254,7 +277,8 @@ export function calcularIRPFDetallat(dades) {
   const retencionsTreball = rendesTreball.reduce((acc, f) => acc + (f.retencions || 0), 0);
   const retencionsImmobles = immobles.reduce((acc, im) => acc + (im.retencions || 0), 0);
   const retencionsTransmissions = transmissions.reduce((acc, t) => acc + (t.retencionsPagamentCompte || 0), 0);
-  const retencions = retencionsTreball + retencionsImmobles + retencionsTransmissions;
+  const retencionsAndorraMobiliaris = calcularRetencionsAndorraMobiliaris(mobiliaris);
+  const retencions = retencionsTreball + retencionsImmobles + retencionsTransmissions + retencionsAndorraMobiliaris;
 
   const resultatDeclaracio = quotaFinal - retencions;
 

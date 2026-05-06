@@ -7,14 +7,18 @@ const DEFAULT_IMMOBLE = {
   descripcio: '',
   tipusDeterminacio: 'directa', // 'directa' | 'forfetaria'
   esHabitatgeAssequible: false,
+  aplicarReduccioHabitatge: false,
+  reduccioHabitatge: 0,
   ingressosIntegres: 0,
   // Despeses reals (si directa):
   despesaReparacio: 0,
   despesaFinancera: 0,
+  serveisPrestatsTercers: 0,
   amortitzacio: 0,
   tributs: 0,
   asseguranca: 0,
   comunitat: 0,
+  altresDespeses: 0,
   impostComunal: 0,
   retencions: 0,
 };
@@ -26,22 +30,27 @@ const calcularRendaNetaImmoble = (immoble) => {
     return { rendaNeta: immoble.ingressosIntegres - despeses, despeses, pct };
   } else {
     const despeses = (immoble.despesaReparacio || 0) + (immoble.despesaFinancera || 0) +
-                     (immoble.amortitzacio || 0) + (immoble.tributs || 0) +
-                     (immoble.asseguranca || 0) + (immoble.comunitat || 0);
-    return { rendaNeta: immoble.ingressosIntegres - despeses, despeses, pct: null };
+                     (immoble.serveisPrestatsTercers || 0) + (immoble.amortitzacio || 0) +
+                     (immoble.tributs || 0) + (immoble.asseguranca || 0) +
+                     (immoble.comunitat || 0) + (immoble.altresDespeses || 0);
+    const rendaNeta = immoble.ingressosIntegres - despeses - (immoble.aplicarReduccioHabitatge ? (immoble.reduccioHabitatge || 0) : 0);
+    return { rendaNeta, despeses, pct: null };
   }
 };
 
-const InputNum = ({ label, value, onChange, min = 0 }) => (
+const InputNum = ({ label, value, onChange, min = 0, hint = '' }) => (
   <div>
     <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
     <input
       type="number"
       min={min}
-      value={value}
-      onChange={e => onChange(Number(e.target.value))}
+      step="0.01"
+      value={value === 0 ? '' : value}
+      placeholder="0"
+      onChange={e => onChange(parseFloat(e.target.value) || 0)}
       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
     />
+    {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
   </div>
 );
 
@@ -50,11 +59,12 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar }) => {
   const { rendaNeta, despeses, pct } = calcularRendaNetaImmoble(immoble);
 
   // Compara mètodes
-  const netaForft = immoble.ingressosIntegres * (immoble.esHabitatgeAssequible ? 0.50 : 0.40);
-  const rendaForft = immoble.ingressosIntegres - netaForft;
+  const despesesForft = immoble.ingressosIntegres * (immoble.esHabitatgeAssequible ? 0.50 : 0.40);
+  const rendaForft = immoble.ingressosIntegres - despesesForft;
   const despesesReals = (immoble.despesaReparacio || 0) + (immoble.despesaFinancera || 0) +
-                        (immoble.amortitzacio || 0) + (immoble.tributs || 0) +
-                        (immoble.asseguranca || 0) + (immoble.comunitat || 0);
+                        (immoble.serveisPrestatsTercers || 0) + (immoble.amortitzacio || 0) +
+                        (immoble.tributs || 0) + (immoble.asseguranca || 0) +
+                        (immoble.comunitat || 0) + (immoble.altresDespeses || 0);
   const rendaDirecta = immoble.ingressosIntegres - despesesReals;
   const metodeRecomanat = rendaDirecta < rendaForft ? 'directa' : 'forfetaria';
 
@@ -66,7 +76,7 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar }) => {
     >
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Descripció de l'immoble</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Descripcio de l'immoble</label>
           <input
             type="text"
             value={immoble.descripcio}
@@ -77,13 +87,13 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar }) => {
         </div>
 
         <InputNum
-          label="Ingressos íntegres (€)"
+          label="Ingressos integres (euros)"
           value={immoble.ingressosIntegres}
           onChange={v => update('ingressosIntegres', v)}
         />
 
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Mètode de despeses</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Metode de despeses</label>
           <select
             value={immoble.tipusDeterminacio}
             onChange={e => update('tipusDeterminacio', e.target.value)}
@@ -114,22 +124,64 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar }) => {
 
         {immoble.tipusDeterminacio === 'directa' && (
           <>
-            <InputNum label="Reparació i conservació (€)" value={immoble.despesaReparacio} onChange={v => update('despesaReparacio', v)} />
-            <InputNum label="Interessos financers (€)" value={immoble.despesaFinancera} onChange={v => update('despesaFinancera', v)} />
-            <InputNum label="Amortització (€)" value={immoble.amortitzacio} onChange={v => update('amortitzacio', v)} />
-            <InputNum label="Tributs i taxes (IBI) (€)" value={immoble.tributs} onChange={v => update('tributs', v)} />
-            <InputNum label="Assegurança (€)" value={immoble.asseguranca} onChange={v => update('asseguranca', v)} />
-            <InputNum label="Comunitat de propietaris (€)" value={immoble.comunitat} onChange={v => update('comunitat', v)} />
+            <InputNum label="Reparacio i conservacio (euros)" value={immoble.despesaReparacio} onChange={v => update('despesaReparacio', v)} />
+            <InputNum label="Interessos financers (euros)" value={immoble.despesaFinancera} onChange={v => update('despesaFinancera', v)} />
+            <InputNum
+              label="Serveis prestats per tercers (euros)"
+              value={immoble.serveisPrestatsTercers}
+              onChange={v => update('serveisPrestatsTercers', v)}
+              hint="Comunitat, agencia immobiliaria, administrador de finques..."
+            />
+            <InputNum label="Amortitzacio (euros)" value={immoble.amortitzacio} onChange={v => update('amortitzacio', v)} />
+            <InputNum label="Tributs i taxes (IBI) (euros)" value={immoble.tributs} onChange={v => update('tributs', v)} />
+            <InputNum label="Asseguranca (euros)" value={immoble.asseguranca} onChange={v => update('asseguranca', v)} />
+            <InputNum label="Comunitat de propietaris (euros)" value={immoble.comunitat} onChange={v => update('comunitat', v)} />
+            <InputNum
+              label="Altres despeses fiscalment deduibles (euros)"
+              value={immoble.altresDespeses}
+              onChange={v => update('altresDespeses', v)}
+              hint="Qualsevol altra despesa justificada i fiscalment deduible."
+            />
           </>
         )}
 
+        {immoble.tipusDeterminacio === 'directa' && (
+          <div className="col-span-2 mt-1 border-t border-gray-100 pt-3">
+            <label className="flex items-center gap-2 cursor-pointer mb-2">
+              <input
+                type="checkbox"
+                checked={immoble.aplicarReduccioHabitatge}
+                onChange={e => update('aplicarReduccioHabitatge', e.target.checked)}
+                className="w-4 h-4 accent-[#009B9C]"
+              />
+              <span className="text-sm font-medium text-gray-700">
+                Aplicar reduccio per arrendament d'habitatge
+              </span>
+            </label>
+            {immoble.aplicarReduccioHabitatge && (
+              <div className="ml-6">
+                <p className="text-xs text-gray-500 mb-2">
+                  Habitatge destinat a residencia habitual i permanent del llogatari, a preu inferior a 8 euros/m2
+                  i renda total inferior a 1.250 euros/mes. Percentatge forfetari: 45% (en lloc del 40%). Font: 300-B nota 1.
+                </p>
+                <InputNum
+                  label="Import de la reduccio per arrendament d'habitatge (euros)"
+                  value={immoble.reduccioHabitatge}
+                  onChange={v => update('reduccioHabitatge', v)}
+                  hint="Introduir l'import de la reduccio tal com figura al 300-B."
+                />
+              </div>
+            )}
+          </div>
+        )}
+
         <InputNum
-          label="Impost comunal arrendaments pagat (€) — Art. 47 (deduïble de la quota)"
+          label="Impost comunal arrendaments pagat (euros) — Art. 47 (deduible de la quota)"
           value={immoble.impostComunal}
           onChange={v => update('impostComunal', v)}
         />
         <InputNum
-          label="Retencions practicades (€)"
+          label="Retencions practicades (euros)"
           value={immoble.retencions}
           onChange={v => update('retencions', v)}
         />
@@ -137,20 +189,20 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar }) => {
 
       {immoble.impostComunal > 0 && (
         <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
-          <strong>ℹ️ Art. 47 Llei 5/2014:</strong> L'impost comunal sobre arrendaments ({immoble.impostComunal.toFixed(2)} €) <strong>no redueix la renda neta</strong> — es dedueix directament de la quota de tributació.
+          <strong>Art. 47 Llei 5/2014:</strong> L'impost comunal sobre arrendaments ({immoble.impostComunal.toFixed(2)} euros) <strong>no redueix la renda neta</strong> — es dedueix directament de la quota de tributacio.
         </div>
       )}
 
       {immoble.ingressosIntegres > 0 && immoble.tipusDeterminacio === 'directa' && (
         <div className="mt-3 bg-blue-50 rounded-lg p-3 text-xs text-blue-700">
-          <strong>Comparativa mètodes:</strong>
+          <strong>Comparativa metodes:</strong>
           <div className="grid grid-cols-2 gap-2 mt-1">
-            <span>Renda neta directa: <strong>{rendaDirecta.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €</strong></span>
-            <span>Renda neta forfetari ({immoble.esHabitatgeAssequible ? '50' : '40'}%): <strong>{rendaForft.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €</strong></span>
+            <span>Renda neta directa: <strong>{rendaDirecta.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong></span>
+            <span>Renda neta forfetari ({immoble.esHabitatgeAssequible ? '50' : '40'}%): <strong>{rendaForft.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong></span>
           </div>
           <p className="mt-1">
-            <strong>Mètode més favorable: {metodeRecomanat === 'directa' ? 'Despeses reals' : 'Forfetari'}</strong>
-            {immoble.tipusDeterminacio !== metodeRecomanat && ' ⚠️ Considereu canviar el mètode'}
+            <strong>Metode mes favorable: {metodeRecomanat === 'directa' ? 'Despeses reals' : 'Forfetari'}</strong>
+            {immoble.tipusDeterminacio !== metodeRecomanat && ' Considereu canviar el metode'}
           </p>
         </div>
       )}
@@ -158,10 +210,10 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar }) => {
       <div className="mt-3 bg-gray-50 rounded-lg p-3 text-xs">
         <span className="font-medium text-gray-600">Renda neta: </span>
         <span className={`font-bold ${rendaNeta >= 0 ? 'text-gray-800' : 'text-red-600'}`}>
-          {rendaNeta.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €
+          {rendaNeta.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros
         </span>
         {pct !== null && (
-          <span className="text-gray-400 ml-2">(despeses forfetàries: {(pct * 100).toFixed(0)}% = {despeses.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €)</span>
+          <span className="text-gray-400 ml-2">(despeses forfetaries: {(pct * 100).toFixed(0)}% = {despeses.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros)</span>
         )}
       </div>
     </RentaBlock>
@@ -214,9 +266,9 @@ const Step4Immobiliari = ({ dades, update }) => {
 
         {dades.immobles.length > 0 && (
           <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-3 text-sm">
-            <span className="font-semibold text-[#009B9C]">Total renda neta immobiliària: </span>
+            <span className="font-semibold text-[#009B9C]">Total renda neta immobiliaria: </span>
             <span className={`font-bold ${totalRenda >= 0 ? 'text-gray-800' : 'text-red-600'}`}>
-              {totalRenda.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €
+              {totalRenda.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros
             </span>
           </div>
         )}

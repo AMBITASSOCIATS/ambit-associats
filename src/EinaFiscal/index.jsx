@@ -13,23 +13,23 @@ import Step4Immobiliari from './steps/Step4Immobiliari';
 import Step5Mobiliari from './steps/Step5Mobiliari';
 import Step6GuanysCapital from './steps/Step6GuanysCapital';
 import Step7DDI from './steps/Step7DDI';
-import Step8Reduccions from './steps/Step8Reduccions';
+import Step8Bases300F from './steps/Step8_300F';
 import Step9Liquidacio from './steps/Step9Liquidacio';
 
 const STEPS = [
-  { id: 1, label: 'Situació personal', formulari: '300-A' },
+  { id: 1, label: 'Situacio personal', formulari: '300-A' },
   { id: 2, label: 'Rendes del treball', formulari: '300-B sec.1' },
-  { id: 3, label: 'Activitats econòmiques', formulari: '300-C' },
+  { id: 3, label: 'Activitats economiques', formulari: '300-C' },
   { id: 4, label: 'Capital immobiliari', formulari: '300-B sec.2' },
   { id: 5, label: 'Capital mobiliari', formulari: '300-D' },
-  { id: 6, label: 'Guanys i pèrdues capital', formulari: '300-E' },
-  { id: 7, label: 'Doble imposició (DDI)', formulari: 'Art. 48' },
-  { id: 8, label: 'Reduccions', formulari: '300-A sec.2' },
-  { id: 9, label: 'Liquidació i informe', formulari: '300-L' },
+  { id: 6, label: 'Guanys i perdues capital', formulari: '300-E' },
+  { id: 7, label: 'Doble imposicio (DDI)', formulari: 'Art. 48' },
+  { id: 8, label: 'Bases neg. i deduccions ant.', formulari: '300-F' },
+  { id: 9, label: 'Liquidacio i informe', formulari: '300-L' },
 ];
 
 const DEFAULT_DADES = {
-  // Pas 1 — Situació personal
+  // Pas 1 — Situacio personal (300-A complert)
   estatCivil: 'altres',
   conjugeNom: '',
   conjugeNRT: '',
@@ -38,27 +38,32 @@ const DEFAULT_DADES = {
   descendents: [],
   ascendents: [],
   tutelats: [],
-  // Pas 2 — Rendes del treball
-  rendesTreball: [],
-  // Pas 3 — Activitats econòmiques
-  activitats: [],
-  // Pas 4 — Capital immobiliari
-  immobles: [],
-  // Pas 5 — Capital mobiliari
-  mobiliaris: [],
-  // Pas 6 — Guanys i pèrdues capital
-  transmissions: [],
-  basesNegativesAnteriors: 0,
-  // Pas 7 — DDI
-  rendesExterior: [],
-  // Pas 8 — Reduccions
+  // Reduccions 300-A sec.2 (ara al pas 1)
   quotesHabitatge: 0,
   esHabitatgeCompra: true,
   aportacioPensions: 0,
   contribucioPensions: 0,
   pensionsCompensatories: 0,
   anualitatAliments: 0,
-  basesNegativesGenerals: 0,
+  // Pas 2 — Rendes del treball
+  rendesTreball: [],
+  // Pas 3 — Activitats economiques
+  activitats: [],
+  // Pas 4 — Capital immobiliari
+  immobles: [],
+  // Pas 5 — Capital mobiliari (estructura entitat/partides)
+  mobiliaris: [],
+  // Pas 6 — Guanys i perdues capital
+  transmissions: [],
+  guanysNoTransmissio: 0,
+  perduessNoTransmissio: 0,
+  basesNegativesAnteriors: 0,
+  // Pas 7 — DDI
+  rendesExterior: [],
+  // Pas 8 — 300-F: Bases negatives i deduccions anteriors
+  basesNegGenerals: [],
+  basesNegEstalvi: [],
+  deduccionsAnteriors: [],
 };
 
 const EinaFiscal = ({ onBack }) => {
@@ -71,7 +76,7 @@ const EinaFiscal = ({ onBack }) => {
     setDades(prev => ({ ...prev, [clau]: valor }));
   }, []);
 
-  // Càlcul en temps real
+  // Calcul en temps real
   const resultat = useMemo(() => {
     try { return calcularIRPFDetallat(dades); }
     catch (e) { return null; }
@@ -79,7 +84,7 @@ const EinaFiscal = ({ onBack }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Capçalera */}
+      {/* Capcalera */}
       <header className="bg-gradient-to-r from-[#007A7B] to-[#009B9C] text-white py-4 px-4 no-print">
         <div className="container mx-auto max-w-7xl flex items-center justify-between">
           <div>
@@ -87,7 +92,7 @@ const EinaFiscal = ({ onBack }) => {
               onClick={onBack}
               className="text-white/70 hover:text-white text-sm mb-1 flex items-center gap-1 transition"
             >
-              ← Tornar a la web
+              Tornar a la web
             </button>
             <h1 className="text-xl font-bold">Eina Fiscal IRPF Andorra {exercici}</h1>
             <p className="text-white/80 text-xs">
@@ -115,7 +120,7 @@ const EinaFiscal = ({ onBack }) => {
         </div>
       </header>
 
-      {/* Navegació wizard */}
+      {/* Navegacio wizard */}
       <div className="no-print">
         <WizardNav steps={STEPS} pasActual={pas} onNavegar={setPas} />
       </div>
@@ -132,7 +137,7 @@ const EinaFiscal = ({ onBack }) => {
             {pas === 5 && <Step5Mobiliari dades={dades} update={updateDades} />}
             {pas === 6 && <Step6GuanysCapital dades={dades} update={updateDades} />}
             {pas === 7 && <Step7DDI dades={dades} update={updateDades} />}
-            {pas === 8 && <Step8Reduccions dades={dades} update={updateDades} />}
+            {pas === 8 && <Step8Bases300F dades={dades} update={updateDades} />}
             {pas === 9 && (
               <Step9Liquidacio
                 dades={dades}
@@ -149,14 +154,14 @@ const EinaFiscal = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Navegació inferior */}
+        {/* Navegacio inferior */}
         <div className="flex justify-between mt-6 no-print">
           <button
             onClick={() => setPas(p => Math.max(1, p - 1))}
             disabled={pas === 1}
             className="px-6 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition"
           >
-            ← Anterior
+            Anterior
           </button>
           <span className="text-sm text-gray-500 self-center">
             Pas {pas} de {STEPS.length} — {STEPS[pas - 1]?.formulari}
@@ -166,14 +171,14 @@ const EinaFiscal = ({ onBack }) => {
             disabled={pas === STEPS.length}
             className="px-6 py-2 bg-[#009B9C] text-white rounded-lg font-semibold hover:bg-[#007A7B] disabled:opacity-40 transition"
           >
-            Següent →
+            Seguent
           </button>
         </div>
       </div>
 
-      {/* Avís ús intern */}
+      {/* Avis us intern */}
       <div className="no-print bg-amber-50 border-t border-amber-200 py-2 px-4 text-center text-xs text-amber-700">
-        Eina d'ús intern exclusiu de ÀMBIT Associats. No substitueix l'assessorament fiscal personalitzat.
+        Eina d'us intern exclusiu de AMBIT Associats. No substitueix l'assessorament fiscal personalitzat.
       </div>
     </div>
   );
