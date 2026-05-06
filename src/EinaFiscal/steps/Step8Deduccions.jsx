@@ -127,7 +127,7 @@ const BlocDeducci = ({
               </div>
               {importPendent > 0 && (
                 <p className="text-xs text-amber-600 mt-0.5">
-                  ⚠️ Consignar al 300-F per no perdre-la
+                  Diferir al 300-F de l'exercici SEGÜENT (màx. 6 exercicis)
                 </p>
               )}
             </div>
@@ -216,8 +216,9 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-700 mb-4">
           <strong>⚠️ Atenció:</strong> Les deduccions generades que no s'apliquen per insuficiència de quota
-          es poden diferir als <strong>3 exercicis posteriors</strong> (Art. 43.3 Llei 5/2014).
-          És imprescindible consignar-les al formulari <strong>300-F</strong> (pas 9) per no perdre-les.
+          es poden diferir als <strong>6 exercicis posteriors</strong> (Art. 45 Llei 5/2014 · Reglament 29/12/2023).
+          La part no aplicada s'ha de consignar al formulari <strong>300-F</strong> de la declaració de l'exercici <strong>SEGÜENT</strong>,
+          no en aquesta declaració.
         </div>
 
         {/* Resum total */}
@@ -521,8 +522,9 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
         {totalGenerat - totalAplicat > 0 && (
           <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
-            <strong>⚠️ {fmt(totalGenerat - totalAplicat)} € pendents d'aplicar</strong> — Consignar al pas 9 (300-F, apartat 3)
-            per poder aplicar-les als 3 exercicis posteriors. Sense declarar-les, el dret prescriu.
+            <strong>⚠️ {fmt(totalGenerat - totalAplicat)} € pendents d'aplicar</strong> — A la declaració de l'exercici SEGÜENT,
+            introduir aquest import al Pas 9 (300-F), apartat 3 "Deduccions de quota d'exercicis anteriors".
+            Sense declarar-les, el dret prescriu als 6 exercicis (Art. 45 Llei 5/2014 · Reglament 29/12/2023).
           </div>
         )}
       </div>

@@ -75,14 +75,14 @@ const SummaryPanel = ({ resultat, pas }) => {
       {pas && (
         <div className="px-4 pb-3">
           <div className="flex gap-0.5">
-            {[1,2,3,4,5,6,7,8,9].map(p => (
+            {[1,2,3,4,5,6,7,8,9,10].map(p => (
               <div
                 key={p}
                 className={`h-1 flex-1 rounded-full ${p <= pas ? 'bg-[#009B9C]' : 'bg-gray-200'}`}
               />
             ))}
           </div>
-          <p className="text-xs text-gray-400 mt-1 text-center">Pas {pas} de 9</p>
+          <p className="text-xs text-gray-400 mt-1 text-center">Pas {pas} de 10</p>
         </div>
       )}
     </div>
