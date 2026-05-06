@@ -30,8 +30,8 @@ export function generarCaselles300L(resultat) {
     { casella: '(12)', descripcio: 'Quota de tributació (10%)', valor: r.quotaTributacio },
     { casella: '(13)', descripcio: 'Bonificació Art. 46', valor: -r.bonificacio },
     { casella: 'QL', descripcio: 'Quota de liquidació', valor: r.quotaLiquidacio, destacat: true },
-    { casella: 'Art.47', descripcio: 'Deducció impost comunal', valor: -r.deduccioImpostComunal },
-    { casella: 'Art.48', descripcio: 'DDI — Deducció doble imposició', valor: -r.ddi },
+    { casella: 'Ded.ex.', descripcio: 'Deduccions generades en l\'exercici que s\'apliquen', valor: -r.totalDeduccionsExercici },
+    { casella: '(12)', descripcio: 'Deduccions pendents d\'exercicis anteriors (300-F)', valor: -r.deduccionsAnteriorsAplicades },
     { casella: '(14)', descripcio: 'Retencions i ingressos a compte', valor: -r.retencions },
     { casella: '(15)', descripcio: 'Resultat de la declaració', valor: r.resultatDeclaracio, destacat: true },
   ];

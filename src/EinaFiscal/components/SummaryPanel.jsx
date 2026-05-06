@@ -53,7 +53,12 @@ const SummaryPanel = ({ resultat, pas }) => {
         <div className="border-t pt-2">
           <Row label="Quota tributació (10%)" value={fmt(r.quotaTributacio)} />
           {r.bonificacio > 0 && <Row label="Bonificació Art.46 (−)" value={`− ${fmt(r.bonificacio)}`} />}
-          {r.ddi > 0 && <Row label="DDI (−)" value={`− ${fmt(r.ddi)}`} />}
+          {r.totalDeduccionsExercici > 0 && (
+            <Row label="Ded. generades exercici (−)" value={`− ${fmt(r.totalDeduccionsExercici)}`} />
+          )}
+          {r.deduccionsAnteriorsAplicades > 0 && (
+            <Row label="Ded. anteriors 300-F (−)" value={`− ${fmt(r.deduccionsAnteriorsAplicades)}`} />
+          )}
         </div>
         <div className="mt-3 bg-[#009B9C]/10 rounded-xl p-3 text-center">
           <p className="text-xs text-gray-500 mb-1">QUOTA FINAL</p>

@@ -280,45 +280,52 @@ export function calcularIRPFDetallat(dades) {
 
   const quotaLiquidacio = Math.max(0, quotaTributacio - bonificacio);
 
-  // Deduccions voluntàries generades en l'exercici (pas 8 — Art. 43 bis, 44, 44 bis)
-  const d = deduccionsExercici;
-  const mecenatge20 = (d.donatiu20 || 0) * 0.20;
-  const mecenatge90 = Math.min(d.donatiu90 || 0, 100) * 0.90;
-  const dedMecenatge = Math.min(d.aplicatMecenatge || 0, mecenatge20 + mecenatge90);
-  const dedProjectes = Math.min(d.aplicatProjectes || 0, (d.aportacionsProjectes || 0) * 0.75);
-  const incNI = Math.max(0, (d.plantillaNIActual||0)-(d.plantillaNIAnterior||0));
-  const incIN = Math.max(0, (d.plantillaINActual||0)-(d.plantillaINAnterior||0));
-  const incIE = Math.max(0, (d.plantillaIEActual||0)-(d.plantillaIEAnterior||0));
-  const dedLlocs = Math.min(d.aplicatLlocs || 0, incNI*1000 + incIN*3500 + incIE*3500);
-  const dedDigital = Math.min(d.aplicatDigital || 0, (d.inversionsDigital||0)*0.02);
-  const dedPatrocini = Math.min(d.aplicatPatrocini || 0, (d.despesesPatrocini||0)*0.10);
-  const totalDeduccionsVoluntaries = dedMecenatge + dedProjectes + dedLlocs + dedDigital + dedPatrocini;
-
-  // Quota after deduccions voluntàries (restades just després de la bonificació)
-  const quotaAfterDedVol = Math.max(0, quotaLiquidacio - totalDeduccionsVoluntaries);
-
-  // Deducció Art.47 i DDI — usar l'import aplicat al pas 8 si existeix
-  const impostComunalArrendaments = immobles.reduce((acc, im) => acc + (im.impostComunal || 0), 0);
-  const impostComunalRadicacio = activitats.reduce((acc, a) => acc + (a.impostRadicacio || 0), 0);
+  // Total deduccions generades en l'exercici — pas 8 (Art. 43 bis, 44, 44 bis, 47, 48)
   const d8 = deduccionsExercici || {};
-  const deduccioArrendaments = Math.min(
+
+  // Art. 47 — impost comunal arrendaments
+  const impostComunalArrendaments = immobles.reduce((acc, im) => acc + (im.impostComunal || 0), 0);
+  const aplicatArrendaments = Math.min(
     d8.aplicatArrendaments !== undefined ? d8.aplicatArrendaments : impostComunalArrendaments,
     quotaLiquidacio
   );
-  const deduccioRadicacio = Math.min(
+
+  // Art. 47 — impost comunal radicació
+  const impostComunalRadicacio = activitats.reduce((acc, a) => acc + (a.impostRadicacio || 0), 0);
+  const aplicatRadicacio = Math.min(
     d8.aplicatRadicacio !== undefined ? d8.aplicatRadicacio : impostComunalRadicacio,
     quotaLiquidacio
   );
-  const deduccioImpostComunal = deduccioArrendaments + deduccioRadicacio;
+
+  // Art. 48 — DDI
   const ddiDetall = calcularDDI(rendesExterior);
   const ddiCalculat = ddiDetall.reduce((acc, r) => acc + r.ddi, 0);
   const ddi = Math.min(
     d8.aplicatDDI !== undefined ? d8.aplicatDDI : ddiCalculat,
-    Math.max(0, quotaLiquidacio - deduccioImpostComunal)
+    Math.max(0, quotaLiquidacio - aplicatArrendaments - aplicatRadicacio)
   );
 
-  // Quota final (incloent deduccions 300-F)
-  const quotaFinal = Math.max(0, quotaAfterDedVol - deduccioImpostComunal - ddi - deduccionsAnteriorsAplicades);
+  // Deduccions voluntàries (mecenatge, projectes, llocs treball, digital, patrocini)
+  const mecenatge20 = (d8.donatiu20 || 0) * 0.20;
+  const mecenatge90 = Math.min(d8.donatiu90 || 0, 100) * 0.90;
+  const dedMecenatge = Math.min(d8.aplicatMecenatge || 0, mecenatge20 + mecenatge90);
+  const dedProjectes = Math.min(d8.aplicatProjectes || 0, (d8.aportacionsProjectes || 0) * 0.75);
+  const incNI = Math.max(0, (d8.plantillaNIActual||0)-(d8.plantillaNIAnterior||0));
+  const incIN = Math.max(0, (d8.plantillaINActual||0)-(d8.plantillaINAnterior||0));
+  const incIE = Math.max(0, (d8.plantillaIEActual||0)-(d8.plantillaIEAnterior||0));
+  const dedLlocs = Math.min(d8.aplicatLlocs || 0, incNI*1000 + incIN*3500 + incIE*3500);
+  const dedDigital = Math.min(d8.aplicatDigital || 0, (d8.inversionsDigital||0)*0.02);
+  const dedPatrocini = Math.min(d8.aplicatPatrocini || 0, (d8.despesesPatrocini||0)*0.10);
+
+  // Total únic deduccions generades exercici (una sola línia al 300-L)
+  const totalDeduccionsExercici = aplicatArrendaments + aplicatRadicacio + ddi +
+    dedMecenatge + dedProjectes + dedLlocs + dedDigital + dedPatrocini;
+
+  // Mantenir per compatibilitat amb altres components
+  const deduccioImpostComunal = aplicatArrendaments + aplicatRadicacio;
+
+  // Quota final
+  const quotaFinal = Math.max(0, quotaLiquidacio - totalDeduccionsExercici - deduccionsAnteriorsAplicades);
 
   // Tipus efectiu
   const rendaTotal = baseTributacioGeneral + btePositiu;
@@ -355,11 +362,12 @@ export function calcularIRPFDetallat(dades) {
     quotaTributacio,
     bonificacio,
     quotaLiquidacio,
-    totalDeduccionsVoluntaries,
+    totalDeduccionsExercici,
     deduccioImpostComunal,
     ddi,
     ddiCalculat,
     ddiDetall,
+    deduccionsAnteriorsAplicades,
     quotaFinal,
     tipusEfectiu,
     // Resultat

@@ -47,7 +47,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, exercici }) => {
       {/* Capçalera */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
         <div className="flex items-center gap-2 mb-4">
-          <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">9</span>
+          <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">10</span>
           <div>
             <h2 className="font-bold text-gray-800">Liquidació i informe — Formulari 300-L</h2>
             <p className="text-xs text-gray-500">Resum complet de la liquidació IRPF {exercici}</p>
