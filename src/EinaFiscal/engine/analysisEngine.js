@@ -64,7 +64,28 @@ function calcularRendaNetaTreball(rendesTreball) {
 }
 
 function calcularRendaNetaActivitat(activitats) {
-  return activitats.reduce((acc, a) => acc + (a.rendaNeta || 0), 0);
+  return activitats.reduce((acc, a) => {
+    // Suport nova estructura amb columnes CAEA
+    if (a.columnes && a.columnes.length > 0) {
+      const totalColumnes = a.columnes.reduce((sum, col) => {
+        if (a.tipusDeterminacio === 'objectiva') {
+          const despeses = (col.ingressosComputables || 0) * ((col.percentatgeDespeses || 40) / 100);
+          return sum + (col.ingressosComputables || 0) - despeses + (col.resultatExtraordinari || 0);
+        } else {
+          const ingressos = (col.xifraNegocios || 0) + (col.ingressosFinancers || 0) + (col.altresIngressos || 0);
+          const despeses = (col.consumMercaderies || 0) + (col.despesesPersonal || 0) +
+            (col.amortitzacions || 0) + (col.arrendamentsCànons || 0) +
+            (col.reparacionsConservacio || 0) + (col.subministraments || 0) +
+            (col.tributsDeduibles || 0) + (col.serveisExteriors || 0) +
+            (col.despesesFinanceres || 0) + (col.altresDespeses || 0);
+          return sum + ingressos - despeses + (col.resultatExtraordinari || 0);
+        }
+      }, 0);
+      return acc + totalColumnes - (a.reduccioArrendament || 0);
+    }
+    // Fallback estructura antiga
+    return acc + (a.rendaNeta || 0);
+  }, 0);
 }
 
 function calcularRendaNetaImmobiliaria(immobles) {
