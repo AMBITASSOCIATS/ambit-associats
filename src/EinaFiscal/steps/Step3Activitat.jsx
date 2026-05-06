@@ -92,14 +92,15 @@ const ActivitatForm = ({ activitat, index, onUpdate, onEliminar }) => {
 
         {activitat.tipusDeterminacio === 'directa' ? (
           <>
-            <InputNum label="Ingressos íntegres (€)" value={activitat.ingressos} onChange={handleIngressos} />
-            <InputNum label="Despeses deduïbles (€)" value={activitat.despeses} onChange={handleDespeses} />
+            <InputNum label="Ingressos íntegres (€)" value={activitat.ingressos === 0 ? '' : activitat.ingressos} placeholder="0" onChange={handleIngressos} />
+            <InputNum label="Despeses deduïbles (€)" value={activitat.despeses === 0 ? '' : activitat.despeses} placeholder="0" onChange={handleDespeses} />
           </>
         ) : (
           <div className="col-span-2">
             <InputNum
               label="Renda neta (mòduls) (€)"
-              value={activitat.rendaNeta}
+              value={activitat.rendaNeta === 0 ? '' : activitat.rendaNeta}
+              placeholder="0"
               onChange={v => update('rendaNeta', v)}
             />
           </div>
@@ -107,7 +108,8 @@ const ActivitatForm = ({ activitat, index, onUpdate, onEliminar }) => {
 
         <InputNum
           label="Retencions i ingressos a compte (€)"
-          value={activitat.retencions}
+          value={activitat.retencions === 0 ? '' : activitat.retencions}
+          placeholder="0"
           onChange={v => update('retencions', v)}
         />
       </div>

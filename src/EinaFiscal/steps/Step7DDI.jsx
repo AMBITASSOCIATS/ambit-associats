@@ -103,11 +103,11 @@ const RendaExtForm = ({ renda, index, onUpdate, onEliminar }) => {
           </select>
         </div>
 
-        <InputNum label="Import brut (euros)" value={renda.importBrut} onChange={v => {
+        <InputNum label="Import brut (euros)" value={renda.importBrut === 0 ? '' : renda.importBrut} placeholder="0" onChange={v => {
           update('importBrut', v);
           update('importNet', v - renda.retencioOrigen);
         }} />
-        <InputNum label="Retencio practicada al pais d'origen (euros)" value={renda.retencioOrigen} onChange={v => {
+        <InputNum label="Retencio practicada al pais d'origen (euros)" value={renda.retencioOrigen === 0 ? '' : renda.retencioOrigen} placeholder="0" onChange={v => {
           update('retencioOrigen', v);
           update('importNet', renda.importBrut - v);
         }} />

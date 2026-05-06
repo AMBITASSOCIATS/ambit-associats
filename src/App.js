@@ -1100,7 +1100,7 @@ const App = () => {
                     onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
                     className="bg-white text-[#009B9C] font-bold px-8 py-4 rounded-xl hover:bg-gray-50 transition shadow-lg text-base w-full sm:w-auto"
                   >
-                    {language === "ca" && "Sol·licita una consulta graïta →"}
+                    {language === "ca" && "Sol·licita una consulta gratuïta →"}
                     {language === "es" && "Solicitar consulta gratuita →"}
                     {language === "en" && "Request a free consultation →"}
                     {language === "fr" && "Demander une consultation gratuite →"}
