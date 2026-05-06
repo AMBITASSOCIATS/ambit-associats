@@ -11,7 +11,7 @@ const InputNum = ({ label, value, onChange, min = 0, hint = '' }) => (
       step="0.01"
       value={value === 0 ? '' : value}
       placeholder="0"
-      onChange={e => onChange(parseFloat(e.target.value) || 0)}
+      onChange={e => { const v = e.target.value; onChange(v === '' ? 0 : parseFloat(v) || 0); }}
       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
     />
     {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}

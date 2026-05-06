@@ -118,7 +118,7 @@ const InputNum = ({ label, value, onChange, min = 0 }) => (
       step="0.01"
       value={value === 0 ? '' : value}
       placeholder="0"
-      onChange={e => onChange(parseFloat(e.target.value) || 0)}
+      onChange={e => { const v = e.target.value; onChange(v === '' ? 0 : parseFloat(v) || 0); }}
       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
     />
   </div>
@@ -209,7 +209,7 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar }) => {
                   type="number" min="0" max="100" step="0.01"
                   value={trans.participacioPct === 0 ? '' : trans.participacioPct}
                   placeholder="0"
-                  onChange={e => update('participacioPct', parseFloat(e.target.value) || 0)}
+                  onChange={e => { const v = e.target.value; update('participacioPct', v === '' ? 0 : parseFloat(v) || 0); }}
                   className="w-full border border-gray-200 rounded px-2 py-1 text-xs mt-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
                 />
               </div>
@@ -219,7 +219,7 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar }) => {
                   type="number" min="0" step="1"
                   value={trans.anysPropieta === 0 ? '' : trans.anysPropieta}
                   placeholder="0"
-                  onChange={e => update('anysPropieta', parseInt(e.target.value) || 0)}
+                  onChange={e => { const v = e.target.value; update('anysPropieta', v === '' ? 0 : parseInt(v) || 0); }}
                   className="w-full border border-gray-200 rounded px-2 py-1 text-xs mt-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
                 />
               </div>
@@ -316,7 +316,7 @@ const Step6GuanysCapital = ({ dades, update }) => {
                 type="number" min="0" step="0.01"
                 value={(dades.guanysNoTransmissio || 0) === 0 ? '' : dades.guanysNoTransmissio}
                 placeholder="0"
-                onChange={e => update('guanysNoTransmissio', parseFloat(e.target.value) || 0)}
+                onChange={e => { const v = e.target.value; update('guanysNoTransmissio', v === '' ? 0 : parseFloat(v) || 0); }}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
               />
             </div>
@@ -328,7 +328,7 @@ const Step6GuanysCapital = ({ dades, update }) => {
                 type="number" min="0" step="0.01"
                 value={(dades.perduessNoTransmissio || 0) === 0 ? '' : dades.perduessNoTransmissio}
                 placeholder="0"
-                onChange={e => update('perduessNoTransmissio', parseFloat(e.target.value) || 0)}
+                onChange={e => { const v = e.target.value; update('perduessNoTransmissio', v === '' ? 0 : parseFloat(v) || 0); }}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
               />
             </div>

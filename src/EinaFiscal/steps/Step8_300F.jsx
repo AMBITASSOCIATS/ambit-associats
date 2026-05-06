@@ -11,7 +11,7 @@ const InputNum = ({ value, onChange, className = '' }) => (
     step="0.01"
     value={value === 0 ? '' : value}
     placeholder="0"
-    onChange={e => onChange(parseFloat(e.target.value) || 0)}
+    onChange={e => { const v = e.target.value; onChange(v === '' ? 0 : parseFloat(v) || 0); }}
     className={`border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C] ${className}`}
   />
 );

@@ -130,7 +130,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                         type="number" min="0" step="0.01"
                         value={partida.importBrut === 0 ? '' : partida.importBrut}
                         placeholder="0"
-                        onChange={e => updatePartida(pd.tipus, 'importBrut', parseFloat(e.target.value) || 0)}
+                        onChange={e => { const v = e.target.value; updatePartida(pd.tipus, 'importBrut', v === '' ? 0 : parseFloat(v) || 0); }}
                         className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs"
                       />
                     </td>
@@ -139,7 +139,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                         type="number" min="0" step="0.01"
                         value={partida.despeses === 0 ? '' : partida.despeses}
                         placeholder="0"
-                        onChange={e => updatePartida(pd.tipus, 'despeses', parseFloat(e.target.value) || 0)}
+                        onChange={e => { const v = e.target.value; updatePartida(pd.tipus, 'despeses', v === '' ? 0 : parseFloat(v) || 0); }}
                         className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs"
                       />
                     </td>
@@ -148,7 +148,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                         type="number" min="0" step="0.01"
                         value={partida.retencioAndorra === 0 ? '' : partida.retencioAndorra}
                         placeholder="0"
-                        onChange={e => updatePartida(pd.tipus, 'retencioAndorra', parseFloat(e.target.value) || 0)}
+                        onChange={e => { const v = e.target.value; updatePartida(pd.tipus, 'retencioAndorra', v === '' ? 0 : parseFloat(v) || 0); }}
                         className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs"
                       />
                     </td>
@@ -157,7 +157,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                         type="number" min="0" step="0.01"
                         value={partida.retencioOrigen === 0 ? '' : partida.retencioOrigen}
                         placeholder="0"
-                        onChange={e => updatePartida(pd.tipus, 'retencioOrigen', parseFloat(e.target.value) || 0)}
+                        onChange={e => { const v = e.target.value; updatePartida(pd.tipus, 'retencioOrigen', v === '' ? 0 : parseFloat(v) || 0); }}
                         className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs"
                       />
                     </td>
@@ -188,7 +188,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                   type="number" min="0" step="0.01"
                   value={entitat.despesesCustodia === 0 ? '' : entitat.despesesCustodia}
                   placeholder="0"
-                  onChange={e => update('despesesCustodia', parseFloat(e.target.value) || 0)}
+                  onChange={e => { const v = e.target.value; update('despesesCustodia', v === '' ? 0 : parseFloat(v) || 0); }}
                   className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs"
                 />
               </td>
