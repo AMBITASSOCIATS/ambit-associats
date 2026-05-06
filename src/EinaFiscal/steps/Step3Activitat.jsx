@@ -28,25 +28,23 @@ const InputNum = ({ label, value, onChange, min = 0 }) => (
   </div>
 );
 
-const ActivitatForm = ({ activitat, index, onUpdate, onEliminar }) => {
+const ActivitatForm = ({ activitat, index, onUpdate, onUpdateTot, onEliminar }) => {
   const update = (camp, valor) => onUpdate(activitat.id, camp, valor);
 
   const rendaCalculada = activitat.tipusDeterminacio === 'directa'
     ? activitat.ingressos - activitat.despeses
     : activitat.rendaNeta;
 
-  // Sync rendaNeta si mode directa
+  // Sync rendaNeta amb una sola crida per evitar sobreescriptura d'estat
   const handleIngressos = (v) => {
-    onUpdate(activitat.id, 'ingressos', v);
-    if (activitat.tipusDeterminacio === 'directa') {
-      onUpdate(activitat.id, 'rendaNeta', v - activitat.despeses);
-    }
+    const updated = { ...activitat, ingressos: v };
+    if (updated.tipusDeterminacio === 'directa') updated.rendaNeta = v - activitat.despeses;
+    onUpdateTot(activitat.id, updated);
   };
   const handleDespeses = (v) => {
-    onUpdate(activitat.id, 'despeses', v);
-    if (activitat.tipusDeterminacio === 'directa') {
-      onUpdate(activitat.id, 'rendaNeta', activitat.ingressos - v);
-    }
+    const updated = { ...activitat, despeses: v };
+    if (updated.tipusDeterminacio === 'directa') updated.rendaNeta = activitat.ingressos - v;
+    onUpdateTot(activitat.id, updated);
   };
 
   return (
@@ -92,8 +90,8 @@ const ActivitatForm = ({ activitat, index, onUpdate, onEliminar }) => {
 
         {activitat.tipusDeterminacio === 'directa' ? (
           <>
-            <InputNum label="Ingressos íntegres (€)" value={activitat.ingressos === 0 ? '' : activitat.ingressos} placeholder="0" onChange={handleIngressos} />
-            <InputNum label="Despeses deduïbles (€)" value={activitat.despeses === 0 ? '' : activitat.despeses} placeholder="0" onChange={handleDespeses} />
+            <InputNum label="Ingressos íntegres (€)" value={activitat.ingressos} onChange={handleIngressos} />
+            <InputNum label="Despeses deduïbles (€)" value={activitat.despeses} onChange={handleDespeses} />
           </>
         ) : (
           <div className="col-span-2">
@@ -148,6 +146,10 @@ const Step3Activitat = ({ dades, update }) => {
     }));
   };
 
+  const updateActivitatTot = (id, activitatActualitzada) => {
+    update('activitats', dades.activitats.map(a => a.id === id ? activitatActualitzada : a));
+  };
+
   const removeActivitat = (id) => {
     update('activitats', dades.activitats.filter(a => a.id !== id));
   };
@@ -196,6 +198,7 @@ const Step3Activitat = ({ dades, update }) => {
           activitat={activitat}
           index={i}
           onUpdate={updateActivitat}
+          onUpdateTot={updateActivitatTot}
           onEliminar={() => removeActivitat(activitat.id)}
         />
       ))}

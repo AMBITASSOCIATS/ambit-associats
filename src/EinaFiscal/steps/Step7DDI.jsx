@@ -42,7 +42,7 @@ const InputNum = ({ label, value, onChange, min = 0 }) => (
 );
 
 const RendaExtForm = ({ renda, index, onUpdate, onEliminar }) => {
-  const update = (camp, valor) => onUpdate(renda.id, camp, valor);
+  const update = (camp, valor) => onUpdate(renda.id, { ...renda, [camp]: valor });
 
   const ddiResult = calcularDDI([renda]);
   const ddiInfo = ddiResult[0];
@@ -103,14 +103,16 @@ const RendaExtForm = ({ renda, index, onUpdate, onEliminar }) => {
           </select>
         </div>
 
-        <InputNum label="Import brut (euros)" value={renda.importBrut === 0 ? '' : renda.importBrut} placeholder="0" onChange={v => {
-          update('importBrut', v);
-          update('importNet', v - renda.retencioOrigen);
-        }} />
-        <InputNum label="Retencio practicada al pais d'origen (euros)" value={renda.retencioOrigen === 0 ? '' : renda.retencioOrigen} placeholder="0" onChange={v => {
-          update('retencioOrigen', v);
-          update('importNet', renda.importBrut - v);
-        }} />
+        <InputNum
+          label="Import brut (euros)"
+          value={renda.importBrut}
+          onChange={v => onUpdate(renda.id, { ...renda, importBrut: v, importNet: v - renda.retencioOrigen })}
+        />
+        <InputNum
+          label="Retencio practicada al pais d'origen (euros)"
+          value={renda.retencioOrigen}
+          onChange={v => onUpdate(renda.id, { ...renda, retencioOrigen: v, importNet: renda.importBrut - v })}
+        />
       </div>
 
       {ddiInfo && (
@@ -145,8 +147,8 @@ const Step7DDI = ({ dades, update }) => {
     ]);
   };
 
-  const updateRenda = (id, camp, valor) => {
-    update('rendesExterior', dades.rendesExterior.map(r => r.id === id ? { ...r, [camp]: valor } : r));
+  const updateRenda = (id, rendaActualitzada) => {
+    update('rendesExterior', dades.rendesExterior.map(r => r.id === id ? rendaActualitzada : r));
   };
 
   const removeRenda = (id) => {
