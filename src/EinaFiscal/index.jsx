@@ -13,19 +13,21 @@ import Step4Immobiliari from './steps/Step4Immobiliari';
 import Step5Mobiliari from './steps/Step5Mobiliari';
 import Step6GuanysCapital from './steps/Step6GuanysCapital';
 import Step7DDI from './steps/Step7DDI';
-import Step8Bases300F from './steps/Step8_300F';
-import Step9Liquidacio from './steps/Step9Liquidacio';
+import Step8Deduccions from './steps/Step8Deduccions';
+import Step9Bases300F from './steps/Step8_300F';
+import Step10Liquidacio from './steps/Step9Liquidacio';
 
 const STEPS = [
-  { id: 1, label: 'Situacio personal', formulari: '300-A' },
-  { id: 2, label: 'Rendes del treball', formulari: '300-B sec.1' },
-  { id: 3, label: 'Activitats economiques', formulari: '300-C' },
-  { id: 4, label: 'Capital immobiliari', formulari: '300-B sec.2' },
-  { id: 5, label: 'Capital mobiliari', formulari: '300-D' },
-  { id: 6, label: 'Guanys i perdues capital', formulari: '300-E' },
-  { id: 7, label: 'Doble imposicio (DDI)', formulari: 'Art. 48' },
-  { id: 8, label: 'Bases neg. i deduccions ant.', formulari: '300-F' },
-  { id: 9, label: 'Liquidacio i informe', formulari: '300-L' },
+  { id: 1,  label: 'Situacio personal',         formulari: '300-A' },
+  { id: 2,  label: 'Rendes del treball',         formulari: '300-B sec.1' },
+  { id: 3,  label: 'Activitats economiques',     formulari: '300-C' },
+  { id: 4,  label: 'Capital immobiliari',        formulari: '300-B sec.2' },
+  { id: 5,  label: 'Capital mobiliari',          formulari: '300-D' },
+  { id: 6,  label: 'Guanys i perdues capital',   formulari: '300-E' },
+  { id: 7,  label: 'Doble imposicio (DDI)',       formulari: 'Art. 48' },
+  { id: 8,  label: 'Deduccions exercici',        formulari: '300-L sec.3' },
+  { id: 9,  label: 'Bases neg. i deduccions ant.', formulari: '300-F' },
+  { id: 10, label: 'Liquidacio i informe',       formulari: '300-L' },
 ];
 
 const DEFAULT_DADES = {
@@ -60,7 +62,9 @@ const DEFAULT_DADES = {
   basesNegativesAnteriors: 0,
   // Pas 7 — DDI
   rendesExterior: [],
-  // Pas 8 — 300-F: Bases negatives i deduccions anteriors
+  // Pas 8 — Deduccions generades en l'exercici
+  deduccionsExercici: {},
+  // Pas 9 — 300-F: Bases negatives i deduccions anteriors
   basesNegGenerals: [],
   basesNegEstalvi: [],
   deduccionsAnteriors: [],
@@ -137,9 +141,10 @@ const EinaFiscal = ({ onBack }) => {
             {pas === 5 && <Step5Mobiliari dades={dades} update={updateDades} />}
             {pas === 6 && <Step6GuanysCapital dades={dades} update={updateDades} />}
             {pas === 7 && <Step7DDI dades={dades} update={updateDades} />}
-            {pas === 8 && <Step8Bases300F dades={dades} update={updateDades} />}
-            {pas === 9 && (
-              <Step9Liquidacio
+            {pas === 8 && <Step8Deduccions dades={dades} update={updateDades} resultat={resultat} />}
+            {pas === 9 && <Step9Bases300F dades={dades} update={updateDades} />}
+            {pas === 10 && (
+              <Step10Liquidacio
                 dades={dades}
                 resultat={resultat}
                 clientNom={clientNom}
