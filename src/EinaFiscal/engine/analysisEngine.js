@@ -279,7 +279,9 @@ export function calcularIRPFDetallat(dades) {
   const quotaLiquidacio = Math.max(0, quotaTributacio - bonificacio);
 
   // Deducció impost comunal (Art. 47)
-  const impostComunalTotal = immobles.reduce((acc, im) => acc + (im.impostComunal || 0), 0);
+  const impostComunalArrendaments = immobles.reduce((acc, im) => acc + (im.impostComunal || 0), 0);
+  const impostComunalRadicacio = activitats.reduce((acc, a) => acc + (a.impostRadicacio || 0), 0);
+  const impostComunalTotal = impostComunalArrendaments + impostComunalRadicacio;
   const deduccioImpostComunal = Math.min(impostComunalTotal, quotaLiquidacio);
 
   // DDI (Art. 48)

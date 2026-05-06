@@ -426,6 +426,16 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
                 onChange={(v) => updateCamp('retencions', v)}
               />
             </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Impost comunal de radicació pagat (€)
+                <span className="ml-1 text-gray-400 font-normal">Art. 47 — deduïble de la quota</span>
+              </label>
+              <Num
+                value={activitat.impostRadicacio || 0}
+                onChange={(v) => updateCamp('impostRadicacio', v)}
+              />
+            </div>
           </div>
 
           {/* Renda neta final */}
