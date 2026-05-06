@@ -154,7 +154,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
     .reduce((acc, im) => acc + (im.impostComunal || 0), 0);
   const impostComunalRadicacio = (dades.activitats || [])
     .reduce((acc, a) => acc + (a.impostRadicacio || 0), 0);
-  const ddiTotal = resultat?.ddi || 0;
+  const ddiTotal = resultat?.ddiCalculat || 0;
 
   // ── Mecenatge ────────────────────────────────────────────────────────────
   // Art. 44 Llei 5/2014: 20% donatius generals, 90% donatius <= 100 € (dineraris, irrevocables)
@@ -186,7 +186,10 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
     totalMecenatge + dedProjectes + dedLlocs + dedDigital + dedPatrocini;
 
   // ── Total que s'aplica ────────────────────────────────────────────────────
-  // Art.47 i DDI s'apliquen íntegrament (ja gestionats al motor)
+  // Art.47 i DDI: per defecte s'aplica tot el generat, l'usuari pot reduir-ho
+  const aplicatArrendaments = d.aplicatArrendaments !== undefined ? d.aplicatArrendaments : impostComunalArrendaments;
+  const aplicatRadicacio = d.aplicatRadicacio !== undefined ? d.aplicatRadicacio : impostComunalRadicacio;
+  const aplicatDDI = d.aplicatDDI !== undefined ? d.aplicatDDI : ddiTotal;
   // Les deduccions voluntàries: l'usuari decideix quant aplica
   const aplicatMecenatge = Math.min(d.aplicatMecenatge || 0, totalMecenatge);
   const aplicatProjectes = Math.min(d.aplicatProjectes || 0, dedProjectes);
@@ -195,7 +198,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
   const aplicatPatrocini = Math.min(d.aplicatPatrocini || 0, dedPatrocini);
 
   const totalAplicatVoluntari = aplicatMecenatge + aplicatProjectes + aplicatLlocs + aplicatDigital + aplicatPatrocini;
-  const totalAplicat = impostComunalArrendaments + impostComunalRadicacio + ddiTotal + totalAplicatVoluntari;
+  const totalAplicat = aplicatArrendaments + aplicatRadicacio + aplicatDDI + totalAplicatVoluntari;
 
   return (
     <div className="space-y-4">
@@ -236,37 +239,34 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
           <span className="w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs flex items-center justify-center">A</span>
           Deduccions automàtiques (calculades dels passos anteriors)
         </h3>
-        <div className="space-y-2">
-          {/* Art.47 arrendaments */}
-          <div className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
-            <div>
-              <p className="text-xs font-medium text-gray-700">
-                Impost comunal arrendaments — Art. 47
-              </p>
-              <p className="text-xs text-gray-400">Del pas 4 (Capital immobiliari)</p>
-            </div>
-            <span className="text-sm font-bold text-[#009B9C]">{fmt(impostComunalArrendaments)} €</span>
-          </div>
-          {/* Art.47 radicació */}
-          <div className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
-            <div>
-              <p className="text-xs font-medium text-gray-700">
-                Impost comunal radicació — Art. 47
-              </p>
-              <p className="text-xs text-gray-400">Del pas 3 (Activitats econòmiques)</p>
-            </div>
-            <span className="text-sm font-bold text-[#009B9C]">{fmt(impostComunalRadicacio)} €</span>
-          </div>
-          {/* DDI */}
-          <div className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
-            <div>
-              <p className="text-xs font-medium text-gray-700">
-                Deducció doble imposició (DDI) — Art. 48
-              </p>
-              <p className="text-xs text-gray-400">Del pas 7 (DDI)</p>
-            </div>
-            <span className="text-sm font-bold text-[#009B9C]">{fmt(ddiTotal)} €</span>
-          </div>
+        <div className="space-y-3">
+          <BlocDeducci
+            titol="Impost comunal arrendaments — Art. 47"
+            referencia="Del pas 4 (Capital immobiliari)"
+            descripcio="L'impost comunal sobre arrendaments efectivament pagat és deduïble de la quota de l'IRPF (Art. 47 Llei 5/2014). El valor generat prové dels imports introduïts al pas 4."
+            importGenerat={impostComunalArrendaments}
+            importAplicat={aplicatArrendaments}
+            onChangeAplicat={(v) => upd('aplicatArrendaments', Math.min(v, impostComunalArrendaments))}
+            readOnlyGenerat={true}
+          />
+          <BlocDeducci
+            titol="Impost comunal de radicació — Art. 47"
+            referencia="Del pas 3 (Activitats econòmiques)"
+            descripcio="L'impost comunal de radicació efectivament pagat per l'activitat econòmica és deduïble de la quota de l'IRPF (Art. 47 Llei 5/2014). El valor generat prové dels imports introduïts al pas 3."
+            importGenerat={impostComunalRadicacio}
+            importAplicat={aplicatRadicacio}
+            onChangeAplicat={(v) => upd('aplicatRadicacio', Math.min(v, impostComunalRadicacio))}
+            readOnlyGenerat={true}
+          />
+          <BlocDeducci
+            titol="Deducció per doble imposició internacional (DDI) — Art. 48"
+            referencia="Del pas 7 (DDI)"
+            descripcio="La deducció per doble imposició internacional (DDI) evita que les rendes obtingudes a l'estranger tributin dos cops. L'import és el mínim entre l'impost pagat a l'origen i la quota andorrana corresponent (Art. 48 Llei 5/2014). El valor generat prové del pas 7."
+            importGenerat={ddiTotal}
+            importAplicat={aplicatDDI}
+            onChangeAplicat={(v) => upd('aplicatDDI', Math.min(v, ddiTotal))}
+            readOnlyGenerat={true}
+          />
         </div>
       </div>
 
@@ -490,9 +490,9 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
           </thead>
           <tbody>
             {[
-              ['Art.47 — Impost comunal arrendaments', impostComunalArrendaments, impostComunalArrendaments, 0],
-              ['Art.47 — Impost comunal radicació', impostComunalRadicacio, impostComunalRadicacio, 0],
-              ['Art.48 — DDI doble imposició', ddiTotal, ddiTotal, 0],
+              ['Art.47 — Impost comunal arrendaments', impostComunalArrendaments, aplicatArrendaments, impostComunalArrendaments - aplicatArrendaments],
+              ['Art.47 — Impost comunal radicació', impostComunalRadicacio, aplicatRadicacio, impostComunalRadicacio - aplicatRadicacio],
+              ['Art.48 — DDI doble imposició', ddiTotal, aplicatDDI, ddiTotal - aplicatDDI],
               ['Mecenatge (20% / 90%)', totalMecenatge, aplicatMecenatge, totalMecenatge - aplicatMecenatge],
               ['Projectes interès nacional (75%)', dedProjectes, aplicatProjectes, dedProjectes - aplicatProjectes],
               ['Creació llocs de treball', dedLlocs, aplicatLlocs, dedLlocs - aplicatLlocs],

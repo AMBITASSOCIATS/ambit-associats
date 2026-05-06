@@ -297,16 +297,25 @@ export function calcularIRPFDetallat(dades) {
   // Quota after deduccions voluntàries (restades just després de la bonificació)
   const quotaAfterDedVol = Math.max(0, quotaLiquidacio - totalDeduccionsVoluntaries);
 
-  // Deducció impost comunal (Art. 47)
+  // Deducció Art.47 — usar l'import aplicat al pas 8 si existeix
   const impostComunalArrendaments = immobles.reduce((acc, im) => acc + (im.impostComunal || 0), 0);
   const impostComunalRadicacio = activitats.reduce((acc, a) => acc + (a.impostRadicacio || 0), 0);
-  const impostComunalTotal = impostComunalArrendaments + impostComunalRadicacio;
-  const deduccioImpostComunal = Math.min(impostComunalTotal, quotaAfterDedVol);
+  const d8 = deduccionsExercici || {};
+  const deduccioImpostComunal = Math.min(
+    d8.aplicatArrendaments !== undefined ? d8.aplicatArrendaments : impostComunalArrendaments,
+    quotaAfterDedVol
+  ) + Math.min(
+    d8.aplicatRadicacio !== undefined ? d8.aplicatRadicacio : impostComunalRadicacio,
+    quotaAfterDedVol
+  );
 
-  // DDI (Art. 48)
+  // DDI — usar l'import aplicat al pas 8 si existeix
   const ddiDetall = calcularDDI(rendesExterior);
-  const ddiTotal = ddiDetall.reduce((acc, r) => acc + r.ddi, 0);
-  const ddi = Math.min(ddiTotal, Math.max(0, quotaAfterDedVol - deduccioImpostComunal));
+  const ddiCalculat = ddiDetall.reduce((acc, r) => acc + r.ddi, 0);
+  const ddi = Math.min(
+    d8.aplicatDDI !== undefined ? d8.aplicatDDI : ddiCalculat,
+    Math.max(0, quotaAfterDedVol - deduccioImpostComunal)
+  );
 
   // Quota final (incloent deduccions 300-F)
   const quotaFinal = Math.max(0, quotaAfterDedVol - deduccioImpostComunal - ddi - deduccionsAnteriorsAplicades);
@@ -349,6 +358,7 @@ export function calcularIRPFDetallat(dades) {
     totalDeduccionsVoluntaries,
     deduccioImpostComunal,
     ddi,
+    ddiCalculat,
     ddiDetall,
     quotaFinal,
     tipusEfectiu,
