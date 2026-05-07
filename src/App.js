@@ -973,20 +973,19 @@ const App = () => {
     setCurrentService(null);
   };
 
-  if (carregant) return (
-    <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center">
-      <div className="text-white text-center">
-        <div className="text-2xl font-bold mb-2">ÀMBIT Associats</div>
-        <div className="text-white/70 text-sm">Carregant...</div>
-      </div>
-    </div>
-  );
-
   if (showIrpf) {
     return <IrpfCalculadora onBack={() => setShowIrpf(false)} />;
   }
 
   if (showEinaFiscal) {
+    if (carregant) return (
+      <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="text-2xl font-bold mb-2">ÀMBIT Associats</div>
+          <div className="text-white/70 text-sm">Carregant...</div>
+        </div>
+      </div>
+    );
     if (!user) return <PaginaLogin onLoginOk={() => {}} />;
     if (!carregant && perfil && !esActiu) return <PaginaAccesDenegat />;
     if (mostrarPanellMaestro && esMaestro) return <PanellMaestro onTancar={() => setMostrarPanellMaestro(false)} />;
