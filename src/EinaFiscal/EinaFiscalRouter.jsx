@@ -18,9 +18,16 @@ const EinaFiscalRouter = ({ onBack }) => {
   const autoDesatRef = useRef(null);
 
   // ── Obrir declaració ──────────────────────────────────────────────────────
-  const handleObrirDeclaracio = useCallback((id) => {
-    const decl = obtenirDeclaracio(id);
-    if (!decl) return;
+  const handleObrirDeclaracio = useCallback((id, declaracioDirecta = null) => {
+    // Si ens passen l'objecte directament (declaració nova), usar-lo sense llegir localStorage
+    const decl = declaracioDirecta || obtenirDeclaracio(id);
+    if (!decl) {
+      // Fallback: crear un objecte mínim per no petar
+      const declMinima = { id, clientNom: '', clientNRT: '', exercici: 2025, dades: {} };
+      setDeclaracioActual(declMinima);
+      setDeclaracioId(id);
+      return;
+    }
     setDeclaracioActual(decl);
     setDeclaracioId(id);
   }, []);

@@ -180,7 +180,7 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack }) => {
   const handleNova = (clientNom, clientNRT, exercici) => {
     const nova = novaDeclaracio(clientNom, clientNRT, exercici);
     setMostrarModal(false);
-    onObrirDeclaracio(nova.id);
+    onObrirDeclaracio(nova.id, nova);  // passar l'objecte directament per evitar race condition
   };
 
   const handleDuplicar = (id) => {
