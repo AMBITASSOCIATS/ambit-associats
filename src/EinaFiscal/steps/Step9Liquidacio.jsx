@@ -235,13 +235,16 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici }) =>
         id="informe-professional"
         ref={informeRef}
         style={{
-          display: 'none',
+          position: 'fixed',
+          left: '-9999px',
+          top: 0,
+          width: '210mm',
           fontFamily: 'Arial, Helvetica, sans-serif',
           fontSize: '10px',
           color: '#333',
           lineHeight: '1.5',
+          backgroundColor: 'white',
         }}
-        className="print:block"
       >
         <style>{`
           @media print {
