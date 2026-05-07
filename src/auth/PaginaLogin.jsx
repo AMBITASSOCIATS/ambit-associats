@@ -1,4 +1,4 @@
-// v2-solicituds
+// v2-solicituds-2026-05-08
 // src/auth/PaginaLogin.jsx
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
