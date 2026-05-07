@@ -39,6 +39,47 @@ const PanellMaestro = ({ onTancar }) => {
 
   const actualitzar = async (id, canvis) => {
     await supabase.from('profiles').update(canvis).eq('id', id);
+
+    // Si s'aprova l'usuari, enviar email de notificació
+    if (canvis.estat === 'actiu') {
+      const usuari = usuaris.find(u => u.id === id);
+      if (usuari?.email) {
+        try {
+          await fetch('https://formspree.io/f/mdkdrkze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: 'ÀMBIT Associats - Sistema',
+              email: usuari.email,
+              message: `Hola ${usuari.nom || ''},\n\nEl teu accés a l'Eina Fiscal IRPF d'ÀMBIT Associats ha estat aprovat.\n\nJa pots iniciar sessió a:\nhttps://www.ambit.ad\n\nSi tens qualsevol dubte, contacta'ns a info@ambit.ad o al +376 655 382.\n\nÀMBIT Associats`,
+            }),
+          });
+        } catch(e) {
+          console.warn('No s\'ha pogut enviar email de confirmació:', e);
+        }
+      }
+    }
+
+    // Si es bloqueja, enviar email avisant
+    if (canvis.estat === 'bloquejat') {
+      const usuari = usuaris.find(u => u.id === id);
+      if (usuari?.email) {
+        try {
+          await fetch('https://formspree.io/f/mdkdrkze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: 'ÀMBIT Associats - Sistema',
+              email: usuari.email,
+              message: `Hola ${usuari.nom || ''},\n\nEl teu accés a l'Eina Fiscal IRPF d'ÀMBIT Associats ha estat suspès.\n\nPer a més informació, contacta'ns a info@ambit.ad o al +376 655 382.\n\nÀMBIT Associats`,
+            }),
+          });
+        } catch(e) {
+          console.warn('No s\'ha pogut enviar email de bloqueig:', e);
+        }
+      }
+    }
+
     carregarUsuaris();
   };
 
