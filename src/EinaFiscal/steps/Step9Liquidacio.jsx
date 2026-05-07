@@ -31,18 +31,6 @@ const dataAvui = () => {
   });
 };
 
-// ─── CSS d'impressió injectat com a style tag ─────────────────────────────────
-const PRINT_CSS = `
-  @media print {
-    body * { visibility: hidden !important; }
-    #informe-professional, #informe-professional * { visibility: visible !important; }
-    #informe-professional { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; z-index: 99999 !important; }
-    .no-print { display: none !important; }
-    .page-break { page-break-before: always; break-before: page; }
-    .avoid-break { page-break-inside: avoid; break-inside: avoid; }
-    @page { margin: 0; size: A4; }
-  }
-`;
 
 // ─── Components interns ───────────────────────────────────────────────────────
 
@@ -140,15 +128,42 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici }) =>
   const r = resultat;
 
   const handlePrint = () => {
-    // Injectar CSS d'impressió
-    let styleEl = document.getElementById('print-style-informe');
-    if (!styleEl) {
-      styleEl = document.createElement('style');
-      styleEl.id = 'print-style-informe';
-      document.head.appendChild(styleEl);
-    }
-    styleEl.textContent = PRINT_CSS;
-    window.print();
+    const win = window.open('', '_blank');
+    if (!win) return;
+
+    const node = document.getElementById('informe-professional');
+    if (!node) return;
+
+    // Mostrar temporalment per forçar render
+    node.style.display = 'block';
+    node.style.position = 'absolute';
+    node.style.left = '-9999px';
+    node.style.width = '210mm';
+
+    const htmlContent = node.innerHTML;
+
+    // Tornar a amagar
+    node.style.display = 'none';
+    node.style.position = '';
+    node.style.left = '';
+    node.style.width = '';
+
+    win.document.write(`<!DOCTYPE html><html lang="ca"><head>
+    <meta charset="UTF-8"/>
+    <title>Informe IRPF ${exercici} — ${clientNom || 'Client'}</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #333; line-height: 1.5; background: white; }
+      .page-break { page-break-before: always; break-before: page; }
+      .avoid-break { page-break-inside: avoid; break-inside: avoid; }
+      .page-content { padding: 0 30px 30px 30px; }
+      @page { margin: 0; size: A4; }
+      @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+    </style>
+  </head><body>${htmlContent}
+    <script>window.onload=function(){setTimeout(function(){window.print();},500);};</script>
+  </body></html>`);
+    win.document.close();
   };
 
   // ── Calcular totals per a la portada ──────────────────────────────────────
@@ -235,10 +250,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici }) =>
         id="informe-professional"
         ref={informeRef}
         style={{
-          position: 'fixed',
-          left: '-9999px',
-          top: 0,
-          width: '210mm',
+          display: 'none',
           fontFamily: 'Arial, Helvetica, sans-serif',
           fontSize: '10px',
           color: '#333',
