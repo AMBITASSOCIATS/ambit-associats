@@ -87,17 +87,10 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const logout = async () => {
-    console.log('[AMBIT] logout() called');
-    try {
-      const { error } = await supabase.auth.signOut();
-      console.log('[AMBIT] signOut result:', { error });
-      setUser(null);
-      setPerfil(null);
-      console.log('[AMBIT] setUser/setPerfil done');
-    } catch(e) {
-      console.error('[AMBIT] logout error:', e);
-    }
+  const logout = () => {
+    supabase.auth.signOut(); // fire and forget — no await per evitar bloqueig
+    setUser(null);
+    setPerfil(null);
   };
 
   const esMaestro = perfil?.rol === 'maestro';
