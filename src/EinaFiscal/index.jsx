@@ -72,7 +72,10 @@ const DEFAULT_DADES = {
 
 const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesChange, onSortir, ultimDesat }) => {
   const [pas, setPas] = useState(1);
-  const [dades, setDades] = useState(() => declaracioInicial?.dades || DEFAULT_DADES);
+  const [dades, setDades] = useState(() => ({
+    ...DEFAULT_DADES,
+    ...(declaracioInicial?.dades || {}),
+  }));
   const [clientNom, setClientNom] = useState(() => declaracioInicial?.clientNom || '');
   const [clientNRT, setClientNRT] = useState(() => declaracioInicial?.clientNRT || '');
   const [exercici, setExercici] = useState(() => declaracioInicial?.exercici || 2025);
