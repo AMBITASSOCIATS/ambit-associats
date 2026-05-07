@@ -70,7 +70,7 @@ const DEFAULT_DADES = {
   deduccionsAnteriors: [],
 };
 
-const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesChange, onSortir, ultimDesat, onLogout, onAdminPanel }) => {
+const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesChange, onSortir, ultimDesat, onLogout, onAdminPanel, pendents = 0 }) => {
   const [pas, setPas] = useState(1);
   const [dades, setDades] = useState(() => ({
     ...DEFAULT_DADES,
@@ -159,9 +159,14 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
             {onAdminPanel && (
               <button
                 onClick={onAdminPanel}
-                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-lg px-3 py-2 text-sm transition"
+                className="relative bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-lg px-3 py-2 text-sm transition"
               >
                 ⚙️ Administració
+                {pendents > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {pendents}
+                  </span>
+                )}
               </button>
             )}
             {onLogout && (

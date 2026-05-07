@@ -83,6 +83,22 @@ export const AuthProvider = ({ children }) => {
         rol: 'individual',
         estat: 'pendent',
       });
+
+      // Notificar al Maestro per email
+      try {
+        await fetch('https://formspree.io/f/mdkdrkze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Sistema ÀMBIT Eina Fiscal',
+            email: 'sistema@ambit.ad',
+            message: `NOU USUARI PENDENT D'APROVACIÓ\n\nNom: ${nom}\nEmail: ${email}\n\nAccedeix al panel d'administració per aprovar o rebutjar l'accés:\nhttps://www.ambit.ad`,
+          }),
+        });
+      } catch(e) {
+        // No bloquejar el registre si falla la notificació
+        console.warn('No s\'ha pogut enviar la notificació al Maestro:', e);
+      }
     }
     return data;
   };

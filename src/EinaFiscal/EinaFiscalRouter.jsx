@@ -8,6 +8,7 @@ import {
   obtenirDeclaracio,
   desarDeclaracio,
 } from './engine/DeclaracionsStorage';
+import { supabase } from '../supabaseClient';
 
 const AUTODESAT_MS = 30000; // autodesat cada 30 segons
 
@@ -15,7 +16,17 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   const [declaracioId, setDeclaracioId] = useState(null);
   const [declaracioActual, setDeclaracioActual] = useState(null);
   const [ultimDesat, setUltimDesat] = useState(null);
+  const [pendents, setPendents] = useState(0);
   const autoDesatRef = useRef(null);
+
+  useEffect(() => {
+    if (!onAdminPanel) return; // Només per al Maestro
+    supabase
+      .from('profiles')
+      .select('id', { count: 'exact' })
+      .eq('estat', 'pendent')
+      .then(({ count }) => setPendents(count || 0));
+  }, [onAdminPanel]);
 
   // ── Obrir declaració ──────────────────────────────────────────────────────
   const handleObrirDeclaracio = useCallback((id, declaracioDirecta = null) => {
@@ -97,6 +108,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
         onBack={handleBackFromLlista}
         onLogout={onLogout}
         onAdminPanel={onAdminPanel}
+        pendents={pendents}
       />
     );
   }
@@ -111,6 +123,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
       ultimDesat={ultimDesat}
       onLogout={onLogout}
       onAdminPanel={onAdminPanel}
+      pendents={pendents}
     />
   );
 };
