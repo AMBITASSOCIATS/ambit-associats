@@ -1,9 +1,10 @@
 // src/auth/PaginaLogin.jsx
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
+import { supabase } from '../supabaseClient';
 
 const PaginaLogin = ({ onLoginOk }) => {
-  const { login, registrar } = useAuth();
+  const { login } = useAuth();
   const [mode, setMode] = useState('login'); // 'login' | 'registre'
   const [email, setEmail] = useState('');
   const [contrasenya, setContrasenya] = useState('');
@@ -31,11 +32,29 @@ const PaginaLogin = ({ onLoginOk }) => {
     setError('');
     setCarregant(true);
     try {
-      await registrar(email, contrasenya, nom);
-      setMissatge('Sol·licitud enviada. El teu accés serà revisat per ÀMBIT Associats. Rebràs un email quan sigui aprovat.');
+      // Guardar sol·licitud sense crear compte auth
+      const { error: errInsert } = await supabase
+        .from('solicituds')
+        .insert({ nom, email, estat: 'pendent', creat_el: new Date().toISOString() });
+
+      if (errInsert) throw errInsert;
+
+      // Notificar al Maestro
+      await fetch('https://formspree.io/f/mdkdrkze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Sistema ÀMBIT Eina Fiscal',
+          email: 'info@ambit.ad',
+          message: `NOU USUARI PENDENT D'APROVACIÓ\n\nNom: ${nom}\nEmail: ${email}\n\nAccedeix al panel d'administració per aprovar l'accés:\nhttps://www.ambit.ad`,
+        }),
+      }).catch(() => {});
+
+      setMissatge('Sol·licitud enviada. ÀMBIT Associats revisarà el teu accés i et contactarà per email.');
       setMode('login');
+      setEmail(''); setContrasenya(''); setNom('');
     } catch (err) {
-      setError(err.message || 'Error en el registre. Torna-ho a intentar.');
+      setError(err.message || 'Error en el registre.');
     } finally {
       setCarregant(false);
     }
@@ -131,12 +150,12 @@ const PaginaLogin = ({ onLoginOk }) => {
             </form>
           )}
 
-          {/* Formulari registre */}
+          {/* Formulari sol·licitud d'accés */}
           {mode === 'registre' && (
             <form onSubmit={handleRegistre} className="space-y-4">
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-700 mb-2">
-                ℹ️ El teu accés serà revisat per ÀMBIT Associats abans d'activar-se.
-                Rebràs un email de confirmació.
+                ℹ️ ÀMBIT Associats revisarà la teva sol·licitud i et crearà l'accés.
+                Rebràs un email amb les teves credencials.
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1.5">
@@ -162,21 +181,6 @@ const PaginaLogin = ({ onLoginOk }) => {
                   onChange={e => setEmail(e.target.value)}
                   required
                   placeholder="usuari@email.com"
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm
-                             focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40 focus:border-[#009B9C]"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-                  Contrasenya
-                </label>
-                <input
-                  type="password"
-                  value={contrasenya}
-                  onChange={e => setContrasenya(e.target.value)}
-                  required
-                  minLength={8}
-                  placeholder="Mínim 8 caràcters"
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm
                              focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40 focus:border-[#009B9C]"
                 />

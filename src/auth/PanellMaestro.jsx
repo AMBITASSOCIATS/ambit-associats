@@ -24,6 +24,11 @@ const PanellMaestro = ({ onTancar }) => {
   const [carregant, setCarregant] = useState(true);
   const [cerca, setCerca] = useState('');
   const [filtreEstat, setFiltreEstat] = useState('tots');
+  const [solicituds, setSolicituds] = useState([]);
+  const [modalCrear, setModalCrear] = useState(null); // null o objecte solicitud
+  const [contrasenyaCrear, setContrasenyaCrear] = useState('');
+  const [errorCrear, setErrorCrear] = useState('');
+  const [carregantCrear, setCarregantCrear] = useState(false);
 
   const carregarUsuaris = async () => {
     setCarregant(true);
@@ -35,7 +40,70 @@ const PanellMaestro = ({ onTancar }) => {
     setCarregant(false);
   };
 
-  useEffect(() => { carregarUsuaris(); }, []);
+  const carregarSolicituds = async () => {
+    const { data } = await supabase
+      .from('solicituds')
+      .select('*')
+      .eq('estat', 'pendent')
+      .order('creat_el', { ascending: false });
+    setSolicituds(data || []);
+  };
+
+  useEffect(() => { carregarUsuaris(); carregarSolicituds(); }, []);
+
+  const handleCrearCompte = async (e) => {
+    e.preventDefault();
+    setErrorCrear('');
+    setCarregantCrear(true);
+    try {
+      // Crear compte auth
+      const { data, error } = await supabase.auth.signUp({
+        email: modalCrear.email,
+        password: contrasenyaCrear,
+        options: { data: { nom: modalCrear.nom } },
+      });
+      if (error) throw error;
+
+      // Crear perfil ja actiu
+      if (data.user) {
+        await supabase.from('profiles').insert({
+          id: data.user.id,
+          email: modalCrear.email,
+          nom: modalCrear.nom,
+          rol: 'individual',
+          estat: 'actiu',
+        });
+      }
+
+      // Enviar email amb credencials a l'usuari
+      await fetch('https://formspree.io/f/mdkdrkze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'ÀMBIT Associats - Sistema',
+          email: modalCrear.email,
+          message: `Hola ${modalCrear.nom || ''},\n\nEl teu accés a l'Eina Fiscal IRPF d'ÀMBIT Associats ha estat aprovat.\n\nPots iniciar sessió a:\nhttps://www.ambit.ad\n\nCredencials:\n- Email: ${modalCrear.email}\n- Contrasenya temporal: ${contrasenyaCrear}\n\nCanvia la contrasenya quan iniciïs sessió per primera vegada.\n\nSi tens qualsevol dubte, contacta'ns a info@ambit.ad o al +376 655 382.\n\nÀMBIT Associats`,
+        }),
+      }).catch(() => {});
+
+      // Eliminar de solicituds
+      await supabase.from('solicituds').delete().eq('id', modalCrear.id);
+
+      setModalCrear(null);
+      setContrasenyaCrear('');
+      carregarSolicituds();
+      carregarUsuaris();
+    } catch (err) {
+      setErrorCrear(err.message || 'Error creant el compte.');
+    } finally {
+      setCarregantCrear(false);
+    }
+  };
+
+  const handleRebutjarSolicitud = async (id) => {
+    await supabase.from('solicituds').delete().eq('id', id);
+    carregarSolicituds();
+  };
 
   const actualitzar = async (id, canvis) => {
     await supabase.from('profiles').update(canvis).eq('id', id);
@@ -134,6 +202,102 @@ const PanellMaestro = ({ onTancar }) => {
             </div>
           ))}
         </div>
+
+        {/* Sol·licituds pendents */}
+        {solicituds.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-sm font-bold text-amber-700 mb-2 flex items-center gap-2">
+              <span className="bg-amber-100 border border-amber-200 rounded-full px-2 py-0.5 text-xs font-bold">
+                {solicituds.length}
+              </span>
+              Sol·licituds d'accés pendents
+            </h2>
+            <div className="space-y-2">
+              {solicituds.map(s => (
+                <div key={s.id} className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm text-gray-800">{s.nom}</p>
+                    <p className="text-xs text-gray-500">{s.email}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      Sol·licitat: {new Date(s.creat_el).toLocaleDateString('ca-AD')}
+                    </p>
+                  </div>
+                  <div className="flex gap-2 flex-shrink-0">
+                    <button
+                      onClick={() => { setModalCrear(s); setContrasenyaCrear(''); setErrorCrear(''); }}
+                      className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold rounded-lg transition"
+                    >
+                      ✓ Crear compte
+                    </button>
+                    <button
+                      onClick={() => handleRebutjarSolicitud(s.id)}
+                      className="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-semibold rounded-lg transition"
+                    >
+                      ✗ Rebutjar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Modal Crear compte */}
+        {modalCrear && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">
+                Crear compte per a {modalCrear.nom}
+              </h3>
+              <form onSubmit={handleCrearCompte} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">Email</label>
+                  <p className="text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                    {modalCrear.email}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1">
+                    Contrasenya temporal
+                  </label>
+                  <input
+                    type="text"
+                    value={contrasenyaCrear}
+                    onChange={e => setContrasenyaCrear(e.target.value)}
+                    required
+                    minLength={8}
+                    placeholder="Mínim 8 caràcters"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                               focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+                  />
+                </div>
+                {errorCrear && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-xs text-red-700">
+                    ⚠️ {errorCrear}
+                  </div>
+                )}
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="submit"
+                    disabled={carregantCrear}
+                    className="flex-1 bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold
+                               py-2.5 rounded-xl transition disabled:opacity-50 text-sm"
+                  >
+                    {carregantCrear ? 'Creant...' : '✓ Crear compte i enviar email'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setModalCrear(null); setContrasenyaCrear(''); setErrorCrear(''); }}
+                    className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700
+                               font-semibold rounded-xl transition text-sm"
+                  >
+                    Cancel·lar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Filtres */}
         <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex gap-3">
