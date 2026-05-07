@@ -32,29 +32,17 @@ const PaginaLogin = ({ onLoginOk }) => {
     setError('');
     setCarregant(true);
     try {
-      // Guardar sol·licitud sense crear compte auth
-      const { error: errInsert } = await supabase
+      const { error } = await supabase
         .from('solicituds')
         .insert({ nom, email, estat: 'pendent', creat_el: new Date().toISOString() });
 
-      if (errInsert) throw errInsert;
+      if (error) throw error;
 
-      // Notificar al Maestro
-      await fetch('https://formspree.io/f/mdkdrkze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'Sistema ÀMBIT Eina Fiscal',
-          email: 'info@ambit.ad',
-          message: `NOU USUARI PENDENT D'APROVACIÓ\n\nNom: ${nom}\nEmail: ${email}\n\nAccedeix al panel d'administració per aprovar l'accés:\nhttps://www.ambit.ad`,
-        }),
-      }).catch(() => {});
-
-      setMissatge('Sol·licitud enviada. ÀMBIT Associats revisarà el teu accés i et contactarà per email.');
+      setMissatge('Sol·licitud enviada correctament. ÀMBIT Associats revisarà el teu accés i et contactarà per email.');
       setMode('login');
       setEmail(''); setContrasenya(''); setNom('');
     } catch (err) {
-      setError(err.message || 'Error en el registre.');
+      setError('Error en el registre. Torna-ho a intentar.');
     } finally {
       setCarregant(false);
     }
