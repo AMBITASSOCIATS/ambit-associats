@@ -88,9 +88,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setPerfil(null);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        alert('Error logout: ' + error.message);
+      } else {
+        alert('Logout OK - ara hauria de redirigir');
+      }
+      setUser(null);
+      setPerfil(null);
+    } catch(e) {
+      alert('Error catch: ' + e.message);
+    }
   };
 
   const esMaestro = perfil?.rol === 'maestro';
