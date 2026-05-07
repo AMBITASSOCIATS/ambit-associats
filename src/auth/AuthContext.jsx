@@ -29,11 +29,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      setCarregant(false);
+    }, 5000);
+
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         await carregarPerfil(session.user.id);
       }
+      clearTimeout(timeout);
       setCarregant(false);
     });
 
@@ -46,7 +51,10 @@ export const AuthProvider = ({ children }) => {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const login = async (email, contrasenya) => {
