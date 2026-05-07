@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import izquierdaImg from './izquierda.png';
 import derechaImg from './derecha.png';
@@ -898,6 +898,53 @@ const App = () => {
   });
   const [menuOpen, setMenuOpen] = useState(false);
   const [servicesDropdown, setServicesDropdown] = useState(false);
+
+  // ── Historial navegador: registrar vista activa ──────────────────────────
+  useEffect(() => {
+    if (showEinaFiscal) {
+      window.history.pushState({ vista: 'einaFiscal' }, '');
+    } else if (showIrpf) {
+      window.history.pushState({ vista: 'irpf' }, '');
+    } else if (currentBlogPost) {
+      window.history.pushState({ vista: 'blog', slug: currentBlogPost.slug }, '');
+    } else if (currentService) {
+      window.history.pushState({ vista: 'service', id: currentService }, '');
+    } else {
+      window.history.pushState({ vista: 'home' }, '');
+    }
+  }, [showEinaFiscal, showIrpf, currentBlogPost, currentService]);
+
+  // ── Historial navegador: gestionar fletxa enrere ─────────────────────────
+  useEffect(() => {
+    const handlePopState = (e) => {
+      const vista = e.state?.vista;
+      if (vista === 'home' || !vista) {
+        setShowEinaFiscal(false);
+        setShowIrpf(false);
+        setCurrentService(null);
+        setCurrentBlogPost(null);
+      } else if (vista === 'einaFiscal') {
+        setShowIrpf(false);
+        setCurrentService(null);
+        setCurrentBlogPost(null);
+      } else if (vista === 'irpf') {
+        setShowEinaFiscal(false);
+        setCurrentService(null);
+        setCurrentBlogPost(null);
+      } else if (vista === 'blog') {
+        setShowEinaFiscal(false);
+        setShowIrpf(false);
+        setCurrentService(null);
+      } else if (vista === 'service') {
+        setShowEinaFiscal(false);
+        setShowIrpf(false);
+        setCurrentBlogPost(null);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const t = translations[language];
   const services = mainServices[language];
   const details = serviceDetails[language];
