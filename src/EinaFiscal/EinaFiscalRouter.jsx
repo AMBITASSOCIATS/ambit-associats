@@ -89,6 +89,48 @@ const EinaFiscalRouter = ({ onBack }) => {
     onBack();
   }, [onBack]);
 
+  // ── Historial navegador: entrada inicial (llista) ────────────────────────
+  useEffect(() => {
+    window.history.pushState({ vista: 'llista' }, '');
+  }, []);
+
+  // ── Historial navegador: entrada wizard ──────────────────────────────────
+  useEffect(() => {
+    if (declaracioId && declaracioActual) {
+      window.history.pushState({ vista: 'wizard', id: declaracioId }, '');
+    }
+  }, [declaracioId, declaracioActual]);
+
+  // ── Historial navegador: gestionar fletxa enrere ─────────────────────────
+  useEffect(() => {
+    const handlePopState = (e) => {
+      if (declaracioId) {
+        // Estem al wizard → tornar a la llista
+        // Desar abans de sortir
+        if (dadesRef.current) {
+          desarDeclaracio(declaracioId, {
+            dades: dadesRef.current,
+            clientNom: metaRef.current.clientNom,
+            clientNRT: metaRef.current.clientNRT,
+            exercici: metaRef.current.exercici,
+          });
+        }
+        setDeclaracioId(null);
+        setDeclaracioActual(null);
+        setUltimDesat(null);
+        clearInterval(autoDesatRef.current);
+        // Restaurar entrada d'historial de la llista
+        window.history.pushState({ vista: 'llista' }, '');
+      } else {
+        // Estem a la llista → tornar a la web principal
+        onBack();
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [declaracioId, onBack]);
+
   // ── Render ───────────────────────────────────────────────────────────────
   if (!declaracioId || !declaracioActual) {
     return (
