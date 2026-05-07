@@ -6,6 +6,10 @@ import legalBottomLeftImg from './legal-bottom-left.png';
 import legalBottomRightImg from './legal-bottom-right.png';
 import IrpfCalculadora from './irpf/IrpfCalculadora';
 import EinaFiscalRouter from './EinaFiscal/EinaFiscalRouter';
+import { useAuth } from './auth/AuthContext';
+import PaginaLogin from './auth/PaginaLogin';
+import PaginaAccesDenegat from './auth/PaginaAccesDenegat';
+import PanellMaestro from './auth/PanellMaestro';
 
 
 // Logo – més gran i centrat
@@ -898,6 +902,8 @@ const App = () => {
   });
   const [menuOpen, setMenuOpen] = useState(false);
   const [servicesDropdown, setServicesDropdown] = useState(false);
+  const [mostrarPanellMaestro, setMostrarPanellMaestro] = useState(false);
+  const { user, carregant, logout, esMaestro, esActiu } = useAuth();
 
   // ── Historial navegador: registrar vista activa ──────────────────────────
   useEffect(() => {
@@ -967,12 +973,30 @@ const App = () => {
     setCurrentService(null);
   };
 
+  if (carregant) return (
+    <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center">
+      <div className="text-white text-center">
+        <div className="text-2xl font-bold mb-2">ÀMBIT Associats</div>
+        <div className="text-white/70 text-sm">Carregant...</div>
+      </div>
+    </div>
+  );
+
   if (showIrpf) {
     return <IrpfCalculadora onBack={() => setShowIrpf(false)} />;
   }
 
   if (showEinaFiscal) {
-    return <EinaFiscalRouter onBack={() => { setShowEinaFiscal(false); }} />;
+    if (!user) return <PaginaLogin onLoginOk={() => {}} />;
+    if (!esActiu) return <PaginaAccesDenegat />;
+    if (mostrarPanellMaestro && esMaestro) return <PanellMaestro onTancar={() => setMostrarPanellMaestro(false)} />;
+    return (
+      <EinaFiscalRouter
+        onBack={() => { setShowEinaFiscal(false); }}
+        onLogout={logout}
+        onAdminPanel={esMaestro ? () => setMostrarPanellMaestro(true) : null}
+      />
+    );
   }
 
   return (

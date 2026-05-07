@@ -70,7 +70,7 @@ const DEFAULT_DADES = {
   deduccionsAnteriors: [],
 };
 
-const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesChange, onSortir, ultimDesat }) => {
+const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesChange, onSortir, ultimDesat, onLogout, onAdminPanel }) => {
   const [pas, setPas] = useState(1);
   const [dades, setDades] = useState(() => ({
     ...DEFAULT_DADES,
@@ -155,6 +155,22 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
               <span className="text-white/60 text-xs">
                 Desat: {ultimDesat.toLocaleTimeString('ca-AD', { hour: '2-digit', minute: '2-digit' })}
               </span>
+            )}
+            {onAdminPanel && (
+              <button
+                onClick={onAdminPanel}
+                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-lg px-3 py-2 text-sm transition"
+              >
+                ⚙️ Administració
+              </button>
+            )}
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="bg-white/10 hover:bg-white/20 text-white/80 hover:text-white border border-white/20 rounded-lg px-3 py-2 text-sm transition"
+              >
+                Tancar sessió
+              </button>
             )}
           </div>
         </div>

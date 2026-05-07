@@ -11,7 +11,7 @@ import {
 
 const AUTODESAT_MS = 30000; // autodesat cada 30 segons
 
-const EinaFiscalRouter = ({ onBack }) => {
+const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   const [declaracioId, setDeclaracioId] = useState(null);
   const [declaracioActual, setDeclaracioActual] = useState(null);
   const [ultimDesat, setUltimDesat] = useState(null);
@@ -107,6 +107,8 @@ const EinaFiscalRouter = ({ onBack }) => {
       onDadesChange={handleDadesChange}
       onSortir={handleSortirWizard}
       ultimDesat={ultimDesat}
+      onLogout={onLogout}
+      onAdminPanel={onAdminPanel}
     />
   );
 };
