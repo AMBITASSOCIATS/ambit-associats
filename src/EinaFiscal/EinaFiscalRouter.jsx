@@ -90,7 +90,7 @@ const EinaFiscalRouter = ({ onBack }) => {
   }, [onBack]);
 
   // ── Render ───────────────────────────────────────────────────────────────
-  if (!declaracioId) {
+  if (!declaracioId || !declaracioActual) {
     return (
       <LlistaDeclaracions
         onObrirDeclaracio={handleObrirDeclaracio}
