@@ -10,13 +10,22 @@ export const AuthProvider = ({ children }) => {
   const [carregant, setCarregant] = useState(true);
 
   const carregarPerfil = async (userId) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    if (!error && data) setPerfil(data);
-    else setPerfil(null);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (!error && data) {
+        setPerfil(data);
+      } else {
+        console.warn('Perfil no trobat o error RLS:', error?.message);
+        setPerfil(null);
+      }
+    } catch (e) {
+      console.warn('Error carregant perfil:', e);
+      setPerfil(null);
+    }
   };
 
   useEffect(() => {
