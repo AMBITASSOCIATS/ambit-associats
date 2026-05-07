@@ -236,7 +236,7 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel 
             )}
             {onLogout && (
               <button
-                onClick={onLogout}
+                onClick={() => { console.log('[AMBIT] botó Tancar sessió clicked'); onLogout(); }}
                 className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition"
               >
                 Tancar sessió

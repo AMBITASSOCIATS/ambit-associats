@@ -88,17 +88,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
+    console.log('[AMBIT] logout() called');
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) {
-        alert('Error logout: ' + error.message);
-      } else {
-        alert('Logout OK - ara hauria de redirigir');
-      }
+      console.log('[AMBIT] signOut result:', { error });
       setUser(null);
       setPerfil(null);
+      console.log('[AMBIT] setUser/setPerfil done');
     } catch(e) {
-      alert('Error catch: ' + e.message);
+      console.error('[AMBIT] logout error:', e);
     }
   };
 
