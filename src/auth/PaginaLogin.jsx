@@ -42,7 +42,7 @@ const PaginaLogin = ({ onLoginOk }) => {
       setMode('login');
       setEmail(''); setContrasenya(''); setNom('');
     } catch (err) {
-      setError('Error en el registre. Torna-ho a intentar.');
+      setError('Error: ' + (err.message || 'Torna-ho a intentar.'));
     } finally {
       setCarregant(false);
     }
