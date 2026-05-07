@@ -62,7 +62,7 @@ const ModalNovaDeclaracio = ({ onConfirmar, onCancelar }) => {
               type="text"
               value={clientNom}
               onChange={e => setClientNom(e.target.value)}
-              placeholder="Ex: Juan Vicente Iniesta Izquierdo"
+              placeholder="Ex: Nom i cognoms del client"
               autoFocus
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
                          focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
@@ -76,7 +76,7 @@ const ModalNovaDeclaracio = ({ onConfirmar, onCancelar }) => {
               type="text"
               value={clientNRT}
               onChange={e => setClientNRT(e.target.value)}
-              placeholder="Ex: F-123456-X"
+              placeholder="Ex: F-XXXXXX-X"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
                          focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
             />
@@ -236,6 +236,20 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack }) => {
       </header>
 
       <div className="container mx-auto max-w-6xl px-4 py-8">
+
+        {/* Disclaimer protecció de dades */}
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 text-xs text-blue-700">
+          <p className="font-semibold mb-1">⚠️ Avís de protecció de dades personals</p>
+          <p>
+            Les dades introduïdes en aquesta eina es guarden únicament al navegador d'aquest dispositiu
+            (localStorage) i no es transmeten a cap servidor extern. El tractament de dades personals
+            de tercers (clients, obligats tributaris) és responsabilitat exclusiva de l'usuari de l'eina,
+            que ha d'assegurar-se de complir la normativa aplicable en matèria de protecció de dades
+            (Llei 29/2021, del 28 d'octubre, qualificada de protecció de dades personals del Principat
+            d'Andorra). ÀMBIT Associats no és responsable del tractament de dades realitzat a través
+            d'aquesta eina.
+          </p>
+        </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
