@@ -128,42 +128,69 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici }) =>
   const r = resultat;
 
   const handlePrint = () => {
-    const win = window.open('', '_blank');
-    if (!win) return;
-
     const node = document.getElementById('informe-professional');
     if (!node) return;
 
-    // Mostrar temporalment per forçar render
+    // Mostrar temporalment per forçar render del navegador
     node.style.display = 'block';
     node.style.position = 'absolute';
     node.style.left = '-9999px';
+    node.style.top = '0';
     node.style.width = '210mm';
+    node.style.backgroundColor = 'white';
 
-    const htmlContent = node.innerHTML;
+    // Esperar 2 frames perquè el navegador calculi el layout
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const htmlContent = node.innerHTML;
 
-    // Tornar a amagar
-    node.style.display = 'none';
-    node.style.position = '';
-    node.style.left = '';
-    node.style.width = '';
+        // Tornar a amagar
+        node.style.display = 'none';
+        node.style.position = '';
+        node.style.left = '';
+        node.style.top = '';
+        node.style.width = '';
 
-    win.document.write(`<!DOCTYPE html><html lang="ca"><head>
-    <meta charset="UTF-8"/>
-    <title>Informe IRPF ${exercici} — ${clientNom || 'Client'}</title>
-    <style>
-      * { box-sizing: border-box; }
-      body { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #333; line-height: 1.5; background: white; }
-      .page-break { page-break-before: always; break-before: page; }
-      .avoid-break { page-break-inside: avoid; break-inside: avoid; }
-      .page-content { padding: 0 30px 30px 30px; }
-      @page { margin: 0; size: A4; }
-      @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
-    </style>
-  </head><body>${htmlContent}
-    <script>window.onload=function(){setTimeout(function(){window.print();},500);};</script>
-  </body></html>`);
-    win.document.close();
+        const win = window.open('', '_blank');
+        if (!win) {
+          alert('El navegador ha blocat la finestra emergent. Permet les finestres emergents per a aquest lloc.');
+          return;
+        }
+
+        win.document.write(`<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Informe IRPF ${exercici} — ${clientNom || 'Client'}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10px;
+      color: #333;
+      line-height: 1.5;
+      background: white;
+    }
+    .page-break { page-break-before: always; break-before: page; }
+    .avoid-break { page-break-inside: avoid; break-inside: avoid; }
+    .page-content { padding: 0 30px 30px 30px; }
+    @page { margin: 0; size: A4 portrait; }
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>${htmlContent}<script>
+  window.onload = function() {
+    setTimeout(function() { window.print(); }, 800);
+  };
+</script>
+</body>
+</html>`);
+        win.document.close();
+      });
+    });
   };
 
   // ── Calcular totals per a la portada ──────────────────────────────────────
