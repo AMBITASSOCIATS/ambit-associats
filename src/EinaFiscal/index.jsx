@@ -2,7 +2,7 @@
 // Eina Fiscal IRPF Andorra — Fase 1
 // Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023 · Guia IRPF 2025
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { calcularIRPFDetallat } from './engine/analysisEngine';
 import WizardNav from './components/WizardNav';
 import SummaryPanel from './components/SummaryPanel';
@@ -70,15 +70,20 @@ const DEFAULT_DADES = {
   deduccionsAnteriors: [],
 };
 
-const EinaFiscal = ({ onBack }) => {
+const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesChange, onSortir, ultimDesat }) => {
   const [pas, setPas] = useState(1);
-  const [dades, setDades] = useState(DEFAULT_DADES);
-  const [clientNom, setClientNom] = useState('');
-  const [exercici, setExercici] = useState(2025);
+  const [dades, setDades] = useState(declaracioInicial?.dades || DEFAULT_DADES);
+  const [clientNom, setClientNom] = useState(declaracioInicial?.clientNom || '');
+  const [clientNRT, setClientNRT] = useState(declaracioInicial?.clientNRT || '');
+  const [exercici, setExercici] = useState(declaracioInicial?.exercici || 2025);
 
   const updateDades = useCallback((clau, valor) => {
     setDades(prev => ({ ...prev, [clau]: valor }));
   }, []);
+
+  useEffect(() => {
+    if (onDadesChange) onDadesChange(dades, clientNom, clientNRT, exercici);
+  }, [dades, clientNom, clientNRT, exercici]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Calcul en temps real
   const resultat = useMemo(() => {
@@ -93,10 +98,18 @@ const EinaFiscal = ({ onBack }) => {
         <div className="container mx-auto max-w-7xl flex items-center justify-between">
           <div>
             <button
-              onClick={onBack}
+              onClick={() => {
+                if (onSortir) {
+                  if (window.confirm('La declaració s\'ha desat. Vols sortir?')) {
+                    onSortir();
+                  }
+                } else if (onBack) {
+                  onBack();
+                }
+              }}
               className="text-white/70 hover:text-white text-sm mb-1 flex items-center gap-1 transition"
             >
-              Tornar a la web
+              ← Tornar a la web
             </button>
             <h1 className="text-xl font-bold">Eina Fiscal IRPF Andorra {exercici}</h1>
             <p className="text-white/80 text-xs">
@@ -111,6 +124,13 @@ const EinaFiscal = ({ onBack }) => {
               onChange={e => setClientNom(e.target.value)}
               className="bg-white/20 text-white placeholder-white/60 border border-white/30 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 w-48"
             />
+            <input
+              type="text"
+              placeholder="NRT client"
+              value={clientNRT}
+              onChange={e => setClientNRT(e.target.value)}
+              className="bg-white/20 text-white placeholder-white/60 border border-white/30 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 w-32"
+            />
             <select
               value={exercici}
               onChange={e => setExercici(Number(e.target.value))}
@@ -120,6 +140,19 @@ const EinaFiscal = ({ onBack }) => {
               <option value={2024}>2024</option>
               <option value={2023}>2023</option>
             </select>
+            {onDesar && (
+              <button
+                onClick={() => onDesar(dades, clientNom, clientNRT, exercici)}
+                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-lg px-3 py-2 text-sm transition flex items-center gap-1"
+              >
+                💾 Desar
+              </button>
+            )}
+            {ultimDesat && (
+              <span className="text-white/60 text-xs">
+                Desat: {ultimDesat.toLocaleTimeString('ca-AD', { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
           </div>
         </div>
       </header>

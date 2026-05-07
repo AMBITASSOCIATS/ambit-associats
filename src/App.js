@@ -5,7 +5,7 @@ import derechaImg from './derecha.png';
 import legalBottomLeftImg from './legal-bottom-left.png';
 import legalBottomRightImg from './legal-bottom-right.png';
 import IrpfCalculadora from './irpf/IrpfCalculadora';
-import EinaFiscal from './EinaFiscal/index';
+import EinaFiscalRouter from './EinaFiscal/EinaFiscalRouter';
 
 
 // Logo – més gran i centrat
@@ -925,7 +925,7 @@ const App = () => {
   }
 
   if (showEinaFiscal) {
-    return <EinaFiscal onBack={() => { setShowEinaFiscal(false); }} />;
+    return <EinaFiscalRouter onBack={() => { setShowEinaFiscal(false); }} />;
   }
 
   return (
