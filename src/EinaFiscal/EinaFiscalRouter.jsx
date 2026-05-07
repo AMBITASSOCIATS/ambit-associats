@@ -95,6 +95,8 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
       <LlistaDeclaracions
         onObrirDeclaracio={handleObrirDeclaracio}
         onBack={handleBackFromLlista}
+        onLogout={onLogout}
+        onAdminPanel={onAdminPanel}
       />
     );
   }

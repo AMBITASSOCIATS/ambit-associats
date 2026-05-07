@@ -159,7 +159,7 @@ const ModalEliminar = ({ declaracio, onConfirmar, onCancelar }) => (
 // COMPONENT PRINCIPAL
 // ─────────────────────────────────────────────────────────────────────────────
 
-const LlistaDeclaracions = ({ onObrirDeclaracio, onBack }) => {
+const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel }) => {
   const [declaracions, setDeclaracions] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [confirmarEliminar, setConfirmarEliminar] = useState(null);
@@ -225,13 +225,31 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack }) => {
               Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023
             </p>
           </div>
-          <button
-            onClick={() => setMostrarModal(true)}
-            className="bg-white text-[#009B9C] font-bold px-5 py-2.5 rounded-xl
-                       hover:bg-gray-50 transition shadow text-sm"
-          >
-            + Nova declaració
-          </button>
+          <div className="flex items-center gap-2">
+            {onAdminPanel && (
+              <button
+                onClick={onAdminPanel}
+                className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition"
+              >
+                ⚙️ Administració
+              </button>
+            )}
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition"
+              >
+                Tancar sessió
+              </button>
+            )}
+            <button
+              onClick={() => setMostrarModal(true)}
+              className="bg-white text-[#009B9C] font-bold px-5 py-2.5 rounded-xl
+                         hover:bg-gray-50 transition shadow text-sm"
+            >
+              + Nova declaració
+            </button>
+          </div>
         </div>
       </header>
 
