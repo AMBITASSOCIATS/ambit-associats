@@ -32,6 +32,11 @@ const PaginaLogin = ({ onLoginOk }) => {
     e.preventDefault();
     setError('');
     setCarregant(true);
+    if (!nom?.trim() || !email?.trim()) {
+      setError('Omple tots els camps obligatoris.');
+      setCarregant(false);
+      return;
+    }
     try {
       const { error } = await supabase
         .from('solicituds')
@@ -43,7 +48,7 @@ const PaginaLogin = ({ onLoginOk }) => {
       setMode('login');
       setEmail(''); setContrasenya(''); setNom('');
     } catch (err) {
-      setError('Error: ' + (err.message || 'Torna-ho a intentar.'));
+      setError('Error: ' + (err?.message || err?.details || JSON.stringify(err) || 'Torna-ho a intentar.'));
     } finally {
       setCarregant(false);
     }
