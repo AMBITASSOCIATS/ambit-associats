@@ -992,7 +992,7 @@ const App = () => {
     return (
       <EinaFiscalRouter
         onBack={() => { setShowEinaFiscal(false); }}
-        onLogout={logout}
+        onLogout={async () => { await logout(); setShowEinaFiscal(false); }}
         onAdminPanel={esMaestro ? () => setMostrarPanellMaestro(true) : null}
       />
     );
