@@ -903,7 +903,7 @@ const App = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [servicesDropdown, setServicesDropdown] = useState(false);
   const [mostrarPanellMaestro, setMostrarPanellMaestro] = useState(false);
-  const { user, carregant, logout, esMaestro, esActiu } = useAuth();
+  const { user, perfil, carregant, logout, esMaestro, esActiu } = useAuth();
 
   // ── Historial navegador: registrar vista activa ──────────────────────────
   useEffect(() => {
@@ -988,7 +988,7 @@ const App = () => {
 
   if (showEinaFiscal) {
     if (!user) return <PaginaLogin onLoginOk={() => {}} />;
-    if (!esActiu) return <PaginaAccesDenegat />;
+    if (!carregant && perfil && !esActiu) return <PaginaAccesDenegat />;
     if (mostrarPanellMaestro && esMaestro) return <PanellMaestro onTancar={() => setMostrarPanellMaestro(false)} />;
     return (
       <EinaFiscalRouter

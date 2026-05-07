@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const esMaestro = perfil?.rol === 'maestro';
-  const esActiu = perfil?.estat === 'actiu';
+  const esActiu = carregant || perfil?.estat === 'actiu';
 
   return (
     <AuthContext.Provider value={{
