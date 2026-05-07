@@ -36,7 +36,7 @@ const PRINT_CSS = `
   @media print {
     body * { visibility: hidden !important; }
     #informe-professional, #informe-professional * { visibility: visible !important; }
-    #informe-professional { position: fixed; top: 0; left: 0; width: 100%; z-index: 99999; }
+    #informe-professional { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; z-index: 99999 !important; }
     .no-print { display: none !important; }
     .page-break { page-break-before: always; break-before: page; }
     .avoid-break { page-break-inside: avoid; break-inside: avoid; }
