@@ -75,16 +75,28 @@ const PanellMaestro = ({ onTancar }) => {
         });
       }
 
-      // Enviar email amb credencials a l'usuari
-      await fetch('https://formspree.io/f/mdkdrkze', {
+      // Enviar email amb credencials a l'usuari via Resend
+      await fetch('https://api.resend.com/emails', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + process.env.REACT_APP_RESEND_API_KEY,
+        },
         body: JSON.stringify({
-          name: 'ÀMBIT Associats - Sistema',
-          email: modalCrear.email,
-          message: `Hola ${modalCrear.nom || ''},\n\nEl teu accés a l'Eina Fiscal IRPF d'ÀMBIT Associats ha estat aprovat.\n\nPots iniciar sessió a:\nhttps://www.ambit.ad\n\nCredencials:\n- Email: ${modalCrear.email}\n- Contrasenya temporal: ${contrasenyaCrear}\n\nCanvia la contrasenya quan iniciïs sessió per primera vegada.\n\nSi tens qualsevol dubte, contacta'ns a info@ambit.ad o al +376 655 382.\n\nÀMBIT Associats`,
+          from: 'ÀMBIT Associats <info@ambit.ad>',
+          to: [modalCrear.email],
+          subject: 'Accés aprovat — Eina Fiscal IRPF Andorra',
+          html: `<p>Hola ${modalCrear.nom || ''},</p>
+<p>El teu accés a l'<strong>Eina Fiscal IRPF d'ÀMBIT Associats</strong> ha estat aprovat.</p>
+<p><strong>Credencials d'accés:</strong><br>
+Email: ${modalCrear.email}<br>
+Contrasenya temporal: ${contrasenyaCrear}</p>
+<p><a href="https://www.ambit.ad">Accedeix ara a www.ambit.ad</a></p>
+<p>Per seguretat, canvia la contrasenya quan iniciïs sessió per primera vegada.</p>
+<p>Si tens qualsevol dubte, contacta'ns a info@ambit.ad o al +376 655 382.</p>
+<p>ÀMBIT Associats</p>`,
         }),
-      }).catch(() => {});
+      }).catch(e => console.warn('Error enviant email:', e));
 
       // Eliminar de solicituds
       await supabase.from('solicituds').delete().eq('id', modalCrear.id);
