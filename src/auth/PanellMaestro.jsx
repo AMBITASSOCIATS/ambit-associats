@@ -80,7 +80,7 @@ const PanellMaestro = ({ onTancar }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer re_WpYuEE1e_L8ipYULFTz9NjyKbNCdhBJV2',
+          'Authorization': 'Bearer ' + process.env.REACT_APP_RESEND_API_KEY,
         },
         body: JSON.stringify({
           from: 'ÀMBIT Associats <onboarding@resend.dev>',
