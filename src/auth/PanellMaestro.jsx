@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from './AuthContext';
+import emailjs from '@emailjs/browser';
 
 const ROLS = ['individual', 'empleat', 'empresa', 'maestro'];
 
@@ -75,20 +76,17 @@ const PanellMaestro = ({ onTancar }) => {
         });
       }
 
-      // Enviar email amb credencials a l'usuari via Resend
-      await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + process.env.REACT_APP_RESEND_API_KEY,
+      // Enviar email amb credencials a l'usuari via EmailJS
+      await emailjs.send(
+        'service_2jvc0w9',
+        'template_5ro2sjh',
+        {
+          nom: modalCrear.nom || '',
+          email_usuari: modalCrear.email,
+          contrasenya: contrasenyaCrear,
         },
-        body: JSON.stringify({
-          from: 'ÀMBIT Associats <onboarding@resend.dev>',
-          to: [modalCrear.email],
-          subject: 'Accés aprovat — Eina Fiscal IRPF Andorra',
-          html: `<p>Hola ${modalCrear.nom || ''},</p><p>El teu accés a l'<strong>Eina Fiscal IRPF d'ÀMBIT Associats</strong> ha estat aprovat.</p><p><strong>Email:</strong> ${modalCrear.email}<br><strong>Contrasenya temporal:</strong> ${contrasenyaCrear}</p><p><a href="https://www.ambit.ad">Accedeix ara</a></p><p>ÀMBIT Associats · info@ambit.ad · +376 655 382</p>`,
-        }),
-      }).catch(e => console.warn('Resend error:', e));
+        'KzIVD4mtDxpovIs4G'
+      ).catch(e => console.warn('EmailJS error:', e));
 
       // Eliminar de solicituds
       await supabase.from('solicituds').delete().eq('id', modalCrear.id);
