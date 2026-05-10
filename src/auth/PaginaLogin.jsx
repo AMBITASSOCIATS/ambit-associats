@@ -15,6 +15,10 @@ const PaginaLogin = ({ onLoginOk }) => {
   const [missatge, setMissatge] = useState('');
   const [carregant, setCarregant] = useState(false);
   const [consentiment, setConsentiment] = useState(false);
+  const [eines, setEines] = useState([]);
+  const toggleEina = (eina) => setEines(prev =>
+    prev.includes(eina) ? prev.filter(e => e !== eina) : [...prev, eina]
+  );
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -39,27 +43,30 @@ const PaginaLogin = ({ onLoginOk }) => {
       setCarregant(false);
       return;
     }
+    if (eines.length === 0) {
+      setError('Selecciona almenys una eina per sol·licitar accés.');
+      setCarregant(false);
+      return;
+    }
     try {
       const { error } = await supabase
         .from('solicituds')
-        .insert({ nom, email, estat: 'pendent', creat_el: new Date().toISOString() });
+        .insert({ nom, email, eines, estat: 'pendent', creat_el: new Date().toISOString() });
 
       if (error) throw error;
 
       // Notificar al Maestro
-      await emailjs.send(
-        'service_2jvc0w9',
-        'template_r8irlfj',
-        {
-          nom_usuari: nom,
-          email_usuari: email,
-        },
-        'KzIVD4mtDxpovIs4G'
-      ).catch(e => console.warn('EmailJS error notificació Maestro:', e));
+      await emailjs.send('service_2jvc0w9', 'template_r8irlfj', {
+        nom_usuari: nom,
+        email_usuari: email,
+        eines: eines.includes('irpf') && eines.includes('bretxa')
+          ? 'Eina Fiscal IRPF + Bretxa de Gènere'
+          : eines.includes('irpf') ? 'Eina Fiscal IRPF' : 'Bretxa de Gènere',
+      }, 'KzIVD4mtDxpovIs4G').catch(() => {});
 
       setMissatge('Sol·licitud enviada correctament. ÀMBIT Associats revisarà el teu accés i et contactarà per email amb les teves credencials (revisa Spam).');
       setMode('login');
-      setEmail(''); setContrasenya(''); setNom('');
+      setEmail(''); setContrasenya(''); setNom(''); setEines([]);
     } catch (err) {
       setError('Error: ' + (err?.message || err?.details || JSON.stringify(err) || 'Torna-ho a intentar.'));
     } finally {
@@ -192,6 +199,30 @@ const PaginaLogin = ({ onLoginOk }) => {
                              focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40 focus:border-[#009B9C]"
                 />
               </div>
+              <div className="space-y-2">
+                <label className="block text-xs font-semibold text-gray-600 mb-1">
+                  Eines sol·licitades <span className="text-red-500">*</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-gray-50 transition">
+                  <input
+                    type="checkbox"
+                    checked={eines.includes('irpf')}
+                    onChange={() => toggleEina('irpf')}
+                    className="accent-[#009B9C] w-4 h-4"
+                  />
+                  <span className="text-sm text-gray-700">Eina Fiscal IRPF Andorra</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-gray-50 transition">
+                  <input
+                    type="checkbox"
+                    checked={eines.includes('bretxa')}
+                    onChange={() => toggleEina('bretxa')}
+                    className="accent-[#009B9C] w-4 h-4"
+                  />
+                  <span className="text-sm text-gray-700">Eina Bretxa de Gènere</span>
+                </label>
+              </div>
+
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-600">
                 <label className="flex items-start gap-2 cursor-pointer">
                   <input

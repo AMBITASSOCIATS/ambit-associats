@@ -30,6 +30,7 @@ const PanellMaestro = ({ onTancar }) => {
   const [contrasenyaCrear, setContrasenyaCrear] = useState('');
   const [errorCrear, setErrorCrear] = useState('');
   const [carregantCrear, setCarregantCrear] = useState(false);
+  const [einesAprovant, setEinesAprovant] = useState([]);
 
   const carregarUsuaris = async () => {
     setCarregant(true);
@@ -52,44 +53,42 @@ const PanellMaestro = ({ onTancar }) => {
 
   useEffect(() => { carregarUsuaris(); carregarSolicituds(); }, []);
 
-  const handleCrearCompte = async (e) => {
-    e.preventDefault();
+  const aprovarSolicitud = async (sol, einesAprovades) => {
     setErrorCrear('');
     setCarregantCrear(true);
     try {
       // Crear compte auth
-      const { data, error } = await supabase.auth.signUp({
-        email: modalCrear.email,
+      const { data: authData, error } = await supabase.auth.signUp({
+        email: sol.email,
         password: contrasenyaCrear,
-        options: { data: { nom: modalCrear.nom } },
+        options: { data: { nom: sol.nom } },
       });
       if (error) throw error;
 
-      // Crear perfil ja actiu
-      if (data.user) {
+      // Crear perfil ja actiu amb eines aprovades
+      if (authData.user) {
         await supabase.from('profiles').insert({
-          id: data.user.id,
-          email: modalCrear.email,
-          nom: modalCrear.nom,
+          id: authData.user.id,
+          email: sol.email,
+          nom: sol.nom,
           rol: 'individual',
           estat: 'actiu',
+          eines: einesAprovades,
         });
       }
 
       // Enviar email amb credencials a l'usuari via EmailJS
-      await emailjs.send(
-        'service_2jvc0w9',
-        'template_5ro2sjh',
-        {
-          nom: modalCrear.nom || '',
-          email_usuari: modalCrear.email,
-          contrasenya: contrasenyaCrear,
-        },
-        'KzIVD4mtDxpovIs4G'
-      ).catch(e => console.warn('EmailJS error:', e));
+      await emailjs.send('service_2jvc0w9', 'template_5ro2sjh', {
+        nom: sol.nom || '',
+        email_usuari: sol.email,
+        contrasenya: contrasenyaCrear,
+        eines: einesAprovades.includes('irpf') && einesAprovades.includes('bretxa')
+          ? 'Eina Fiscal IRPF + Bretxa de Gènere'
+          : einesAprovades.includes('irpf') ? 'Eina Fiscal IRPF' : 'Bretxa de Gènere',
+      }, 'KzIVD4mtDxpovIs4G').catch(() => {});
 
       // Eliminar de solicituds
-      await supabase.from('solicituds').delete().eq('id', modalCrear.id);
+      await supabase.from('solicituds').delete().eq('id', sol.id);
 
       setModalCrear(null);
       setContrasenyaCrear('');
@@ -102,12 +101,7 @@ const PanellMaestro = ({ onTancar }) => {
     }
   };
 
-  const handleRebutjarSolicitud = async (id) => {
-    await supabase.from('solicituds').delete().eq('id', id);
-    carregarSolicituds();
-  };
-
-  const actualitzar = async (id, canvis) => {
+const actualitzar = async (id, canvis) => {
     await supabase.from('profiles').update(canvis).eq('id', id);
 
     // Si s'aprova l'usuari, enviar email de notificació
@@ -220,19 +214,43 @@ const PanellMaestro = ({ onTancar }) => {
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm text-gray-800">{s.nom}</p>
                     <p className="text-xs text-gray-500">{s.email}</p>
+                    <p className="text-xs text-teal-600 font-medium mt-0.5">
+                      Sol·licita: {(s.eines || []).map(e => e === 'irpf' ? 'IRPF' : 'Bretxa').join(' + ') || '—'}
+                    </p>
                     <p className="text-xs text-gray-400 mt-0.5">
                       Sol·licitat: {new Date(s.creat_el).toLocaleDateString('ca-AD')}
                     </p>
                   </div>
-                  <div className="flex gap-2 flex-shrink-0">
+                  <div className="flex flex-col gap-1.5 flex-shrink-0">
+                    {(s.eines || []).includes('irpf') && (
+                      <button
+                        onClick={() => { setModalCrear(s); setContrasenyaCrear(''); setErrorCrear(''); setEinesAprovant(['irpf']); }}
+                        className="px-3 py-1.5 bg-teal-500 hover:bg-teal-600 text-white text-xs font-semibold rounded-lg transition"
+                      >
+                        ✓ Aprovar IRPF
+                      </button>
+                    )}
+                    {(s.eines || []).includes('bretxa') && (
+                      <button
+                        onClick={() => { setModalCrear(s); setContrasenyaCrear(''); setErrorCrear(''); setEinesAprovant(['bretxa']); }}
+                        className="px-3 py-1.5 bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold rounded-lg transition"
+                      >
+                        ✓ Aprovar Bretxa
+                      </button>
+                    )}
+                    {(s.eines || []).length > 1 && (
+                      <button
+                        onClick={() => { setModalCrear(s); setContrasenyaCrear(''); setErrorCrear(''); setEinesAprovant(s.eines); }}
+                        className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold rounded-lg transition"
+                      >
+                        ✓ Aprovar totes
+                      </button>
+                    )}
                     <button
-                      onClick={() => { setModalCrear(s); setContrasenyaCrear(''); setErrorCrear(''); }}
-                      className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold rounded-lg transition"
-                    >
-                      ✓ Crear compte
-                    </button>
-                    <button
-                      onClick={() => handleRebutjarSolicitud(s.id)}
+                      onClick={async () => {
+                        await supabase.from('solicituds').update({ estat: 'rebutjat' }).eq('id', s.id);
+                        carregarSolicituds();
+                      }}
                       className="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-semibold rounded-lg transition"
                     >
                       ✗ Rebutjar
@@ -251,7 +269,7 @@ const PanellMaestro = ({ onTancar }) => {
               <h3 className="text-lg font-bold text-gray-800 mb-4">
                 Crear compte per a {modalCrear.nom}
               </h3>
-              <form onSubmit={handleCrearCompte} className="space-y-4">
+              <form onSubmit={(e) => { e.preventDefault(); aprovarSolicitud(modalCrear, einesAprovant); }} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Email</label>
                   <p className="text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
@@ -289,7 +307,7 @@ const PanellMaestro = ({ onTancar }) => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => { setModalCrear(null); setContrasenyaCrear(''); setErrorCrear(''); }}
+                    onClick={() => { setModalCrear(null); setContrasenyaCrear(''); setErrorCrear(''); setEinesAprovant([]); }}
                     className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700
                                font-semibold rounded-xl transition text-sm"
                   >
@@ -347,6 +365,9 @@ const PanellMaestro = ({ onTancar }) => {
                     </span>
                   </div>
                   <p className="text-xs text-gray-400">{u.email}</p>
+                  <span className="text-xs text-gray-400">
+                    {(u.eines || []).map(e => e === 'irpf' ? 'IRPF' : 'Bretxa').join(' + ') || 'Sense eines'}
+                  </span>
                   <p className="text-xs text-gray-300 mt-0.5">
                     Registrat: {new Date(u.creat_el).toLocaleDateString('ca-AD')}
                     {u.id === user?.id && <span className="ml-2 text-[#009B9C] font-semibold">(Tu)</span>}
