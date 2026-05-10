@@ -17,9 +17,12 @@ export const AuthProvider = ({ children }) => {
         .eq('id', userId)
         .single();
       if (!error && data) {
+        console.log('Perfil carregat:', data.email, 'rol:', data.rol);
         setPerfil(data);
       } else {
-        console.warn('Perfil no trobat o error RLS:', error?.message);
+        console.warn('Perfil no trobat:', error?.message);
+        await supabase.auth.signOut();
+        setUser(null);
         setPerfil(null);
       }
     } catch (e) {
