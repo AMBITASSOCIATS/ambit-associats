@@ -49,14 +49,13 @@ const PaginaLogin = ({ onLoginOk }) => {
       // Notificar al Maestro
       await emailjs.send(
         'service_2jvc0w9',
-        'template_5ro2sjh',
+        'template_r8irlfj',
         {
-          nom: 'Nova sol·licitud d\'accés — ÀMBIT Associats',
-          email_usuari: 'info@ambit.ad',
-          contrasenya: `Has rebut una nova sol·licitud d'accés a l'Eina Fiscal IRPF:\n\nNom: ${nom}\nEmail: ${email}\n\nPer aprovar o rebutjar la sol·licitud, accedeix amb el teu usuari Maestro a:\nhttps://www.ambit.ad`,
+          nom_usuari: nom,
+          email_usuari: email,
         },
         'KzIVD4mtDxpovIs4G'
-      ).catch(e => console.warn('EmailJS error:', e));
+      ).catch(e => console.warn('EmailJS error notificació Maestro:', e));
 
       setMissatge('Sol·licitud enviada correctament. ÀMBIT Associats revisarà el teu accés i et contactarà per email amb les teves credencials (revisa Spam).');
       setMode('login');
