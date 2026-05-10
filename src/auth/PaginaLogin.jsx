@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { supabase } from '../supabaseClient';
+import emailjs from '@emailjs/browser';
 
 const PaginaLogin = ({ onLoginOk }) => {
   const { login } = useAuth();
@@ -44,6 +45,18 @@ const PaginaLogin = ({ onLoginOk }) => {
         .insert({ nom, email, estat: 'pendent', creat_el: new Date().toISOString() });
 
       if (error) throw error;
+
+      // Notificar al Maestro
+      await emailjs.send(
+        'service_2jvc0w9',
+        'template_5ro2sjh',
+        {
+          nom: 'ÀMBIT Associats — Nova sol·licitud',
+          email_usuari: 'info@ambit.ad',
+          contrasenya: `Nova sol·licitud d'accés rebuda:\n\nNom: ${nom}\nEmail: ${email}\n\nAccedeix al panel d'administració per aprovar-la:\nhttps://www.ambit.ad`,
+        },
+        'KzIVD4mtDxpovIs4G'
+      ).catch(e => console.warn('EmailJS error notificació:', e));
 
       setMissatge('Sol·licitud enviada correctament. ÀMBIT Associats revisarà el teu accés i et contactarà per email amb les teves credencials (revisa Spam).');
       setMode('login');

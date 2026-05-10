@@ -282,6 +282,11 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel,
             </p>
           </div>
           <div className="flex items-center gap-2">
+            {user?.email && (
+              <span className="text-white/70 text-xs hidden md:inline">
+                {user.email}
+              </span>
+            )}
             {onAdminPanel && (
               <button
                 onClick={onAdminPanel}
