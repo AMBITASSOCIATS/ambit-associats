@@ -30,27 +30,21 @@ function mapRow(row) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Retorna les declaracions d'un usuari, ordenades per data de modificació (més recent primer)
+ * Retorna declaracions ordenades per data de modificació (més recent primer).
+ * Si isMaestro és true, retorna TOTES les declaracions de tots els usuaris.
+ * Si isMaestro és false, filtra per user_id.
  */
-export async function llistarDeclaracions(userId) {
-  const { data, error } = await supabase
+export async function llistarDeclaracions(userId, isMaestro = false) {
+  console.log('llistarDeclaracions called:', { userId, isMaestro });
+  let query = supabase
     .from('declaracions')
     .select('*')
-    .eq('user_id', userId)
     .order('modificat_el', { ascending: false });
+  if (!isMaestro) {
+    query = query.eq('user_id', userId);
+  }
+  const { data, error } = await query;
   if (error) { console.error('llistarDeclaracions:', JSON.stringify(error)); return []; }
-  return (data || []).map(mapRow);
-}
-
-/**
- * Retorna TOTES les declaracions (per al maestro), ordenades per data de modificació
- */
-export async function llistarTotesDeclaracions() {
-  const { data, error } = await supabase
-    .from('declaracions')
-    .select('*')
-    .order('modificat_el', { ascending: false });
-  if (error) { console.error('llistarTotesDeclaracions:', JSON.stringify(error)); return []; }
   return (data || []).map(mapRow);
 }
 

@@ -6,7 +6,6 @@ import LlistaDeclaracions from './LlistaDeclaracions';
 import EinaFiscal from './index';
 import {
   llistarDeclaracions,
-  llistarTotesDeclaracions,
   obtenirDeclaracio,
   desarDeclaracio,
 } from './engine/DeclaracionsSupabase';
@@ -76,9 +75,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   const carregarDeclaracions = useCallback(async () => {
     if (!user) return;
     setCarregantDeclaracions(true);
-    const data = esMaestro
-      ? await llistarTotesDeclaracions()
-      : await llistarDeclaracions(user.id);
+    const data = await llistarDeclaracions(user.id, esMaestro);
     setDeclaracions(data);
     setCarregantDeclaracions(false);
   }, [user, esMaestro]);
