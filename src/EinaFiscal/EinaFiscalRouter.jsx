@@ -41,19 +41,15 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
       return;
     }
     setCarregantContrasenya(true);
-    try {
-      const { error } = await supabase.auth.updateUser({ password: novaContrasenya });
-      if (error) {
-        setErrorContrasenya('Error: ' + error.message);
-        return;
-      }
-      alert('Contrasenya canviada correctament!');
-      setVistaActual('zona');
-      setNovaContrasenya('');
-      setConfirmarContrasenya('');
-    } finally {
+    const { error } = await supabase.auth.updateUser({ password: novaContrasenya });
+    if (error) {
+      setErrorContrasenya('Error: ' + error.message);
       setCarregantContrasenya(false);
+      return;
     }
+    // Contrasenya canviada: tancar sessió perquè l'usuari torni a fer login
+    await supabase.auth.signOut();
+    if (typeof onLogout === 'function') onLogout();
   };
 
   const autoDesatRef = useRef(null);
