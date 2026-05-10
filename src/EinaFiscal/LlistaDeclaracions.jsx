@@ -274,7 +274,7 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel,
               onClick={onBack}
               className="text-white/70 hover:text-white text-sm mb-1 block transition"
             >
-              ← Tornar a la web
+              ← Zona Professionals
             </button>
             <h1 className="text-xl font-bold">Eina Fiscal IRPF Andorra</h1>
             <p className="text-white/70 text-xs">

@@ -899,7 +899,7 @@ const App = () => {
   });
   const [menuOpen, setMenuOpen] = useState(false);
   const [servicesDropdown, setServicesDropdown] = useState(false);
-  const { logout } = useAuth();
+  const { user, perfil, logout } = useAuth();
 
   // ── Historial navegador: registrar vista activa ──────────────────────────
   useEffect(() => {
@@ -1272,11 +1272,19 @@ const App = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
                 {/* Eina Bretxa — activa */}
-                <a
-                  href="https://bretxa-genere.onrender.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-gray-800 rounded-2xl p-7 border border-gray-700 hover:border-[#009B9C] hover:bg-gray-750 transition-all duration-300 group flex flex-col"
+                <button
+                  onClick={() => {
+                    if (!user || !perfil) {
+                      setShowEinaFiscal(true);
+                      return;
+                    }
+                    if (perfil.rol !== 'maestro' && !(perfil.eines || []).includes('bretxa')) {
+                      setShowEinaFiscal(true);
+                      return;
+                    }
+                    window.open('https://bretxa-genere.onrender.com', '_blank');
+                  }}
+                  className="bg-gray-800 rounded-2xl p-7 border border-gray-700 hover:border-[#009B9C] hover:bg-gray-750 transition-all duration-300 group flex flex-col text-left w-full"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="w-12 h-12 bg-[#009B9C] rounded-xl flex items-center justify-center flex-shrink-0">
@@ -1286,7 +1294,7 @@ const App = () => {
                     </div>
                     <span className="bg-green-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">{t.professionals.available}</span>
                   </div>
-                  <h3 className="text-lg font-bold mb-2 group-hover:text-[#009B9C] transition-colors">{t.professionals.bretxaTitle}</h3>
+                  <h3 className="text-lg font-bold mb-2 group-hover:text-[#009B9C] transition-colors text-white">{t.professionals.bretxaTitle}</h3>
                   <p className="text-gray-400 text-sm flex-1 mb-5">{t.professionals.bretxaDesc}</p>
                   <span className="inline-flex items-center gap-2 text-[#009B9C] font-semibold text-sm">
                     {t.professionals.bretxaCta}
@@ -1294,7 +1302,7 @@ const App = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </span>
-                </a>
+                </button>
 
                 {/* Eina Fiscal IRPF — activa */}
                 <button

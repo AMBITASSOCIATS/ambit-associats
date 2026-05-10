@@ -19,6 +19,7 @@ const AUTODESAT_MS = 30000; // autodesat cada 30 segons
 const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   const { user, perfil, carregant, esMaestro } = useAuth();
   const [mostrarPanellMaestro, setMostrarPanellMaestro] = useState(false);
+  const [vistaActual, setVistaActual] = useState('zona'); // 'zona' | 'irpf'
   const [declaracioId, setDeclaracioId] = useState(null);
   const [declaracioActual, setDeclaracioActual] = useState(null);
   const [ultimDesat, setUltimDesat] = useState(null);
@@ -106,11 +107,6 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     clearInterval(autoDesatRef.current);
   }, [declaracioId]);
 
-  // ── Tornar a la web (des de la llista) ───────────────────────────────────
-  const handleBackFromLlista = useCallback(() => {
-    onBack();
-  }, [onBack]);
-
   // ── Autenticació ─────────────────────────────────────────────────────────
   if (carregant) return (
     <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center">
@@ -129,12 +125,153 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     <PanellMaestro onTancar={() => setMostrarPanellMaestro(false)} />
   );
 
-  // ── Render ───────────────────────────────────────────────────────────────
-  if (!declaracioId || !declaracioActual) {
+  // ── Zona Professionals ───────────────────────────────────────────────────
+  if (vistaActual === 'zona') {
+    const teIrpf = esMaestro || (perfil.eines || []).includes('irpf');
+    const teBretxa = esMaestro || (perfil.eines || []).includes('bretxa');
+
     return (
-      <LlistaDeclaracions
-        onObrirDeclaracio={handleObrirDeclaracio}
-        onBack={handleBackFromLlista}
+      <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C]">
+        {/* Capçalera */}
+        <header className="bg-black/20 px-6 py-4 flex items-center justify-between">
+          <div>
+            <button onClick={onBack} className="text-white/70 hover:text-white text-sm transition">
+              ← Tornar a la web
+            </button>
+            <h1 className="text-white font-bold text-xl mt-1">Zona Professionals</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            {user?.email && (
+              <span className="text-white/60 text-xs hidden md:inline">{user.email}</span>
+            )}
+            {esMaestro && (
+              <button
+                onClick={() => setMostrarPanellMaestro(true)}
+                className="relative text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition"
+              >
+                ⚙️ Administració
+                {pendents > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none">
+                    {pendents}
+                  </span>
+                )}
+              </button>
+            )}
+            <button
+              onClick={() => { if (typeof onLogout === 'function') onLogout(); }}
+              className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition"
+            >
+              Tancar sessió
+            </button>
+          </div>
+        </header>
+
+        {/* Eines disponibles */}
+        <div className="container mx-auto max-w-4xl px-4 py-16">
+          <div className="text-center mb-12">
+            <span className="inline-flex items-center gap-2 bg-white/20 text-white text-xs font-semibold px-4 py-2 rounded-full border border-white/30 mb-4">
+              <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+              Accés exclusiu per a professionals
+            </span>
+            <h2 className="text-3xl font-bold text-white mb-3">Eines Professionals</h2>
+            <p className="text-white/70">Selecciona l'eina que vols utilitzar</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+            {/* Eina Fiscal IRPF */}
+            <button
+              onClick={() => teIrpf ? setVistaActual('irpf') : null}
+              disabled={!teIrpf}
+              className={`rounded-2xl p-7 border text-left flex flex-col transition-all duration-300 group ${
+                teIrpf
+                  ? 'bg-white/15 border-white/30 hover:bg-white/25 hover:border-white/50 cursor-pointer'
+                  : 'bg-white/5 border-white/10 cursor-not-allowed opacity-50'
+              }`}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-12 h-12 bg-[#009B9C] rounded-xl flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${teIrpf ? 'bg-teal-400 text-teal-900' : 'bg-white/20 text-white/60'}`}>
+                  {teIrpf ? 'Disponible' : 'Sense accés'}
+                </span>
+              </div>
+              <h3 className="text-white font-bold text-lg mb-2">Eina Fiscal IRPF Andorra</h3>
+              <p className="text-white/60 text-sm flex-1 mb-4">Analitza i liquida l'IRPF andorrà amb referència legal de cada renda.</p>
+              {teIrpf && (
+                <span className="inline-flex items-center gap-2 text-teal-300 font-semibold text-sm">
+                  Accedir →
+                </span>
+              )}
+            </button>
+
+            {/* Eina Bretxa de Gènere */}
+            <button
+              onClick={() => teBretxa ? window.open('https://bretxa-genere.onrender.com', '_blank') : null}
+              disabled={!teBretxa}
+              className={`rounded-2xl p-7 border text-left flex flex-col transition-all duration-300 group ${
+                teBretxa
+                  ? 'bg-white/15 border-white/30 hover:bg-white/25 hover:border-white/50 cursor-pointer'
+                  : 'bg-white/5 border-white/10 cursor-not-allowed opacity-50'
+              }`}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${teBretxa ? 'bg-purple-400 text-purple-900' : 'bg-white/20 text-white/60'}`}>
+                  {teBretxa ? 'Disponible' : 'Sense accés'}
+                </span>
+              </div>
+              <h3 className="text-white font-bold text-lg mb-2">Bretxa de Gènere</h3>
+              <p className="text-white/60 text-sm flex-1 mb-4">Calcula i genera l'informe de bretxa salarial de gènere segons la Llei 6/2022.</p>
+              {teBretxa && (
+                <span className="inline-flex items-center gap-2 text-purple-300 font-semibold text-sm">
+                  Accedir →
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Botó canviar contrasenya */}
+          <div className="text-center mt-8">
+            <button
+              onClick={() => setVistaActual('canviarContrasenya')}
+              className="text-white/50 hover:text-white text-xs transition"
+            >
+              🔑 Canviar contrasenya
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Eina Fiscal IRPF ─────────────────────────────────────────────────────
+  if (vistaActual === 'irpf') {
+    if (!declaracioId || !declaracioActual) {
+      return (
+        <LlistaDeclaracions
+          onObrirDeclaracio={handleObrirDeclaracio}
+          onBack={() => setVistaActual('zona')}
+          onLogout={onLogout}
+          onAdminPanel={esMaestro ? () => setMostrarPanellMaestro(true) : null}
+          pendents={pendents}
+        />
+      );
+    }
+    return (
+      <EinaFiscal
+        declaracioId={declaracioId}
+        declaracioInicial={declaracioActual}
+        onDesar={handleDesar}
+        onDadesChange={handleDadesChange}
+        onSortir={handleSortirWizard}
+        ultimDesat={ultimDesat}
         onLogout={onLogout}
         onAdminPanel={esMaestro ? () => setMostrarPanellMaestro(true) : null}
         pendents={pendents}
@@ -142,19 +279,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     );
   }
 
-  return (
-    <EinaFiscal
-      declaracioId={declaracioId}
-      declaracioInicial={declaracioActual}
-      onDesar={handleDesar}
-      onDadesChange={handleDadesChange}
-      onSortir={handleSortirWizard}
-      ultimDesat={ultimDesat}
-      onLogout={onLogout}
-      onAdminPanel={esMaestro ? () => setMostrarPanellMaestro(true) : null}
-      pendents={pendents}
-    />
-  );
+  return null;
 };
 
 export default EinaFiscalRouter;
