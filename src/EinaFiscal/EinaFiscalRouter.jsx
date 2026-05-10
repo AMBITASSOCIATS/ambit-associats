@@ -47,9 +47,9 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
       setCarregantContrasenya(false);
       return;
     }
-    // Contrasenya canviada: tancar sessió perquè l'usuari torni a fer login
+    // Contrasenya canviada: tancar sessió → SIGNED_OUT mostrarà el login
+    // No cridem onLogout per evitar setShowEinaFiscal(false) — millor UX
     await supabase.auth.signOut();
-    if (typeof onLogout === 'function') onLogout();
   };
 
   const autoDesatRef = useRef(null);
@@ -186,10 +186,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
               </button>
             )}
             <button
-              onClick={async () => {
-                await supabase.auth.signOut();
-                if (typeof onLogout === 'function') onLogout();
-              }}
+              onClick={() => { if (typeof onLogout === 'function') onLogout(); }}
               className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition"
             >
               Tancar sessió

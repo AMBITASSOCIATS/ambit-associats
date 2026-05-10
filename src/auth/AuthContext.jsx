@@ -62,11 +62,13 @@ export const AuthProvider = ({ children }) => {
       if (!mounted) return;
 
       // Fase post-inicial: gestionar logout/login manuals
+      // Ignorar USER_UPDATED i TOKEN_REFRESHED — si es gestionen podrien
+      // sobreescriure setUser/setPerfil després d'un signOut concurrent
       if (settled) {
         if (event === 'SIGNED_OUT') {
           setUser(null);
           setPerfil(null);
-        } else if (session?.user) {
+        } else if (event === 'SIGNED_IN' && session?.user) {
           const profileData = await fetchPerfil(session.user.id);
           if (mounted) {
             setUser(session.user);
