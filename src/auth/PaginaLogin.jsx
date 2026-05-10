@@ -13,6 +13,7 @@ const PaginaLogin = ({ onLoginOk }) => {
   const [error, setError] = useState('');
   const [missatge, setMissatge] = useState('');
   const [carregant, setCarregant] = useState(false);
+  const [consentiment, setConsentiment] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -179,9 +180,26 @@ const PaginaLogin = ({ onLoginOk }) => {
                              focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40 focus:border-[#009B9C]"
                 />
               </div>
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-600">
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={consentiment}
+                    onChange={e => setConsentiment(e.target.checked)}
+                    className="mt-0.5 flex-shrink-0 accent-[#009B9C]"
+                    required
+                  />
+                  <span>
+                    He llegit i accepto el tractament de les meves dades personals per part de DEL SOTO – PALEARI & ASSOCIATS, S.L. (NRT L-720543-P), d'acord amb l'article 31 de la{' '}
+                    <strong>Llei 29/2021, del 28 d'octubre, qualificada de protecció de dades personals del Principat d'Andorra</strong>.
+                    Les dades es guardaran en servidors segurs de la UE (Supabase, certificat RGPD) i s'utilitzaran exclusivament per a la gestió fiscal. Podeu exercir els vostres drets a{' '}
+                    <a href="mailto:info@ambit.ad" className="text-[#009B9C] underline">info@ambit.ad</a>.
+                  </span>
+                </label>
+              </div>
               <button
                 type="submit"
-                disabled={carregant}
+                disabled={carregant || !consentiment}
                 className="w-full bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold
                            py-3 rounded-xl transition disabled:opacity-50 text-sm mt-2"
               >

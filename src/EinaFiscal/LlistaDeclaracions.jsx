@@ -326,13 +326,7 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel,
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 text-xs text-blue-700">
           <p className="font-semibold mb-1">⚠️ Avís de protecció de dades personals</p>
           <p>
-            Les dades introduïdes en aquesta eina es guarden únicament al navegador d'aquest dispositiu
-            (localStorage) i no es transmeten a cap servidor extern. El tractament de dades personals
-            de tercers (clients, obligats tributaris) és responsabilitat exclusiva de l'usuari de l'eina,
-            que ha d'assegurar-se de complir la normativa aplicable en matèria de protecció de dades
-            (Llei 29/2021, del 28 d'octubre, qualificada de protecció de dades personals del Principat
-            d'Andorra). ÀMBIT Associats no és responsable del tractament de dades realitzat a través
-            d'aquesta eina.
+            Les dades personals introduïdes en aquesta eina (nom, NRT i dades fiscals) es guarden en servidors segurs de la Unió Europea (Supabase Inc., certificat RGPD). DEL SOTO – PALEARI & ASSOCIATS, S.L. (NRT L-720543-P) actua com a responsable del tractament d'acord amb la Llei 29/2021, del 28 d'octubre, qualificada de protecció de dades personals del Principat d'Andorra. Les dades s'utilitzen exclusivament per a la gestió de la liquidació de l'IRPF. Drets d'accés, rectificació i supressió: info@ambit.ad.
           </p>
         </div>
 
