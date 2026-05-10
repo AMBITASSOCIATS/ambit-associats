@@ -1,7 +1,6 @@
 // EinaFiscal/LlistaDeclaracions.jsx
 // Pantalla d'inici de l'Eina Fiscal: llista de declaracions guardades
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../supabaseClient';
 import { useAuth } from '../auth/AuthContext';
 import {
   llistarDeclaracions,
@@ -170,59 +169,6 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel,
   const [filtreEstat, setFiltreEstat] = useState('tots');
   const [cerca, setCerca] = useState('');
   const [kb, setKb] = useState('0');
-  const [mostrarModalContrasenya, setMostrarModalContrasenya] = useState(false);
-  const [contrasenyaActual, setContrasenyaActual] = useState('');
-  const [novaContrasenya, setNovaContrasenya] = useState('');
-  const [confirmarContrasenya, setConfirmarContrasenya] = useState('');
-  const [errorContrasenya, setErrorContrasenya] = useState('');
-  const [carregantContrasenya, setCarregantContrasenya] = useState(false);
-
-  const obrirModalContrasenya = () => {
-    setContrasenyaActual('');
-    setNovaContrasenya('');
-    setConfirmarContrasenya('');
-    setErrorContrasenya('');
-    setMostrarModalContrasenya(true);
-  };
-
-  const canviarContrasenya = async (e) => {
-    e.preventDefault();
-    setErrorContrasenya('');
-    if (!contrasenyaActual) {
-      setErrorContrasenya('Introdueix la contrasenya actual.');
-      return;
-    }
-    if (novaContrasenya.length < 8) {
-      setErrorContrasenya('La nova contrasenya ha de tenir mínim 8 caràcters.');
-      return;
-    }
-    if (novaContrasenya !== confirmarContrasenya) {
-      setErrorContrasenya('Les contrasenyes noves no coincideixen.');
-      return;
-    }
-    setCarregantContrasenya(true);
-    try {
-      // Verificar contrasenya actual
-      const { error: errLogin } = await supabase.auth.signInWithPassword({
-        email: user?.email,
-        password: contrasenyaActual,
-      });
-      if (errLogin) {
-        setErrorContrasenya('La contrasenya actual és incorrecta.');
-        return;
-      }
-      // Actualitzar contrasenya
-      const { error } = await supabase.auth.updateUser({ password: novaContrasenya });
-      if (error) {
-        setErrorContrasenya('Error: ' + error.message);
-      } else {
-        setMostrarModalContrasenya(false);
-        alert('Contrasenya canviada correctament!');
-      }
-    } finally {
-      setCarregantContrasenya(false);
-    }
-  };
 
   const recarregar = useCallback(() => {
     setDeclaracions(llistarDeclaracions());
@@ -300,12 +246,6 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel,
                 )}
               </button>
             )}
-            <button
-              onClick={obrirModalContrasenya}
-              className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition"
-            >
-              🔑 Canviar contrasenya
-            </button>
             {onLogout && (
               <button
                 onClick={onLogout}
@@ -501,71 +441,6 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel,
         />
       )}
 
-      {/* Modal canvi de contrasenya */}
-      {mostrarModalContrasenya && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setMostrarModalContrasenya(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-800 mb-4">🔑 Canviar contrasenya</h3>
-            <form onSubmit={canviarContrasenya} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Contrasenya actual</label>
-                <input
-                  type="password"
-                  value={contrasenyaActual}
-                  onChange={e => setContrasenyaActual(e.target.value)}
-                  required
-                  placeholder="La teva contrasenya actual"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Nova contrasenya</label>
-                <input
-                  type="password"
-                  value={novaContrasenya}
-                  onChange={e => setNovaContrasenya(e.target.value)}
-                  required
-                  minLength={8}
-                  placeholder="Mínim 8 caràcters"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Confirmar nova contrasenya</label>
-                <input
-                  type="password"
-                  value={confirmarContrasenya}
-                  onChange={e => setConfirmarContrasenya(e.target.value)}
-                  required
-                  placeholder="Repeteix la nova contrasenya"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
-                />
-              </div>
-              {errorContrasenya && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-xs text-red-700">
-                  ⚠️ {errorContrasenya}
-                </div>
-              )}
-              <div className="flex gap-3 pt-1">
-                <button
-                  type="submit"
-                  disabled={carregantContrasenya}
-                  className="flex-1 bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold py-2.5 rounded-xl transition text-sm disabled:opacity-50"
-                >
-                  {carregantContrasenya ? 'Verificant...' : 'Guardar'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMostrarModalContrasenya(false)}
-                  className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition text-sm"
-                >
-                  Cancel·lar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -1270,6 +1270,16 @@ const App = () => {
                 <h2 className="text-3xl font-bold mb-3">{t.professionals.title}</h2>
                 <p className="text-gray-400 max-w-xl mx-auto">{t.professionals.subtitle}</p>
               </div>
+              {/* Botó accés directe Zona Professionals */}
+              <div className="flex justify-center mb-8">
+                <button
+                  onClick={() => setShowEinaFiscal(true)}
+                  className="bg-white text-[#009B9C] font-bold px-8 py-3 rounded-xl hover:bg-gray-50 transition shadow-lg text-sm flex items-center gap-2"
+                >
+                  🔐 Accedir a la Zona Professionals →
+                </button>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
                 {/* Eina Bretxa — activa */}
                 <button

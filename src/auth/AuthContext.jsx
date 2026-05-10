@@ -18,7 +18,15 @@ export const AuthProvider = ({ children }) => {
         .eq('id', userId)
         .single();
       if (!error && data) return data;
-      console.warn('Perfil no trobat per userId:', userId, error?.message);
+      // Esperar 2 segons i tornar a intentar (pot ser un usuari nou)
+      await new Promise(r => setTimeout(r, 2000));
+      const { data: data2, error: error2 } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (!error2 && data2) return data2;
+      console.warn('Perfil no trobat definitiu:', error2?.message);
       return null;
     } catch (e) {
       console.warn('Error carregant perfil:', e);
