@@ -178,21 +178,19 @@ const LlistaDeclaracions = ({
   const [cerca, setCerca] = useState('');
   const [operant, setOperant] = useState(false);
 
-  const handleNova = useCallback(async (clientNom, clientNRT, exercici) => {
-    setOperant(true);
+  const handleNova = async (clientNom, clientNRT, exercici) => {
+    const nova = await novaDeclaracio(clientNom, clientNRT, exercici, user?.id);
     setMostrarModal(false);
-    const nova = await novaDeclaracio(clientNom, clientNRT, exercici, userId);
-    setOperant(false);
-    if (!nova) return;
-    onObrirDeclaracio(nova.id, nova);
-  }, [userId, onObrirDeclaracio]);
+    if (nova) {
+      await onRecarregar();
+      onObrirDeclaracio(nova.id, nova);
+    }
+  };
 
-  const handleDuplicar = useCallback(async (id) => {
-    setOperant(true);
-    await duplicarDeclaracio(id);
+  const handleDuplicar = async (id) => {
+    await duplicarDeclaracio(id, user?.id);
     await onRecarregar();
-    setOperant(false);
-  }, [onRecarregar]);
+  };
 
   const handleEliminar = useCallback(async () => {
     if (!confirmarEliminar) return;
