@@ -185,7 +185,7 @@ const LlistaDeclaracions = ({
     setOperant(false);
     if (!nova) return;
     onObrirDeclaracio(nova.id, nova);
-  }, [userId, user, onObrirDeclaracio]);
+  }, [userId, onObrirDeclaracio]);
 
   const handleDuplicar = useCallback(async (id) => {
     setOperant(true);
