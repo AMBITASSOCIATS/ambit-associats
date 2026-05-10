@@ -903,7 +903,7 @@ const App = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [servicesDropdown, setServicesDropdown] = useState(false);
   const [mostrarPanellMaestro, setMostrarPanellMaestro] = useState(false);
-  const { user, perfil, carregant, logout, esMaestro, esActiu } = useAuth();
+  const { user, perfil, carregant, logout, esMaestro } = useAuth();
 
   // ── Historial navegador: registrar vista activa ──────────────────────────
   useEffect(() => {
