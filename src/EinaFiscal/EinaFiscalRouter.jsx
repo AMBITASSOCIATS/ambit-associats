@@ -81,10 +81,11 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   }, [user, esMaestro]);
 
   useEffect(() => {
-    if (vistaActual === 'irpf' && user) {
+    if (user?.id && perfil) {
       carregarDeclaracions();
     }
-  }, [vistaActual, user, carregarDeclaracions]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, perfil?.id, esMaestro]);
 
   // ── Obrir declaració ──────────────────────────────────────────────────────
   const handleObrirDeclaracio = useCallback(async (id, declaracioDirecta = null) => {
