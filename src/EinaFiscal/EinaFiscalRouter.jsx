@@ -9,10 +9,12 @@ import {
   desarDeclaracio,
 } from './engine/DeclaracionsStorage';
 import { supabase } from '../supabaseClient';
+import { useAuth } from '../auth/AuthContext';
 
 const AUTODESAT_MS = 30000; // autodesat cada 30 segons
 
 const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
+  const { esMaestro } = useAuth();
   const [declaracioId, setDeclaracioId] = useState(null);
   const [declaracioActual, setDeclaracioActual] = useState(null);
   const [ultimDesat, setUltimDesat] = useState(null);
@@ -20,13 +22,18 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   const autoDesatRef = useRef(null);
 
   useEffect(() => {
-    if (!onAdminPanel) return; // Només per al Maestro
-    supabase
-      .from('profiles')
-      .select('id', { count: 'exact' })
-      .eq('estat', 'pendent')
-      .then(({ count }) => setPendents(count || 0));
-  }, [onAdminPanel]);
+    if (!esMaestro) return;
+    const carregarPendents = async () => {
+      const { count } = await supabase
+        .from('solicituds')
+        .select('*', { count: 'exact', head: true })
+        .eq('estat', 'pendent');
+      setPendents(count || 0);
+    };
+    carregarPendents();
+    const interval = setInterval(carregarPendents, 30000);
+    return () => clearInterval(interval);
+  }, [esMaestro]);
 
   // ── Obrir declaració ──────────────────────────────────────────────────────
   const handleObrirDeclaracio = useCallback((id, declaracioDirecta = null) => {

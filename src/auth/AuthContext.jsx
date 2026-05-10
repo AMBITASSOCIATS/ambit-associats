@@ -69,45 +69,8 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const registrar = async (email, contrasenya, nom) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password: contrasenya,
-      options: { data: { nom } },
-    });
-    if (error) throw error;
-
-    // Crear perfil pendent
-    if (data.user) {
-      await supabase.from('profiles').insert({
-        id: data.user.id,
-        email,
-        nom,
-        rol: 'individual',
-        estat: 'pendent',
-      });
-
-      // Notificar al Maestro per email
-      try {
-        await fetch('https://formspree.io/f/mdkdrkze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: 'Sistema ÀMBIT Eina Fiscal',
-            email: 'sistema@ambit.ad',
-            message: `NOU USUARI PENDENT D'APROVACIÓ\n\nNom: ${nom}\nEmail: ${email}\n\nAccedeix al panel d'administració per aprovar o rebutjar l'accés:\nhttps://www.ambit.ad`,
-          }),
-        });
-      } catch(e) {
-        // No bloquejar el registre si falla la notificació
-        console.warn('No s\'ha pogut enviar la notificació al Maestro:', e);
-      }
-    }
-    return data;
-  };
-
-  const logout = () => {
-    supabase.auth.signOut(); // fire and forget — no await per evitar bloqueig
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
     setPerfil(null);
   };
@@ -118,7 +81,7 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={{
       user, perfil, carregant,
-      login, registrar, logout,
+      login, logout,
       esMaestro, esActiu,
     }}>
       {children}
