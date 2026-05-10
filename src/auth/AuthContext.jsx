@@ -41,12 +41,12 @@ export const AuthProvider = ({ children }) => {
     };
 
     // Timeout de seguretat: si fetchPerfil es penja o onAuthStateChange no dispara
-    // en 5s, netegem la sessió i desbloquem la càrrega
+    // en 5s, netejem l'estat local i mostrem el login.
+    // NO fem signOut() aquí — podria bloquejar un signIn posterior.
     const timeout = setTimeout(() => {
       if (!settled && mounted) {
-        console.warn('Auth timeout: forçant neteja de sessió');
+        console.warn('Auth timeout: netejant estat local i mostrant login');
         settle(null, null);
-        supabase.auth.signOut(); // en segon pla; SIGNED_OUT actualitzarà l'estat
       }
     }, 5000);
 
