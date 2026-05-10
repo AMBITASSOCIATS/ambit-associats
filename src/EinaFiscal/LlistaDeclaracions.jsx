@@ -1,14 +1,12 @@
 // EinaFiscal/LlistaDeclaracions.jsx
-// Pantalla d'inici de l'Eina Fiscal: llista de declaracions guardades
-import React, { useState, useEffect, useCallback } from 'react';
+// Pantalla d'inici de l'Eina Fiscal: llista de declaracions guardades a Supabase
+import React, { useState, useCallback } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import {
-  llistarDeclaracions,
   novaDeclaracio,
   duplicarDeclaracio,
   eliminarDeclaracio,
-  tamanyEmmagatzemat,
-} from './engine/DeclaracionsStorage';
+} from './engine/DeclaracionsSupabase';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
@@ -160,41 +158,50 @@ const ModalEliminar = ({ declaracio, onConfirmar, onCancelar }) => (
 // COMPONENT PRINCIPAL
 // ─────────────────────────────────────────────────────────────────────────────
 
-const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel, pendents = 0 }) => {
+const LlistaDeclaracions = ({
+  onObrirDeclaracio,
+  onBack,
+  onLogout,
+  onAdminPanel,
+  pendents = 0,
+  declaracions = [],
+  carregantDeclaracions = false,
+  onRecarregar,
+  isMaestro = false,
+  userId,
+}) => {
   const { user } = useAuth();
-  const [declaracions, setDeclaracions] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [confirmarEliminar, setConfirmarEliminar] = useState(null);
   const [filtreExercici, setFiltreExercici] = useState('tots');
   const [filtreEstat, setFiltreEstat] = useState('tots');
   const [cerca, setCerca] = useState('');
-  const [kb, setKb] = useState('0');
+  const [operant, setOperant] = useState(false);
 
-  const recarregar = useCallback(() => {
-    setDeclaracions(llistarDeclaracions());
-    setKb(tamanyEmmagatzemat());
-  }, []);
-
-  useEffect(() => {
-    recarregar();
-  }, [recarregar]);
-
-  const handleNova = (clientNom, clientNRT, exercici) => {
-    const nova = novaDeclaracio(clientNom, clientNRT, exercici);
+  const handleNova = useCallback(async (clientNom, clientNRT, exercici) => {
+    setOperant(true);
     setMostrarModal(false);
-    onObrirDeclaracio(nova.id, nova);  // passar l'objecte directament per evitar race condition
-  };
+    const nova = await novaDeclaracio(userId, user?.email, clientNom, clientNRT, exercici);
+    setOperant(false);
+    if (!nova) return;
+    onObrirDeclaracio(nova.id, nova);
+  }, [userId, user, onObrirDeclaracio]);
 
-  const handleDuplicar = (id) => {
-    duplicarDeclaracio(id);
-    recarregar();
-  };
+  const handleDuplicar = useCallback(async (id) => {
+    setOperant(true);
+    await duplicarDeclaracio(id);
+    await onRecarregar();
+    setOperant(false);
+  }, [onRecarregar]);
 
-  const handleEliminar = () => {
-    eliminarDeclaracio(confirmarEliminar.id);
+  const handleEliminar = useCallback(async () => {
+    if (!confirmarEliminar) return;
+    setOperant(true);
+    await eliminarDeclaracio(confirmarEliminar.id);
     setConfirmarEliminar(null);
-    recarregar();
-  };
+    await onRecarregar();
+    setOperant(false);
+  }, [confirmarEliminar, onRecarregar]);
 
   // Filtrat
   const declaracionsFiltrades = declaracions.filter(d => {
@@ -203,7 +210,8 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel,
     if (cerca) {
       const q = cerca.toLowerCase();
       if (!(d.clientNom || '').toLowerCase().includes(q) &&
-          !(d.clientNRT || '').toLowerCase().includes(q)) return false;
+          !(d.clientNRT || '').toLowerCase().includes(q) &&
+          !(d.userEmail || '').toLowerCase().includes(q)) return false;
     }
     return true;
   });
@@ -256,8 +264,9 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel,
             )}
             <button
               onClick={() => setMostrarModal(true)}
+              disabled={operant}
               className="bg-white text-[#009B9C] font-bold px-5 py-2.5 rounded-xl
-                         hover:bg-gray-50 transition shadow text-sm"
+                         hover:bg-gray-50 transition shadow text-sm disabled:opacity-50"
             >
               + Nova declaració
             </button>
@@ -301,7 +310,7 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel,
             type="text"
             value={cerca}
             onChange={e => setCerca(e.target.value)}
-            placeholder="Cercar per nom o NRT..."
+            placeholder={isMaestro ? 'Cercar per nom, NRT o usuari...' : 'Cercar per nom o NRT...'}
             className="flex-1 min-w-48 border border-gray-300 rounded-lg px-3 py-2 text-sm
                        focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
           />
@@ -326,10 +335,24 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel,
             <option value="esborrany">Esborranys</option>
             <option value="finalitzada">Finalitzades</option>
           </select>
+          {onRecarregar && (
+            <button
+              onClick={onRecarregar}
+              disabled={carregantDeclaracions || operant}
+              title="Actualitzar llista"
+              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition disabled:opacity-40"
+            >
+              🔄
+            </button>
+          )}
         </div>
 
         {/* Llista */}
-        {declaracionsFiltrades.length === 0 ? (
+        {carregantDeclaracions ? (
+          <div className="bg-white rounded-2xl border border-gray-200 p-16 text-center">
+            <p className="text-gray-400 text-sm">Carregant declaracions...</p>
+          </div>
+        ) : declaracionsFiltrades.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-200 p-16 text-center">
             {declaracions.length === 0 ? (
               <>
@@ -380,35 +403,44 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel,
                       {ESTAT_LABELS[d.estat] || d.estat}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-400">
+                  <div className="flex items-center gap-3 text-xs text-gray-400 flex-wrap">
                     {d.clientNRT && <span>NRT: {d.clientNRT}</span>}
                     <span>·</span>
                     <span>Modificat: {formatData(d.modificatEn)}</span>
+                    {isMaestro && d.userEmail && (
+                      <>
+                        <span>·</span>
+                        <span className="text-indigo-400">👤 {d.userEmail}</span>
+                      </>
+                    )}
                   </div>
                 </div>
 
                 {/* Accions */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
-                    onClick={() => onObrirDeclaracio(d.id)}
+                    onClick={() => onObrirDeclaracio(d.id, d)}
+                    disabled={operant}
                     className="px-4 py-2 bg-[#009B9C] text-white text-xs font-semibold
-                               rounded-lg hover:bg-[#007A7B] transition"
+                               rounded-lg hover:bg-[#007A7B] transition disabled:opacity-50"
                   >
                     {d.estat === 'finalitzada' ? 'Veure' : 'Continuar'} →
                   </button>
                   <button
                     onClick={() => handleDuplicar(d.id)}
+                    disabled={operant}
                     title="Duplicar"
                     className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100
-                               rounded-lg transition text-sm"
+                               rounded-lg transition text-sm disabled:opacity-40"
                   >
                     📄
                   </button>
                   <button
                     onClick={() => setConfirmarEliminar(d)}
+                    disabled={operant}
                     title="Eliminar"
                     className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50
-                               rounded-lg transition text-sm"
+                               rounded-lg transition text-sm disabled:opacity-40"
                   >
                     🗑️
                   </button>
@@ -421,7 +453,7 @@ const LlistaDeclaracions = ({ onObrirDeclaracio, onBack, onLogout, onAdminPanel,
         {/* Peu */}
         {declaracions.length > 0 && (
           <p className="text-center text-xs text-gray-400 mt-6">
-            {declaracions.length} declaració{declaracions.length !== 1 ? 'ns' : ''} guardada{declaracions.length !== 1 ? 's' : ''} localment · {kb} KB usats
+            {declaracions.length} declaració{declaracions.length !== 1 ? 'ns' : ''} guardada{declaracions.length !== 1 ? 's' : ''} al núvol
           </p>
         )}
       </div>

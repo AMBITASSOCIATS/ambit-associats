@@ -5,9 +5,11 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import LlistaDeclaracions from './LlistaDeclaracions';
 import EinaFiscal from './index';
 import {
+  llistarDeclaracions,
+  llistarTotesDeclaracions,
   obtenirDeclaracio,
   desarDeclaracio,
-} from './engine/DeclaracionsStorage';
+} from './engine/DeclaracionsSupabase';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../auth/AuthContext';
 import PaginaLogin from '../auth/PaginaLogin';
@@ -24,6 +26,8 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   const [declaracioActual, setDeclaracioActual] = useState(null);
   const [ultimDesat, setUltimDesat] = useState(null);
   const [pendents, setPendents] = useState(0);
+  const [declaracions, setDeclaracions] = useState([]);
+  const [carregantDeclaracions, setCarregantDeclaracions] = useState(false);
   const [novaContrasenya, setNovaContrasenya] = useState('');
   const [confirmarContrasenya, setConfirmarContrasenya] = useState('');
   const [errorContrasenya, setErrorContrasenya] = useState('');
@@ -68,25 +72,49 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     return () => clearInterval(interval);
   }, [esMaestro]);
 
+  // ── Carregar declaracions ────────────────────────────────────────────────
+  const carregarDeclaracions = useCallback(async () => {
+    if (!user) return;
+    setCarregantDeclaracions(true);
+    const data = esMaestro
+      ? await llistarTotesDeclaracions()
+      : await llistarDeclaracions(user.id);
+    setDeclaracions(data);
+    setCarregantDeclaracions(false);
+  }, [user, esMaestro]);
+
+  useEffect(() => {
+    if (vistaActual === 'irpf' && user) {
+      carregarDeclaracions();
+    }
+  }, [vistaActual, user, carregarDeclaracions]);
+
   // ── Obrir declaració ──────────────────────────────────────────────────────
-  const handleObrirDeclaracio = useCallback((id, declaracioDirecta = null) => {
-    // Si ens passen l'objecte directament (declaració nova), usar-lo sense llegir localStorage
-    const decl = declaracioDirecta || obtenirDeclaracio(id);
-    if (!decl) {
-      // Fallback: crear un objecte mínim per no petar
-      const declMinima = { id, clientNom: '', clientNRT: '', exercici: 2025, dades: {} };
-      setDeclaracioActual(declMinima);
+  const handleObrirDeclaracio = useCallback(async (id, declaracioDirecta = null) => {
+    // Si ens passen l'objecte directament (declaració nova), usar-lo sense fer fetch
+    if (declaracioDirecta) {
+      setDeclaracioActual(declaracioDirecta);
       setDeclaracioId(id);
       return;
     }
-    setDeclaracioActual(decl);
+    // Buscar primer a la llista local (evita un round-trip extra)
+    const local = declaracions.find(d => d.id === id);
+    if (local) {
+      setDeclaracioActual(local);
+      setDeclaracioId(id);
+      return;
+    }
+    // Fallback: obtenir de Supabase
+    const decl = await obtenirDeclaracio(id);
+    const declFinal = decl || { id, clientNom: '', clientNRT: '', exercici: 2025, dades: {} };
+    setDeclaracioActual(declFinal);
     setDeclaracioId(id);
-  }, []);
+  }, [declaracions]);
 
   // ── Desar declaració ─────────────────────────────────────────────────────
-  const handleDesar = useCallback((dades, clientNom, clientNRT, exercici) => {
-    if (!declaracioId) return;
-    const ok = desarDeclaracio(declaracioId, { dades, clientNom, clientNRT, exercici });
+  const handleDesar = useCallback(async (dades, clientNom, clientNRT, exercici) => {
+    if (!declaracioId) return false;
+    const ok = await desarDeclaracio(declaracioId, { dades, clientNom, clientNRT, exercici });
     if (ok) setUltimDesat(new Date());
     return ok;
   }, [declaracioId]);
@@ -110,30 +138,30 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
           clientNom,
           clientNRT,
           exercici,
-        });
-        setUltimDesat(new Date());
+        }).then(ok => { if (ok) setUltimDesat(new Date()); });
       }
     }, AUTODESAT_MS);
     return () => clearInterval(autoDesatRef.current);
   }, [declaracioId]);
 
   // ── Sortir del wizard ────────────────────────────────────────────────────
-  const handleSortirWizard = useCallback((dades, clientNom, clientNRT, exercici) => {
+  const handleSortirWizard = useCallback(async () => {
     // Desar primer
     if (declaracioId && dadesRef.current) {
-      desarDeclaracio(declaracioId, {
+      await desarDeclaracio(declaracioId, {
         dades: dadesRef.current,
         clientNom: metaRef.current.clientNom,
         clientNRT: metaRef.current.clientNRT,
         exercici: metaRef.current.exercici,
       });
     }
-    // Tornar a la llista
+    // Tornar a la llista i recarregar
+    clearInterval(autoDesatRef.current);
     setDeclaracioId(null);
     setDeclaracioActual(null);
     setUltimDesat(null);
-    clearInterval(autoDesatRef.current);
-  }, [declaracioId]);
+    await carregarDeclaracions();
+  }, [declaracioId, carregarDeclaracions]);
 
   // ── Autenticació ─────────────────────────────────────────────────────────
   if (carregant) return (
@@ -326,6 +354,11 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
           onLogout={onLogout}
           onAdminPanel={esMaestro ? () => setMostrarPanellMaestro(true) : null}
           pendents={pendents}
+          declaracions={declaracions}
+          carregantDeclaracions={carregantDeclaracions}
+          onRecarregar={carregarDeclaracions}
+          isMaestro={esMaestro}
+          userId={user?.id}
         />
       );
     }
