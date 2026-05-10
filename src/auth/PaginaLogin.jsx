@@ -45,7 +45,7 @@ const PaginaLogin = ({ onLoginOk }) => {
 
       if (error) throw error;
 
-      setMissatge('Sol·licitud enviada correctament. ÀMBIT Associats revisarà el teu accés i et contactarà per email.');
+      setMissatge('Sol·licitud enviada correctament. ÀMBIT Associats revisarà el teu accés i et contactarà per email amb les teves credencials (revisa Spam).');
       setMode('login');
       setEmail(''); setContrasenya(''); setNom('');
     } catch (err) {
