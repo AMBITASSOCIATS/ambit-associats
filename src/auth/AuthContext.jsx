@@ -28,43 +28,58 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     let mounted = true;
+    let settled = false; // true quan l'estat inicial ja s'ha resolt
 
-    // Timeout de seguretat: si Supabase no respon en 6s (token expirat, xarxa lenta…)
-    // forcem carregant=false i netegem la sessió per evitar bloqueig infinit
-    const timeout = setTimeout(async () => {
-      if (!mounted) return;
-      console.warn('Auth timeout: netejant sessió i desbloquejant càrrega');
-      await supabase.auth.signOut();
-      if (mounted) {
-        setUser(null);
-        setPerfil(null);
-        setCarregant(false);
+    // settle() és idempotent: només resol una vegada
+    const settle = (userData, perfilData) => {
+      if (!mounted || settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      setUser(userData);
+      setPerfil(perfilData);
+      setCarregant(false);
+    };
+
+    // Timeout de seguretat: si fetchPerfil es penja o onAuthStateChange no dispara
+    // en 5s, netegem la sessió i desbloquem la càrrega
+    const timeout = setTimeout(() => {
+      if (!settled && mounted) {
+        console.warn('Auth timeout: forçant neteja de sessió');
+        settle(null, null);
+        supabase.auth.signOut(); // en segon pla; SIGNED_OUT actualitzarà l'estat
       }
-    }, 6000);
+    }, 5000);
 
-    // Única font de veritat: onAuthStateChange (inclou INITIAL_SESSION en càrrega)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
-      clearTimeout(timeout); // resposta rebuda, cancel·lar timeout
 
+      // Fase post-inicial: gestionar logout/login manuals
+      if (settled) {
+        if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setPerfil(null);
+        } else if (session?.user) {
+          const profileData = await fetchPerfil(session.user.id);
+          if (mounted) {
+            setUser(session.user);
+            setPerfil(profileData);
+          }
+        }
+        return;
+      }
+
+      // Fase inicial (settled = false): resolve amb timeout actiu
       if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setPerfil(null);
-        setCarregant(false);
+        settle(null, null);
         return;
       }
 
       if (session?.user) {
         const profileData = await fetchPerfil(session.user.id);
         if (!mounted) return;
-        // Actualitzar user + perfil + carregant en el mateix tick per evitar flashes
-        setUser(session.user);
-        setPerfil(profileData);
-        setCarregant(false);
+        settle(session.user, profileData);
       } else {
-        setUser(null);
-        setPerfil(null);
-        setCarregant(false);
+        settle(null, null);
       }
     });
 
