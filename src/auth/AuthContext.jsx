@@ -9,56 +9,49 @@ export const AuthProvider = ({ children }) => {
   const [perfil, setPerfil] = useState(null);
   const [carregant, setCarregant] = useState(true);
 
-  const carregarPerfil = async (userId) => {
+  // Retorna les dades del perfil (no crida setPerfil directament)
+  const fetchPerfil = async (userId) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
-      if (!error && data) {
-        setPerfil(data);
-      } else {
-        // Perfil no trobat — NO fer signOut automàtic
-        // Pot ser un usuari nou que encara no té perfil creat
-        console.warn('Perfil no trobat per userId:', userId, error?.message);
-        setPerfil(null);
-      }
+      if (!error && data) return data;
+      console.warn('Perfil no trobat per userId:', userId, error?.message);
+      return null;
     } catch (e) {
       console.warn('Error carregant perfil:', e);
-      setPerfil(null);
+      return null;
     }
   };
 
   useEffect(() => {
     let mounted = true;
 
-    const inicialitzar = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!mounted) return;
-
-      if (session?.user) {
-        setUser(session.user);
-        await carregarPerfil(session.user.id);
-      }
-      if (mounted) setCarregant(false);
-    };
-
-    inicialitzar();
-
+    // Única font de veritat: onAuthStateChange (inclou INITIAL_SESSION en càrrega)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
+
       if (event === 'SIGNED_OUT') {
         setUser(null);
         setPerfil(null);
         setCarregant(false);
         return;
       }
+
       if (session?.user) {
+        const profileData = await fetchPerfil(session.user.id);
+        if (!mounted) return;
+        // Actualitzar user + perfil + carregant en el mateix tick per evitar flashes
         setUser(session.user);
-        await carregarPerfil(session.user.id);
+        setPerfil(profileData);
+        setCarregant(false);
+      } else {
+        setUser(null);
+        setPerfil(null);
+        setCarregant(false);
       }
-      setCarregant(false);
     });
 
     return () => {
