@@ -24,7 +24,6 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   const [declaracioActual, setDeclaracioActual] = useState(null);
   const [ultimDesat, setUltimDesat] = useState(null);
   const [pendents, setPendents] = useState(0);
-  const [contrasenyaActual, setContrasenyaActual] = useState('');
   const [novaContrasenya, setNovaContrasenya] = useState('');
   const [confirmarContrasenya, setConfirmarContrasenya] = useState('');
   const [errorContrasenya, setErrorContrasenya] = useState('');
@@ -33,21 +32,25 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   const canviarContrasenya = async (e) => {
     e.preventDefault();
     setErrorContrasenya('');
-    if (!contrasenyaActual) { setErrorContrasenya('Introdueix la contrasenya actual.'); return; }
-    if (novaContrasenya.length < 8) { setErrorContrasenya('La nova contrasenya ha de tenir mínim 8 caràcters.'); return; }
-    if (novaContrasenya !== confirmarContrasenya) { setErrorContrasenya('Les contrasenyes no coincideixen.'); return; }
+    if (novaContrasenya.length < 8) {
+      setErrorContrasenya('La nova contrasenya ha de tenir mínim 8 caràcters.');
+      return;
+    }
+    if (novaContrasenya !== confirmarContrasenya) {
+      setErrorContrasenya('Les contrasenyes no coincideixen.');
+      return;
+    }
     setCarregantContrasenya(true);
     try {
-      const { error: errLogin } = await supabase.auth.signInWithPassword({
-        email: user?.email,
-        password: contrasenyaActual,
-      });
-      if (errLogin) { setErrorContrasenya('La contrasenya actual és incorrecta.'); return; }
       const { error } = await supabase.auth.updateUser({ password: novaContrasenya });
-      if (error) { setErrorContrasenya('Error: ' + error.message); return; }
+      if (error) {
+        setErrorContrasenya('Error: ' + error.message);
+        return;
+      }
       alert('Contrasenya canviada correctament!');
       setVistaActual('zona');
-      setContrasenyaActual(''); setNovaContrasenya(''); setConfirmarContrasenya('');
+      setNovaContrasenya('');
+      setConfirmarContrasenya('');
     } finally {
       setCarregantContrasenya(false);
     }
@@ -187,7 +190,10 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
               </button>
             )}
             <button
-              onClick={() => { if (typeof onLogout === 'function') onLogout(); }}
+              onClick={async () => {
+                await supabase.auth.signOut();
+                if (typeof onLogout === 'function') onLogout();
+              }}
               className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition"
             >
               Tancar sessió
@@ -269,7 +275,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
           {/* Botó canviar contrasenya */}
           <div className="text-center mt-8">
             <button
-              onClick={() => { setContrasenyaActual(''); setNovaContrasenya(''); setConfirmarContrasenya(''); setErrorContrasenya(''); setVistaActual('canviarContrasenya'); }}
+              onClick={() => { setNovaContrasenya(''); setConfirmarContrasenya(''); setErrorContrasenya(''); setVistaActual('canviarContrasenya'); }}
               className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition border border-white/20"
             >
               🔑 Canviar contrasenya
@@ -292,10 +298,6 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
           </button>
           <h3 className="text-lg font-bold text-gray-800 mb-4">🔑 Canviar contrasenya</h3>
           <form onSubmit={canviarContrasenya} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Contrasenya actual</label>
-              <input type="password" value={contrasenyaActual} onChange={e => setContrasenyaActual(e.target.value)} required placeholder="La teva contrasenya actual" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40" />
-            </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Nova contrasenya</label>
               <input type="password" value={novaContrasenya} onChange={e => setNovaContrasenya(e.target.value)} required minLength={8} placeholder="Mínim 8 caràcters" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40" />
