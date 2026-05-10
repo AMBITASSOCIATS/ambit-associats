@@ -986,7 +986,7 @@ const App = () => {
         </div>
       </div>
     );
-    if (!user) return <PaginaLogin onLoginOk={() => window.location.reload()} />;
+    if (!user) return <PaginaLogin onLoginOk={() => {}} />;
     if (perfil && perfil.estat !== 'actiu') return <PaginaAccesDenegat />;
     if (!perfil) return <PaginaAccesDenegat />;
     if (mostrarPanellMaestro && esMaestro) return <PanellMaestro onTancar={() => setMostrarPanellMaestro(false)} />;
