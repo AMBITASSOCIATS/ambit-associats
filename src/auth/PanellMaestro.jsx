@@ -177,7 +177,7 @@ const actualitzar = async (id, canvis) => {
             onClick={onTancar}
             className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl text-sm font-semibold transition"
           >
-            ← Tornar a l'Eina Fiscal
+            ← Zona Professionals
           </button>
         </div>
       </header>

@@ -1306,7 +1306,17 @@ const App = () => {
 
                 {/* Eina Fiscal IRPF — activa */}
                 <button
-                  onClick={() => setShowEinaFiscal(true)}
+                  onClick={() => {
+                    if (!user || !perfil) {
+                      setShowEinaFiscal(true);
+                      return;
+                    }
+                    if (perfil.rol !== 'maestro' && !(perfil.eines || []).includes('irpf')) {
+                      setShowEinaFiscal(true);
+                      return;
+                    }
+                    setShowEinaFiscal(true);
+                  }}
                   className="bg-gray-800 rounded-2xl p-7 border border-gray-700 hover:border-[#009B9C] hover:bg-gray-750 transition-all duration-300 group flex flex-col text-left"
                 >
                   <div className="flex items-start justify-between mb-4">
