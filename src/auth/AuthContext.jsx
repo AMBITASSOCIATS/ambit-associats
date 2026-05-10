@@ -29,9 +29,23 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     let mounted = true;
 
+    // Timeout de seguretat: si Supabase no respon en 6s (token expirat, xarxa lenta…)
+    // forcem carregant=false i netegem la sessió per evitar bloqueig infinit
+    const timeout = setTimeout(async () => {
+      if (!mounted) return;
+      console.warn('Auth timeout: netejant sessió i desbloquejant càrrega');
+      await supabase.auth.signOut();
+      if (mounted) {
+        setUser(null);
+        setPerfil(null);
+        setCarregant(false);
+      }
+    }, 6000);
+
     // Única font de veritat: onAuthStateChange (inclou INITIAL_SESSION en càrrega)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
+      clearTimeout(timeout); // resposta rebuda, cancel·lar timeout
 
       if (event === 'SIGNED_OUT') {
         setUser(null);
@@ -56,6 +70,7 @@ export const AuthProvider = ({ children }) => {
 
     return () => {
       mounted = false;
+      clearTimeout(timeout);
       subscription.unsubscribe();
     };
   }, []);
