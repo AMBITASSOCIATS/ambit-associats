@@ -8,10 +8,6 @@ import { supabase } from '../../supabaseClient';
 // HELPERS INTERNS
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ara() {
-  return new Date().toISOString();
-}
-
 // Converteix una fila Supabase (snake_case) a objecte de l'app (camelCase)
 function mapRow(row) {
   if (!row) return null;
@@ -23,8 +19,8 @@ function mapRow(row) {
     clientNRT: row.client_nrt || '',
     exercici: row.exercici || 2025,
     estat: row.estat || 'esborrany',
-    creatEn: row.creat_en,
-    modificatEn: row.modificat_en,
+    creatEn: row.creat_el,
+    modificatEn: row.modificat_el,
     dades: row.dades || {},
   };
 }
@@ -41,8 +37,8 @@ export async function llistarDeclaracions(userId) {
     .from('declaracions')
     .select('*')
     .eq('user_id', userId)
-    .order('modificat_en', { ascending: false });
-  if (error) { console.error('llistarDeclaracions:', error); return []; }
+    .order('modificat_el', { ascending: false });
+  if (error) { console.error('llistarDeclaracions:', JSON.stringify(error)); return []; }
   return (data || []).map(mapRow);
 }
 
@@ -53,8 +49,8 @@ export async function llistarTotesDeclaracions() {
   const { data, error } = await supabase
     .from('declaracions')
     .select('*')
-    .order('modificat_en', { ascending: false });
-  if (error) { console.error('llistarTotesDeclaracions:', error); return []; }
+    .order('modificat_el', { ascending: false });
+  if (error) { console.error('llistarTotesDeclaracions:', JSON.stringify(error)); return []; }
   return (data || []).map(mapRow);
 }
 
@@ -67,7 +63,7 @@ export async function obtenirDeclaracio(id) {
     .select('*')
     .eq('id', id)
     .single();
-  if (error) { console.error('obtenirDeclaracio:', error); return null; }
+  if (error) { console.error('obtenirDeclaracio:', JSON.stringify(error)); return null; }
   return mapRow(data);
 }
 
@@ -75,24 +71,27 @@ export async function obtenirDeclaracio(id) {
  * Crea una nova declaració buida i la desa
  * Retorna la declaració creada, o null si error
  */
-export async function novaDeclaracio(userId, userEmail, clientNom = '', clientNRT = '', exercici = 2025) {
-  const now = ara();
+export async function novaDeclaracio(clientNom = '', clientNRT = '', exercici = 2025, userId) {
+  console.log('novaDeclaracio called:', { clientNom, clientNRT, exercici, userId });
   const { data, error } = await supabase
     .from('declaracions')
     .insert({
-      user_id: userId,
-      user_email: userEmail || '',
       client_nom: clientNom,
       client_nrt: clientNRT,
       exercici,
       estat: 'esborrany',
       dades: {},
-      creat_en: now,
-      modificat_en: now,
+      user_id: userId,
+      creat_el: new Date().toISOString(),
+      modificat_el: new Date().toISOString(),
     })
     .select()
     .single();
-  if (error) { console.error('novaDeclaracio:', error); return null; }
+  if (error) {
+    console.error('Error creant declaració:', JSON.stringify(error));
+    return null;
+  }
+  console.log('Declaració creada:', data);
   return mapRow(data);
 }
 
@@ -101,7 +100,7 @@ export async function novaDeclaracio(userId, userEmail, clientNom = '', clientNR
  * Retorna true si OK, false si error.
  */
 export async function desarDeclaracio(id, { clientNom, clientNRT, exercici, dades, estat } = {}) {
-  const update = { modificat_en: ara() };
+  const update = { modificat_el: new Date().toISOString() };
   if (clientNom !== undefined) update.client_nom = clientNom;
   if (clientNRT !== undefined) update.client_nrt = clientNRT;
   if (exercici !== undefined) update.exercici = exercici;
@@ -112,7 +111,7 @@ export async function desarDeclaracio(id, { clientNom, clientNRT, exercici, dade
     .from('declaracions')
     .update(update)
     .eq('id', id);
-  if (error) { console.error('desarDeclaracio:', error); return false; }
+  if (error) { console.error('desarDeclaracio:', JSON.stringify(error)); return false; }
   return true;
 }
 
@@ -124,23 +123,22 @@ export async function duplicarDeclaracio(id) {
   const original = await obtenirDeclaracio(id);
   if (!original) return null;
 
-  const now = ara();
+  const now = new Date().toISOString();
   const { data, error } = await supabase
     .from('declaracions')
     .insert({
       user_id: original.userId,
-      user_email: original.userEmail,
       client_nom: `${original.clientNom} (còpia)`,
       client_nrt: original.clientNRT,
       exercici: original.exercici,
       estat: 'esborrany',
       dades: original.dades,
-      creat_en: now,
-      modificat_en: now,
+      creat_el: now,
+      modificat_el: now,
     })
     .select()
     .single();
-  if (error) { console.error('duplicarDeclaracio:', error); return null; }
+  if (error) { console.error('duplicarDeclaracio:', JSON.stringify(error)); return null; }
   return mapRow(data);
 }
 
@@ -153,7 +151,7 @@ export async function eliminarDeclaracio(id) {
     .from('declaracions')
     .delete()
     .eq('id', id);
-  if (error) { console.error('eliminarDeclaracio:', error); return false; }
+  if (error) { console.error('eliminarDeclaracio:', JSON.stringify(error)); return false; }
   return true;
 }
 

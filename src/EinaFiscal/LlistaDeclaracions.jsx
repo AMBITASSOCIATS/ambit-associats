@@ -181,7 +181,7 @@ const LlistaDeclaracions = ({
   const handleNova = useCallback(async (clientNom, clientNRT, exercici) => {
     setOperant(true);
     setMostrarModal(false);
-    const nova = await novaDeclaracio(userId, user?.email, clientNom, clientNRT, exercici);
+    const nova = await novaDeclaracio(clientNom, clientNRT, exercici, userId);
     setOperant(false);
     if (!nova) return;
     onObrirDeclaracio(nova.id, nova);
