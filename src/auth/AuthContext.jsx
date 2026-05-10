@@ -17,12 +17,11 @@ export const AuthProvider = ({ children }) => {
         .eq('id', userId)
         .single();
       if (!error && data) {
-        console.log('Perfil carregat:', data.email, 'rol:', data.rol);
         setPerfil(data);
       } else {
-        console.warn('Perfil no trobat:', error?.message);
-        await supabase.auth.signOut();
-        setUser(null);
+        // Perfil no trobat — NO fer signOut automàtic
+        // Pot ser un usuari nou que encara no té perfil creat
+        console.warn('Perfil no trobat per userId:', userId, error?.message);
         setPerfil(null);
       }
     } catch (e) {

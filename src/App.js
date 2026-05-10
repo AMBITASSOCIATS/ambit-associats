@@ -987,7 +987,8 @@ const App = () => {
       </div>
     );
     if (!user) return <PaginaLogin onLoginOk={() => {}} />;
-    if (!carregant && perfil && !esActiu) return <PaginaAccesDenegat />;
+    if (!carregant && perfil && perfil.estat !== 'actiu') return <PaginaAccesDenegat />;
+    if (!carregant && !perfil && user) return <PaginaAccesDenegat />;
     if (mostrarPanellMaestro && esMaestro) return <PanellMaestro onTancar={() => setMostrarPanellMaestro(false)} />;
     return (
       <EinaFiscalRouter
