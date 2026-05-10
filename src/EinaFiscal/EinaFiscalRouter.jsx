@@ -72,20 +72,15 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   }, [esMaestro]);
 
   // ── Carregar declaracions ────────────────────────────────────────────────
-  const carregarDeclaracions = useCallback(async () => {
-    if (!user) return;
-    setCarregantDeclaracions(true);
-    const data = await llistarDeclaracions(user.id, esMaestro);
-    setDeclaracions(data);
-    setCarregantDeclaracions(false);
-  }, [user, esMaestro]);
-
-  useEffect(() => {
-    if (user?.id && perfil) {
-      carregarDeclaracions();
-    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, perfil?.id, esMaestro]);
+  useEffect(() => {
+    if (user?.id && perfil?.id) {
+      llistarDeclaracions(user.id, esMaestro).then(data => {
+        setDeclaracions(data || []);
+        setCarregantDeclaracions(false);
+      });
+    }
+  }, [user?.id, perfil?.id, esMaestro, vistaActual]);
 
   // ── Obrir declaració ──────────────────────────────────────────────────────
   const handleObrirDeclaracio = useCallback(async (id, declaracioDirecta = null) => {
@@ -158,8 +153,8 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     setDeclaracioId(null);
     setDeclaracioActual(null);
     setUltimDesat(null);
-    await carregarDeclaracions();
-  }, [declaracioId, carregarDeclaracions]);
+    llistarDeclaracions(user.id, esMaestro).then(data => setDeclaracions(data || []));
+  }, [declaracioId, user, esMaestro]);
 
   // ── Autenticació ─────────────────────────────────────────────────────────
   if (carregant) return (
@@ -354,7 +349,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
           pendents={pendents}
           declaracions={declaracions}
           carregantDeclaracions={carregantDeclaracions}
-          onRecarregar={carregarDeclaracions}
+          onRecarregar={() => llistarDeclaracions(user.id, esMaestro).then(data => setDeclaracions(data || []))}
           isMaestro={esMaestro}
           userId={user?.id}
         />
