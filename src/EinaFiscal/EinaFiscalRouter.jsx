@@ -10,11 +10,15 @@ import {
 } from './engine/DeclaracionsStorage';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../auth/AuthContext';
+import PaginaLogin from '../auth/PaginaLogin';
+import PaginaAccesDenegat from '../auth/PaginaAccesDenegat';
+import PanellMaestro from '../auth/PanellMaestro';
 
 const AUTODESAT_MS = 30000; // autodesat cada 30 segons
 
 const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
-  const { esMaestro } = useAuth();
+  const { user, perfil, carregant, esMaestro } = useAuth();
+  const [mostrarPanellMaestro, setMostrarPanellMaestro] = useState(false);
   const [declaracioId, setDeclaracioId] = useState(null);
   const [declaracioActual, setDeclaracioActual] = useState(null);
   const [ultimDesat, setUltimDesat] = useState(null);
@@ -107,6 +111,24 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     onBack();
   }, [onBack]);
 
+  // ── Autenticació ─────────────────────────────────────────────────────────
+  if (carregant) return (
+    <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center">
+      <div className="text-white text-center">
+        <div className="text-2xl font-bold mb-2">ÀMBIT Associats</div>
+        <div className="text-white/70 text-sm">Carregant...</div>
+      </div>
+    </div>
+  );
+
+  if (!user) return <PaginaLogin onLoginOk={() => {}} />;
+  if (perfil && perfil.estat !== 'actiu') return <PaginaAccesDenegat />;
+  if (!perfil) return <PaginaAccesDenegat />;
+
+  if (mostrarPanellMaestro && esMaestro) return (
+    <PanellMaestro onTancar={() => setMostrarPanellMaestro(false)} />
+  );
+
   // ── Render ───────────────────────────────────────────────────────────────
   if (!declaracioId || !declaracioActual) {
     return (
@@ -114,7 +136,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
         onObrirDeclaracio={handleObrirDeclaracio}
         onBack={handleBackFromLlista}
         onLogout={onLogout}
-        onAdminPanel={onAdminPanel}
+        onAdminPanel={esMaestro ? () => setMostrarPanellMaestro(true) : null}
         pendents={pendents}
       />
     );
@@ -129,7 +151,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
       onSortir={handleSortirWizard}
       ultimDesat={ultimDesat}
       onLogout={onLogout}
-      onAdminPanel={onAdminPanel}
+      onAdminPanel={esMaestro ? () => setMostrarPanellMaestro(true) : null}
       pendents={pendents}
     />
   );
