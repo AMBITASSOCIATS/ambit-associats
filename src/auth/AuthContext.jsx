@@ -31,31 +31,39 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setCarregant(false);
-    }, 5000);
+    let mounted = true;
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setUser(session?.user ?? null);
+    const inicialitzar = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!mounted) return;
+
       if (session?.user) {
+        setUser(session.user);
         await carregarPerfil(session.user.id);
       }
-      clearTimeout(timeout);
-      setCarregant(false);
-    });
+      if (mounted) setCarregant(false);
+    };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await carregarPerfil(session.user.id);
-      } else {
+    inicialitzar();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+      if (event === 'SIGNED_OUT') {
+        setUser(null);
         setPerfil(null);
+        setCarregant(false);
+        return;
       }
+      if (session?.user) {
+        setUser(session.user);
+        await carregarPerfil(session.user.id);
+      }
+      setCarregant(false);
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
-      clearTimeout(timeout);
     };
   }, []);
 
