@@ -17,6 +17,60 @@ import PanellMaestro from '../auth/PanellMaestro';
 
 const AUTODESAT_MS = 30000; // autodesat cada 30 segons
 
+// ── Configuració capçalera PDF ───────────────────────────────────────────────
+const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
+  const [form, setForm] = React.useState(valorsInicials);
+  const [desant, setDesant] = React.useState(false);
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
+        <button onClick={onCancelar} className="text-[#009B9C] text-sm mb-4 hover:underline block">
+          ← Zona Professionals
+        </button>
+        <h3 className="text-lg font-bold text-gray-800 mb-1">⚙️ Configuració de la capçalera</h3>
+        <p className="text-xs text-gray-500 mb-5">Aquestes dades apareixeran a la capçalera dels informes PDF generats. Si no s'omple, s'usaran les dades d'ÀMBIT Associats per defecte.</p>
+        <div className="space-y-3">
+          {[
+            { key: 'nom', label: 'Nom empresa / Professional', placeholder: 'Ex: Assessoria López, S.L.' },
+            { key: 'nrt', label: 'NRT', placeholder: 'Ex: L-XXXXXX-X' },
+            { key: 'adreca', label: 'Adreça', placeholder: 'Ex: Carrer Major, 10' },
+            { key: 'poblacio', label: 'Població', placeholder: 'Ex: Andorra la Vella' },
+            { key: 'email', label: 'Email', placeholder: 'Ex: contact@empresa.ad' },
+            { key: 'tel', label: 'Telèfon', placeholder: 'Ex: +376 XXX XXX' },
+            { key: 'web', label: 'Web', placeholder: 'Ex: www.empresa.ad' },
+          ].map(f => (
+            <div key={f.key}>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">{f.label}</label>
+              <input
+                type="text"
+                value={form[f.key]}
+                onChange={e => set(f.key, e.target.value)}
+                placeholder={f.placeholder}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+              />
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-3 pt-4">
+          <button
+            onClick={async () => { setDesant(true); await onDesar(form); setDesant(false); }}
+            disabled={desant}
+            className="flex-1 bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold py-2.5 rounded-xl transition text-sm disabled:opacity-50"
+          >
+            {desant ? 'Desant...' : 'Desar configuració'}
+          </button>
+          <button onClick={onCancelar} className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition text-sm">
+            Cancel·lar
+          </button>
+        </div>
+        <p className="text-xs text-gray-400 mt-3 text-center">Deixa els camps en blanc per usar les dades d'ÀMBIT Associats per defecte.</p>
+      </div>
+    </div>
+  );
+};
+
 const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   const { user, perfil, carregant, esMaestro } = useAuth();
   const [mostrarPanellMaestro, setMostrarPanellMaestro] = useState(false);
@@ -286,8 +340,14 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
             </button>
           </div>
 
-          {/* Botó canviar contrasenya */}
-          <div className="text-center mt-8">
+          {/* Botons inferiors */}
+          <div className="text-center mt-8 flex flex-wrap justify-center gap-3">
+            <button
+              onClick={() => setVistaActual('configuracio')}
+              className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition border border-white/20"
+            >
+              ⚙️ Configuració del perfil
+            </button>
             <button
               onClick={() => { setNovaContrasenya(''); setConfirmarContrasenya(''); setErrorContrasenya(''); setVistaActual('canviarContrasenya'); }}
               className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition border border-white/20"
@@ -298,6 +358,26 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
         </div>
       </div>
     );
+  }
+
+  if (vistaActual === 'configuracio') {
+    const capDefault = {
+      nom: perfil?.capcalera?.nom || '',
+      nrt: perfil?.capcalera?.nrt || '',
+      adreca: perfil?.capcalera?.adreca || '',
+      poblacio: perfil?.capcalera?.poblacio || '',
+      email: perfil?.capcalera?.email || '',
+      tel: perfil?.capcalera?.tel || '',
+      web: perfil?.capcalera?.web || '',
+    };
+    return <ConfiguracioCapcalera
+      valorsInicials={capDefault}
+      onDesar={async (novaCapcalera) => {
+        await supabase.from('profiles').update({ capcalera: novaCapcalera }).eq('id', user.id);
+        setVistaActual('zona');
+      }}
+      onCancelar={() => setVistaActual('zona')}
+    />;
   }
 
   if (vistaActual === 'canviarContrasenya') {

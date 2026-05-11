@@ -113,8 +113,22 @@ const CapcaleraDocument = ({ clientNom, clientNRT, exercici, seccio }) => (
 );
 
 // ─── COMPONENT PRINCIPAL ──────────────────────────────────────────────────────
-const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFinalitzar, onReobrir, estat }) => {
+const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFinalitzar, onReobrir, estat, capcalera }) => {
   const informeRef = useRef(null);
+
+  // Combinar capçalera personalitzada amb valors ÀMBIT per defecte
+  const CAP = {
+    nom: capcalera?.nom || AMBIT.nom,
+    nomComercial: capcalera?.nom || AMBIT.nomComercial,
+    nrt: capcalera?.nrt || AMBIT.nrt,
+    adreca: capcalera?.adreca || AMBIT.adreca,
+    poblacio: capcalera?.poblacio || AMBIT.poblacio,
+    email: capcalera?.email || AMBIT.email,
+    tel: capcalera?.tel || AMBIT.tel,
+    web: capcalera?.web || AMBIT.web,
+    color: AMBIT.color,
+    colorFosc: AMBIT.colorFosc,
+  };
 
   if (!resultat) {
     return (
@@ -331,7 +345,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         <div style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
           {/* Header gran portada */}
           <div style={{
-            background: `linear-gradient(135deg, ${AMBIT.colorFosc} 0%, ${AMBIT.color} 60%, #00B5B6 100%)`,
+            background: `linear-gradient(135deg, ${CAP.colorFosc} 0%, ${CAP.color} 60%, #00B5B6 100%)`,
             padding: '50px 40px 40px',
             color: 'white',
           }}>
@@ -373,7 +387,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
           {/* Resum executiu portada */}
           <div style={{ padding: '30px 40px', flex: 1 }}>
-            <div style={{ fontSize: '11px', fontWeight: '700', color: AMBIT.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: `2px solid ${AMBIT.color}`, paddingBottom: '6px' }}>
+            <div style={{ fontSize: '11px', fontWeight: '700', color: CAP.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: `2px solid ${CAP.color}`, paddingBottom: '6px' }}>
               Resum executiu
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '24px' }}>
@@ -388,10 +402,10 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 <div key={i} style={{
                   backgroundColor: 'white', border: '1px solid #d0eaea',
                   borderRadius: '6px', padding: '10px 12px',
-                  borderLeft: `3px solid ${AMBIT.color}`
+                  borderLeft: `3px solid ${CAP.color}`
                 }}>
                   <div style={{ fontSize: '9px', color: '#888', marginBottom: '3px' }}>{item.label}</div>
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: AMBIT.colorFosc, fontFamily: 'monospace' }}>{item.valor}</div>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: CAP.colorFosc, fontFamily: 'monospace' }}>{item.valor}</div>
                 </div>
               ))}
             </div>
@@ -420,15 +434,15 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
             {/* Tipus efectiu */}
             <div style={{ marginTop: '12px', fontSize: '10px', color: '#666', textAlign: 'right' }}>
-              Tipus efectiu de tributació: <strong style={{ color: AMBIT.colorFosc }}>{fmtPct(r.tipusEfectiu)}</strong>
+              Tipus efectiu de tributació: <strong style={{ color: CAP.colorFosc }}>{fmtPct(r.tipusEfectiu)}</strong>
               {' · '}Retencions practicades: <strong>{fmt(r.retencions)}</strong>
             </div>
           </div>
 
           {/* Peu portada */}
           <div style={{ padding: '16px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
-            <span>{AMBIT.nomComercial} · {AMBIT.nom} · NRT {AMBIT.nrt}</span>
-            <span>{AMBIT.adreca} · {AMBIT.email} · {AMBIT.tel}</span>
+            <span>{CAP.nomComercial} · {CAP.nom} · NRT {CAP.nrt}</span>
+            <span>{CAP.adreca} · {CAP.email} · {CAP.tel}</span>
           </div>
         </div>
 
@@ -587,14 +601,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Liquidació final — Formulari 300-L" />
 
           <div className="page-content" style={{ flex: 1 }}>
-            <div style={{ fontSize: '11px', fontWeight: '700', color: AMBIT.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: `2px solid ${AMBIT.color}`, paddingBottom: '6px' }}>
+            <div style={{ fontSize: '11px', fontWeight: '700', color: CAP.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: `2px solid ${CAP.color}`, paddingBottom: '6px' }}>
               Formulari 300-L · Liquidació de l'IRPF {exercici}
             </div>
 
             {/* Taula 300-L */}
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px', marginBottom: '20px' }}>
               <thead>
-                <tr style={{ backgroundColor: AMBIT.color, color: 'white' }}>
+                <tr style={{ backgroundColor: CAP.color, color: 'white' }}>
                   <th style={{ padding: '7px 10px', textAlign: 'left', fontWeight: '600', width: '70px' }}>Casella</th>
                   <th style={{ padding: '7px 10px', textAlign: 'left', fontWeight: '600' }}>Descripció</th>
                   <th style={{ padding: '7px 10px', textAlign: 'right', fontWeight: '600', width: '120px' }}>Import</th>
@@ -609,10 +623,10 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     <td style={{ padding: '6px 10px', fontFamily: 'monospace', fontSize: '9px', color: '#666', fontWeight: c.destacat ? '700' : '400' }}>
                       {c.casella}
                     </td>
-                    <td style={{ padding: '6px 10px', fontWeight: c.destacat ? '700' : '400', color: c.destacat ? AMBIT.colorFosc : '#333' }}>
+                    <td style={{ padding: '6px 10px', fontWeight: c.destacat ? '700' : '400', color: c.destacat ? CAP.colorFosc : '#333' }}>
                       {c.descripcio}
                     </td>
-                    <td style={{ padding: '6px 10px', textAlign: 'right', fontFamily: 'monospace', fontWeight: c.destacat ? '700' : '500', color: c.destacat ? AMBIT.color : typeof c.valor === 'number' && c.valor < 0 ? '#c0392b' : '#333' }}>
+                    <td style={{ padding: '6px 10px', textAlign: 'right', fontFamily: 'monospace', fontWeight: c.destacat ? '700' : '500', color: c.destacat ? CAP.color : typeof c.valor === 'number' && c.valor < 0 ? '#c0392b' : '#333' }}>
                       {fmt(c.valor)}
                     </td>
                   </tr>
@@ -650,7 +664,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
             {/* Formularis a presentar */}
             <div style={{ marginBottom: '16px' }}>
-              <div style={{ fontSize: '10px', fontWeight: '700', color: AMBIT.colorFosc, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ fontSize: '10px', fontWeight: '700', color: CAP.colorFosc, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Formularis a presentar al Portal Tributari
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -665,9 +679,9 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 ].map(f => (
                   <div key={f.codi} style={{
                     backgroundColor: f.actiu ? '#e6f7f7' : '#f5f5f5',
-                    border: `1px solid ${f.actiu ? AMBIT.color : '#ddd'}`,
+                    border: `1px solid ${f.actiu ? CAP.color : '#ddd'}`,
                     borderRadius: '4px', padding: '4px 8px',
-                    fontSize: '9px', color: f.actiu ? AMBIT.colorFosc : '#aaa',
+                    fontSize: '9px', color: f.actiu ? CAP.colorFosc : '#aaa',
                     display: 'flex', alignItems: 'center', gap: '4px'
                   }}>
                     <span style={{ fontWeight: '700', fontFamily: 'monospace' }}>{f.codi}</span>
@@ -689,7 +703,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         {/* ══ ÚLTIMA PÀGINA — DISCLAIMERS I PEU LEGAL ════════════════════ */}
         <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{
-            background: `linear-gradient(135deg, ${AMBIT.colorFosc} 0%, ${AMBIT.color} 100%)`,
+            background: `linear-gradient(135deg, ${CAP.colorFosc} 0%, ${CAP.color} 100%)`,
             padding: '30px 40px', color: 'white'
           }}>
             <div style={{ fontSize: '18px', fontWeight: '800' }}>ÀMBIT Associats</div>
@@ -717,7 +731,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               },
               {
                 titol: '3. Protecció de dades personals (Llei 29/2021)',
-                text: `En compliment de la Llei 29/2021, del 28 d'octubre, qualificada de protecció de dades personals del Principat d'Andorra, i del Reglament (UE) 2016/679 (RGPD), s'informa que les dades personals contingudes en aquest informe (nom, NRT, dades fiscals) han estat introduïdes per l'assessor tributari en el marc de la relació professional establerta amb l'obligat tributari. Les dades es tracten únicament per a la finalitat de gestionar la liquidació de l'IRPF i no es cediran a tercers sense consentiment exprés. Les dades es guarden localment al navegador (localStorage) i no es transmeten a cap servidor extern. L'obligat tributari pot exercir els seus drets d'accés, rectificació i supressió dirigint-se a ${AMBIT.email}.`
+                text: `En compliment de la Llei 29/2021, del 28 d'octubre, qualificada de protecció de dades personals del Principat d'Andorra, i del Reglament (UE) 2016/679 (RGPD), s'informa que les dades personals contingudes en aquest informe (nom, NRT, dades fiscals) han estat introduïdes per l'assessor tributari en el marc de la relació professional establerta amb l'obligat tributari. Les dades es tracten únicament per a la finalitat de gestionar la liquidació de l'IRPF i no es cediran a tercers sense consentiment exprés. Les dades es guarden localment al navegador (localStorage) i no es transmeten a cap servidor extern. L'obligat tributari pot exercir els seus drets d'accés, rectificació i supressió dirigint-se a ${CAP.email}.`
               },
               {
                 titol: '4. Confidencialitat',
@@ -729,7 +743,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               }
             ].map((item, i) => (
               <div key={i} style={{ marginBottom: '14px' }} className="avoid-break">
-                <div style={{ fontSize: '10px', fontWeight: '700', color: AMBIT.colorFosc, marginBottom: '4px' }}>{item.titol}</div>
+                <div style={{ fontSize: '10px', fontWeight: '700', color: CAP.colorFosc, marginBottom: '4px' }}>{item.titol}</div>
                 <p style={{ fontSize: '9px', color: '#555', lineHeight: '1.6', margin: 0 }}>{item.text}</p>
               </div>
             ))}
@@ -737,28 +751,28 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
           {/* Peu legal final */}
           <div style={{
-            backgroundColor: AMBIT.colorFosc, color: 'white',
+            backgroundColor: CAP.colorFosc, color: 'white',
             padding: '20px 40px'
           }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', fontSize: '9px', marginBottom: '12px' }}>
               <div>
                 <div style={{ fontWeight: '700', marginBottom: '4px', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '8px' }}>Entitat</div>
-                <div>{AMBIT.nom}</div>
-                <div style={{ opacity: 0.75 }}>NRT: {AMBIT.nrt}</div>
+                <div>{CAP.nom}</div>
+                <div style={{ opacity: 0.75 }}>NRT: {CAP.nrt}</div>
               </div>
               <div>
                 <div style={{ fontWeight: '700', marginBottom: '4px', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '8px' }}>Adreça</div>
-                <div>{AMBIT.adreca}</div>
-                <div style={{ opacity: 0.75 }}>{AMBIT.poblacio}</div>
+                <div>{CAP.adreca}</div>
+                <div style={{ opacity: 0.75 }}>{CAP.poblacio}</div>
               </div>
               <div>
                 <div style={{ fontWeight: '700', marginBottom: '4px', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '8px' }}>Contacte</div>
-                <div>{AMBIT.email}</div>
-                <div style={{ opacity: 0.75 }}>{AMBIT.tel} · {AMBIT.web}</div>
+                <div>{CAP.email}</div>
+                <div style={{ opacity: 0.75 }}>{CAP.tel} · {CAP.web}</div>
               </div>
             </div>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '10px', fontSize: '8px', opacity: 0.6, textAlign: 'center' }}>
-              © {new Date().getFullYear()} {AMBIT.nom} · Tots els drets reservats · Informe generat el {dataAvui()} · Normativa: Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023
+              © {new Date().getFullYear()} {CAP.nom} · Tots els drets reservats · Informe generat el {dataAvui()} · Normativa: Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023
             </div>
           </div>
         </div>

@@ -17,6 +17,7 @@ import Step8Deduccions from './steps/Step8Deduccions';
 import Step9Bases300F from './steps/Step8_300F';
 import Step10Liquidacio from './steps/Step9Liquidacio';
 import { finalitzarDeclaracio, desarDeclaracio } from './engine/DeclaracionsSupabase';
+import { useAuth } from '../auth/AuthContext';
 
 const STEPS = [
   { id: 1,  label: 'Situacio personal',         formulari: '300-A' },
@@ -72,6 +73,7 @@ const DEFAULT_DADES = {
 };
 
 const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesChange, onSortir, ultimDesat, onLogout, onAdminPanel, pendents = 0 }) => {
+  const { perfil } = useAuth();
   const [pas, setPas] = useState(1);
   const [dades, setDades] = useState(() => ({
     ...DEFAULT_DADES,
@@ -208,6 +210,7 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
                 resultat={resultat}
                 clientNom={clientNom}
                 exercici={exercici}
+                capcalera={perfil?.capcalera}
                 estat={estatActual}
                 onFinalitzar={async () => {
                   await finalitzarDeclaracio(declaracioId);
