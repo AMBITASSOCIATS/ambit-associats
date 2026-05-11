@@ -38,7 +38,7 @@ const ESTAT_LABELS = {
 // MODAL NOVA DECLARACIÓ
 // ─────────────────────────────────────────────────────────────────────────────
 
-const ModalNovaDeclaracio = ({ onConfirmar, onCancelar }) => {
+const ModalNovaDeclaracio = ({ onConfirmar, onCancelar, error = '', operant = false }) => {
   const [clientNom, setClientNom] = useState('');
   const [clientNRT, setClientNRT] = useState('');
   const [exercici, setExercici] = useState(2025);
@@ -96,20 +96,29 @@ const ModalNovaDeclaracio = ({ onConfirmar, onCancelar }) => {
             </select>
           </div>
         </div>
+        {error && (
+          <div className="px-6 pb-2">
+            <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-xs text-red-700">
+              ⚠️ {error}
+            </div>
+          </div>
+        )}
         <div className="px-6 py-4 border-t border-gray-100 flex gap-3 justify-end">
           <button
             onClick={onCancelar}
+            disabled={operant}
             className="px-4 py-2 text-sm text-gray-600 border border-gray-300
-                       rounded-lg hover:bg-gray-50 transition"
+                       rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
           >
             Cancel·lar
           </button>
           <button
             onClick={() => onConfirmar(clientNom.trim(), clientNRT.trim(), exercici)}
+            disabled={operant}
             className="px-5 py-2 text-sm bg-[#009B9C] text-white rounded-lg
-                       font-semibold hover:bg-[#007A7B] transition"
+                       font-semibold hover:bg-[#007A7B] transition disabled:opacity-50"
           >
-            Crear declaració →
+            {operant ? 'Creant...' : 'Crear declaració →'}
           </button>
         </div>
       </div>
@@ -177,13 +186,25 @@ const LlistaDeclaracions = ({
   const [filtreEstat, setFiltreEstat] = useState('tots');
   const [cerca, setCerca] = useState('');
   const [operant, setOperant] = useState(false);
+  const [errorNova, setErrorNova] = useState('');
 
   const handleNova = async (clientNom, clientNRT, exercici) => {
-    const nova = await novaDeclaracio(clientNom, clientNRT, exercici, user?.id);
-    setMostrarModal(false);
-    if (nova) {
-      await onRecarregar();
-      onObrirDeclaracio(nova.id, nova);
+    setOperant(true);
+    setErrorNova('');
+    try {
+      const nova = await novaDeclaracio(clientNom, clientNRT, exercici, user?.id);
+      if (nova) {
+        setMostrarModal(false);
+        await onRecarregar();
+        onObrirDeclaracio(nova.id, nova);
+      } else {
+        setErrorNova('No s\'ha pogut crear la declaració. Comprova els permisos de la base de dades.');
+      }
+    } catch (e) {
+      console.error('Error inesperat creant declaració:', e);
+      setErrorNova('Error inesperat. Torna a intentar-ho.');
+    } finally {
+      setOperant(false);
     }
   };
 
@@ -460,7 +481,9 @@ const LlistaDeclaracions = ({
       {mostrarModal && (
         <ModalNovaDeclaracio
           onConfirmar={handleNova}
-          onCancelar={() => setMostrarModal(false)}
+          onCancelar={() => { setMostrarModal(false); setErrorNova(''); }}
+          error={errorNova}
+          operant={operant}
         />
       )}
       {confirmarEliminar && (
