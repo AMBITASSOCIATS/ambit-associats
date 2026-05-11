@@ -113,7 +113,7 @@ const CapcaleraDocument = ({ clientNom, clientNRT, exercici, seccio }) => (
 );
 
 // ─── COMPONENT PRINCIPAL ──────────────────────────────────────────────────────
-const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFinalitzar }) => {
+const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFinalitzar, onReobrir, estat }) => {
   const informeRef = useRef(null);
 
   if (!resultat) {
@@ -268,17 +268,38 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         <p className="text-xs text-gray-400 text-center mt-2">
           Al diàleg d'impressió, seleccioneu "Desar com a PDF". Recomanem orientació vertical, mida A4.
         </p>
-        {onFinalitzar && (
-          <button
-            onClick={onFinalitzar}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition flex items-center justify-center gap-3 text-sm"
-          >
-            <span>✅</span>
-            <div className="text-left">
-              <div>Finalitzar declaració</div>
-              <div className="text-xs font-normal opacity-80">Marca la declaració com a finalitzada i torna a la llista</div>
+        {estat === 'finalitzada' ? (
+          <div className="space-y-3">
+            <div className="w-full bg-green-50 border-2 border-green-300 text-green-700 font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 text-sm">
+              <span>✅</span>
+              <span>Declaració finalitzada</span>
             </div>
-          </button>
+            {onReobrir && (
+              <button
+                onClick={onReobrir}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-xl transition flex items-center justify-center gap-3 text-sm"
+              >
+                <span>✏️</span>
+                <div className="text-left">
+                  <div>Reobrir i editar</div>
+                  <div className="text-xs font-normal opacity-70">Torna la declaració a estat esborrany per poder modificar-la</div>
+                </div>
+              </button>
+            )}
+          </div>
+        ) : (
+          onFinalitzar && (
+            <button
+              onClick={onFinalitzar}
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition flex items-center justify-center gap-3 text-sm"
+            >
+              <span>✅</span>
+              <div className="text-left">
+                <div>Finalitzar declaració</div>
+                <div className="text-xs font-normal opacity-80">Marca la declaració com a finalitzada i torna a la llista</div>
+              </div>
+            </button>
+          )
         )}
       </div>
 

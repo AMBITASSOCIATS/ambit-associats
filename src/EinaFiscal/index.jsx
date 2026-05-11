@@ -16,7 +16,7 @@ import Step7DDI from './steps/Step7DDI';
 import Step8Deduccions from './steps/Step8Deduccions';
 import Step9Bases300F from './steps/Step8_300F';
 import Step10Liquidacio from './steps/Step9Liquidacio';
-import { finalitzarDeclaracio } from './engine/DeclaracionsSupabase';
+import { finalitzarDeclaracio, desarDeclaracio } from './engine/DeclaracionsSupabase';
 
 const STEPS = [
   { id: 1,  label: 'Situacio personal',         formulari: '300-A' },
@@ -207,9 +207,14 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
                 resultat={resultat}
                 clientNom={clientNom}
                 exercici={exercici}
+                estat={declaracioInicial?.estat}
                 onFinalitzar={async () => {
                   await finalitzarDeclaracio(declaracioId);
                   onSortir();
+                }}
+                onReobrir={async () => {
+                  await desarDeclaracio(declaracioId, { estat: 'esborrany' });
+                  window.location.reload();
                 }}
               />
             )}
