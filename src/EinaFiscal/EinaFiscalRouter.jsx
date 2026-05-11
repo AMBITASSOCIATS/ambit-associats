@@ -195,9 +195,15 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     return () => clearInterval(autoDesatRef.current);
   }, [declaracioId]);
 
+  // ── Recarregar declaracions ──────────────────────────────────────────────
+  const handleRecarregar = useCallback(() => {
+    if (!user?.id) return Promise.resolve();
+    return llistarDeclaracions(user.id, esMaestro)
+      .then(data => setDeclaracions(data || []));
+  }, [user?.id, esMaestro]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── Sortir del wizard ────────────────────────────────────────────────────
   const handleSortirWizard = useCallback(() => {
-    // Desar en segon pla — no bloquejar la navegació
     if (declaracioId && dadesRef.current) {
       desarDeclaracio(declaracioId, {
         dades: dadesRef.current,
@@ -206,15 +212,12 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
         exercici: metaRef.current.exercici,
       }).catch(e => console.error('Error desant al sortir:', e));
     }
-    // Navegar immediatament — no esperar Supabase
     clearInterval(autoDesatRef.current);
     setDeclaracioId(null);
     setDeclaracioActual(null);
     setUltimDesat(null);
-    llistarDeclaracions(user.id, esMaestro)
-      .then(data => setDeclaracions(data || []))
-      .catch(() => {});
-  }, [declaracioId, user, esMaestro]);
+    handleRecarregar();
+  }, [declaracioId, handleRecarregar]);
 
   // ── Autenticació ─────────────────────────────────────────────────────────
   if (carregant) return (
@@ -451,7 +454,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
           pendents={pendents}
           declaracions={declaracions}
           carregantDeclaracions={carregantDeclaracions}
-          onRecarregar={() => llistarDeclaracions(user.id, esMaestro).then(data => setDeclaracions(data || []))}
+          onRecarregar={handleRecarregar}
           isMaestro={esMaestro}
           userId={user?.id}
         />
