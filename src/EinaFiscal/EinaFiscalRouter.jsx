@@ -387,7 +387,16 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
           alert('Error desant: ' + error.message);
           return;
         }
-        setVistaActual('zona');
+        // Forçar recàrrega del perfil des de Supabase
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        if (data) {
+          // Actualitzar el perfil al context via recàrrega de pàgina
+          window.location.reload();
+        }
       }}
       onCancelar={() => setVistaActual('zona')}
     />;
