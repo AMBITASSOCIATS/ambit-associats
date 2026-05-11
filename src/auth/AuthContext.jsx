@@ -120,13 +120,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Refresca el perfil des de Supabase (útil després de desar canvis al perfil)
+  const refreshPerfil = async () => {
+    if (!user?.id) return;
+    const data = await fetchPerfil(user.id);
+    if (data) setPerfil(data);
+  };
+
   const esMaestro = perfil?.rol === 'maestro';
   const esActiu = carregant || perfil?.estat === 'actiu';
 
   return (
     <AuthContext.Provider value={{
       user, perfil, carregant,
-      login, logout,
+      login, logout, refreshPerfil,
       esMaestro, esActiu,
     }}>
       {children}

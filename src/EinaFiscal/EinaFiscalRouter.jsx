@@ -72,7 +72,7 @@ const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
 };
 
 const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
-  const { user, perfil, carregant, esMaestro } = useAuth();
+  const { user, perfil, carregant, esMaestro, refreshPerfil } = useAuth();
   const [mostrarPanellMaestro, setMostrarPanellMaestro] = useState(false);
   const [vistaActual, setVistaActual] = useState('zona'); // 'zona' | 'irpf'
   const [declaracioId, setDeclaracioId] = useState(null);
@@ -375,7 +375,20 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     return <ConfiguracioCapcalera
       valorsInicials={capDefault}
       onDesar={async (novaCapcalera) => {
-        await supabase.from('profiles').update({ capcalera: novaCapcalera }).eq('id', user.id);
+        // Desar al DB: si tots els camps estan buits, guardar null (usarà defaults d'ÀMBIT)
+        const esTotBuit = Object.values(novaCapcalera).every(v => !v || !v.toString().trim());
+        const valorADesar = esTotBuit ? null : novaCapcalera;
+        const { error } = await supabase
+          .from('profiles')
+          .update({ capcalera: valorADesar })
+          .eq('id', user.id);
+        if (error) {
+          console.error('Error desant capçalera:', JSON.stringify(error));
+          alert('Error desant la configuració: ' + error.message);
+          return;
+        }
+        // Refrescar el perfil al context perquè el wizard agafi els nous valors
+        await refreshPerfil();
         setVistaActual('zona');
       }}
       onCancelar={() => setVistaActual('zona')}
