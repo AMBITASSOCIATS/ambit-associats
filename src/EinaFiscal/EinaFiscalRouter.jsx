@@ -55,7 +55,11 @@ const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
         </div>
         <div className="flex gap-3 pt-4">
           <button
-            onClick={async () => { setDesant(true); await onDesar(form); setDesant(false); }}
+            onClick={async () => {
+              setDesant(true);
+              try { await onDesar(form); } catch (e) { console.error('Error desant capçalera:', e); }
+              finally { setDesant(false); }
+            }}
             disabled={desant}
             className="flex-1 bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold py-2.5 rounded-xl transition text-sm disabled:opacity-50"
           >
@@ -387,8 +391,8 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
           alert('Error desant la configuració: ' + error.message);
           return;
         }
-        // Refrescar el perfil al context perquè el wizard agafi els nous valors
-        await refreshPerfil();
+        // Refrescar el perfil en segon pla — navegar immediatament
+        refreshPerfil().catch(e => console.warn('refreshPerfil error:', e));
         setVistaActual('zona');
       }}
       onCancelar={() => setVistaActual('zona')}
