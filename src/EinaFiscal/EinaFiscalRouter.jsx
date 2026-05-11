@@ -76,7 +76,7 @@ const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
 };
 
 const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
-  const { user, perfil, carregant, esMaestro, refreshPerfil } = useAuth();
+  const { user, perfil, carregant, esMaestro } = useAuth();
   const [mostrarPanellMaestro, setMostrarPanellMaestro] = useState(false);
   const [vistaActual, setVistaActual] = useState('zona'); // 'zona' | 'irpf'
   const [declaracioId, setDeclaracioId] = useState(null);
@@ -379,20 +379,14 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     return <ConfiguracioCapcalera
       valorsInicials={capDefault}
       onDesar={async (novaCapcalera) => {
-        // Desar al DB: si tots els camps estan buits, guardar null (usarà defaults d'ÀMBIT)
-        const esTotBuit = Object.values(novaCapcalera).every(v => !v || !v.toString().trim());
-        const valorADesar = esTotBuit ? null : novaCapcalera;
         const { error } = await supabase
           .from('profiles')
-          .update({ capcalera: valorADesar })
+          .update({ capcalera: novaCapcalera })
           .eq('id', user.id);
         if (error) {
-          console.error('Error desant capçalera:', JSON.stringify(error));
-          alert('Error desant la configuració: ' + error.message);
+          alert('Error desant: ' + error.message);
           return;
         }
-        // Refrescar el perfil en segon pla — navegar immediatament
-        refreshPerfil().catch(e => console.warn('refreshPerfil error:', e));
         setVistaActual('zona');
       }}
       onCancelar={() => setVistaActual('zona')}
