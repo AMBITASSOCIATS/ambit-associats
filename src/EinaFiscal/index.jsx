@@ -80,6 +80,7 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
   const [clientNom, setClientNom] = useState(() => declaracioInicial?.clientNom || '');
   const [clientNRT, setClientNRT] = useState(() => declaracioInicial?.clientNRT || '');
   const [exercici, setExercici] = useState(() => declaracioInicial?.exercici || 2025);
+  const [estatActual, setEstatActual] = useState(() => declaracioInicial?.estat || 'esborrany');
 
   const updateDades = useCallback((clau, valor) => {
     setDades(prev => ({ ...prev, [clau]: valor }));
@@ -207,14 +208,15 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
                 resultat={resultat}
                 clientNom={clientNom}
                 exercici={exercici}
-                estat={declaracioInicial?.estat}
+                estat={estatActual}
                 onFinalitzar={async () => {
                   await finalitzarDeclaracio(declaracioId);
+                  setEstatActual('finalitzada');
                   onSortir();
                 }}
                 onReobrir={async () => {
                   await desarDeclaracio(declaracioId, { estat: 'esborrany' });
-                  window.location.reload();
+                  setEstatActual('esborrany');
                 }}
               />
             )}
