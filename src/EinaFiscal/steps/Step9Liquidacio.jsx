@@ -78,39 +78,40 @@ const NotaNormativa = ({ ref: refText, text }) => (
   </div>
 );
 
-// ─── CAPÇALERA DEL DOCUMENT (repetida a cada secció impresa) ─────────────────
-const CapcaleraDocument = ({ clientNom, clientNRT, exercici, seccio }) => (
-  <div style={{ marginBottom: '20px' }}>
-    {/* Header principal */}
-    <div style={{
-      background: `linear-gradient(135deg, ${AMBIT.colorFosc} 0%, ${AMBIT.color} 100%)`,
-      padding: '20px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-    }}>
-      <div>
-        <div style={{ color: 'white', fontSize: '20px', fontWeight: '800', letterSpacing: '-0.5px' }}>
-          ÀMBIT Associats
+// ─── CAPÇALERA DEL DOCUMENT (rep cap com a prop per suportar capçalera personalitzada) ──
+const CapcaleraDocument = ({ clientNom, clientNRT, exercici, seccio, cap }) => {
+  const C = cap || AMBIT;
+  return (
+    <div style={{ marginBottom: '20px' }}>
+      <div style={{
+        background: `linear-gradient(135deg, ${C.colorFosc} 0%, ${C.color} 100%)`,
+        padding: '20px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+      }}>
+        <div>
+          <div style={{ color: 'white', fontSize: '20px', fontWeight: '800', letterSpacing: '-0.5px' }}>
+            {C.nomComercial || C.nom}
+          </div>
+          <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '9px', marginTop: '2px' }}>
+            {C.adreca}{C.poblacio ? ` · ${C.poblacio}` : ''}
+          </div>
         </div>
-        <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '9px', marginTop: '2px' }}>
-          Assessoria fiscal, comptable i mercantil · Escaldes-Engordany
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ color: 'white', fontSize: '13px', fontWeight: '700' }}>
+            Informe IRPF {exercici}
+          </div>
+          <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '9px' }}>{seccio}</div>
         </div>
       </div>
-      <div style={{ textAlign: 'right' }}>
-        <div style={{ color: 'white', fontSize: '13px', fontWeight: '700' }}>
-          Informe IRPF {exercici}
-        </div>
-        <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '9px' }}>{seccio}</div>
+      <div style={{
+        backgroundColor: '#f7fafa', borderBottom: '1px solid #d0eaea',
+        padding: '8px 30px', display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: '#555'
+      }}>
+        <span><strong>Client:</strong> {clientNom || '—'} {clientNRT ? `· NRT: ${clientNRT}` : ''}</span>
+        <span><strong>Exercici:</strong> {exercici} · <strong>Generat:</strong> {dataAvui()}</span>
       </div>
     </div>
-    {/* Barra client */}
-    <div style={{
-      backgroundColor: '#f7fafa', borderBottom: '1px solid #d0eaea',
-      padding: '8px 30px', display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: '#555'
-    }}>
-      <span><strong>Client:</strong> {clientNom || '—'} {clientNRT ? `· NRT: ${clientNRT}` : ''}</span>
-      <span><strong>Exercici:</strong> {exercici} · <strong>Generat:</strong> {dataAvui()}</span>
-    </div>
-  </div>
-);
+  );
+};
 
 // ─── COMPONENT PRINCIPAL ──────────────────────────────────────────────────────
 const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFinalitzar, onReobrir, estat, capcalera }) => {
@@ -350,10 +351,10 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             color: 'white',
           }}>
             <div style={{ fontSize: '32px', fontWeight: '800', letterSpacing: '-1px', marginBottom: '4px' }}>
-              ÀMBIT Associats
+              {CAP.nomComercial || CAP.nom}
             </div>
             <div style={{ fontSize: '12px', opacity: 0.85, marginBottom: '40px' }}>
-              Assessoria fiscal, comptable i mercantil · Escaldes-Engordany
+              {CAP.adreca}{CAP.poblacio ? ` · ${CAP.poblacio}` : ''}
             </div>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.3)', paddingTop: '30px' }}>
               <div style={{ fontSize: '11px', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
@@ -448,7 +449,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
         {/* ══ PÀGINA 2 — DETALL DE RENDES ════════════════════════════════ */}
         <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Detall de rendes" />
+          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Detall de rendes" cap={CAP} />
 
           <div className="page-content" style={{ flex: 1 }}>
 
@@ -544,14 +545,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           </div>
 
           <div style={{ padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
-            <span>ÀMBIT Associats · Informe IRPF {exercici} · {clientNom || '—'}</span>
+            <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
             <span>Pàgina 2 / 4</span>
           </div>
         </div>
 
         {/* ══ PÀGINA 3 — BASES I REDUCCIONS ══════════════════════════════ */}
         <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Bases i reduccions" />
+          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Bases i reduccions" cap={CAP} />
 
           <div className="page-content" style={{ flex: 1 }}>
 
@@ -591,14 +592,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           </div>
 
           <div style={{ padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
-            <span>ÀMBIT Associats · Informe IRPF {exercici} · {clientNom || '—'}</span>
+            <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
             <span>Pàgina 3 / 4</span>
           </div>
         </div>
 
         {/* ══ PÀGINA 4 — LIQUIDACIÓ FINAL 300-L (INDEPENDENT) ════════════ */}
         <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Liquidació final — Formulari 300-L" />
+          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Liquidació final — Formulari 300-L" cap={CAP} />
 
           <div className="page-content" style={{ flex: 1 }}>
             <div style={{ fontSize: '11px', fontWeight: '700', color: CAP.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: `2px solid ${CAP.color}`, paddingBottom: '6px' }}>
@@ -695,7 +696,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           </div>
 
           <div style={{ padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
-            <span>ÀMBIT Associats · Informe IRPF {exercici} · {clientNom || '—'}</span>
+            <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
             <span>Pàgina 4 / 4</span>
           </div>
         </div>
@@ -706,7 +707,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             background: `linear-gradient(135deg, ${CAP.colorFosc} 0%, ${CAP.color} 100%)`,
             padding: '30px 40px', color: 'white'
           }}>
-            <div style={{ fontSize: '18px', fontWeight: '800' }}>ÀMBIT Associats</div>
+            <div style={{ fontSize: '18px', fontWeight: '800' }}>{CAP.nomComercial || CAP.nom}</div>
             <div style={{ fontSize: '11px', opacity: 0.8 }}>Informació legal i avisos importants</div>
           </div>
 

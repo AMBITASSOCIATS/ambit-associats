@@ -216,10 +216,20 @@ const LlistaDeclaracions = ({
   const handleEliminar = useCallback(async () => {
     if (!confirmarEliminar) return;
     setOperant(true);
-    await eliminarDeclaracio(confirmarEliminar.id);
-    setConfirmarEliminar(null);
-    await onRecarregar();
-    setOperant(false);
+    try {
+      const ok = await eliminarDeclaracio(confirmarEliminar.id);
+      setConfirmarEliminar(null);
+      if (ok) {
+        await onRecarregar();
+      } else {
+        alert('No s\'ha pogut eliminar la declaració. Comprova els permisos (RLS Supabase).');
+      }
+    } catch (e) {
+      console.error('Error eliminant declaració:', e);
+      setConfirmarEliminar(null);
+    } finally {
+      setOperant(false);
+    }
   }, [confirmarEliminar, onRecarregar]);
 
   // Filtrat
