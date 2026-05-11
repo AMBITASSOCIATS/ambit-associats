@@ -192,22 +192,24 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   }, [declaracioId]);
 
   // ── Sortir del wizard ────────────────────────────────────────────────────
-  const handleSortirWizard = useCallback(async () => {
-    // Desar primer
+  const handleSortirWizard = useCallback(() => {
+    // Desar en segon pla — no bloquejar la navegació
     if (declaracioId && dadesRef.current) {
-      await desarDeclaracio(declaracioId, {
+      desarDeclaracio(declaracioId, {
         dades: dadesRef.current,
         clientNom: metaRef.current.clientNom,
         clientNRT: metaRef.current.clientNRT,
         exercici: metaRef.current.exercici,
-      });
+      }).catch(e => console.error('Error desant al sortir:', e));
     }
-    // Tornar a la llista i recarregar
+    // Navegar immediatament — no esperar Supabase
     clearInterval(autoDesatRef.current);
     setDeclaracioId(null);
     setDeclaracioActual(null);
     setUltimDesat(null);
-    llistarDeclaracions(user.id, esMaestro).then(data => setDeclaracions(data || []));
+    llistarDeclaracions(user.id, esMaestro)
+      .then(data => setDeclaracions(data || []))
+      .catch(() => {});
   }, [declaracioId, user, esMaestro]);
 
   // ── Autenticació ─────────────────────────────────────────────────────────

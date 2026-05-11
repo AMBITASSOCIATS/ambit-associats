@@ -212,13 +212,13 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
                 exercici={exercici}
                 capcalera={perfil?.capcalera}
                 estat={estatActual}
-                onFinalitzar={async () => {
-                  await finalitzarDeclaracio(declaracioId);
+                onFinalitzar={() => {
+                  finalitzarDeclaracio(declaracioId).catch(e => console.error('Error finalitzant:', e));
                   setEstatActual('finalitzada');
                   onSortir();
                 }}
-                onReobrir={async () => {
-                  await desarDeclaracio(declaracioId, { estat: 'esborrany' });
+                onReobrir={() => {
+                  desarDeclaracio(declaracioId, { estat: 'esborrany' }).catch(e => console.error('Error reobrind:', e));
                   setEstatActual('esborrany');
                 }}
               />
