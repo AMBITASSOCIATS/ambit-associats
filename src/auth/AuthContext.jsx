@@ -9,18 +9,16 @@ export const AuthProvider = ({ children }) => {
   const [perfil, setPerfil] = useState(null);
   const [carregant, setCarregant] = useState(true);
 
-  // Retorna les dades del perfil usant fetch() directe amb AbortSignal
-  const fetchPerfil = async (userId) => {
+  // Retorna les dades del perfil usant fetch() directe amb AbortSignal.
+  // accessToken es passa des de fora per evitar cridar getSession() dins d'un
+  // callback onAuthStateChange (causaria deadlock a supabase-js v2).
+  const fetchPerfil = async (userId, accessToken = null) => {
     try {
       const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
       const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
       console.log('fetchPerfil START:', userId);
-      console.log('fetchPerfil URL base:', supabaseUrl ? supabaseUrl.substring(0, 40) : 'NO URL');
-      console.log('fetchPerfil KEY:', supabaseKey ? supabaseKey.substring(0, 20) + '...' : 'NO KEY');
 
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token || supabaseKey;
-
+      const token = accessToken || supabaseKey;
       const url = `${supabaseUrl}/rest/v1/profiles?id=eq.${userId}&select=*&limit=1`;
       const response = await fetch(url, {
         headers: {
@@ -84,8 +82,8 @@ export const AuthProvider = ({ children }) => {
         } else if (event === 'SIGNED_IN' && session?.user) {
           const userData = session.user;
           setUser(userData);
-          // fetchPerfil en segon pla — no bloqueja signInWithPassword
-          fetchPerfil(userData.id).then(profileData => {
+          // fetchPerfil en segon pla — passem access_token per evitar deadlock
+          fetchPerfil(userData.id, session.access_token).then(profileData => {
             if (mounted) setPerfil(profileData);
           }).catch(() => {});
         }
@@ -100,7 +98,7 @@ export const AuthProvider = ({ children }) => {
 
       // Té sessió: settle immediatament i carrega perfil en segon pla
       const userData = session.user;
-      fetchPerfil(userData.id).then(profileData => {
+      fetchPerfil(userData.id, session.access_token).then(profileData => {
         if (mounted) settle(userData, profileData);
       }).catch(() => {
         if (mounted) settle(userData, null);
@@ -137,7 +135,8 @@ export const AuthProvider = ({ children }) => {
   // Refresca el perfil des de Supabase (útil després de desar canvis al perfil)
   const refreshPerfil = async () => {
     if (!user?.id) return;
-    const data = await fetchPerfil(user.id);
+    const { data: { session } } = await supabase.auth.getSession();
+    const data = await fetchPerfil(user.id, session?.access_token);
     if (data) setPerfil(data);
   };
 
