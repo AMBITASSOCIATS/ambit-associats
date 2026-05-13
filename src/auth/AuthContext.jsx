@@ -93,16 +93,19 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, contrasenya) => {
-    const loginPromise = supabase.auth.signInWithPassword({
-      email,
-      password: contrasenya,
-    });
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('La connexió ha trigat massa. Comprova la connexió i torna-ho a intentar.')), 10000)
-    );
-    const { data, error } = await Promise.race([loginPromise, timeoutPromise]);
-    if (error) throw error;
-    return data;
+    console.log('LOGIN START');
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password: contrasenya,
+      });
+      console.log('LOGIN RESULT:', { data: !!data, error });
+      if (error) throw error;
+      return data;
+    } catch (e) {
+      console.error('LOGIN ERROR:', e);
+      throw e;
+    }
   };
 
   const logout = async () => {
