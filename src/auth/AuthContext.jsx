@@ -9,22 +9,37 @@ export const AuthProvider = ({ children }) => {
   const [perfil, setPerfil] = useState(null);
   const [carregant, setCarregant] = useState(true);
 
-  // Retorna les dades del perfil (no crida setPerfil directament)
+  // Retorna les dades del perfil usant fetch() directe amb AbortSignal
   const fetchPerfil = async (userId) => {
     try {
+      const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+      const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
       console.log('fetchPerfil START:', userId);
-      const fetchPromise = supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('fetchPerfil timeout (6s)')), 6000)
-      );
-      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
-      console.log('fetchPerfil RESULT:', { data: !!data, error: error?.message });
-      if (!error && data) return data;
-      return null;
+      console.log('fetchPerfil URL base:', supabaseUrl ? supabaseUrl.substring(0, 40) : 'NO URL');
+      console.log('fetchPerfil KEY:', supabaseKey ? supabaseKey.substring(0, 20) + '...' : 'NO KEY');
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token || supabaseKey;
+
+      const url = `${supabaseUrl}/rest/v1/profiles?id=eq.${userId}&select=*&limit=1`;
+      const response = await fetch(url, {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(6000),
+      });
+
+      console.log('fetchPerfil HTTP status:', response.status);
+      if (!response.ok) {
+        const txt = await response.text().catch(() => '');
+        console.warn('fetchPerfil HTTP error:', response.status, txt.substring(0, 200));
+        return null;
+      }
+      const data = await response.json();
+      console.log('fetchPerfil RESULT:', { count: data?.length, ok: !!data?.[0] });
+      return data?.[0] || null;
     } catch (e) {
       console.warn('fetchPerfil ERROR:', e.message);
       return null;
