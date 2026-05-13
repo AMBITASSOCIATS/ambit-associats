@@ -28,7 +28,7 @@ const PaginaLogin = ({ onLoginOk }) => {
       await login(email, contrasenya);
       onLoginOk();
     } catch (err) {
-      setError('Credencials incorrectes. Verifica el teu email i contrasenya.');
+      setError(err?.message || 'Credencials incorrectes. Verifica el teu email i contrasenya.');
     } finally {
       setCarregant(false);
     }
