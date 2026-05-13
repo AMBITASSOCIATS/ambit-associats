@@ -228,28 +228,18 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   );
 
   if (!user) return <PaginaLogin onLoginOk={() => {}} />;
-  if (perfil && perfil.estat !== 'actiu') return <PaginaAccesDenegat />;
-  if (!perfil && user) return (
-    <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm text-center">
-        <div className="text-4xl mb-4">⚠️</div>
-        <h2 className="text-xl font-bold text-gray-800 mb-2">Error carregant el perfil</h2>
-        <p className="text-sm text-gray-600 mb-4">No s'ha pogut carregar el teu perfil. Torna a intentar-ho.</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="bg-[#009B9C] text-white font-bold px-6 py-2.5 rounded-xl hover:bg-[#007A7B] transition text-sm"
-        >
-          Tornar a intentar
-        </button>
-        <button
-          onClick={async () => { await supabase.auth.signOut(); window.location.reload(); }}
-          className="block w-full mt-2 text-xs text-gray-400 hover:text-gray-600 transition"
-        >
-          Tancar sessió
-        </button>
+
+  // Si tenim user però encara no tenim perfil, mostrar carregant en lloc d'error
+  if (!perfil) return (
+    <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center">
+      <div className="text-white text-center">
+        <div className="text-2xl font-bold mb-2">ÀMBIT Associats</div>
+        <div className="text-white/70 text-sm">Carregant perfil...</div>
       </div>
     </div>
   );
+
+  if (perfil.estat !== 'actiu') return <PaginaAccesDenegat />;
 
   if (mostrarPanellMaestro && esMaestro) return (
     <PanellMaestro onTancar={() => setMostrarPanellMaestro(false)} />
