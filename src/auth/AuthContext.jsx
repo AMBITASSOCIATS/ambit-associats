@@ -18,15 +18,7 @@ export const AuthProvider = ({ children }) => {
         .eq('id', userId)
         .single();
       if (!error && data) return data;
-      // Esperar 2 segons i tornar a intentar (pot ser un usuari nou)
-      await new Promise(r => setTimeout(r, 2000));
-      const { data: data2, error: error2 } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      if (!error2 && data2) return data2;
-      console.warn('Perfil no trobat definitiu:', error2?.message);
+      console.warn('Perfil no trobat:', error?.message);
       return null;
     } catch (e) {
       console.warn('Error carregant perfil:', e);
@@ -56,7 +48,7 @@ export const AuthProvider = ({ children }) => {
         console.warn('Auth timeout: netejant estat local i mostrant login');
         settle(null, null);
       }
-    }, 5000);
+    }, 8000);
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
