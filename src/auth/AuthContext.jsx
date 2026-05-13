@@ -12,16 +12,17 @@ export const AuthProvider = ({ children }) => {
   // Retorna les dades del perfil (no crida setPerfil directament)
   const fetchPerfil = async (userId) => {
     try {
+      console.log('fetchPerfil START:', userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
+      console.log('fetchPerfil RESULT:', { data: !!data, error: error?.message });
       if (!error && data) return data;
-      console.warn('Perfil no trobat:', error?.message);
       return null;
     } catch (e) {
-      console.warn('Error carregant perfil:', e);
+      console.warn('fetchPerfil ERROR:', e);
       return null;
     }
   };
