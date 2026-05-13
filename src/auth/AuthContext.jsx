@@ -50,39 +50,41 @@ export const AuthProvider = ({ children }) => {
       }
     }, 8000);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // IMPORTANT: el callback NO és async perquè supabase-js v2 fa await de tots
+    // els subscribers abans de retornar signInWithPassword. Si el callback és async
+    // i fetchPerfil penja, signInWithPassword mai retorna (botó penjat).
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
 
       // Fase post-inicial: gestionar logout/login manuals
-      // Ignorar USER_UPDATED i TOKEN_REFRESHED — si es gestionen podrien
-      // sobreescriure setUser/setPerfil després d'un signOut concurrent
       if (settled) {
         if (event === 'SIGNED_OUT') {
           setUser(null);
           setPerfil(null);
         } else if (event === 'SIGNED_IN' && session?.user) {
-          const profileData = await fetchPerfil(session.user.id);
-          if (mounted) {
-            setUser(session.user);
-            setPerfil(profileData);
-          }
+          const userData = session.user;
+          setUser(userData);
+          // fetchPerfil en segon pla — no bloqueja signInWithPassword
+          fetchPerfil(userData.id).then(profileData => {
+            if (mounted) setPerfil(profileData);
+          }).catch(() => {});
         }
         return;
       }
 
       // Fase inicial (settled = false): resolve amb timeout actiu
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' || !session?.user) {
         settle(null, null);
         return;
       }
 
-      if (session?.user) {
-        const profileData = await fetchPerfil(session.user.id);
-        if (!mounted) return;
-        settle(session.user, profileData);
-      } else {
-        settle(null, null);
-      }
+      // Té sessió: settle immediatament i carrega perfil en segon pla
+      const userData = session.user;
+      fetchPerfil(userData.id).then(profileData => {
+        if (mounted) settle(userData, profileData);
+      }).catch(() => {
+        if (mounted) settle(userData, null);
+      });
     });
 
     return () => {
@@ -93,19 +95,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, contrasenya) => {
-    console.log('LOGIN START');
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password: contrasenya,
-      });
-      console.log('LOGIN RESULT:', { data: !!data, error });
-      if (error) throw error;
-      return data;
-    } catch (e) {
-      console.error('LOGIN ERROR:', e);
-      throw e;
-    }
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password: contrasenya,
+    });
+    if (error) throw error;
+    return data;
   };
 
   const logout = async () => {
