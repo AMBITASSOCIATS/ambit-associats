@@ -115,6 +115,14 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
 
   const autoDesatRef = useRef(null);
 
+  // ── Recarregar declaracions ──────────────────────────────────────────────
+  const handleRecarregar = useCallback(() => {
+    if (!user?.id) return Promise.resolve();
+    return llistarDeclaracions(user.id, esMaestro)
+      .then(data => setDeclaracions(data || []))
+      .catch(e => console.error('Error recarregant declaracions:', e));
+  }, [user?.id, esMaestro]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     if (!esMaestro) return;
     const carregarPendents = async () => {
@@ -130,15 +138,12 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   }, [esMaestro]);
 
   // ── Carregar declaracions ────────────────────────────────────────────────
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (user?.id && perfil?.id) {
-      llistarDeclaracions(user.id, esMaestro).then(data => {
-        setDeclaracions(data || []);
-        setCarregantDeclaracions(false);
-      });
+      setCarregantDeclaracions(true);
+      handleRecarregar().finally(() => setCarregantDeclaracions(false));
     }
-  }, [user?.id, perfil?.id, esMaestro, vistaActual]);
+  }, [user?.id, perfil?.id, esMaestro, handleRecarregar]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Obrir declaració ──────────────────────────────────────────────────────
   const handleObrirDeclaracio = useCallback(async (id, declaracioDirecta = null) => {
@@ -194,13 +199,6 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     }, AUTODESAT_MS);
     return () => clearInterval(autoDesatRef.current);
   }, [declaracioId]);
-
-  // ── Recarregar declaracions ──────────────────────────────────────────────
-  const handleRecarregar = useCallback(() => {
-    if (!user?.id) return Promise.resolve();
-    return llistarDeclaracions(user.id, esMaestro)
-      .then(data => setDeclaracions(data || []));
-  }, [user?.id, esMaestro]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Sortir del wizard ────────────────────────────────────────────────────
   const handleSortirWizard = useCallback(() => {
