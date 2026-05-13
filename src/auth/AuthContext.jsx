@@ -13,16 +13,20 @@ export const AuthProvider = ({ children }) => {
   const fetchPerfil = async (userId) => {
     try {
       console.log('fetchPerfil START:', userId);
-      const { data, error } = await supabase
+      const fetchPromise = supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('fetchPerfil timeout (6s)')), 6000)
+      );
+      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
       console.log('fetchPerfil RESULT:', { data: !!data, error: error?.message });
       if (!error && data) return data;
       return null;
     } catch (e) {
-      console.warn('fetchPerfil ERROR:', e);
+      console.warn('fetchPerfil ERROR:', e.message);
       return null;
     }
   };
