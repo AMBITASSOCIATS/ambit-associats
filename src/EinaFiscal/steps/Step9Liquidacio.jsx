@@ -107,6 +107,14 @@ const CapcaleraDocument = ({ clientNom, clientNRT, exercici, seccio, cap }) => {
   );
 };
 
+// Noms descriptius per a les partides de capital mobiliari (300-D)
+const MOBILIARI_NOMS = {
+  'a': 'Dividends i participació en patrimoni net',
+  'b': 'Interessos i cessió de capitals propis',
+  'c': 'Operacions de capitalització i assegurances de vida',
+  'd': 'Altres rendes de capital mobiliari',
+};
+
 // ─── COMPONENT PRINCIPAL ──────────────────────────────────────────────────────
 const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFinalitzar, onReobrir, estat, capcalera }) => {
   const informeRef = useRef(null);
@@ -388,7 +396,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         <div style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
           {/* Header gran portada */}
           <div style={{
-            background: `linear-gradient(135deg, ${CAP.colorFosc} 0%, ${CAP.color} 60%, #00B5B6 100%)`,
+            background: `linear-gradient(135deg, ${CAP.colorFosc} 0%, ${CAP.color} 100%)`,
             padding: '50px 40px 40px',
             color: 'white',
           }}>
@@ -412,7 +420,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           </div>
 
           {/* Dades del client */}
-          <div style={{ padding: '30px 40px', backgroundColor: '#f7fafa', borderBottom: '2px solid #d0eaea' }}>
+          <div style={{ padding: '30px 40px', backgroundColor: CAP.colorClar, borderBottom: `2px solid ${CAP.colorBorde}` }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               <div>
                 <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>Obligat Tributari</div>
@@ -443,7 +451,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 { label: 'Quota Final', valor: fmt(r.quotaFinal) },
               ].map((item, i) => (
                 <div key={i} style={{
-                  backgroundColor: 'white', border: '1px solid #d0eaea',
+                  backgroundColor: 'white', border: `1px solid ${CAP.colorBorde}`,
                   borderRadius: '6px', padding: '10px 12px',
                   borderLeft: `3px solid ${CAP.color}`
                 }}>
@@ -602,7 +610,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     <FilaDetall label={`Entitat ${i + 1}: ${ent.entitat || ''}`} valor={null} negrita />
                     {(ent.partides || []).map((p, j) => (
                       <React.Fragment key={j}>
-                        <FilaDetall label={`  ${p.tipusRenda || 'Renda'}${p.descripcio ? `: ${p.descripcio}` : ''}`} valor={fmt(p.importBrut || 0)} nota={p.tipusRenda ? `Tipus: ${p.tipusRenda}` : 'Import brut'} />
+                        <FilaDetall label={`  ${MOBILIARI_NOMS[p.tipus] || p.tipusRenda || 'Renda'}`} valor={fmt(p.importBrut || 0)} nota={`Apartat ${(p.tipus || '?').toUpperCase()} del formulari 300-D`} />
                         {(p.despeses || 0) > 0 && <FilaDetall label="    − Despeses custòdia/gestió" valor={fmt(-(p.despeses || 0))} negatiu />}
                         {(p.retencioAndorra || 0) > 0 && <FilaDetall label="    Retenció Andorra (a compte)" valor={fmt(p.retencioAndorra || 0)} nota="Deduïble de la quota" />}
                         {(p.retencioEstranger || 0) > 0 && <FilaDetall label="    Retenció estranger (DDI)" valor={fmt(p.retencioEstranger || 0)} nota="Base per al càlcul de la DDI" />}
