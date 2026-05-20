@@ -204,6 +204,8 @@ export function calcularIRPFDetallat(dades) {
     deduccionsExercici = {},
     // Pagament fraccionat (Formulari 320) ja ingressat
     pagamentACompte = 0,
+    // Nombre de progenitors amb dret a la reducció familiar (1 o 2)
+    numProgenitorsReduccio = 1,
   } = dades;
 
   // PAS 1 — Rendes netes
@@ -247,11 +249,13 @@ export function calcularIRPFDetallat(dades) {
   const matricules = descendents.reduce((acc, d) => acc + (d.matricules || 0), 0);
   const redMatricules = Math.min(matricules, IRPF.RED_MATRICULA_MAX * numDescendents);
 
-  const redFamiliar = (numDescendents * IRPF.RED_DESCENDENT) +
-                      (numAscendents * IRPF.RED_ASCENDENT) +
-                      (numTutelats * IRPF.RED_TUTELA) +
-                      (numDiscapacitats * IRPF.RED_DESCENDENT * (IRPF.COEF_DISCAPACITAT - 1)) +
-                      redMatricules;
+  // Reducció familiar: 1.000€ per persona a càrrec, dividida entre els progenitors amb dret (Art. 35.2)
+  const numProgenitors = Math.max(1, numProgenitorsReduccio || 1);
+  const redFamiliar = ((numDescendents * IRPF.RED_DESCENDENT) +
+                       (numAscendents * IRPF.RED_ASCENDENT) +
+                       (numTutelats * IRPF.RED_TUTELA) +
+                       (numDiscapacitats * IRPF.RED_DESCENDENT * (IRPF.COEF_DISCAPACITAT - 1)) +
+                       redMatricules) / numProgenitors;
 
   const redHabitatge = Math.min(
     quotesHabitatge * IRPF.RED_HABITATGE_PCT,
@@ -274,12 +278,13 @@ export function calcularIRPFDetallat(dades) {
   // PAS 5 — Quota
   const quotaTributacio = (baseLiquidacioGeneral + baseLiquidacioEstalvi) * IRPF.TIPUS_GRAVAMEN;
 
-  // Bonificació Art. 46
+  // Bonificació Art. 46 — fórmula correcta:
+  // bonificació = (BTG − mínim personal base) × 10% × 50%, màxim 800 €
+  // S'usa la BTG (base de TRIBUTACIÓ general), NO la BLG
+  // NO s'inclou el mínim incrementat per cònjuge ni càrregues familiars
   const minimPersonalBase = obligatDiscapacitat ? IRPF.MINIM_PERSONAL_DISCAP : IRPF.MINIM_PERSONAL;
-  const basePerBonif = Math.max(0, baseTributacioGeneral - minimPersonalBase);
-  const bonificacio = basePerBonif > 0
-    ? Math.min(IRPF.BONIF_MAX, (minimPersonalBase / (baseTributacioGeneral)) * quotaTributacio)
-    : 0;
+  const baseBonificacio = Math.max(0, baseTributacioGeneral - minimPersonalBase);
+  const bonificacio = Math.min(IRPF.BONIF_MAX, baseBonificacio * IRPF.TIPUS_GRAVAMEN * 0.50);
 
   const quotaLiquidacio = Math.max(0, quotaTributacio - bonificacio);
 

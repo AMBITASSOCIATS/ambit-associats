@@ -36,7 +36,7 @@ const Step1SituacioPersonal = ({ dades, update }) => {
 
   const addDescendent = () => {
     update('descendents', [...dades.descendents, {
-      id: Date.now(), nom: '', anyNaixement: new Date().getFullYear() - 10, discapacitat: false, matricules: 0
+      id: Date.now(), nom: '', nrt: '', anyNaixement: new Date().getFullYear() - 10, discapacitat: false, matricules: 0
     }]);
   };
 
@@ -50,7 +50,7 @@ const Step1SituacioPersonal = ({ dades, update }) => {
 
   const addAscendent = () => {
     update('ascendents', [...dades.ascendents, {
-      id: Date.now(), nom: '', anyNaixement: new Date().getFullYear() - 70, discapacitat: false
+      id: Date.now(), nom: '', nrt: '', anyNaixement: new Date().getFullYear() - 70, discapacitat: false
     }]);
   };
 
@@ -297,6 +297,7 @@ const Step1SituacioPersonal = ({ dades, update }) => {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <InputText label="Nom" value={d.nom} onChange={v => updateDescendent(d.id, 'nom', v)} />
+              <InputText label="NRT" value={d.nrt || ''} onChange={v => updateDescendent(d.id, 'nrt', v)} placeholder="F-XXXXXX-X" />
               <InputNum label="Any de naixement" value={d.anyNaixement} onChange={v => updateDescendent(d.id, 'anyNaixement', v)} min={1900} />
               <InputNum label="Matricules ensenyament superior (euros, max. 300 euros)" value={d.matricules} onChange={v => updateDescendent(d.id, 'matricules', v)} />
               <div className="flex items-center gap-2 pt-5">
@@ -333,6 +334,7 @@ const Step1SituacioPersonal = ({ dades, update }) => {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <InputText label="Nom" value={a.nom} onChange={v => updateAscendent(a.id, 'nom', v)} />
+              <InputText label="NRT" value={a.nrt || ''} onChange={v => updateAscendent(a.id, 'nrt', v)} placeholder="F-XXXXXX-X" />
               <InputNum label="Any de naixement" value={a.anyNaixement} onChange={v => updateAscendent(a.id, 'anyNaixement', v)} min={1900} />
               <div className="flex items-center gap-2 pt-5">
                 <input type="checkbox" checked={a.discapacitat} onChange={e => updateAscendent(a.id, 'discapacitat', e.target.checked)} className="w-4 h-4 accent-[#009B9C]" />
@@ -342,6 +344,35 @@ const Step1SituacioPersonal = ({ dades, update }) => {
           </div>
         ))}
       </div>
+
+      {/* Progenitors amb dret a reducció familiar */}
+      {(dades.descendents.length > 0 || dades.ascendents.length > 0) && (
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <h3 className="font-semibold text-gray-800 text-sm mb-2">Progenitors amb dret a la reducció familiar</h3>
+          <p className="text-xs text-gray-500 mb-4">
+            Si les mateixes persones a càrrec donen dret a reducció a dos progenitors (custòdia compartida o convivència amb ambdós pares), els 1.000 € per persona es reparteixen entre ambdós. Art. 35.2 Llei 5/2014.
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { val: 1, label: '1 progenitor', desc: 'Únic progenitor amb dret — 1.000 € per persona' },
+              { val: 2, label: '2 progenitors', desc: 'Custòdia compartida — 500 € per persona cadascun' },
+            ].map(opt => (
+              <button
+                key={opt.val}
+                onClick={() => update('numProgenitorsReduccio', opt.val)}
+                className={`p-3 rounded-xl border-2 text-sm font-medium transition text-left ${
+                  (dades.numProgenitorsReduccio || 1) === opt.val
+                    ? 'border-[#009B9C] bg-[#009B9C]/10 text-[#009B9C]'
+                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-bold">{opt.label}</div>
+                <div className="text-xs opacity-75 mt-0.5">{opt.desc}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Seccio 2 del 300-A: Reduccions economiques (habitatge, pensions, compensatories) */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -498,10 +529,10 @@ const Step1SituacioPersonal = ({ dades, update }) => {
             <p>Mínim personal: <strong>24.000 €</strong> (general — Art. 35.1)</p>
           )}
           {dades.descendents.length > 0 && (
-            <p>Reduccions descendents: <strong>{(dades.descendents.length * 1000).toLocaleString('ca-AD')} euros</strong> ({dades.descendents.length} x 1.000 euros — Art. 35.2.a)</p>
+            <p>Reduccions descendents: <strong>{(dades.descendents.length * 1000 / (dades.numProgenitorsReduccio || 1)).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong> ({dades.descendents.length} × {(1000 / (dades.numProgenitorsReduccio || 1)).toLocaleString('ca-AD')} euros — Art. 35.2.a{(dades.numProgenitorsReduccio || 1) === 2 ? ' · repartit entre 2 progenitors' : ''})</p>
           )}
           {dades.ascendents.length > 0 && (
-            <p>Reduccions ascendents: <strong>{(dades.ascendents.length * 1000).toLocaleString('ca-AD')} euros</strong> ({dades.ascendents.length} x 1.000 euros — Art. 35.2.b)</p>
+            <p>Reduccions ascendents: <strong>{(dades.ascendents.length * 1000 / (dades.numProgenitorsReduccio || 1)).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong> ({dades.ascendents.length} × {(1000 / (dades.numProgenitorsReduccio || 1)).toLocaleString('ca-AD')} euros — Art. 35.2.b{(dades.numProgenitorsReduccio || 1) === 2 ? ' · repartit entre 2 progenitors' : ''})</p>
           )}
         </div>
       </div>
