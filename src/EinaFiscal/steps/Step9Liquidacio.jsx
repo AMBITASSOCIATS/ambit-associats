@@ -579,8 +579,16 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             </SeccioBlocNormatiu>
 
             <SeccioBlocNormatiu titol="Bases de liquidació">
-              <FilaDetall label="Base de Liquidació General (BLG)" valor={fmt(r.baseLiquidacioGeneral)} negrita destacat nota="BTG − reduccions − bases negatives 300-F. No pot ser negativa." />
-              <FilaDetall label="Base de Liquidació de l'Estalvi (BLE)" valor={fmt(r.baseLiquidacioEstalvi)} negrita destacat nota="BTE − mínim exempt estalvi (3.000 €). No pot ser negativa." />
+              {/* Base general */}
+              <FilaDetall label="Base de Tributació General (BTG)" valor={fmt(r.baseTributacioGeneral)} />
+              <FilaDetall label="− Reduccions (mínim personal + familiars + habitatge + pensions)" valor={`− ${fmt(r.totalReduccions)}`} nota="Art. 35-39 Llei 5/2014" />
+              <FilaDetall label="Base de Liquidació General (BLG)" valor={fmt(r.baseLiquidacioGeneral)} negrita destacat nota="No pot ser negativa." />
+              <div style={{ height: '10px' }} />
+              {/* Base estalvi */}
+              <FilaDetall label="Base de Tributació de l'Estalvi (BTE)" valor={fmt(r.baseTributacioEstalvi)} />
+              <FilaDetall label="− Mínim exempt estalvi (3.000 €)" valor={`− ${fmt(Math.min(3000, Math.max(0, r.baseTributacioEstalvi)))}`} nota="Art. 37 Llei 5/2014 · Màxim 3.000 €/any sobre rendes de l'estalvi" />
+              <FilaDetall label="Base de Liquidació de l'Estalvi (BLE)" valor={fmt(r.baseLiquidacioEstalvi)} negrita destacat nota="No pot ser negativa." />
+              <NotaNormativa refText="Art. 33-39 Llei 5/2014" text="La BLG és el resultat de restar les reduccions (mínim personal, familiars, habitatge i pensions) a la BTG. La BLE és el resultat de restar el mínim exempt de 3.000 € a la BTE. Ambdues bases no poden ser negatives." />
             </SeccioBlocNormatiu>
 
             <SeccioBlocNormatiu titol="Quota de tributació i bonificació">
