@@ -202,6 +202,8 @@ export function calcularIRPFDetallat(dades) {
     deduccionsAnteriors = [],
     // Pas 8 — Deduccions generades en l'exercici
     deduccionsExercici = {},
+    // Pagament fraccionat (Formulari 320) ja ingressat
+    pagamentACompte = 0,
   } = dades;
 
   // PAS 1 — Rendes netes
@@ -212,8 +214,9 @@ export function calcularIRPFDetallat(dades) {
   const guanysCapital = calcularGuanysCapitalNet(transmissions, guanysNoTransmissio, perduessNoTransmissio, basesNegativesAnteriors);
 
   // Compensacio 300-F
-  const basesNegGeneralsAplicades = basesNegGenerals.reduce((a, f) => a + (f.aplicat || 0), 0);
-  const basesNegEstalviAplicades = basesNegEstalvi.reduce((a, f) => a + (f.aplicat || 0), 0);
+  const basesNegGeneralsAplicades = Math.max(0, basesNegGenerals.reduce((a, f) => a + (f.aplicat || 0), 0));
+  // Math.max(0, ...) evita que un valor negatiu accidental infli btePositiu per sobre del BTE real
+  const basesNegEstalviAplicades = Math.max(0, basesNegEstalvi.reduce((a, f) => a + (f.aplicat || 0), 0));
   const deduccionsAnteriorsAplicades = deduccionsAnteriors.reduce((a, f) => a + (f.aplicat || 0), 0);
 
   // PAS 2 — Bases de tributació
@@ -338,7 +341,7 @@ export function calcularIRPFDetallat(dades) {
   const retencionsAndorraMobiliaris = calcularRetencionsAndorraMobiliaris(mobiliaris);
   const retencions = retencionsTreball + retencionsImmobles + retencionsTransmissions + retencionsAndorraMobiliaris;
 
-  const resultatDeclaracio = quotaFinal - retencions;
+  const resultatDeclaracio = quotaFinal - retencions - (pagamentACompte || 0);
 
   return {
     // Rendes
@@ -372,6 +375,7 @@ export function calcularIRPFDetallat(dades) {
     tipusEfectiu,
     // Resultat
     retencions,
+    pagamentACompte: pagamentACompte || 0,
     resultatDeclaracio,
   };
 }

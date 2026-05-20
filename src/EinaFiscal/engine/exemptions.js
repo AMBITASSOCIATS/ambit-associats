@@ -204,7 +204,9 @@ export function calcularDDI(rendesExt) {
   return rendesExt.map(r => {
     const cdi = CDI_RATES[r.pais] || CDI_RATES.DEFAULT;
     const tipusAndorra = 0.10;
-    const quotaAndorra = r.importNet * tipusAndorra;
+    // Art. 48: la quota andorrana es calcula sobre l'import BRUT (no net),
+    // ja que la retenció en origen forma part de la renda gravada a Andorra.
+    const quotaAndorra = r.importBrut * tipusAndorra;
     const ddi = Math.min(r.retencioOrigen, quotaAndorra);
     const teCDI = r.pais in CDI_RATES && r.pais !== 'DEFAULT';
     const explicacio = teCDI

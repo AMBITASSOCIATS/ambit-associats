@@ -33,6 +33,7 @@ export function generarCaselles300L(resultat) {
     { casella: 'Ded.ex.', descripcio: 'Deduccions generades en l\'exercici que s\'apliquen', valor: -r.totalDeduccionsExercici },
     { casella: '(12)', descripcio: 'Deduccions pendents d\'exercicis anteriors (300-F)', valor: -r.deduccionsAnteriorsAplicades },
     { casella: '(14)', descripcio: 'Retencions i ingressos a compte', valor: -r.retencions },
+    { casella: '(16)', descripcio: 'Pagament fraccionat (Formulari 320)', valor: -(r.pagamentACompte || 0) },
     { casella: '(15)', descripcio: 'Resultat de la declaració', valor: r.resultatDeclaracio, destacat: true },
   ];
 }

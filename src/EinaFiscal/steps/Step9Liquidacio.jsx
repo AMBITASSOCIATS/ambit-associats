@@ -266,6 +266,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           </p>
           <p className="text-xs text-gray-500 mt-2">
             Tipus efectiu: <strong>{fmtPct(r.tipusEfectiu)}</strong> · Quota final: <strong>{fmt(r.quotaFinal)}</strong>
+            {(r.pagamentACompte || 0) > 0 && <> · Pag. fraccionat (320): <strong>{fmt(r.pagamentACompte)}</strong></>}
           </p>
         </div>
 
@@ -652,6 +653,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   Tipus efectiu: <strong>{fmtPct(r.tipusEfectiu)}</strong>
                   {' · '}Quota final: <strong>{fmt(r.quotaFinal)}</strong>
                   {' · '}Retencions: <strong>{fmt(r.retencions)}</strong>
+                  {(r.pagamentACompte || 0) > 0 && <>{' · '}Pag. fraccionat (320): <strong>{fmt(r.pagamentACompte)}</strong></>}
                 </div>
               </div>
               <div style={{

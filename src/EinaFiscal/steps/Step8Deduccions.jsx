@@ -477,6 +477,29 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
         </div>
       </div>
 
+      {/* ── PAGAMENT FRACCIONAT (FORMULARI 320) ──────────────────────────── */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+        <h3 className="font-semibold text-sm text-gray-700 mb-1">💳 Pagament fraccionat ja realitzat (Formulari 320)</h3>
+        <p className="text-xs text-gray-500 mb-3">
+          Si heu presentat el Formulari 320 al setembre i heu ingressat un pagament fraccionat, introduïu l'import aquí.
+          Es restarà del resultat final de la declaració. <span className="text-gray-400">Art. 19 Reglament IRPF.</span>
+        </p>
+        <div className="flex items-center gap-3">
+          <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Import pagament fraccionat (€)</label>
+          <div className="w-40">
+            <Num
+              value={dades.pagamentACompte || 0}
+              onChange={v => update('pagamentACompte', v)}
+            />
+          </div>
+          {(dades.pagamentACompte || 0) > 0 && (
+            <span className="text-xs text-green-700 font-semibold">
+              − {((dades.pagamentACompte || 0).toLocaleString('ca-AD', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))} € del resultat final
+            </span>
+          )}
+        </div>
+      </div>
+
       {/* ── RESUM FINAL ─────────────────────────────────────────────────── */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
         <h3 className="font-semibold text-sm text-gray-700 mb-3">Resum deduccions — impacte a la liquidació</h3>
