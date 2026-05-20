@@ -536,8 +536,23 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   const rendaNeta = ingressos - despeses - radicacio;
                   return (
                     <React.Fragment key={i}>
-                      <FilaDetall label={`Activitat ${i + 1}: ${a.descripcio || ''}`} valor={fmt(ingressos)} nota="Total ingressos" />
-                      <FilaDetall label="  − Despeses deduïbles" valor={fmt(-despeses)} negatiu />
+                      <FilaDetall label={`Activitat ${i + 1}${a.descripcio ? `: ${a.descripcio}` : ''}${a.tipusActivitat ? ` (${a.tipusActivitat})` : ''}`} valor={fmt(ingressos)} nota="Total ingressos" />
+                      {a.columnes ? a.columnes.map((col, ci) => {
+                        const despExplotacio = (col.consumMercaderies || 0) + (col.arrendamentsCànons || 0) +
+                          (col.reparacionsConservacio || 0) + (col.subministraments || 0) +
+                          (col.tributsDeduibles || 0) + (col.serveisExteriors || 0);
+                        return (
+                          <React.Fragment key={ci}>
+                            {(col.despesesPersonal || 0) > 0 && <FilaDetall label="  − Despeses de personal" valor={fmt(-(col.despesesPersonal || 0))} negatiu />}
+                            {despExplotacio > 0 && <FilaDetall label="  − Despeses d'explotació" valor={fmt(-despExplotacio)} negatiu />}
+                            {(col.despesesFinanceres || 0) > 0 && <FilaDetall label="  − Despeses financeres" valor={fmt(-(col.despesesFinanceres || 0))} negatiu />}
+                            {(col.amortitzacions || 0) > 0 && <FilaDetall label="  − Amortitzacions" valor={fmt(-(col.amortitzacions || 0))} negatiu />}
+                            {(col.altresDespeses || 0) > 0 && <FilaDetall label="  − Altres despeses" valor={fmt(-(col.altresDespeses || 0))} negatiu />}
+                          </React.Fragment>
+                        );
+                      }) : (
+                        <FilaDetall label="  − Despeses deduïbles" valor={fmt(-despeses)} negatiu />
+                      )}
                       {radicacio > 0 && <FilaDetall label="  − Impost de Radicació" valor={fmt(-radicacio)} negatiu />}
                       <FilaDetall label="  = Renda neta activitat" valor={fmt(rendaNeta)} negrita
                         nota={`Mètode: ${a.tipusDeterminacio === 'directa' ? 'Determinació directa' : 'Determinació objectiva'}`} />
@@ -587,10 +602,10 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     <FilaDetall label={`Entitat ${i + 1}: ${ent.entitat || ''}`} valor={null} negrita />
                     {(ent.partides || []).map((p, j) => (
                       <React.Fragment key={j}>
-                        <FilaDetall label={`  ${p.tipusRenda || 'Renda'}`} valor={fmt(p.importBrut || 0)} nota="Import brut" />
+                        <FilaDetall label={`  ${p.tipusRenda || 'Renda'}${p.descripcio ? `: ${p.descripcio}` : ''}`} valor={fmt(p.importBrut || 0)} nota={p.tipusRenda ? `Tipus: ${p.tipusRenda}` : 'Import brut'} />
                         {(p.despeses || 0) > 0 && <FilaDetall label="    − Despeses custòdia/gestió" valor={fmt(-(p.despeses || 0))} negatiu />}
-                        {(p.retencioAndorra || 0) > 0 && <FilaDetall label="    Retenció Andorra" valor={fmt(p.retencioAndorra || 0)} nota="A compte IRPF" />}
-                        {(p.retencioEstranger || 0) > 0 && <FilaDetall label="    Retenció estranger" valor={fmt(p.retencioEstranger || 0)} nota="Base DDI" />}
+                        {(p.retencioAndorra || 0) > 0 && <FilaDetall label="    Retenció Andorra (a compte)" valor={fmt(p.retencioAndorra || 0)} nota="Deduïble de la quota" />}
+                        {(p.retencioEstranger || 0) > 0 && <FilaDetall label="    Retenció estranger (DDI)" valor={fmt(p.retencioEstranger || 0)} nota="Base per al càlcul de la DDI" />}
                       </React.Fragment>
                     ))}
                   </React.Fragment>
