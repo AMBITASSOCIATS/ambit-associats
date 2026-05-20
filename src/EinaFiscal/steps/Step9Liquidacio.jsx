@@ -25,6 +25,43 @@ const fmtPct = n => {
   return (n * 100).toFixed(2).replace('.', ',') + '%';
 };
 
+// Genera una versió més fosca d'un color HEX per usar als recuadres
+function colorFosc(hex) {
+  if (!hex || !hex.startsWith('#')) return '#007A7B';
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const factor = 0.75; // 25% més fosc
+  const rf = Math.round(r * factor).toString(16).padStart(2, '0');
+  const gf = Math.round(g * factor).toString(16).padStart(2, '0');
+  const bf = Math.round(b * factor).toString(16).padStart(2, '0');
+  return `#${rf}${gf}${bf}`;
+}
+
+// Genera una versió molt clara d'un color HEX per usar als fons dels recuadres
+function colorClar(hex) {
+  if (!hex || !hex.startsWith('#')) return '#e6f7f7';
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const rf = Math.round(r + (255 - r) * 0.88).toString(16).padStart(2, '0');
+  const gf = Math.round(g + (255 - g) * 0.88).toString(16).padStart(2, '0');
+  const bf = Math.round(b + (255 - b) * 0.88).toString(16).padStart(2, '0');
+  return `#${rf}${gf}${bf}`;
+}
+
+// Genera una versió mitjanament clara per a bordes
+function colorBorde(hex) {
+  if (!hex || !hex.startsWith('#')) return '#b2e0e0';
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const rf = Math.round(r + (255 - r) * 0.60).toString(16).padStart(2, '0');
+  const gf = Math.round(g + (255 - g) * 0.60).toString(16).padStart(2, '0');
+  const bf = Math.round(b + (255 - b) * 0.60).toString(16).padStart(2, '0');
+  return `#${rf}${gf}${bf}`;
+}
+
 const dataAvui = () => {
   return new Date().toLocaleDateString('ca-AD', {
     day: '2-digit', month: 'long', year: 'numeric'
@@ -33,50 +70,7 @@ const dataAvui = () => {
 
 
 // ─── Components interns ───────────────────────────────────────────────────────
-
-const SeccioBlocNormatiu = ({ titol, children }) => (
-  <div className="avoid-break mb-6">
-    <div style={{ borderLeft: `4px solid ${AMBIT.color}`, paddingLeft: '12px', marginBottom: '12px' }}>
-      <h3 style={{ fontSize: '11px', fontWeight: '700', color: AMBIT.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
-        {titol}
-      </h3>
-    </div>
-    {children}
-  </div>
-);
-
-const FilaDetall = ({ label, valor, negrita = false, destacat = false, negatiu = false, nota = null }) => (
-  <div style={{
-    display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
-    padding: '5px 10px',
-    backgroundColor: destacat ? '#e6f7f7' : 'transparent',
-    borderBottom: '1px solid #f0f0f0',
-    fontSize: '10px',
-  }}>
-    <div style={{ flex: 1 }}>
-      <span style={{ fontWeight: negrita || destacat ? '700' : '400', color: destacat ? AMBIT.colorFosc : '#333' }}>
-        {label}
-      </span>
-      {nota && <div style={{ fontSize: '9px', color: '#888', marginTop: '1px', fontStyle: 'italic' }}>{nota}</div>}
-    </div>
-    <span style={{
-      fontWeight: negrita || destacat ? '700' : '500',
-      color: destacat ? AMBIT.color : negatiu ? '#c0392b' : '#333',
-      fontFamily: 'monospace', fontSize: '10px', marginLeft: '8px', whiteSpace: 'nowrap'
-    }}>
-      {valor}
-    </span>
-  </div>
-);
-
-const NotaNormativa = ({ ref: refText, text }) => (
-  <div style={{
-    backgroundColor: '#f0fafa', border: '1px solid #b2e0e0', borderRadius: '4px',
-    padding: '6px 10px', marginTop: '6px', fontSize: '9px', color: '#005f5f'
-  }}>
-    <span style={{ fontWeight: '700' }}>📋 {refText}:</span> {text}
-  </div>
-);
+// (definits dins Step9Liquidacio per tenir accés directe al CAP i als colors personalitzats)
 
 // ─── CAPÇALERA DEL DOCUMENT (rep cap com a prop per suportar capçalera personalitzada) ──
 const CapcaleraDocument = ({ clientNom, clientNRT, exercici, seccio, cap }) => {
@@ -128,8 +122,55 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
     tel: capcalera?.tel || AMBIT.tel,
     web: capcalera?.web || AMBIT.web,
     color: capcalera?.color || AMBIT.color,
-    colorFosc: capcalera?.color ? capcalera.color : AMBIT.colorFosc,
+    colorFosc: colorFosc(capcalera?.color || AMBIT.color),
+    colorClar: colorClar(capcalera?.color || AMBIT.color),
+    colorBorde: colorBorde(capcalera?.color || AMBIT.color),
   };
+
+  // Components interns que tanquen sobre CAP per usar els colors personalitzats
+  const SeccioBlocNormatiu = ({ titol, children }) => (
+    <div className="avoid-break mb-6">
+      <div style={{ borderLeft: `4px solid ${CAP.color}`, paddingLeft: '12px', marginBottom: '12px' }}>
+        <h3 style={{ fontSize: '11px', fontWeight: '700', color: CAP.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+          {titol}
+        </h3>
+      </div>
+      {children}
+    </div>
+  );
+
+  const FilaDetall = ({ label, valor, negrita = false, destacat = false, negatiu = false, nota = null }) => (
+    <div style={{
+      display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+      padding: '5px 10px',
+      backgroundColor: destacat ? CAP.colorClar : 'transparent',
+      borderBottom: '1px solid #f0f0f0',
+      fontSize: '10px',
+    }}>
+      <div style={{ flex: 1 }}>
+        <span style={{ fontWeight: negrita || destacat ? '700' : '400', color: destacat ? CAP.colorFosc : '#333' }}>
+          {label}
+        </span>
+        {nota && <div style={{ fontSize: '9px', color: '#888', marginTop: '1px', fontStyle: 'italic' }}>{nota}</div>}
+      </div>
+      <span style={{
+        fontWeight: negrita || destacat ? '700' : '500',
+        color: destacat ? CAP.color : negatiu ? '#c0392b' : '#333',
+        fontFamily: 'monospace', fontSize: '10px', marginLeft: '8px', whiteSpace: 'nowrap'
+      }}>
+        {valor === null ? '' : valor}
+      </span>
+    </div>
+  );
+
+  const NotaNormativa = ({ refText, text }) => (
+    <div style={{
+      backgroundColor: CAP.colorClar, border: `1px solid ${CAP.colorBorde}`, borderRadius: '4px',
+      padding: '6px 10px', marginTop: '6px', fontSize: '9px', color: CAP.colorFosc
+    }}>
+      <span style={{ fontWeight: '700' }}>📋 {refText}:</span> {text}
+    </div>
+  );
 
   if (!resultat) {
     return (
@@ -680,7 +721,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               <tbody>
                 {caselles.map((c, i) => (
                   <tr key={i} style={{
-                    backgroundColor: c.destacat ? '#e6f7f7' : i % 2 === 0 ? '#fafafa' : 'white',
+                    backgroundColor: c.destacat ? CAP.colorClar : i % 2 === 0 ? '#fafafa' : 'white',
                     borderBottom: '1px solid #eee'
                   }}>
                     <td style={{ padding: '6px 10px', fontFamily: 'monospace', fontSize: '9px', color: '#666', fontWeight: c.destacat ? '700' : '400' }}>
@@ -742,7 +783,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   { codi: '300-L', actiu: true, desc: 'Liquidació' },
                 ].map(f => (
                   <div key={f.codi} style={{
-                    backgroundColor: f.actiu ? '#e6f7f7' : '#f5f5f5',
+                    backgroundColor: f.actiu ? CAP.colorClar : '#f5f5f5',
                     border: `1px solid ${f.actiu ? CAP.color : '#ddd'}`,
                     borderRadius: '4px', padding: '4px 8px',
                     fontSize: '9px', color: f.actiu ? CAP.colorFosc : '#aaa',
