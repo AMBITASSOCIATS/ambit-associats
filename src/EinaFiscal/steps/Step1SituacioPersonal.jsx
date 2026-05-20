@@ -34,9 +34,13 @@ const InputText = ({ label, value, onChange, placeholder = '' }) => (
 const Step1SituacioPersonal = ({ dades, update }) => {
   const [showEconomiques, setShowEconomiques] = useState(false);
 
+  const anyMeritacio = dades.exercici || 2025;
+  const SMI_ANUAL = 17367.96; // SMI Andorra 2025 — Art. 35.2.a Llei 5/2014
+
   const addDescendent = () => {
     update('descendents', [...dades.descendents, {
-      id: Date.now(), nom: '', nrt: '', anyNaixement: new Date().getFullYear() - 10, discapacitat: false, matricules: 0
+      id: Date.now(), nom: '', nrt: '', anyNaixement: new Date().getFullYear() - 10,
+      discapacitat: false, matricules: 0, rendesAnuals: 0
     }]);
   };
 
@@ -299,12 +303,34 @@ const Step1SituacioPersonal = ({ dades, update }) => {
               <InputText label="Nom" value={d.nom} onChange={v => updateDescendent(d.id, 'nom', v)} />
               <InputText label="NRT" value={d.nrt || ''} onChange={v => updateDescendent(d.id, 'nrt', v)} placeholder="F-XXXXXX-X" />
               <InputNum label="Any de naixement" value={d.anyNaixement} onChange={v => updateDescendent(d.id, 'anyNaixement', v)} min={1900} />
+              <InputNum label={`Rendes anuals del descendent (€) — límit SMI ${SMI_ANUAL.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €`} value={d.rendesAnuals || 0} onChange={v => updateDescendent(d.id, 'rendesAnuals', v)} />
               <InputNum label="Matricules ensenyament superior (euros, max. 300 euros)" value={d.matricules} onChange={v => updateDescendent(d.id, 'matricules', v)} />
               <div className="flex items-center gap-2 pt-5">
                 <input type="checkbox" checked={d.discapacitat} onChange={e => updateDescendent(d.id, 'discapacitat', e.target.checked)} className="w-4 h-4 accent-[#009B9C]" />
                 <span className="text-xs text-gray-600">Discapacitat reconeguda</span>
               </div>
             </div>
+            {/* Avisos de validació */}
+            {(() => {
+              const edat = anyMeritacio - (d.anyNaixement || 0);
+              const edatKO = !d.discapacitat && edat >= 25;
+              const rendesKO = (d.rendesAnuals || 0) > SMI_ANUAL;
+              if (!edatKO && !rendesKO) return null;
+              return (
+                <div className="mt-2 space-y-1">
+                  {edatKO && (
+                    <div className="bg-amber-50 border border-amber-300 rounded-lg px-3 py-2 text-xs text-amber-800">
+                      ⚠️ <strong>Sense dret a reducció:</strong> el descendent té {edat} anys el 31/12/{anyMeritacio} (cal tenir menys de 25 anys). La reducció de 1.000 € <strong>no s'aplicarà</strong> a menys que tingui discapacitat reconeguda. Art. 35.2.a Llei 5/2014.
+                    </div>
+                  )}
+                  {rendesKO && (
+                    <div className="bg-amber-50 border border-amber-300 rounded-lg px-3 py-2 text-xs text-amber-800">
+                      ⚠️ <strong>Rendes superiors al SMI:</strong> les rendes del descendent ({(d.rendesAnuals || 0).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €) superen el SMI anual ({SMI_ANUAL.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €). La reducció de 1.000 € <strong>no s'aplicarà</strong>. Art. 35.2.a Llei 5/2014.
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
         ))}
       </div>
@@ -528,9 +554,16 @@ const Step1SituacioPersonal = ({ dades, update }) => {
           ) : (
             <p>Mínim personal: <strong>24.000 €</strong> (general — Art. 35.1)</p>
           )}
-          {dades.descendents.length > 0 && (
-            <p>Reduccions descendents: <strong>{(dades.descendents.length * 1000 / (dades.numProgenitorsReduccio || 1)).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong> ({dades.descendents.length} × {(1000 / (dades.numProgenitorsReduccio || 1)).toLocaleString('ca-AD')} euros — Art. 35.2.a{(dades.numProgenitorsReduccio || 1) === 2 ? ' · repartit entre 2 progenitors' : ''})</p>
-          )}
+          {dades.descendents.length > 0 && (() => {
+            const valids = dades.descendents.filter(d => {
+              const edat = anyMeritacio - (d.anyNaixement || 0);
+              return (d.discapacitat || edat < 25) && (d.rendesAnuals || 0) <= SMI_ANUAL;
+            });
+            const exclosos = dades.descendents.length - valids.length;
+            return (
+              <p>Reduccions descendents: <strong>{(valids.length * 1000 / (dades.numProgenitorsReduccio || 1)).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong> ({valids.length} de {dades.descendents.length} × {(1000 / (dades.numProgenitorsReduccio || 1)).toLocaleString('ca-AD')} euros — Art. 35.2.a{(dades.numProgenitorsReduccio || 1) === 2 ? ' · 2 progenitors' : ''}{exclosos > 0 ? ` · ${exclosos} exclòs/os per edat/rendes` : ''})</p>
+            );
+          })()}
           {dades.ascendents.length > 0 && (
             <p>Reduccions ascendents: <strong>{(dades.ascendents.length * 1000 / (dades.numProgenitorsReduccio || 1)).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong> ({dades.ascendents.length} × {(1000 / (dades.numProgenitorsReduccio || 1)).toLocaleString('ca-AD')} euros — Art. 35.2.b{(dades.numProgenitorsReduccio || 1) === 2 ? ' · repartit entre 2 progenitors' : ''})</p>
           )}

@@ -206,6 +206,8 @@ export function calcularIRPFDetallat(dades) {
     pagamentACompte = 0,
     // Nombre de progenitors amb dret a la reducció familiar (1 o 2)
     numProgenitorsReduccio = 1,
+    // Any de l'exercici declarat (per calcular edats a 31/12)
+    exercici = 2025,
   } = dades;
 
   // PAS 1 — Rendes netes
@@ -238,15 +240,28 @@ export function calcularIRPFDetallat(dades) {
   }
 
   // PAS 4 — Reduccions
-  const numDescendents = descendents.length;
+  // Validació descendents (Art. 35.2.a):
+  // — edat < 25 anys el 31/12 de l'exercici (nascut el 2000 → edat 25 el 31/12/2025 → NO aplica)
+  // — rendes anuals ≤ SMI (17.367,96 € per a 2025)
+  // — excepció: discapacitat reconeguda → sense límit d'edat
+  const anyMeritacio = exercici || 2025;
+  const descendentsValids = descendents.filter(d => {
+    const edat = anyMeritacio - (d.anyNaixement || 0);
+    const teDiscapacitat = d.discapacitat || false;
+    const compleixEdat = teDiscapacitat || edat < 25;
+    const compleixRendes = (d.rendesAnuals || 0) <= IRPF_EF.SMI_ANUAL;
+    return compleixEdat && compleixRendes;
+  });
+
+  const numDescendents = descendentsValids.length;
   const numAscendents = ascendents.length;
   const numTutelats = tutelats.length;
   const numDiscapacitats = [
-    ...descendents.filter(d => d.discapacitat),
+    ...descendentsValids.filter(d => d.discapacitat),
     ...ascendents.filter(a => a.discapacitat),
-  ].length + (obligatDiscapacitat ? 0 : 0);
+  ].length;
 
-  const matricules = descendents.reduce((acc, d) => acc + (d.matricules || 0), 0);
+  const matricules = descendentsValids.reduce((acc, d) => acc + (d.matricules || 0), 0);
   const redMatricules = Math.min(matricules, IRPF.RED_MATRICULA_MAX * numDescendents);
 
   // Reducció familiar: 1.000€ per persona a càrrec, dividida entre els progenitors amb dret (Art. 35.2)
