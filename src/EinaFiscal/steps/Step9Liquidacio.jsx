@@ -127,8 +127,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
     email: capcalera?.email || AMBIT.email,
     tel: capcalera?.tel || AMBIT.tel,
     web: capcalera?.web || AMBIT.web,
-    color: AMBIT.color,
-    colorFosc: AMBIT.colorFosc,
+    color: capcalera?.color || AMBIT.color,
+    colorFosc: capcalera?.color ? capcalera.color : AMBIT.colorFosc,
   };
 
   if (!resultat) {

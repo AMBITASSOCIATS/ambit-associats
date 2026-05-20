@@ -53,6 +53,34 @@ const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
             </div>
           ))}
         </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-2">Color de l'informe</label>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { nom: 'Verd ÀMBIT', valor: '#009B9C' },
+              { nom: 'Blau', valor: '#2563EB' },
+              { nom: 'Vermell', valor: '#DC2626' },
+              { nom: 'Violeta', valor: '#7C3AED' },
+              { nom: 'Taronja', valor: '#EA580C' },
+              { nom: 'Gris fosc', valor: '#374151' },
+              { nom: 'Negre', valor: '#111827' },
+            ].map(c => (
+              <button
+                key={c.valor}
+                type="button"
+                onClick={() => set('color', c.valor)}
+                title={c.nom}
+                className={`w-8 h-8 rounded-full border-4 transition ${
+                  form.color === c.valor ? 'border-gray-800 scale-110' : 'border-transparent hover:border-gray-400'
+                }`}
+                style={{ backgroundColor: c.valor }}
+              />
+            ))}
+          </div>
+          <p className="text-xs text-gray-400 mt-1">
+            Color per defecte: Verd ÀMBIT
+          </p>
+        </div>
         <div className="flex gap-3 pt-4">
           <button
             onClick={async () => {
@@ -386,6 +414,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
       email: perfil?.capcalera?.email || '',
       tel: perfil?.capcalera?.tel || '',
       web: perfil?.capcalera?.web || '',
+      color: perfil?.capcalera?.color || '#009B9C',
     };
     return <ConfiguracioCapcalera
       valorsInicials={capDefault}
