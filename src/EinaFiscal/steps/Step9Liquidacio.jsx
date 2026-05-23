@@ -137,8 +137,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
   // Components interns que tanquen sobre CAP per usar els colors personalitzats
   const SeccioBlocNormatiu = ({ titol, children }) => (
-    <div className="avoid-break mb-6">
-      <div style={{ borderLeft: `4px solid ${CAP.color}`, paddingLeft: '12px', marginBottom: '12px' }}>
+    <div style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginBottom: '16px' }}>
+      <div style={{ borderLeft: `4px solid ${CAP.color}`, paddingLeft: '12px', marginBottom: '10px' }}>
         <h3 style={{ fontSize: '11px', fontWeight: '700', color: CAP.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
           {titol}
         </h3>
@@ -264,6 +264,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
   const tensMobiliaris = (dades.mobiliaris || []).length > 0;
   const tensTransmissions = (dades.transmissions || []).length > 0;
   const tensTransmissionsGravades = (dades.transmissions || []).some(t => !t.exempta);
+  const tensTransmissionsExemptes = (dades.transmissions || []).some(t => t.exempta);
   const tensDDI = (dades.rendesExterior || []).length > 0;
 
   return (
@@ -499,10 +500,10 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         </div>
 
         {/* ══ PÀGINA 2 — DETALL DE RENDES ════════════════════════════════ */}
-        <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
+        <div className="page-break" style={{ height: '297mm', display: 'flex', flexDirection: 'column' }}>
           <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Detall de rendes" cap={CAP} />
 
-          <div className="page-content" style={{ flex: 1 }}>
+          <div className="page-content" style={{ flex: 1, padding: '0 30px 20px 30px', overflow: 'hidden' }}>
 
             {/* Rendes del treball */}
             {tensTreball && (
@@ -652,31 +653,6 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </SeccioBlocNormatiu>
             )}
 
-            {/* Guanys capital exempts */}
-            {r.transmissionsExemptes && r.transmissionsExemptes.length > 0 && (
-              <SeccioBlocNormatiu titol="5b. Guanys i pèrdues de capital EXEMPTS — Art. 5 Llei 5/2014">
-                <FilaDetall
-                  label="Transmissions exemptes — NO computen a la base de l'estalvi"
-                  valor="EXEMPT"
-                  negrita destacat
-                  nota="Excloses de la base de tributació de l'estalvi per aplicació d'exempció legal"
-                />
-                {r.transmissionsExemptes.map((t, i) => (
-                  <React.Fragment key={i}>
-                    <FilaDetall
-                      label={`  ${t.descripcio || `Transmissió exempta ${i + 1}`} (${t.tipusElement || ''})`}
-                      valor={`${(t.importExempt || 0) >= 0 ? '+' : ''}${(t.importExempt || 0).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €`}
-                      nota={`EXEMPT · ${t.motivExempcio || 'Art. 5 Llei 5/2014'}`}
-                    />
-                  </React.Fragment>
-                ))}
-                <NotaNormativa
-                  refText="Art. 5 Llei 5/2014"
-                  text="Els guanys de capital indicats estan exempts de tributació per aplicació de l'article 5 de la Llei 5/2014. No s'integren a la base de tributació de l'estalvi ni computen a efectes del càlcul de la quota."
-                />
-              </SeccioBlocNormatiu>
-            )}
-
             {/* DDI */}
             {tensDDI && r.ddiDetall && r.ddiDetall.length > 0 && (
               <SeccioBlocNormatiu titol="6. Deducció per doble imposició (DDI) — Art. 48">
@@ -695,17 +671,17 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             )}
           </div>
 
-          <div style={{ padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0 }}>
             <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
             <span>Pàgina 2 / 4</span>
           </div>
         </div>
 
         {/* ══ PÀGINA 3 — BASES I REDUCCIONS ══════════════════════════════ */}
-        <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
+        <div className="page-break" style={{ height: '297mm', display: 'flex', flexDirection: 'column' }}>
           <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Bases i reduccions" cap={CAP} />
 
-          <div className="page-content" style={{ flex: 1 }}>
+          <div className="page-content" style={{ flex: 1, padding: '0 30px 20px 30px', overflow: 'hidden' }}>
 
             <SeccioBlocNormatiu titol="Bases de tributació">
               <FilaDetall label="Renda del treball" valor={fmt(r.rendaTreball)} />
@@ -750,17 +726,17 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
           </div>
 
-          <div style={{ padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0 }}>
             <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
             <span>Pàgina 3 / 4</span>
           </div>
         </div>
 
         {/* ══ PÀGINA 4 — LIQUIDACIÓ FINAL 300-L (INDEPENDENT) ════════════ */}
-        <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
+        <div className="page-break" style={{ height: '297mm', display: 'flex', flexDirection: 'column' }}>
           <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Liquidació final — Formulari 300-L" cap={CAP} />
 
-          <div className="page-content" style={{ flex: 1 }}>
+          <div className="page-content" style={{ flex: 1, padding: '0 30px 20px 30px', overflow: 'hidden' }}>
             <div style={{ fontSize: '11px', fontWeight: '700', color: CAP.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: `2px solid ${CAP.color}`, paddingBottom: '6px' }}>
               Formulari 300-L · Liquidació de l'IRPF {exercici}
             </div>
@@ -855,14 +831,50 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             <NotaNormativa refText="Termini de presentació" text={`La declaració de l'IRPF de l'exercici ${exercici} s'ha de presentar entre l'1 d'abril i el 30 de setembre de ${exercici + 1}. El pagament fraccionat (formulari 320) es presenta a l'Administració tributària durant el mes de setembre de ${exercici}. Portal Tributari: www.eda.ad`} />
           </div>
 
-          <div style={{ padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0 }}>
             <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
             <span>Pàgina 4 / 4</span>
           </div>
         </div>
 
+        {/* ══ PÀGINA 5b — TRANSMISSIONS EXEMPTES (condicional) ══════════ */}
+        {tensTransmissionsExemptes && r.transmissionsExemptes && r.transmissionsExemptes.length > 0 && (
+          <div className="page-break" style={{ height: '297mm', display: 'flex', flexDirection: 'column' }}>
+            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Rendes exemptes — Art. 5 Llei 5/2014" cap={CAP} />
+
+            <div className="page-content" style={{ flex: 1, padding: '0 30px 20px 30px', overflow: 'hidden' }}>
+              <SeccioBlocNormatiu titol="5b. Guanys i pèrdues de capital EXEMPTS — Art. 5 Llei 5/2014">
+                <FilaDetall
+                  label="Transmissions exemptes — NO computen a la base de l'estalvi"
+                  valor="EXEMPT"
+                  negrita destacat
+                  nota="Excloses de la base de tributació de l'estalvi per aplicació d'exempció legal"
+                />
+                {r.transmissionsExemptes.map((t, i) => (
+                  <React.Fragment key={i}>
+                    <FilaDetall
+                      label={`  ${t.descripcio || `Transmissió exempta ${i + 1}`} (${t.tipusElement || ''})`}
+                      valor={`${(t.importExempt || 0) >= 0 ? '+' : ''}${(t.importExempt || 0).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €`}
+                      nota={`EXEMPT · ${t.motivExempcio || 'Art. 5 Llei 5/2014'}`}
+                    />
+                  </React.Fragment>
+                ))}
+                <NotaNormativa
+                  refText="Art. 5 Llei 5/2014"
+                  text="Els guanys de capital indicats estan exempts de tributació per aplicació de l'article 5 de la Llei 5/2014. No s'integren a la base de tributació de l'estalvi ni computen a efectes del càlcul de la quota."
+                />
+              </SeccioBlocNormatiu>
+            </div>
+
+            <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0 }}>
+              <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
+              <span>Rendes exemptes · Art. 5 Llei 5/2014</span>
+            </div>
+          </div>
+        )}
+
         {/* ══ ÚLTIMA PÀGINA — DISCLAIMERS I PEU LEGAL ════════════════════ */}
-        <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
+        <div className="page-break" style={{ height: '297mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{
             background: `linear-gradient(135deg, ${CAP.colorFosc} 0%, ${CAP.color} 100%)`,
             padding: '30px 40px', color: 'white'
