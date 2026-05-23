@@ -263,6 +263,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
   const tensImmobles = (dades.immobles || []).length > 0;
   const tensMobiliaris = (dades.mobiliaris || []).length > 0;
   const tensTransmissions = (dades.transmissions || []).length > 0;
+  const tensTransmissionsGravades = (dades.transmissions || []).some(t => !t.exempta);
+  const tensTransmissionsExemptes = (dades.transmissions || []).some(t => t.exempta);
   const tensDDI = (dades.rendesExterior || []).length > 0;
 
   return (
@@ -622,12 +624,12 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </SeccioBlocNormatiu>
             )}
 
-            {/* Guanys capital */}
-            {tensTransmissions && (
+            {/* Guanys capital gravats */}
+            {tensTransmissionsGravades && (
               <SeccioBlocNormatiu titol="5. Guanys i pèrdues de capital — Formulari 300-E">
                 <FilaDetall label="Guanys i pèrdues de capital nets" valor={fmt(r.guanysCapital)} negrita destacat
                   nota="Art. 30-32 Llei 5/2014 · Valor transmissió − valor adquisició actualitzat" />
-                {(dades.transmissions || []).map((t, i) => {
+                {(dades.transmissions || []).filter(t => !t.exempta).map((t, i) => {
                   const guany = (t.valorTransmissio || 0) - (t.despesesTransmissio || 0) - (t.valorAdquisicio || 0) - (t.despesesAdquisicio || 0);
                   return (
                     <React.Fragment key={i}>
@@ -641,6 +643,13 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   );
                 })}
                 <NotaNormativa refText="Art. 30 Llei 5/2014" text="Constitueixen guanys o pèrdues de capital les variacions en el valor del patrimoni de l'obligat tributari que es posin de manifest amb ocasió d'alteració en la composició d'aquell." />
+              </SeccioBlocNormatiu>
+            )}
+            {tensTransmissions && !tensTransmissionsGravades && (
+              <SeccioBlocNormatiu titol="5. Guanys i pèrdues de capital — Formulari 300-E">
+                <FilaDetall label="Cap transmissió gravada" valor="0,00 €" negrita destacat
+                  nota="Totes les transmissions declarades estan exemptes de tributació per aplicació de l'Art. 5 Llei 5/2014" />
+                <NotaNormativa refText="Art. 5 Llei 5/2014" text="Les transmissions declarades estan acollides a una exempció legal. Vegeu l'apartat 5b per al detall." />
               </SeccioBlocNormatiu>
             )}
 

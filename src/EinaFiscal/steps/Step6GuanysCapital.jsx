@@ -79,25 +79,39 @@ const analisiValors = (tipusElement, guanyNet, participacioPct, anysPropieta) =>
     };
   }
   if (tipusElement === 'COT') {
+    const esExempt = participacioPct <= 25 || (participacioPct > 25 && anysPropieta >= 10);
+    const explicacio = participacioPct <= 25
+      ? 'Participació ≤ 25%: guany EXEMPT per Art. 5.k Llei 5/2014. Podeu confirmar l\'exempció a continuació.'
+      : participacioPct > 25 && anysPropieta >= 10
+        ? 'Participació > 25% però tinença ≥ 10 anys: EXEMPT per Art. 5.k Llei 5/2014. Podeu confirmar l\'exempció.'
+        : guanyNet <= 0
+          ? 'Participació > 25% i tinença < 10 anys. Pèrdua: analitzar si hi ha valors homogenis (Art. 32 + Reglament).'
+          : 'Participació > 25% i tinença < 10 anys: guany GRAVAT. Integrar a la base de l\'estalvi.';
     return {
-      titol: 'Valors cotitzats (COT) — Art. 32 Llei 5/2014',
-      explicacio: guanyNet <= 0
-        ? 'Perdua en transmissio de valors cotitzats. Analitzar si hi ha valors homogenis adquirits 2 mesos abans/despres (Art. 32 + Reglament).'
-        : 'Guany gravat. Integrar a la base de l\'estalvi.',
-      ref: 'Art. 32 Llei 5/2014 + Reglament',
+      titol: 'Valors cotitzats (COT) — Art. 5.k Llei 5/2014',
+      explicacio,
+      ref: 'Art. 5.k Llei 5/2014 · L2023005',
       formulari: '300-E',
       casella: 'COT',
-      alertType: guanyNet <= 0 ? 'warning' : 'info',
+      alertType: esExempt ? 'success' : guanyNet <= 0 ? 'warning' : 'info',
+      exempt: esExempt,
     };
   }
   if (tipusElement === 'NCT') {
+    const esExempt = participacioPct <= 25 || (participacioPct > 25 && anysPropieta >= 10);
+    const explicacio = participacioPct <= 25
+      ? 'Participació ≤ 25%: guany EXEMPT per Art. 5.k Llei 5/2014. Podeu confirmar l\'exempció a continuació.'
+      : participacioPct > 25 && anysPropieta >= 10
+        ? 'Participació > 25% però tinença ≥ 10 anys: EXEMPT per Art. 5.k Llei 5/2014. Podeu confirmar l\'exempció.'
+        : 'Participació > 25% i tinença < 10 anys: guany GRAVAT. Analitzar substància i vinculació societària.';
     return {
-      titol: 'Participacions no cotitzades (NCT)',
-      explicacio: 'Gravat. Analitzar substancia i vinculacio societaria. Verificar si aplica algun tractament especific.',
-      ref: 'Art. 30-32 Llei 5/2014',
+      titol: 'Participacions no cotitzades (NCT) — Art. 5.k Llei 5/2014',
+      explicacio,
+      ref: 'Art. 5.k Llei 5/2014 · L2023005',
       formulari: '300-E',
       casella: 'NCT',
-      alertType: 'info',
+      alertType: esExempt ? 'success' : 'info',
+      exempt: esExempt,
     };
   }
   if (tipusElement === 'MOB') {
@@ -262,7 +276,7 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar }) => {
 
       {analisi && <AnalysisAlert analisi={analisi} />}
 
-      {analisi && analisi.alertType === 'success' && (
+      {analisi && analisi.exempt === true && (
         <div className="mt-3 p-4 bg-green-50 border border-green-200 rounded-xl space-y-3">
           <div className="flex items-center gap-2">
             <input
