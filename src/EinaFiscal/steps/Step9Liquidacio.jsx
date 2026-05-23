@@ -644,6 +644,31 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </SeccioBlocNormatiu>
             )}
 
+            {/* Guanys capital exempts */}
+            {r.transmissionsExemptes && r.transmissionsExemptes.length > 0 && (
+              <SeccioBlocNormatiu titol="5b. Guanys i pèrdues de capital EXEMPTS — Art. 5 Llei 5/2014">
+                <FilaDetall
+                  label="Transmissions exemptes — NO computen a la base de l'estalvi"
+                  valor="EXEMPT"
+                  negrita destacat
+                  nota="Excloses de la base de tributació de l'estalvi per aplicació d'exempció legal"
+                />
+                {r.transmissionsExemptes.map((t, i) => (
+                  <React.Fragment key={i}>
+                    <FilaDetall
+                      label={`  ${t.descripcio || `Transmissió exempta ${i + 1}`} (${t.tipusElement || ''})`}
+                      valor={`${(t.importExempt || 0) >= 0 ? '+' : ''}${(t.importExempt || 0).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €`}
+                      nota={`EXEMPT · ${t.motivExempcio || 'Art. 5 Llei 5/2014'}`}
+                    />
+                  </React.Fragment>
+                ))}
+                <NotaNormativa
+                  refText="Art. 5 Llei 5/2014"
+                  text="Els guanys de capital indicats estan exempts de tributació per aplicació de l'article 5 de la Llei 5/2014. No s'integren a la base de tributació de l'estalvi ni computen a efectes del càlcul de la quota."
+                />
+              </SeccioBlocNormatiu>
+            )}
+
             {/* DDI */}
             {tensDDI && r.ddiDetall && r.ddiDetall.length > 0 && (
               <SeccioBlocNormatiu titol="6. Deducció per doble imposició (DDI) — Art. 48">

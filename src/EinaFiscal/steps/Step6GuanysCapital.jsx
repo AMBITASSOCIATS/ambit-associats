@@ -31,6 +31,10 @@ const DEFAULT_TRANSMISSIO = {
   participacioPct: 0,
   anysPropieta: 0,
   retencionsPagamentCompte: 0,
+  // Exempció legal
+  exempta: false,
+  importExempt: 0,
+  motivExempcio: '',
 };
 
 const calcularGuany = (t) => {
@@ -125,7 +129,8 @@ const InputNum = ({ label, value, onChange, min = 0 }) => (
 );
 
 const TransmissioForm = ({ trans, index, onUpdate, onEliminar }) => {
-  const update = (camp, valor) => onUpdate(trans.id, camp, valor);
+  // Accepta update('camp', valor) o update({ camp1: v1, camp2: v2 })
+  const update = (campOrObj, valor) => onUpdate(trans.id, campOrObj, valor);
   const { guanyNet, valorAdqActualitzat, coefAplicat, anysPropieta } = calcularGuany(trans);
 
   const tipusMotor = mapTipusElement(trans.tipusElement);
@@ -256,6 +261,44 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar }) => {
       </div>
 
       {analisi && <AnalysisAlert analisi={analisi} />}
+
+      {analisi && analisi.alertType === 'success' && (
+        <div className="mt-3 p-4 bg-green-50 border border-green-200 rounded-xl space-y-3">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id={`exempt-${trans.id}`}
+              checked={trans.exempta || false}
+              onChange={e => update({ exempta: e.target.checked, motivExempcio: e.target.checked ? (analisi.ref || '') : '' })}
+              className="accent-green-600 w-4 h-4"
+            />
+            <label htmlFor={`exempt-${trans.id}`} className="text-sm font-semibold text-green-700 cursor-pointer">
+              Confirmar exempció — {analisi.ref}
+            </label>
+          </div>
+          {trans.exempta && (
+            <>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Guany / pèrdua real obtinguda (€) — no computarà a la base de l'estalvi
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={trans.importExempt || 0}
+                  onChange={e => update({ importExempt: parseFloat(e.target.value) || 0 })}
+                  placeholder="0.00"
+                  className="w-full border border-green-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/40"
+                />
+              </div>
+              <div className="bg-green-100 rounded-lg px-3 py-2 text-xs text-green-800">
+                ✅ Aquest import <strong>no computarà</strong> a la base de tributació de l'estalvi.
+                Referència legal: <strong>{analisi.ref}</strong>
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </RentaBlock>
   );
 };
@@ -268,8 +311,12 @@ const Step6GuanysCapital = ({ dades, update }) => {
     ]);
   };
 
-  const updateTransmissio = (id, camp, valor) => {
-    update('transmissions', dades.transmissions.map(t => t.id === id ? { ...t, [camp]: valor } : t));
+  const updateTransmissio = (id, campOrObj, valor) => {
+    update('transmissions', dades.transmissions.map(t => {
+      if (t.id !== id) return t;
+      if (typeof campOrObj === 'object' && campOrObj !== null) return { ...t, ...campOrObj };
+      return { ...t, [campOrObj]: valor };
+    }));
   };
 
   const removeTransmissio = (id) => {

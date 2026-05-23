@@ -37,6 +37,16 @@ const AnalysisAlert = ({ analisi }) => {
               </span>
             )}
           </div>
+          {analisi.exempt && (
+            <div className="mt-2 flex gap-2 flex-wrap">
+              <span className="bg-green-200 text-green-800 font-bold text-xs px-3 py-1 rounded-full">
+                ✅ EXEMPT de tributació
+              </span>
+              <span className="bg-white/80 text-green-700 text-xs px-3 py-1 rounded-full border border-green-200">
+                {analisi.ref}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>
