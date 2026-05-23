@@ -264,7 +264,6 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
   const tensMobiliaris = (dades.mobiliaris || []).length > 0;
   const tensTransmissions = (dades.transmissions || []).length > 0;
   const tensTransmissionsGravades = (dades.transmissions || []).some(t => !t.exempta);
-  const tensTransmissionsExemptes = (dades.transmissions || []).some(t => t.exempta);
   const tensDDI = (dades.rendesExterior || []).length > 0;
 
   return (
