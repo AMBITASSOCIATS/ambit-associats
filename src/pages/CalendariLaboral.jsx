@@ -180,47 +180,48 @@ const CalendariLaboral = ({ onBack, language: langProp = 'ca' }) => {
   return (
     <div className="bg-white min-h-screen">
 
-      {/* ── Capçalera sticky ─────────────────────────────────────────────── */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            {onBack && (
-              <button
-                onClick={onBack}
-                className="text-sm text-gray-400 hover:text-gray-700 transition whitespace-nowrap flex-shrink-0"
-              >
-                {t.tornar}
-              </button>
-            )}
-            <h1 className="text-base sm:text-lg font-semibold text-gray-800 truncate">
-              {t.titol}
-            </h1>
+      {/* ── Botó enrere sticky (només si hi ha onBack) ──────────────────── */}
+      {onBack && (
+        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3">
+            <button
+              onClick={onBack}
+              className="text-sm text-gray-400 hover:text-gray-700 transition"
+            >
+              {t.tornar}
+            </button>
           </div>
+        </div>
+      )}
 
-          {/* Selector d'idioma */}
-          <div className="flex gap-0.5 flex-shrink-0">
-            {['ca', 'es', 'en', 'fr'].map(lang => (
-              <button
-                key={lang}
-                onClick={() => setIdiomaActiu(lang)}
-                className={`px-2.5 py-1 text-xs font-medium rounded transition ${
-                  idiomaActiu === lang
-                    ? 'bg-teal-600 text-white'
-                    : 'text-gray-400 hover:text-gray-700'
-                }`}
-              >
-                {lang.toUpperCase()}
-              </button>
-            ))}
-          </div>
+      {/* ── Hero institucional ───────────────────────────────────────────── */}
+      <div style={{ backgroundColor: '#1A9E8F' }} className="w-full py-14 px-6 text-center">
+        <div className="flex justify-center mb-5">
+          <img src="/ÀMBIT Associats.png" alt="ÀMBIT Associats" className="h-16 w-auto" />
+        </div>
+        <h1 className="text-3xl font-bold text-white mb-3">{t.titol}</h1>
+        <p className="text-teal-100 text-sm max-w-xl mx-auto mb-6 leading-relaxed">{t.intro}</p>
+
+        {/* Selector d'idioma */}
+        <div className="flex justify-center gap-2">
+          {['ca', 'es', 'en', 'fr'].map(lang => (
+            <button
+              key={lang}
+              onClick={() => setIdiomaActiu(lang)}
+              className={`px-3 py-1 text-xs font-medium rounded border transition ${
+                idiomaActiu === lang
+                  ? 'bg-white text-teal-700 border-white'
+                  : 'bg-transparent text-white border-white/40 hover:bg-white/10'
+              }`}
+            >
+              {lang.toUpperCase()}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* ── Cos principal ────────────────────────────────────────────────── */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
-
-        {/* Intro */}
-        <p className="text-sm text-gray-500 mb-6 max-w-3xl leading-relaxed">{t.intro}</p>
 
         {/* ── Barra de filtres ──────────────────────────────────────────── */}
         <div className="flex flex-wrap gap-2 mb-6">
