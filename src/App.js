@@ -6,6 +6,7 @@ import legalBottomLeftImg from './legal-bottom-left.png';
 import legalBottomRightImg from './legal-bottom-right.png';
 import IrpfCalculadora from './irpf/IrpfCalculadora';
 import EinaFiscalRouter from './EinaFiscal/EinaFiscalRouter';
+import CalendariLaboral from './pages/CalendariLaboral';
 import { useAuth } from './auth/AuthContext';
 
 
@@ -66,6 +67,7 @@ const translations = {
       calculadora: "Calculadora IRPF",
       professionals: "Zona Professionals",
       einaFiscal: "Eina Fiscal IRPF",
+      calendari: "Calendari Laboral",
       blog: "Blog",
       contacte: "Contacte",
     },
@@ -121,6 +123,7 @@ const translations = {
       calculadora: "Calculadora IRPF",
       professionals: "Zona Profesionales",
       einaFiscal: "Herramienta Fiscal IRPF",
+      calendari: "Calendario Laboral",
       blog: "Blog",
       contacte: "Contacto",
     },
@@ -176,6 +179,7 @@ const translations = {
       calculadora: "IRPF Calculator",
       professionals: "Professional Area",
       einaFiscal: "IRPF Tax Tool",
+      calendari: "Labour Calendar",
       blog: "Blog",
       contacte: "Contact",
     },
@@ -231,6 +235,7 @@ const translations = {
       calculadora: "Calculatrice IRPF",
       professionals: "Espace Professionnels",
       einaFiscal: "Outil Fiscal IRPF",
+      calendari: "Calendrier du Travail",
       blog: "Blog",
       contacte: "Contact",
     },
@@ -893,6 +898,7 @@ const App = () => {
   const [currentBlogPost, setCurrentBlogPost] = useState(null);
   const [showIrpf, setShowIrpf] = useState(false);
   const [showEinaFiscal, setShowEinaFiscal] = useState(false);
+  const [showCalendari, setShowCalendari] = useState(false);
   const [showCookieBanner, setShowCookieBanner] = useState(() => {
     const savedConsent = localStorage.getItem('cookieConsent');
     return savedConsent === null;
@@ -907,6 +913,8 @@ const App = () => {
       window.history.pushState({ vista: 'einaFiscal' }, '');
     } else if (showIrpf) {
       window.history.pushState({ vista: 'irpf' }, '');
+    } else if (showCalendari) {
+      window.history.pushState({ vista: 'calendari' }, '');
     } else if (currentBlogPost) {
       window.history.pushState({ vista: 'blog', slug: currentBlogPost.slug }, '');
     } else if (currentService) {
@@ -914,7 +922,7 @@ const App = () => {
     } else {
       window.history.pushState({ vista: 'home' }, '');
     }
-  }, [showEinaFiscal, showIrpf, currentBlogPost, currentService]);
+  }, [showEinaFiscal, showIrpf, showCalendari, currentBlogPost, currentService]);
 
   // ── Historial navegador: gestionar fletxa enrere ─────────────────────────
   useEffect(() => {
@@ -923,14 +931,22 @@ const App = () => {
       if (vista === 'home' || !vista) {
         setShowEinaFiscal(false);
         setShowIrpf(false);
+        setShowCalendari(false);
         setCurrentService(null);
         setCurrentBlogPost(null);
       } else if (vista === 'einaFiscal') {
         setShowIrpf(false);
+        setShowCalendari(false);
         setCurrentService(null);
         setCurrentBlogPost(null);
       } else if (vista === 'irpf') {
         setShowEinaFiscal(false);
+        setShowCalendari(false);
+        setCurrentService(null);
+        setCurrentBlogPost(null);
+      } else if (vista === 'calendari') {
+        setShowEinaFiscal(false);
+        setShowIrpf(false);
         setCurrentService(null);
         setCurrentBlogPost(null);
       } else if (vista === 'blog') {
@@ -957,6 +973,7 @@ const App = () => {
     setCurrentBlogPost(null);
     setShowIrpf(false);
     setShowEinaFiscal(false);
+    setShowCalendari(false);
     setMenuOpen(false);
     setServicesDropdown(false);
   };
@@ -971,6 +988,10 @@ const App = () => {
 
   if (showIrpf) {
     return <IrpfCalculadora onBack={() => setShowIrpf(false)} />;
+  }
+
+  if (showCalendari) {
+    return <CalendariLaboral onBack={() => setShowCalendari(false)} language={language} />;
   }
 
   if (showEinaFiscal) {
@@ -1045,6 +1066,9 @@ const App = () => {
                 {t.nav?.einaFiscal}
                 <span className="text-xs bg-teal-300 text-teal-900 font-semibold px-1.5 py-0.5 rounded-full">Nou</span>
               </button>
+              <button onClick={() => setShowCalendari(true)} className="hover:text-white hover:underline">
+                {t.nav?.calendari}
+              </button>
               <button onClick={() => document.getElementById("blog")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-white hover:underline">
                 {t.nav?.blog}
               </button>
@@ -1076,6 +1100,7 @@ const App = () => {
                   <button onClick={() => { setShowIrpf(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.calculadora}</button>
                   <button onClick={() => { document.getElementById("professionals")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="hover:underline">{t.nav?.professionals}</button>
                   <button onClick={() => { setShowEinaFiscal(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.einaFiscal}</button>
+                  <button onClick={() => { setShowCalendari(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.calendari}</button>
                   <button onClick={() => { document.getElementById("blog")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="hover:underline">{t.nav?.blog}</button>
                   <button onClick={() => { document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="bg-white/20 px-4 py-1.5 rounded-full font-semibold">{t.nav?.contacte}</button>
                 </div>
