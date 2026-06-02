@@ -695,8 +695,29 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               <NotaNormativa refText="Art. 33-37 Llei 5/2014" text="La base de tributació general integra les rendes del treball, activitats econòmiques i capital immobiliari. La base de tributació de l'estalvi integra les rendes del capital mobiliari i els guanys i pèrdues de capital." />
             </SeccioBlocNormatiu>
 
+            {dades.estatCivil === 'casat' && (
+              <SeccioBlocNormatiu titol="Formulari 300-A — Situació personal i familiar">
+                <FilaDetall label="Estat civil" valor="Casat/da o parella de fet" />
+                <FilaDetall
+                  label="Cònjuge / parella de fet"
+                  valor={`${dades.conjugeNom || '—'}${dades.conjugeNRT ? ` (NRT: ${dades.conjugeNRT})` : ''}`}
+                />
+                <FilaDetall
+                  label="Rendes generals del cònjuge"
+                  valor={fmt(dades.conjugeRendesGenerals || 0)}
+                  nota={
+                    dades.conjugePercepRendes === false
+                      ? 'No percep rendes de la base general → mínim personal màxim: 40.000 €'
+                      : (dades.conjugeRendesInf24k === false || (dades.conjugeRendesGenerals || 0) >= 24000)
+                      ? '≥ 24.000 € → no s\'aplica increment del mínim personal (es manté en 24.000 €)'
+                      : `< 24.000 € → mínim incrementat: ${fmt(Math.max(24000, 40000 - (dades.conjugeRendesGenerals || 0)))} (40.000 − rendes netes cònjuge)`
+                  }
+                />
+              </SeccioBlocNormatiu>
+            )}
+
             <SeccioBlocNormatiu titol="Mínim personal i reduccions — Formulari 300-A sec.2">
-              <FilaDetall label="Mínim personal exempt" valor={`− ${fmt(r.minimPersonal)}`} nota={`Art. 35.1 Llei 5/2014 · ${dades.estatCivil === 'casat' ? `Casat/da · Rendes cònjuge: ${fmt(dades.conjugeRendesGenerals)}` : 'Solter/a, vidu/a o divorciat/da'} · ${dades.obligatDiscapacitat ? 'Discapacitat CONAVA' : 'Sense discapacitat reconeguda'}`} />
+              <FilaDetall label="Mínim personal exempt" valor={`− ${fmt(r.minimPersonal)}`} nota={`Art. 35.1 Llei 5/2014 · ${dades.estatCivil === 'casat' ? dades.conjugePercepRendes === false ? 'Casat/da · cònjuge sense rendes generals → mínim 40.000 €' : dades.conjugeRendesInf24k === false ? 'Casat/da · rendes cònjuge ≥ 24.000 € → mínim base 24.000 €' : `Casat/da · rendes cònjuge ${fmt(dades.conjugeRendesGenerals)} < 24.000 € → mínim incrementat` : 'Solter/a, vidu/a o divorciat/da'} · ${dades.obligatDiscapacitat ? 'Discapacitat CONAVA' : 'Sense discapacitat reconeguda'}`} />
               {r.redFamiliar > 0 && <FilaDetall label="Reducció per càrregues familiars" valor={`− ${fmt(r.redFamiliar)}`} nota="Art. 35.2 Llei 5/2014 · Descendents, ascendents i tutela: 1.000 € per persona" />}
               {r.redHabitatge > 0 && <FilaDetall label="Reducció per habitatge habitual" valor={`− ${fmt(r.redHabitatge)}`} nota="Art. 38 Llei 5/2014 · 50% quotes hipoteca o lloguer assequible, màx. 5.000 €/any" />}
               {r.redPensions > 0 && <FilaDetall label="Reducció per plans de pensions" valor={`− ${fmt(r.redPensions)}`} nota="Art. 39 Llei 5/2014 · 100% aportació, màx. 5.000 €/any" />}
