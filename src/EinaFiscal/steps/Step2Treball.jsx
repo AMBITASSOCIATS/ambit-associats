@@ -9,6 +9,7 @@ const TIPUS_TREBALL = [
   { value: 'SALARI_GENERAL', label: 'Salari / nòmina general' },
   { value: 'ADMINISTRADOR', label: "Retribució d'administrador" },
   { value: 'PENSIO_CASS', label: 'Pensió CASS (jubilació, IP, mort/supervivència)' },
+  { value: 'PENSIO_CLASSES_PASSIVES', label: 'Pensió pública de jubilació (Classes Passives)' },
   { value: 'INDEMNITZACIO_ACOMIADAMENT', label: 'Indemnització per acomiadament' },
   { value: 'DIETES', label: 'Dietes i despeses de viatge' },
   { value: 'BECA', label: "Beca a l'estudi o ajut de recerca" },
@@ -25,12 +26,16 @@ const DEFAULT_FONT_TREBALL = {
   cotitzacionsCASS: 0,
   importNet: 0,
   esPensionista: false,
-  anysCotitzats: 0,
+  anysCotitzats: 0,              // llegat — fallback per a dades existents
+  anysTotals: 0,                 // anys totals cotitzats CASS (llindar ≥ 15)
+  anysCotitzatsAbans2015: 0,     // anys cotitzats abans 1/1/2015 (càlcul 1%)
   retencions: 0,
   limitLegal: 0,
   limitDietes: 0,
   participacioPct: 0,
   anysParticipacio: 0,
+  compleixRequisitsExempcio: false, // BECA / PREMI
+  b: 0, c: 0, d: 0, dPrima: 0,     // PENSIO_CLASSES_PASSIVES
 };
 
 const InputNum = ({ label, value, onChange, min = 0, className = '' }) => (
@@ -51,16 +56,40 @@ const InputNum = ({ label, value, onChange, min = 0, className = '' }) => (
 const FontTreball = ({ font, index, onUpdate, onEliminar }) => {
   const update = (camp, valor) => onUpdate(font.id, camp, valor);
 
+  const anysTotalsEfectius = font.anysTotals || 0;
+  const anysCotAbans2015 = font.anysCotitzatsAbans2015 != null ? font.anysCotitzatsAbans2015 : (font.anysCotitzats || 0);
+
   const analisi = analizarRendaTreball({
     tipus: font.tipus,
     importBrut: font.importBrut,
-    detalls: { limitLegal: font.limitLegal, limitReglamentari: font.limitDietes }
+    detalls: {
+      limitLegal: font.limitLegal,
+      limitReglamentari: font.limitDietes,
+      compleixRequisitsExempcio: font.compleixRequisitsExempcio,
+      anysTotals: anysTotalsEfectius,
+      anysCotitzatsAbans2015: anysCotAbans2015,
+      b: font.b || 0,
+      c: font.c || 0,
+      d: font.d || 0,
+      dPrima: font.dPrima || 0,
+    }
   });
 
-  // Càlcul renda neta estimada
+  // Càlcul renda neta estimada (display informatiu, no afecta el motor)
   const calcularNetaEstimada = () => {
-    if (font.tipus === 'PENSIO_CASS') return 0; // exempta
-    if (font.tipus === 'BECA' || font.tipus === 'PREMI') return 0;
+    if (font.tipus === 'PENSIO_CASS') {
+      const ratio = anysTotalsEfectius >= 15 ? Math.min(anysCotAbans2015 * 0.01, 0.30) : 0;
+      return (font.importBrut || 0) * (1 - ratio);
+    }
+    if (font.tipus === 'PENSIO_CLASSES_PASSIVES') {
+      const a = font.importBrut || 0;
+      const b = font.b || 0; const c = font.c || 0;
+      const d = font.d || 0; const dPrima = font.dPrima || 0;
+      return b > 0 ? Math.min(Math.max(0, a * ((b - c) - (d - dPrima)) / b), a) : 0;
+    }
+    if (font.tipus === 'BECA' || font.tipus === 'PREMI') {
+      return font.compleixRequisitsExempcio ? 0 : (font.importBrut || 0);
+    }
     let gravat = font.importBrut;
     if (font.tipus === 'INDEMNITZACIO_ACOMIADAMENT') gravat = Math.max(0, font.importBrut - font.limitLegal);
     if (font.tipus === 'DIETES') gravat = Math.max(0, font.importBrut - font.limitDietes);
@@ -101,15 +130,17 @@ const FontTreball = ({ font, index, onUpdate, onEliminar }) => {
         </div>
 
         <InputNum
-          label="Import brut (€)"
+          label={font.tipus === 'PENSIO_CLASSES_PASSIVES' ? 'Renda íntegra anual (a)' : 'Import brut (€)'}
           value={font.importBrut}
           onChange={v => update('importBrut', v)}
         />
-        <InputNum
-          label="Cotitzacions CASS treballador (€)"
-          value={font.cotitzacionsCASS}
-          onChange={v => update('cotitzacionsCASS', v)}
-        />
+        {font.tipus !== 'PENSIO_CASS' && font.tipus !== 'PENSIO_CLASSES_PASSIVES' && (
+          <InputNum
+            label="Cotitzacions CASS treballador (€)"
+            value={font.cotitzacionsCASS}
+            onChange={v => update('cotitzacionsCASS', v)}
+          />
+        )}
 
         {font.tipus === 'INDEMNITZACIO_ACOMIADAMENT' && (
           <InputNum
@@ -128,52 +159,93 @@ const FontTreball = ({ font, index, onUpdate, onEliminar }) => {
           />
         )}
 
+        {font.tipus === 'PENSIO_CLASSES_PASSIVES' && (
+          <>
+            <InputNum label="Provisió matemàtica a data jubilació (b)" value={font.b || 0} onChange={v => update('b', v)} className="col-span-2" />
+            <InputNum label="Provisió matemàtica a 31/12/2014 (c)" value={font.c || 0} onChange={v => update('c', v)} />
+            <InputNum label="Aportacions posteriors a 31/12/2014 (d)" value={font.d || 0} onChange={v => update('d', v)} />
+            <InputNum label="De les anteriors, les que han reduït base (d')" value={font.dPrima || 0} onChange={v => update('dPrima', v)} className="col-span-2" />
+          </>
+        )}
+
         <InputNum
           label="Retencions practicades (€)"
           value={font.retencions}
           onChange={v => update('retencions', v)}
         />
 
-        <div className="flex items-center gap-2 pt-5">
-          <input
-            type="checkbox"
-            checked={font.esPensionista}
-            onChange={e => update('esPensionista', e.target.checked)}
-            className="w-4 h-4 accent-[#009B9C]"
-          />
-          <span className="text-xs text-gray-600">Pensionista CASS</span>
-        </div>
+        {font.tipus !== 'PENSIO_CASS' && font.tipus !== 'PENSIO_CLASSES_PASSIVES' && (
+          <div className="flex items-center gap-2 pt-5">
+            <input
+              type="checkbox"
+              checked={font.esPensionista}
+              onChange={e => update('esPensionista', e.target.checked)}
+              className="w-4 h-4 accent-[#009B9C]"
+            />
+            <span className="text-xs text-gray-600">Pensionista CASS</span>
+          </div>
+        )}
 
-        {font.esPensionista && (
-          <InputNum
-            label="Anys cotitzats a la CASS"
-            value={font.anysCotitzats}
-            onChange={v => update('anysCotitzats', v)}
-            className="col-span-2"
-          />
+        {(font.tipus === 'PENSIO_CASS' || font.esPensionista) && (
+          <>
+            <InputNum
+              label="Anys totals cotitzats a la CASS"
+              value={font.anysTotals || 0}
+              onChange={v => update('anysTotals', v)}
+            />
+            <InputNum
+              label="Anys cotitzats ABANS de l'1/1/2015"
+              value={font.anysCotitzatsAbans2015 != null ? font.anysCotitzatsAbans2015 : (font.anysCotitzats || 0)}
+              onChange={v => update('anysCotitzatsAbans2015', v)}
+            />
+          </>
+        )}
+
+        {font.tipus === 'BECA' && (
+          <div className="flex items-center gap-2 col-span-2">
+            <input
+              type="checkbox"
+              checked={font.compleixRequisitsExempcio || false}
+              onChange={e => update('compleixRequisitsExempcio', e.target.checked)}
+              className="w-4 h-4 accent-[#009B9C]"
+            />
+            <span className="text-xs text-gray-600">Compleix requisits d'exempció (Art. 16 Reglament 29/12/2023)</span>
+          </div>
+        )}
+
+        {font.tipus === 'PREMI' && (
+          <div className="flex items-center gap-2 col-span-2">
+            <input
+              type="checkbox"
+              checked={font.compleixRequisitsExempcio || false}
+              onChange={e => update('compleixRequisitsExempcio', e.target.checked)}
+              className="w-4 h-4 accent-[#009B9C]"
+            />
+            <span className="text-xs text-gray-600">Premi exempt (Art. 17 Reglament 29/12/2023)</span>
+          </div>
         )}
       </div>
 
       {/* Càlcul reducció pensionista */}
-      {font.esPensionista && font.anysCotitzats > 0 && font.tipus !== 'PENSIO_CASS' && (
+      {font.esPensionista && anysTotalsEfectius > 0 && font.tipus !== 'PENSIO_CASS' && (
         <div className="bg-blue-50 rounded-lg p-3 text-sm mt-3">
           <p className="font-medium text-blue-800">Reducció per pensionista CASS:</p>
           <p className="text-blue-600 text-xs">
-            {font.anysCotitzats} anys × 1% = {Math.min(font.anysCotitzats, 30)}%
-            {' '}→ Reducció: {(calcularNetaEstimada() * Math.min(font.anysCotitzats * 0.01, 0.30)).toFixed(2)} €
+            {anysTotalsEfectius} anys × 1% = {Math.min(anysTotalsEfectius, 30)}%
+            {' '}→ Reducció: {(calcularNetaEstimada() * Math.min(anysTotalsEfectius * 0.01, 0.30)).toFixed(2)} €
           </p>
           <p className="text-blue-500 text-xs">Font: Guia IRPF 2025 §6.2</p>
         </div>
       )}
 
-      {/* Estimació renda neta */}
-      {font.tipus !== 'PENSIO_CASS' && font.tipus !== 'BECA' && font.tipus !== 'PREMI' && (
-        <div className="bg-gray-50 rounded-lg p-3 text-xs mt-3">
-          <span className="font-medium text-gray-600">Renda neta estimada: </span>
-          <span className="font-bold text-gray-800">{calcularNetaEstimada().toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €</span>
+      {/* Estimació renda gravada */}
+      <div className="bg-gray-50 rounded-lg p-3 text-xs mt-3">
+        <span className="font-medium text-gray-600">Import gravat estimat: </span>
+        <span className="font-bold text-gray-800">{calcularNetaEstimada().toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €</span>
+        {(font.tipus === 'SALARI_GENERAL' || font.tipus === 'ADMINISTRADOR' || font.tipus === 'ALTRES_TREBALL') && (
           <span className="text-gray-400 ml-2">(brut gravat − CASS − 3% altres despeses)</span>
-        </div>
-      )}
+        )}
+      </div>
 
       <AnalysisAlert analisi={analisi} />
     </RentaBlock>
