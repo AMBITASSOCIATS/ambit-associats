@@ -820,13 +820,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           if (!hiHaBasesNeg && !hiHaDedAnts && !hiHaDedExerc) return null;
 
           // Helper: mostra Generades / Aplicades / Pendents + venciment per a una partida
-          const deduccioRows = (key, titol, ref, generades, aplicades, anysVig, noDiferable = false) => {
+          const deduccioRows = (key, titol, ref, generades, aplicades, anysVig, noDiferable = false, anyGeneracio = null) => {
             if (!generades || generades <= 0) return null;
             const pendents = Math.max(0, generades - aplicades);
+            const anyBase = anyGeneracio || exercici;
             const notaPendent = pendents > 0
               ? (noDiferable
-                ? "Import no diferible — s'extingeix si la quota és insuficient (Art. 47)"
-                : `Diferible fins a exercici ${exercici + anysVig} (${anysVig} anys · ${ref} Llei 5/2014)`)
+                ? "Import no diferible — s'extingeix si la quota és insuficient"
+                : `Diferible fins a exercici ${anyBase + anysVig} (generat ${anyBase} · ${anysVig} anys · ${ref} Llei 5/2014)`)
               : 'Totalment aplicada en l\'exercici';
             return (
               <React.Fragment key={key}>
@@ -877,13 +878,18 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 {/* Deduccions pendents exercicis anteriors */}
                 {(dades.deduccionsAnteriors || []).length > 0 && (
                   <SeccioBlocNormatiu titol="300-F · Deduccions pendents d'exercicis anteriors">
-                    {(dades.deduccionsAnteriors || []).map((f, i) => (
-                      <React.Fragment key={i}>
-                        <FilaDetall label={`Exercici ${f.exercici} — pendent inici`} valor={fmt(f.pendentInici || 0)} />
-                        <FilaDetall label={`  Aplicat en ${exercici}`} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
-                        <FilaDetall label="  Pendent exercicis futurs" valor={fmt(Math.max(0,(f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? `Pendent de deduir en exercicis futurs` : undefined} />
-                      </React.Fragment>
-                    ))}
+                    {(dades.deduccionsAnteriors || []).map((ded, i) =>
+                      deduccioRows(
+                        `ded-ant-${i}`,
+                        ded.descripcio || `Deducció exercici ${ded.exercici}`,
+                        ded.ref || 'Art. 43',
+                        ded.pendentInici || 0,
+                        ded.aplicat || 0,
+                        ded.anysVig || 5,
+                        false,
+                        ded.exercici || (exercici - 1)
+                      )
+                    )}
                     <FilaDetall label="Total deduccions anteriors aplicades" valor={fmt(-r.deduccionsAnteriorsAplicades)} negrita destacat negatiu />
                   </SeccioBlocNormatiu>
                 )}
@@ -891,7 +897,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 {/* Deduccions generades en l'exercici — detall per partida */}
                 {hiHaDedExerc && (
                   <SeccioBlocNormatiu titol={`Deduccions generades en l'exercici ${exercici} — Generades / Aplicades / Pendents`}>
-                    {deduccioRows('comunal', "Impost comunal arrendaments i radicació", 'Art. 47', impostComunalGenerat, r.deduccioImpostComunal || 0, 0, true)}
+                    {deduccioRows('comunal', "Impost comunal arrendaments i radicació", 'Art. 43 bis', impostComunalGenerat, r.deduccioImpostComunal || 0, 6, false)}
                     {deduccioRows('ddi', "Deducció per Doble Imposició Internacional", 'Art. 48', ddiGenerat, r.ddi || 0, 10)}
                     {deduccioRows('mecen', "Mecenatge i donacions", 'Art. 43 bis', mecenGen, d8.aplicatMecenatge || 0, 5)}
                     {deduccioRows('proj', "Projectes d'interès nacional", 'Art. 44', projGen, d8.aplicatProjectes || 0, 5)}
