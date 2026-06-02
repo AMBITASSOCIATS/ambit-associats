@@ -8,16 +8,36 @@ import { calcularDDI } from './exemptions.js';
 
 function calcularRendaNetaTreball(rendesTreball) {
   let totalCASS = 0;
-  let totalGravat = 0;
+  let totalGravat3pct = 0;    // renda gravada on s'aplica el 3% d'altres despeses
+  let totalGravatDirecte = 0; // renda gravada sense 3% (pensions CASS i Classes Passives)
 
   for (const font of rendesTreball) {
-    // Pensions CASS: totalment exemptes (no s'inclouen en renda gravada)
+    const brut = font.importBrut || 0;
+
+    // PENSIO_CASS: gravada parcialment — Disp. add. 5a Llei 5/2014
+    // Sense CASS ni 3% d'altres despeses sobre aquesta renda
     if (font.tipus === 'PENSIO_CASS') {
-      // Però apliquem la reducció pensionista si correspon (però la pensió és exempta)
+      const anysTotals = font.anysTotals || 0;
+      const anysCotAbans2015 = font.anysCotitzatsAbans2015 != null
+        ? font.anysCotitzatsAbans2015 : (font.anysCotitzats || 0);
+      const ratio = anysTotals >= 15 ? Math.min(anysCotAbans2015 * 0.01, 0.30) : 0;
+      totalGravatDirecte += brut * (1 - ratio);
       continue;
     }
 
-    const brut = font.importBrut || 0;
+    // PENSIO_CLASSES_PASSIVES: Art. 12.2.c + Disp. add. 4a ap.3 Llei 5/2014
+    // Sense CASS ni 3% d'altres despeses sobre aquesta renda
+    if (font.tipus === 'PENSIO_CLASSES_PASSIVES') {
+      const a = brut;
+      const b = font.b || 0;
+      const c = font.c || 0;
+      const d = font.d || 0;
+      const dPrima = font.dPrima || 0;
+      const e = b > 0 ? Math.min(Math.max(0, a * ((b - c) - (d - dPrima)) / b), a) : 0;
+      totalGravatDirecte += e;
+      continue;
+    }
+
     const cass = font.cotitzacionsCASS || 0;
     totalCASS += cass;
 
@@ -28,28 +48,28 @@ function calcularRendaNetaTreball(rendesTreball) {
     } else if (font.tipus === 'DIETES') {
       gravat = Math.max(0, brut - (font.limitDietes || 0));
     } else if (font.tipus === 'BECA' || font.tipus === 'PREMI') {
-      gravat = 0; // exemptes
+      gravat = font.compleixRequisitsExempcio ? 0 : brut;
     }
 
-    totalGravat += gravat;
+    totalGravat3pct += gravat;
   }
 
   // Despeses deduïbles: cotitzacions CASS + 3% altres (màx. 2.500)
+  // El 3% s'aplica NOMÉS sobre rendes generals (no sobre pensions)
   const altresDespeses = Math.min(
-    totalGravat * IRPF_EF.ALTRES_DESPESES_TREBALL_PCT,
+    totalGravat3pct * IRPF_EF.ALTRES_DESPESES_TREBALL_PCT,
     IRPF_EF.ALTRES_DESPESES_TREBALL_MAX
   );
 
+  const totalGravat = totalGravat3pct + totalGravatDirecte;
   let rendaNeta = totalGravat - totalCASS - altresDespeses;
 
-  // Reducció pensionistes CASS (s'aplica sobre la renda neta gravada del pensionista)
-  // Si hi ha algun ingrés de pensionista CASS que NO és la pensió (peu de pàgina: improbable)
-  // En la pràctica la reducció s'aplica si el contribuent cobra pensió CASS + altres rendes
-  // Aquí implementem la reducció sobre la renda neta total si hi ha fonts amb esPensionista
+  // Reducció pensionistes CASS (s'aplica sobre la renda neta gravada de la font)
   let redPensionista = 0;
   for (const font of rendesTreball) {
-    if (font.esPensionista && font.anysCotitzats > 0 && font.tipus !== 'PENSIO_CASS') {
-      const pct = Math.min(font.anysCotitzats * IRPF_EF.PENSIONISTA_RED_PER_ANY, IRPF_EF.PENSIONISTA_RED_MAX);
+    const anysTotals = font.anysTotals || font.anysCotitzats || 0;
+    if (font.esPensionista && anysTotals > 0 && font.tipus !== 'PENSIO_CASS') {
+      const pct = Math.min(anysTotals * IRPF_EF.PENSIONISTA_RED_PER_ANY, IRPF_EF.PENSIONISTA_RED_MAX);
       const fontBrut = font.importBrut || 0;
       const fontCASS = font.cotitzacionsCASS || 0;
       const fontAltres = Math.min(fontBrut * IRPF_EF.ALTRES_DESPESES_TREBALL_PCT, IRPF_EF.ALTRES_DESPESES_TREBALL_MAX);
