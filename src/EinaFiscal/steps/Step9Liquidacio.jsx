@@ -1068,7 +1068,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             <div style={{ backgroundColor: '#fff8e1', border: '2px solid #f9a825', borderRadius: '8px', padding: '16px 20px', marginBottom: '20px' }}>
               <div style={{ fontSize: '11px', fontWeight: '700', color: '#e65100', marginBottom: '8px' }}>⚠️ AVÍS IMPORTANT</div>
               <p style={{ fontSize: '10px', color: '#555', lineHeight: '1.6', margin: 0 }}>
-                Aquest informe ha estat generat per l'<strong>Eina Fiscal IRPF d'ÀMBIT Associats</strong> a partir de les dades introduïdes per l'usuari. El seu contingut té caràcter <strong>merament informatiu i orientatiu</strong>, i no constitueix ni substitueix en cap cas l'assessorament fiscal professional personalitzat. ÀMBIT Associats no assumeix cap responsabilitat sobre les decisions preses en base a aquest informe sense una revisió professional prèvia.
+                Aquest informe ha estat generat per l'<strong>{`Eina Fiscal IRPF${CAP.nom !== 'DEL SOTO – PALEARI & ASSOCIATS, S.L.' ? ` (gestionada per ${CAP.nomComercial || CAP.nom})` : ' d\'ÀMBIT Associats'}`}</strong> a partir de les dades introduïdes per l'usuari. El seu contingut té caràcter <strong>merament informatiu i orientatiu</strong>, i no constitueix ni substitueix en cap cas l'assessorament fiscal professional personalitzat. {CAP.nomComercial || CAP.nom} no assumeix cap responsabilitat sobre les decisions preses en base a aquest informe sense una revisió professional prèvia.
               </p>
             </div>
 
@@ -1120,11 +1120,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               <div>
                 <div style={{ fontWeight: '700', marginBottom: '4px', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '8px' }}>Contacte</div>
                 <div>{CAP.email}</div>
-                <div style={{ opacity: 0.75 }}>{CAP.tel} · {CAP.web}</div>
+                <div style={{ opacity: 0.75 }}>{CAP.tel}{CAP.web ? ` · ${CAP.web}` : ''}</div>
               </div>
             </div>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '10px', fontSize: '8px', opacity: 0.6, textAlign: 'center' }}>
               © {new Date().getFullYear()} {CAP.nom} · Tots els drets reservats · Informe generat el {dataAvui()} · Normativa: Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023
+            </div>
+            <div style={{ textAlign: 'center', fontSize: '7px', opacity: 0.4, color: 'white', paddingBottom: '4px' }}>
+              Informe generat amb l'Eina Fiscal IRPF d'ÀMBIT Associats · DEL SOTO – PALEARI &amp; ASSOCIATS, S.L. · NRT L-720543-P · www.ambit.ad
             </div>
           </div>
         </div>
