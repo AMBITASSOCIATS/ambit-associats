@@ -8,24 +8,59 @@ import { CDI_RATES } from './cdiRates.js';
 export function analizarRendaTreball(renda) {
   const { tipus, importBrut, detalls } = renda;
   switch (tipus) {
-    case 'PENSIO_CASS':
+    case 'PENSIO_CASS': {
+      const anysTotals = detalls?.anysTotals || 0;
+      const anysCotitzatsAbans2015 = detalls?.anysCotitzatsAbans2015 || 0;
+      const ratio = anysTotals >= 15 ? Math.min(anysCotitzatsAbans2015 * 0.01, 0.30) : 0;
+      const importExemptCASS = importBrut * ratio;
+      const importGravat = importBrut - importExemptCASS;
       return {
-        exempt: true, parcial: false, ratio: 1.0,
-        importGravat: 0, importExempt: importBrut,
-        ref: 'Art. 5.i Llei 5/2014',
-        titol: 'Pensió CASS — exempta',
-        explicacio: `Les pensions de jubilació, invalidesa permanent i mort i supervivència abonades per la Caixa Andorrana de Seguretat Social (CASS) estan totalment exemptes d'IRPF en virtut de l'art. 5.i de la Llei 5/2014. Import exempt: ${importBrut.toFixed(2)} €.`,
-        alertType: 'success', formulari: '300-B', casella: 'I.2'
+        exempt: false, parcial: true, ratio,
+        importGravat, importExempt: importExemptCASS,
+        ref: 'Disp. add. 5a Llei 5/2014',
+        titol: 'Pensió CASS — parcialment gravada',
+        explicacio: `Pensió de la CASS subjecta a IRPF per la part generada des de l'1/1/2015 (Disp. add. 5a Llei 5/2014). Anys cotitzats totals: ${anysTotals}. Anys cotitzats abans del 2015: ${anysCotitzatsAbans2015}. Ràtio d'exempció (màx. 30%): ${(ratio * 100).toFixed(0)}%. Import exempt: ${importExemptCASS.toFixed(2)} €. Import gravat: ${importGravat.toFixed(2)} €. No s'apliquen despeses del 3% ni deducció de cotitzacions CASS sobre aquesta renda.`,
+        alertType: ratio > 0 ? 'warning' : 'info', formulari: '300-B', casella: '300-B · I.2'
       };
+    }
+
+    case 'PENSIO_CLASSES_PASSIVES': {
+      const a = importBrut;
+      const b = detalls?.b || 0;
+      const c = detalls?.c || 0;
+      const d = detalls?.d || 0;
+      const dPrima = detalls?.dPrima || 0;
+      const e = b > 0 ? Math.min(Math.max(0, a * ((b - c) - (d - dPrima)) / b), a) : 0;
+      const importExemptCP = a - e;
+      const ratioCP = a > 0 ? importExemptCP / a : 0;
+      return {
+        exempt: false, parcial: true, ratio: ratioCP,
+        importGravat: e, importExempt: importExemptCP,
+        ref: 'Art. 12.2.c + Disp. add. 4a ap.3 Llei 5/2014',
+        titol: 'Pensió pública de jubilació (Classes Passives)',
+        explicacio: `Només tributa la part generada des de l'1/1/2015. Si b = c, gravat = 0. Paràmetres: a (pensió anual bruta) = ${a.toFixed(2)} €, b (anys totals) = ${b}, c (anys fins 31/12/2014) = ${c}, d (base reguladora actual) = ${d.toFixed(2)} €, d' (base reguladora a 31/12/2014) = ${dPrima.toFixed(2)} €. Import gravat (e): ${e.toFixed(2)} €. Import exempt: ${importExemptCP.toFixed(2)} €.`,
+        alertType: e > 0 ? 'warning' : 'success', formulari: '300-B', casella: '300-B · I.1'
+      };
+    }
 
     case 'BECA':
+      if (detalls?.compleixRequisitsExempcio === true) {
+        return {
+          exempt: true, parcial: false, ratio: 1.0,
+          importGravat: 0, importExempt: importBrut,
+          ref: 'Art. 16 Reglament 29/12/2023',
+          titol: "Beca a l'estudi — exempta (requisits acreditats)",
+          explicacio: "Beca a l'estudi o ajut de recerca exempt d'IRPF: l'entitat atorgant és una entitat pública andorrana o entitat sense ànim de lucre reconeguda i compleix els requisits de l'Art. 16 del Reglament 29/12/2023. Import exempt: " + importBrut.toFixed(2) + ' €.',
+          alertType: 'success', formulari: '300-B', casella: 'I.1'
+        };
+      }
       return {
-        exempt: true, parcial: false, ratio: 1.0,
-        importGravat: 0, importExempt: importBrut,
-        ref: 'Art. 5.n Llei 5/2014 + Art. 16 Reglament 29/12/2023',
-        titol: "Beca a l'estudi — exempta",
-        explicacio: "Les beques a l'estudi i els ajuts de recerca concedits per entitats públiques andorranes o per entitats sense ànim de lucre reconegudes estan exemptes d'IRPF (Art. 5.n Llei 5/2014 i Art. 16 Reglament). ATENCIÓ: verificar que l'entitat atorgant compleix els requisits reglamentaris.",
-        alertType: 'success', formulari: '300-B', casella: 'I.1'
+        exempt: false, parcial: false, ratio: 0,
+        importGravat: importBrut, importExempt: 0,
+        ref: 'Art. 16 Reglament 29/12/2023',
+        titol: "Beca a l'estudi — gravada (requisits no acreditats)",
+        explicacio: "La beca o ajut de recerca tributa com a renda del treball perquè no s'ha acreditat que l'entitat atorgant compleixi els requisits de l'Art. 16 del Reglament 29/12/2023 (entitat pública andorrana o entitat sense ànim de lucre reconeguda). Import gravat: " + importBrut.toFixed(2) + ' €.',
+        alertType: 'warning', formulari: '300-B', casella: 'I.1'
       };
 
     case 'INDEMNITZACIO_ACOMIADAMENT': {
@@ -59,13 +94,23 @@ export function analizarRendaTreball(renda) {
     }
 
     case 'PREMI':
+      if (detalls?.compleixRequisitsExempcio === true) {
+        return {
+          exempt: true, parcial: false, ratio: 1.0,
+          importGravat: 0, importExempt: importBrut,
+          ref: 'Art. 17 Reglament 29/12/2023',
+          titol: 'Premi literari, artístic o científic — exempt (requisits acreditats)',
+          explicacio: "Premi literari, artístic o científic exempt d'IRPF: atorgat per institució pública andorrana o entitat privada reconeguda, no comporta obligació de cedir drets (Art. 17 Reglament 29/12/2023). Import exempt: " + importBrut.toFixed(2) + ' €.',
+          alertType: 'success', formulari: '300-B', casella: 'I.1'
+        };
+      }
       return {
-        exempt: true, parcial: false, ratio: 1.0,
-        importGravat: 0, importExempt: importBrut,
+        exempt: false, parcial: false, ratio: 0,
+        importGravat: importBrut, importExempt: 0,
         ref: 'Art. 17 Reglament 29/12/2023',
-        titol: 'Premi literari, artístic o científic — exempt si compleix requisits',
-        explicacio: "Els premis literaris, artístics o científics estan exempts d'IRPF quan siguin atorgats per institucions públiques andorranes o entitats privades reconegudes i no comportin obligació de cedir drets (Art. 17 Reglament). ATENCIÓ: verificar que es compleixen els requisits reglamentaris.",
-        alertType: 'success', formulari: '300-B', casella: 'I.1'
+        titol: 'Premi literari, artístic o científic — gravat (requisits no acreditats)',
+        explicacio: "El premi tributa com a renda del treball perquè no s'ha acreditat que compleixi els requisits de l'Art. 17 del Reglament 29/12/2023 (atorgament per institució pública andorrana o entitat reconeguda, sense cessió de drets). Import gravat: " + importBrut.toFixed(2) + ' €.',
+        alertType: 'warning', formulari: '300-B', casella: 'I.1'
       };
 
     case 'ADMINISTRADOR':
