@@ -117,9 +117,11 @@ function calcularRendaNetaImmobiliaria(immobles) {
       total += immoble.ingressosIntegres - despeses;
     } else {
       const despeses = (immoble.despesaReparacio || 0) + (immoble.despesaFinancera || 0) +
-                       (immoble.amortitzacio || 0) + (immoble.tributs || 0) +
-                       (immoble.asseguranca || 0) + (immoble.comunitat || 0);
-      total += (immoble.ingressosIntegres || 0) - despeses;
+                       (immoble.serveisPrestatsTercers || 0) + (immoble.amortitzacio || 0) +
+                       (immoble.tributs || 0) + (immoble.asseguranca || 0) +
+                       (immoble.comunitat || 0) + (immoble.altresDespeses || 0);
+      const reduccio = immoble.aplicarReduccioHabitatge ? (immoble.reduccioHabitatge || 0) : 0;
+      total += (immoble.ingressosIntegres || 0) - despeses - reduccio;
     }
   }
   return total;

@@ -511,13 +511,49 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 <FilaDetall label="Renda neta del treball" valor={fmt(r.rendaTreball)} negrita destacat
                   nota="Art. 12-13 Llei 5/2014 · Ingressos bruts − cotitzacions CASS − 3% altres despeses (màx. 2.500 €)" />
                 {(dades.rendesTreball || []).map((f, i) => {
-                  const desp3pct = Math.min((f.importBrut || 0) * 0.03, 2500);
-                  const rendaNeta = (f.importBrut || 0) - (f.cotitzacionsCASS || 0) - desp3pct;
+                  const brut = f.importBrut || 0;
+
+                  if (f.tipus === 'PENSIO_CASS') {
+                    const anysTotals = f.anysTotals || 0;
+                    const anysCotAbans2015 = f.anysCotitzatsAbans2015 != null ? f.anysCotitzatsAbans2015 : (f.anysCotitzats || 0);
+                    const ratio = anysTotals >= 15 ? Math.min(anysCotAbans2015 * 0.01, 0.30) : 0;
+                    const importExempt = brut * ratio;
+                    const importGravat = brut - importExempt;
+                    return (
+                      <React.Fragment key={i}>
+                        <FilaDetall label={`Font ${i + 1}: Pensió CASS`} valor={fmt(brut)} nota="Import brut · Disp. add. 5a Llei 5/2014" />
+                        <FilaDetall label={`  − Reducció Disp. add. 5a (${anysCotAbans2015} anys × 1% = ${(ratio * 100).toFixed(0)}%, màx. 30%)`}
+                          valor={fmt(-importExempt)} negatiu
+                          nota={anysTotals < 15 ? `Anys totals cotitzats: ${anysTotals} (< 15 → reducció 0%)` : `Anys totals: ${anysTotals} · Anys abans 2015: ${anysCotAbans2015}`} />
+                        <FilaDetall label="  = Import gravat pensió CASS" valor={fmt(importGravat)} negrita
+                          nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />
+                      </React.Fragment>
+                    );
+                  }
+
+                  if (f.tipus === 'PENSIO_CLASSES_PASSIVES') {
+                    const a = brut;
+                    const b = f.b || 0; const c = f.c || 0;
+                    const d = f.d || 0; const dPrima = f.dPrima || 0;
+                    const e = b > 0 ? Math.min(Math.max(0, a * ((b - c) - (d - dPrima)) / b), a) : 0;
+                    return (
+                      <React.Fragment key={i}>
+                        <FilaDetall label={`Font ${i + 1}: Pensió pública (Classes Passives)`} valor={fmt(a)} nota="Renda íntegra anual (a) · Art. 12.2.c + Disp. add. 4a ap.3 Llei 5/2014" />
+                        <FilaDetall label="  − Part exempt (generada fins 31/12/2014)" valor={fmt(-(a - e))} negatiu
+                          nota={`b=${fmt(b)} · c=${fmt(c)} · d=${fmt(d)} · d'=${fmt(dPrima)}${b === c ? ' · b=c → tot exempt' : ''}`} />
+                        <FilaDetall label="  = Import gravat (e)" valor={fmt(e)} negrita
+                          nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />
+                      </React.Fragment>
+                    );
+                  }
+
+                  const desp3pct = Math.min(brut * 0.03, 2500);
+                  const rendaNeta = brut - (f.cotitzacionsCASS || 0) - desp3pct;
                   return (
                     <React.Fragment key={i}>
-                      <FilaDetall label={`Font ${i + 1}: ${f.tipus || 'Treball'}`} valor={fmt(f.importBrut)} nota="Ingressos bruts" />
+                      <FilaDetall label={`Font ${i + 1}: ${f.tipus || 'Treball'}`} valor={fmt(brut)} nota="Ingressos bruts" />
                       <FilaDetall label="  − Cotitzacions CASS" valor={fmt(-(f.cotitzacionsCASS || 0))} negatiu />
-                      <FilaDetall label={`  − Despeses (3%, màx. 2.500 €)`} valor={fmt(-desp3pct)} negatiu />
+                      <FilaDetall label="  − Despeses (3%, màx. 2.500 €)" valor={fmt(-desp3pct)} negatiu />
                       <FilaDetall label="  = Renda neta font" valor={fmt(rendaNeta)} negrita
                         nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />
                     </React.Fragment>
@@ -582,10 +618,13 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   const pctForfet = im.esHabitatgeAssequible ? 0.50 : 0.40;
                   const despesesForfet = (im.ingressosIntegres || 0) * pctForfet;
                   const despesesDirecta = (im.despesaReparacio || 0) + (im.despesaFinancera || 0) +
-                    (im.amortitzacio || 0) + (im.tributs || 0) + (im.asseguranca || 0) + (im.comunitat || 0);
+                    (im.serveisPrestatsTercers || 0) + (im.amortitzacio || 0) +
+                    (im.tributs || 0) + (im.asseguranca || 0) +
+                    (im.comunitat || 0) + (im.altresDespeses || 0);
+                  const reduccioHab = im.aplicarReduccioHabitatge ? (im.reduccioHabitatge || 0) : 0;
                   const esForfet = im.tipusDeterminacio === 'forfetaria';
                   const despeses = esForfet ? despesesForfet : despesesDirecta;
-                  const rendaNeta = (im.ingressosIntegres || 0) - despeses;
+                  const rendaNeta = (im.ingressosIntegres || 0) - despeses - (esForfet ? 0 : reduccioHab);
                   return (
                     <React.Fragment key={i}>
                       <FilaDetall label={`Immoble ${i + 1}: ${im.descripcio || ''}`} valor={fmt(im.ingressosIntegres || 0)} nota="Ingressos íntegres" />
@@ -593,6 +632,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                         ? <FilaDetall label={`  − Reducció forfetària (${Math.round(pctForfet * 100)}%)`} valor={fmt(-despesesForfet)} negatiu nota="Mètode forfetari" />
                         : <FilaDetall label="  − Despeses deduïbles" valor={fmt(-despesesDirecta)} negatiu />
                       }
+                      {!esForfet && reduccioHab > 0 && <FilaDetall label="  − Reducció habitatge" valor={fmt(-reduccioHab)} negatiu />}
                       {(im.impostComunal || 0) > 0 && <FilaDetall label="  − Impost comunal" valor={fmt(-(im.impostComunal || 0))} negatiu />}
                       <FilaDetall label="  = Renda neta immoble" valor={fmt(rendaNeta)} negrita />
                     </React.Fragment>
