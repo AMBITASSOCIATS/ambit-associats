@@ -793,6 +793,124 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           </div>
         </div>
 
+        {/* ══ PÀGINA 300-F — BASES NEGATIVES I DEDUCCIONS (condicional) ══ */}
+        {(() => {
+          const d8 = dades.deduccionsExercici || {};
+
+          // Importos generats per cada partida de deducció
+          const impostComunalGenerat = (dades.immobles || []).reduce((a, im) => a + (im.impostComunal || 0), 0)
+                                     + (dades.activitats || []).reduce((a, act) => a + (act.impostRadicacio || 0), 0);
+          const ddiGenerat    = r.ddiCalculat || 0;
+          const mecenGen      = (d8.donatiu20 || 0) * 0.20 + Math.min(d8.donatiu90 || 0, 100) * 0.90;
+          const projGen       = (d8.aportacionsProjectes || 0) * 0.75;
+          const digGen        = (d8.inversionsDigital || 0) * 0.02;
+          const patGen        = (d8.despesesPatrocini || 0) * 0.10;
+          const incNI = Math.max(0,(d8.plantillaNIActual||0)-(d8.plantillaNIAnterior||0));
+          const incIN = Math.max(0,(d8.plantillaINActual||0)-(d8.plantillaINAnterior||0));
+          const incIE = Math.max(0,(d8.plantillaIEActual||0)-(d8.plantillaIEAnterior||0));
+          const llocsGen      = incNI * 1000 + incIN * 3500 + incIE * 3500;
+
+          const hiHaBasesNeg  = (dades.basesNegGenerals || []).length > 0 || (dades.basesNegEstalvi || []).length > 0;
+          const hiHaDedAnts   = (dades.deduccionsAnteriors || []).length > 0;
+          const hiHaDedExerc  = impostComunalGenerat > 0 || ddiGenerat > 0 || mecenGen > 0 ||
+                                projGen > 0 || digGen > 0 || patGen > 0 || llocsGen > 0;
+
+          if (!hiHaBasesNeg && !hiHaDedAnts && !hiHaDedExerc) return null;
+
+          // Helper: mostra Generades / Aplicades / Pendents + venciment per a una partida
+          const deduccioRows = (key, titol, ref, generades, aplicades, anysVig, noDiferable = false) => {
+            if (!generades || generades <= 0) return null;
+            const pendents = Math.max(0, generades - aplicades);
+            const notaPendent = pendents > 0
+              ? (noDiferable
+                ? "Import no diferible — s'extingeix si la quota és insuficient (Art. 47)"
+                : `Diferible fins a exercici ${exercici + anysVig} (${anysVig} anys · ${ref} Llei 5/2014)`)
+              : 'Totalment aplicada en l\'exercici';
+            return (
+              <React.Fragment key={key}>
+                <FilaDetall label={`${titol} (${ref})`} valor={null} negrita />
+                <FilaDetall label="    Deducció generada" valor={fmt(generades)} />
+                <FilaDetall label={`    Aplicada en ${exercici}`} valor={fmt(-aplicades)} negatiu={aplicades > 0} />
+                <FilaDetall label="    Pendent de diferir" valor={fmt(pendents)} negrita={pendents > 0} nota={notaPendent} />
+              </React.Fragment>
+            );
+          };
+
+          return (
+            <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
+              <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Formulari 300-F — Bases negatives i deduccions" cap={CAP} />
+
+              <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
+
+                {/* Bases negatives generals */}
+                {(dades.basesNegGenerals || []).length > 0 && (
+                  <SeccioBlocNormatiu titol="300-F · Bases de tributació general negatives d'exercicis anteriors">
+                    {(dades.basesNegGenerals || []).map((f, i) => (
+                      <React.Fragment key={i}>
+                        <FilaDetall label={`Exercici ${f.exercici} — pendent inici`} valor={fmt(f.pendentInici || 0)} />
+                        <FilaDetall label={`  Aplicat en ${exercici}`} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
+                        <FilaDetall label="  Pendent exercicis futurs" valor={fmt(Math.max(0, (f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? `Venciment: exercici ${f.exercici + 10}` : undefined} />
+                      </React.Fragment>
+                    ))}
+                    <FilaDetall label="Total aplicat exercici" valor={fmt(-(dades.basesNegGenerals||[]).reduce((a,f)=>a+(f.aplicat||0),0))} negrita destacat negatiu />
+                    <NotaNormativa refText="Art. 33 + 300-F Llei 5/2014" text="Les bases negatives generals es compensen durant els 10 exercicis posteriors al de la seva generació." />
+                  </SeccioBlocNormatiu>
+                )}
+
+                {/* Bases negatives estalvi */}
+                {(dades.basesNegEstalvi || []).length > 0 && (
+                  <SeccioBlocNormatiu titol="300-F · Bases de tributació de l'estalvi negatives d'exercicis anteriors">
+                    {(dades.basesNegEstalvi || []).map((f, i) => (
+                      <React.Fragment key={i}>
+                        <FilaDetall label={`Exercici ${f.exercici} — pendent inici`} valor={fmt(f.pendentInici || 0)} />
+                        <FilaDetall label={`  Aplicat en ${exercici}`} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
+                        <FilaDetall label="  Pendent exercicis futurs" valor={fmt(Math.max(0,(f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? `Venciment: exercici ${f.exercici + 10}` : undefined} />
+                      </React.Fragment>
+                    ))}
+                    <FilaDetall label="Total aplicat exercici" valor={fmt(-(dades.basesNegEstalvi||[]).reduce((a,f)=>a+(f.aplicat||0),0))} negrita destacat negatiu />
+                    <NotaNormativa refText="Art. 37 + 300-F Llei 5/2014" text="Les bases negatives de l'estalvi es compensen durant els 10 exercicis posteriors." />
+                  </SeccioBlocNormatiu>
+                )}
+
+                {/* Deduccions pendents exercicis anteriors */}
+                {(dades.deduccionsAnteriors || []).length > 0 && (
+                  <SeccioBlocNormatiu titol="300-F · Deduccions pendents d'exercicis anteriors">
+                    {(dades.deduccionsAnteriors || []).map((f, i) => (
+                      <React.Fragment key={i}>
+                        <FilaDetall label={`Exercici ${f.exercici} — pendent inici`} valor={fmt(f.pendentInici || 0)} />
+                        <FilaDetall label={`  Aplicat en ${exercici}`} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
+                        <FilaDetall label="  Pendent exercicis futurs" valor={fmt(Math.max(0,(f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? `Pendent de deduir en exercicis futurs` : undefined} />
+                      </React.Fragment>
+                    ))}
+                    <FilaDetall label="Total deduccions anteriors aplicades" valor={fmt(-r.deduccionsAnteriorsAplicades)} negrita destacat negatiu />
+                  </SeccioBlocNormatiu>
+                )}
+
+                {/* Deduccions generades en l'exercici — detall per partida */}
+                {hiHaDedExerc && (
+                  <SeccioBlocNormatiu titol={`Deduccions generades en l'exercici ${exercici} — Generades / Aplicades / Pendents`}>
+                    {deduccioRows('comunal', "Impost comunal arrendaments i radicació", 'Art. 47', impostComunalGenerat, r.deduccioImpostComunal || 0, 0, true)}
+                    {deduccioRows('ddi', "Deducció per Doble Imposició Internacional", 'Art. 48', ddiGenerat, r.ddi || 0, 10)}
+                    {deduccioRows('mecen', "Mecenatge i donacions", 'Art. 43 bis', mecenGen, d8.aplicatMecenatge || 0, 5)}
+                    {deduccioRows('proj', "Projectes d'interès nacional", 'Art. 44', projGen, d8.aplicatProjectes || 0, 5)}
+                    {deduccioRows('dig', "Inversions en digitalització", 'Art. 44 bis', digGen, d8.aplicatDigital || 0, 5)}
+                    {deduccioRows('pat', "Patrocini esportiu i cultural", 'Art. 44 ter', patGen, d8.aplicatPatrocini || 0, 5)}
+                    {deduccioRows('llocs', "Creació de llocs de treball", 'Art. 44 quater', llocsGen, d8.aplicatLlocs || 0, 5)}
+                    <FilaDetall label="Total deduccions aplicades a la quota" valor={fmt(-r.totalDeduccionsExercici)} negrita destacat negatiu />
+                    <NotaNormativa refText="Arts. 43 bis – 48 Llei 5/2014" text={`Deduccions pendents diferibles fins a exercici ${exercici + 5} (general) o ${exercici + 10} (DDI). L'impost comunal (Art. 47) no és diferible: la part que excedeixi la quota s'extingeix.`} />
+                  </SeccioBlocNormatiu>
+                )}
+
+              </div>
+
+              <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
+                <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
+                <span>Formulari 300-F</span>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ══ PÀGINA 4 — LIQUIDACIÓ FINAL 300-L (INDEPENDENT) ════════════ */}
         <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
           <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Liquidació final — Formulari 300-L" cap={CAP} />
@@ -897,87 +1015,6 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             <span>Pàgina 4 / 4</span>
           </div>
         </div>
-
-        {/* ══ PÀGINA 300-F — BASES NEGATIVES I DEDUCCIONS (condicional) ══ */}
-        {((dades.basesNegGenerals || []).length > 0 ||
-          (dades.basesNegEstalvi || []).length > 0 ||
-          (dades.deduccionsAnteriors || []).length > 0 ||
-          r.totalDeduccionsExercici > 0) && (
-          <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Formulari 300-F — Bases negatives i deduccions" cap={CAP} />
-
-            <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
-
-              {/* Bases negatives generals */}
-              {(dades.basesNegGenerals || []).length > 0 && (
-                <SeccioBlocNormatiu titol="300-F · Bases de tributació general negatives d'exercicis anteriors">
-                  {(dades.basesNegGenerals || []).map((f, i) => (
-                    <React.Fragment key={i}>
-                      <FilaDetall label={`Exercici ${f.exercici} — pendent inici`} valor={fmt(f.pendentInici || 0)} />
-                      <FilaDetall label={`  Aplicat en ${exercici}`} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
-                      <FilaDetall label={`  Pendent exercicis futurs`} valor={fmt(Math.max(0, (f.pendentInici || 0) - (f.aplicat || 0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} />
-                    </React.Fragment>
-                  ))}
-                  <FilaDetall label="Total aplicat exercici (casella BTG)" valor={fmt(-(dades.basesNegGenerals || []).reduce((a, f) => a + (f.aplicat || 0), 0))} negrita destacat negatiu />
-                  <NotaNormativa refText="Art. 33 + 300-F Llei 5/2014" text="Les bases negatives de la tributació general es poden compensar durant els 10 exercicis posteriors al de la seva generació." />
-                </SeccioBlocNormatiu>
-              )}
-
-              {/* Bases negatives estalvi */}
-              {(dades.basesNegEstalvi || []).length > 0 && (
-                <SeccioBlocNormatiu titol="300-F · Bases de tributació de l'estalvi negatives d'exercicis anteriors">
-                  {(dades.basesNegEstalvi || []).map((f, i) => (
-                    <React.Fragment key={i}>
-                      <FilaDetall label={`Exercici ${f.exercici} — pendent inici`} valor={fmt(f.pendentInici || 0)} />
-                      <FilaDetall label={`  Aplicat en ${exercici}`} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
-                      <FilaDetall label={`  Pendent exercicis futurs`} valor={fmt(Math.max(0, (f.pendentInici || 0) - (f.aplicat || 0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} />
-                    </React.Fragment>
-                  ))}
-                  <FilaDetall label="Total aplicat exercici (casella BTE)" valor={fmt(-(dades.basesNegEstalvi || []).reduce((a, f) => a + (f.aplicat || 0), 0))} negrita destacat negatiu />
-                  <NotaNormativa refText="Art. 37 + 300-F Llei 5/2014" text="Les bases negatives de la tributació de l'estalvi es poden compensar durant els 10 exercicis posteriors." />
-                </SeccioBlocNormatiu>
-              )}
-
-              {/* Deduccions pendents exercicis anteriors */}
-              {(dades.deduccionsAnteriors || []).length > 0 && (
-                <SeccioBlocNormatiu titol="300-F · Deduccions pendents d'exercicis anteriors">
-                  {(dades.deduccionsAnteriors || []).map((f, i) => (
-                    <React.Fragment key={i}>
-                      <FilaDetall label={`Exercici ${f.exercici} — pendent inici`} valor={fmt(f.pendentInici || 0)} />
-                      <FilaDetall label={`  Aplicat en ${exercici}`} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
-                      <FilaDetall label={`  Pendent exercicis futurs`} valor={fmt(Math.max(0, (f.pendentInici || 0) - (f.aplicat || 0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} />
-                    </React.Fragment>
-                  ))}
-                  <FilaDetall label="Total deduccions anteriors aplicades" valor={fmt(-r.deduccionsAnteriorsAplicades)} negrita destacat negatiu />
-                </SeccioBlocNormatiu>
-              )}
-
-              {/* Deduccions generades en l'exercici */}
-              {r.totalDeduccionsExercici > 0 && (() => {
-                const d8 = dades.deduccionsExercici || {};
-                return (
-                  <SeccioBlocNormatiu titol={`Deduccions generades en l'exercici ${exercici} — aplicació a la quota`}>
-                    {r.deduccioImpostComunal > 0 && <FilaDetall label="Impost comunal d'arrendaments / radicació (Art. 47)" valor={fmt(-r.deduccioImpostComunal)} negatiu nota="Deduïble de la quota de liquidació fins al seu import" />}
-                    {r.ddi > 0 && <FilaDetall label={`Deducció per Doble Imposició Internacional — DDI (Art. 48)`} valor={fmt(-r.ddi)} negatiu nota={`DDI calculada: ${fmt(r.ddiCalculat)} · Aplicada: ${fmt(r.ddi)}`} />}
-                    {(d8.donatiu20 || d8.donatiu90) && ((d8.donatiu20 || 0) > 0 || (d8.donatiu90 || 0) > 0) ? <FilaDetall label="Deduccions per mecenatge (Art. 43 bis)" valor={fmt(-Math.min(d8.aplicatMecenatge || 0, (d8.donatiu20||0)*0.20 + Math.min(d8.donatiu90||0,100)*0.90))} negatiu nota={`Donatius 20%: ${fmt(d8.donatiu20||0)} · Donatius 90%: ${fmt(Math.min(d8.donatiu90||0,100))}`} /> : null}
-                    {(d8.aportacionsProjectes || 0) > 0 && <FilaDetall label="Deducció projectes d'interès nacional (Art. 44)" valor={fmt(-(d8.aplicatProjectes || 0))} negatiu nota={`Base: ${fmt(d8.aportacionsProjectes||0)} × 75%`} />}
-                    {(d8.inversionsDigital || 0) > 0 && <FilaDetall label="Deducció inversions digitalització (Art. 44 bis)" valor={fmt(-(d8.aplicatDigital || 0))} negatiu nota={`Base: ${fmt(d8.inversionsDigital||0)} × 2%`} />}
-                    {(d8.despesesPatrocini || 0) > 0 && <FilaDetall label="Deducció despeses patrocini (Art. 44 ter)" valor={fmt(-(d8.aplicatPatrocini || 0))} negatiu nota={`Base: ${fmt(d8.despesesPatrocini||0)} × 10%`} />}
-                    {((d8.plantillaNIActual||0) > (d8.plantillaNIAnterior||0) || (d8.plantillaINActual||0) > (d8.plantillaINAnterior||0) || (d8.plantillaIEActual||0) > (d8.plantillaIEAnterior||0)) && <FilaDetall label="Deducció creació llocs de treball (Art. 44 quater)" valor={fmt(-(d8.aplicatLlocs || 0))} negatiu />}
-                    <FilaDetall label="Total deduccions exercici aplicades a la quota" valor={fmt(-r.totalDeduccionsExercici)} negrita destacat negatiu />
-                    <NotaNormativa refText="Arts. 43 bis – 48 Llei 5/2014" text="Les deduccions generades que superin la quota de liquidació queden pendents per als exercicis futurs (300-F). La DDI es limita a la quota andorrana sobre les rendes estrangeres." />
-                  </SeccioBlocNormatiu>
-                );
-              })()}
-
-            </div>
-
-            <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
-              <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
-              <span>Formulari 300-F</span>
-            </div>
-          </div>
-        )}
 
         {/* ══ PÀGINA 5b — TRANSMISSIONS EXEMPTES (condicional) ══════════ */}
         {tensTransmissionsExemptes && r.transmissionsExemptes && r.transmissionsExemptes.length > 0 && (
