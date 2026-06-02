@@ -135,6 +135,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
     colorBorde: colorBorde(capcalera?.color || AMBIT.color),
   };
 
+  const esAmbit = CAP.nom === AMBIT.nom;
+
   // Components interns que tanquen sobre CAP per usar els colors personalitzats
   const SeccioBlocNormatiu = ({ titol, children }) => (
     <div style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginBottom: '16px' }}>
@@ -1068,14 +1070,18 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             <div style={{ backgroundColor: '#fff8e1', border: '2px solid #f9a825', borderRadius: '8px', padding: '16px 20px', marginBottom: '20px' }}>
               <div style={{ fontSize: '11px', fontWeight: '700', color: '#e65100', marginBottom: '8px' }}>⚠️ AVÍS IMPORTANT</div>
               <p style={{ fontSize: '10px', color: '#555', lineHeight: '1.6', margin: 0 }}>
-                Aquest informe ha estat generat per l'<strong>{`Eina Fiscal IRPF${CAP.nom !== 'DEL SOTO – PALEARI & ASSOCIATS, S.L.' ? ` (gestionada per ${CAP.nomComercial || CAP.nom})` : ' d\'ÀMBIT Associats'}`}</strong> a partir de les dades introduïdes per l'usuari. El seu contingut té caràcter <strong>merament informatiu i orientatiu</strong>, i no constitueix ni substitueix en cap cas l'assessorament fiscal professional personalitzat. {CAP.nomComercial || CAP.nom} no assumeix cap responsabilitat sobre les decisions preses en base a aquest informe sense una revisió professional prèvia.
+                {esAmbit
+                  ? `Aquest informe ha estat generat per l'Eina Fiscal IRPF d'ÀMBIT Associats a partir de les dades introduïdes per l'usuari.`
+                  : `Aquest informe ha estat generat per ${CAP.nomComercial || CAP.nom} a partir de les dades introduïdes per l'usuari.`
+                }
+                {` El seu contingut té caràcter merament informatiu i orientatiu, i no constitueix ni substitueix en cap cas l'assessorament fiscal professional personalitzat. ${CAP.nomComercial || CAP.nom} no assumeix cap responsabilitat sobre les decisions preses en base a aquest informe sense una revisió professional prèvia.`}
               </p>
             </div>
 
             {[
               {
                 titol: '1. Responsabilitat i limitació de responsabilitat',
-                text: `Els càlculs continguts en aquest informe s'han efectuat d'acord amb la Llei 5/2014, del 24 d'abril, de l'Impost sobre la Renda de les Persones Físiques del Principat d'Andorra, i les seves modificacions posteriors (L2023005 i L2025005), així com el Reglament de 29/12/2023. Tanmateix, l'eina pot no reflectir la totalitat de les particularitats normatives aplicables a cada situació individual. DEL SOTO – PALEARI & ASSOCIATS, S.L. no es fa responsable dels errors, omissions o inexactituds que poguessin derivar-se de les dades introduïdes per l'usuari o de canvis normatius posteriors a l'última actualització de l'eina.`
+                text: `Els càlculs continguts en aquest informe s'han efectuat d'acord amb la Llei 5/2014, del 24 d'abril, de l'Impost sobre la Renda de les Persones Físiques del Principat d'Andorra, i les seves modificacions posteriors (L2023005 i L2025005), així com el Reglament de 29/12/2023. Tanmateix, l'eina pot no reflectir la totalitat de les particularitats normatives aplicables a cada situació individual. ${CAP.nomComercial || CAP.nom} no es fa responsable dels errors, omissions o inexactituds que poguessin derivar-se de les dades introduïdes per l'usuari o de canvis normatius posteriors a l'última actualització de l'eina.`
               },
               {
                 titol: '2. Naturalesa de l\'informe',
@@ -1126,9 +1132,11 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '10px', fontSize: '8px', opacity: 0.6, textAlign: 'center' }}>
               © {new Date().getFullYear()} {CAP.nom} · Tots els drets reservats · Informe generat el {dataAvui()} · Normativa: Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023
             </div>
-            <div style={{ textAlign: 'center', fontSize: '7px', opacity: 0.4, color: 'white', paddingBottom: '4px' }}>
-              Informe generat amb l'Eina Fiscal IRPF d'ÀMBIT Associats · DEL SOTO – PALEARI &amp; ASSOCIATS, S.L. · NRT L-720543-P · www.ambit.ad
-            </div>
+            {!esAmbit && (
+              <div style={{ textAlign: 'center', fontSize: '7px', opacity: 0.4, color: 'white', paddingBottom: '4px' }}>
+                Informe generat amb l'Eina Fiscal IRPF d'ÀMBIT Associats · DEL SOTO – PALEARI &amp; ASSOCIATS, S.L. · NRT L-720543-P · www.ambit.ad
+              </div>
+            )}
           </div>
         </div>
 
