@@ -209,6 +209,7 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
                 dades={dades}
                 resultat={resultat}
                 clientNom={clientNom}
+                clientNRT={clientNRT}
                 exercici={exercici}
                 capcalera={perfil?.capcalera}
                 estat={estatActual}
