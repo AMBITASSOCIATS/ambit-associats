@@ -6,7 +6,7 @@ const EXERCICIS_DISPONIBLES = [2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2
 
 const InputNum = ({ value, onChange, className = '' }) => (
   <input
-    type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()}
+    type="number" onWheel={e => e.target.blur()}
     min="0"
     step="0.01"
     value={value === 0 ? '' : value}

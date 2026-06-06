@@ -14,3 +14,13 @@ code {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Amagar spinners dels inputs numèrics (mantenim onWheel blur per evitar scroll) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}

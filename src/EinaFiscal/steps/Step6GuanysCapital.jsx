@@ -131,7 +131,7 @@ const InputNum = ({ label, value, onChange, min = 0 }) => (
   <div>
     <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
     <input
-      type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()}
+      type="number" onWheel={e => e.target.blur()}
       min={min}
       step="0.01"
       value={value === 0 ? '' : value}
@@ -225,7 +225,7 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar }) => {
               <div>
                 <label className="text-xs text-gray-600">Participacio en el capital (%)</label>
                 <input
-                  type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()} min="0" max="100" step="0.01"
+                  type="number" onWheel={e => e.target.blur()} min="0" max="100" step="0.01"
                   value={trans.participacioPct === 0 ? '' : trans.participacioPct}
                   placeholder="0"
                   onChange={e => { const v = e.target.value; update('participacioPct', v === '' ? 0 : parseFloat(v) || 0); }}
@@ -235,7 +235,7 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar }) => {
               <div>
                 <label className="text-xs text-gray-600">Anys de tinenca</label>
                 <input
-                  type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()} min="0" step="1"
+                  type="number" onWheel={e => e.target.blur()} min="0" step="1"
                   value={trans.anysPropieta === 0 ? '' : trans.anysPropieta}
                   placeholder="0"
                   onChange={e => { const v = e.target.value; update('anysPropieta', v === '' ? 0 : parseInt(v) || 0); }}
@@ -297,7 +297,7 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar }) => {
                   Guany / pèrdua real obtinguda (€) — no computarà a la base de l'estalvi
                 </label>
                 <input
-                  type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()}
+                  type="number" onWheel={e => e.target.blur()}
                   step="0.01"
                   value={trans.importExempt || 0}
                   onChange={e => update({ importExempt: parseFloat(e.target.value) || 0 })}
@@ -374,7 +374,7 @@ const Step6GuanysCapital = ({ dades, update }) => {
                 Import dels guanys de capital generats (euros)
               </label>
               <input
-                type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()} min="0" step="0.01"
+                type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
                 value={(dades.guanysNoTransmissio || 0) === 0 ? '' : dades.guanysNoTransmissio}
                 placeholder="0"
                 onChange={e => { const v = e.target.value; update('guanysNoTransmissio', v === '' ? 0 : parseFloat(v) || 0); }}
@@ -386,7 +386,7 @@ const Step6GuanysCapital = ({ dades, update }) => {
                 Import de les perdues de capital generades (euros)
               </label>
               <input
-                type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()} min="0" step="0.01"
+                type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
                 value={(dades.perduessNoTransmissio || 0) === 0 ? '' : dades.perduessNoTransmissio}
                 placeholder="0"
                 onChange={e => { const v = e.target.value; update('perduessNoTransmissio', v === '' ? 0 : parseFloat(v) || 0); }}
