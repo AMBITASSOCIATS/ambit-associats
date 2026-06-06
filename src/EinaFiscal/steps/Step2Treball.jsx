@@ -4,6 +4,7 @@ import AnalysisAlert from '../components/AnalysisAlert';
 import RentaBlock from '../components/RentaBlock';
 import { analizarRendaTreball } from '../engine/exemptions';
 import { IRPF_EF } from '../engine/constants';
+import { calcularIRPFDetallat } from '../engine/analysisEngine';
 
 const TIPUS_TREBALL = [
   { value: 'SALARI_GENERAL', label: 'Salari / nòmina general' },
@@ -326,6 +327,48 @@ const Step2Treball = ({ dades, update }) => {
           onEliminar={() => removeFont(font.id)}
         />
       ))}
+
+      {/* Resum totals de rendes del treball */}
+      {dades.rendesTreball.length > 0 && (() => {
+        const TIPUS_SENSE_3PCT = ['PENSIO_CASS', 'PENSIO_CLASSES_PASSIVES', 'PENSIO_PRIVADA', 'DIETES', 'INDEMNITZACIO_ACOMIADAMENT', 'BECA', 'PREMI'];
+        const totalBrut = dades.rendesTreball.reduce((s, f) => s + (f.importBrut || 0), 0);
+        const totalCASS = dades.rendesTreball.reduce((s, f) => s + (f.cotitzacionsCASS || 0), 0);
+        const totalGravat3pct = dades.rendesTreball.reduce((s, f) => TIPUS_SENSE_3PCT.includes(f.tipus) ? s : s + (f.importBrut || 0), 0);
+        const altresDespesesTotal = Math.min(totalGravat3pct * 0.03, 2500);
+        const rendaNeta = calcularIRPFDetallat(dades).rendaTreball;
+        const fmt = n => (n || 0).toLocaleString('ca-AD', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+        return (
+          <div className="bg-white rounded-2xl border-2 border-[#009B9C] shadow-sm p-6">
+            <h3 className="font-bold text-gray-800 mb-3 text-sm">Resum rendes del treball</h3>
+            <div className="space-y-1.5 text-sm">
+              <div className="flex justify-between py-1.5 border-b border-gray-100">
+                <span className="text-gray-600 font-medium">TOTAL Ingressos bruts</span>
+                <span className="font-mono font-semibold text-gray-800">{fmt(totalBrut)}</span>
+              </div>
+              {totalCASS > 0 && (
+                <div className="flex justify-between py-1.5 border-b border-gray-100">
+                  <span className="text-gray-600">− Total cotitzacions CASS</span>
+                  <span className="font-mono text-red-500">{fmt(-totalCASS)}</span>
+                </div>
+              )}
+              {altresDespesesTotal > 0 && (
+                <div className="flex justify-between py-1.5 border-b border-gray-100">
+                  <span className="text-gray-600">
+                    − Total altres despeses (3%, màx. 2.500 €)
+                    <span className="block text-xs text-gray-400">Aplicat sobre {fmt(totalGravat3pct)} de rendes ordinàries (Art. 13.2.b)</span>
+                  </span>
+                  <span className="font-mono text-red-500">{fmt(-altresDespesesTotal)}</span>
+                </div>
+              )}
+              <div className="flex justify-between py-2 px-3 mt-2 bg-[#009B9C]/10 rounded-lg">
+                <span className="font-bold text-gray-800">= RENDA NETA DEL TREBALL</span>
+                <span className="font-mono font-bold text-[#009B9C]">{fmt(rendaNeta)}</span>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Import que s'integra a la Base de Tributació General (BTG) · Casella 300-B</p>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
