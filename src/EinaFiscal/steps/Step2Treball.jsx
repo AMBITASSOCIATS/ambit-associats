@@ -10,6 +10,7 @@ const TIPUS_TREBALL = [
   { value: 'ADMINISTRADOR', label: "Retribució d'administrador" },
   { value: 'PENSIO_CASS', label: 'Pensió CASS (jubilació, IP, mort/supervivència)' },
   { value: 'PENSIO_CLASSES_PASSIVES', label: 'Pensió pública de jubilació (Classes Passives)' },
+  { value: 'PENSIO_PRIVADA', label: 'Pensió privada / estrangera (Art. 12.2.c)' },
   { value: 'INDEMNITZACIO_ACOMIADAMENT', label: 'Indemnització per acomiadament' },
   { value: 'DIETES', label: 'Dietes i despeses de viatge' },
   { value: 'BECA', label: "Beca a l'estudi o ajut de recerca" },
@@ -81,6 +82,9 @@ const FontTreball = ({ font, index, onUpdate, onEliminar }) => {
       const ratio = anysTotalsEfectius >= 15 ? Math.min(anysCotAbans2015 * 0.01, 0.30) : 0;
       return (font.importBrut || 0) * (1 - ratio);
     }
+    if (font.tipus === 'PENSIO_PRIVADA') {
+      return font.importBrut || 0; // íntegrament gravada, sense 3% ni CASS
+    }
     if (font.tipus === 'PENSIO_CLASSES_PASSIVES') {
       const a = font.importBrut || 0;
       const b = font.b || 0; const c = font.c || 0;
@@ -127,6 +131,13 @@ const FontTreball = ({ font, index, onUpdate, onEliminar }) => {
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </select>
+          {font.tipus === 'PENSIO_PRIVADA' && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mt-1">
+              <p className="text-xs text-blue-700">
+                ℹ️ <strong>Pensió privada o estrangera</strong> — S'inclou a la casella "Rendes no sotmeses a cotització a la CASS" del 300-B. No aplica la deducció del 3% d'altres despeses (Art. 13.2.b Llei 5/2014). Sense cotitzacions CASS.
+              </p>
+            </div>
+          )}
           {['PENSIO_CASS', 'PENSIO_CLASSES_PASSIVES', 'DIETES', 'INDEMNITZACIO_ACOMIADAMENT', 'BECA', 'PREMI'].includes(font.tipus) && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-1">
               <p className="text-xs text-amber-700">
@@ -141,7 +152,7 @@ const FontTreball = ({ font, index, onUpdate, onEliminar }) => {
           value={font.importBrut}
           onChange={v => update('importBrut', v)}
         />
-        {font.tipus !== 'PENSIO_CASS' && font.tipus !== 'PENSIO_CLASSES_PASSIVES' && (
+        {font.tipus !== 'PENSIO_CASS' && font.tipus !== 'PENSIO_CLASSES_PASSIVES' && font.tipus !== 'PENSIO_PRIVADA' && (
           <InputNum
             label="Cotitzacions CASS treballador (€)"
             value={font.cotitzacionsCASS}
@@ -181,7 +192,7 @@ const FontTreball = ({ font, index, onUpdate, onEliminar }) => {
           onChange={v => update('retencions', v)}
         />
 
-        {font.tipus !== 'PENSIO_CASS' && font.tipus !== 'PENSIO_CLASSES_PASSIVES' && (
+        {font.tipus !== 'PENSIO_CASS' && font.tipus !== 'PENSIO_CLASSES_PASSIVES' && font.tipus !== 'PENSIO_PRIVADA' && (
           <div className="flex items-center gap-2 pt-5">
             <input
               type="checkbox"

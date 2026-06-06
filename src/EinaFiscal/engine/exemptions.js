@@ -63,6 +63,16 @@ export function analizarRendaTreball(renda) {
         alertType: 'warning', formulari: '300-B', casella: 'I.1'
       };
 
+    case 'PENSIO_PRIVADA':
+      return {
+        exempt: false, parcial: false, ratio: 0,
+        importGravat: importBrut, importExempt: 0,
+        ref: 'Art. 12.2.c Llei 5/2014',
+        titol: 'Pensió privada o estrangera — gravada sense 3%',
+        explicacio: `Les pensions privades i prestacions similars derivades d'una ocupació anterior (incloses les pensions estrangeres) tributen íntegrament com a rendes del treball (Art. 12.2.c). No s'aplica la deducció del 3% d'altres despeses (exclosa per Art. 13.2.b). Sense cotitzacions CASS. Import gravat: ${importBrut.toFixed(2)} €.`,
+        alertType: 'info', formulari: '300-B', casella: 'I.3'
+      };
+
     case 'INDEMNITZACIO_ACOMIADAMENT': {
       const limitExempt = detalls?.limitLegal || 0;
       const importGravat = Math.max(0, importBrut - limitExempt);

@@ -53,7 +53,7 @@ function calcularRendaNetaTreball(rendesTreball) {
 
     // Art. 13.2.b Llei 5/2014: el 3% NOMÉS aplica a rendes ordinàries
     // DIETES, INDEMNITZACIO_ACOMIADAMENT, BECA i PREMI no apliquen el 3%
-    if (['DIETES', 'INDEMNITZACIO_ACOMIADAMENT', 'BECA', 'PREMI'].includes(font.tipus)) {
+    if (['PENSIO_PRIVADA', 'DIETES', 'INDEMNITZACIO_ACOMIADAMENT', 'BECA', 'PREMI'].includes(font.tipus)) {
       totalGravatDirecte += gravat; // compta per a la base però no per al 3%
     } else {
       totalGravat3pct += gravat;    // SALARI_GENERAL, ADMINISTRADOR, ALTRES_TREBALL

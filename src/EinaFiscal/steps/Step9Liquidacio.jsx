@@ -563,7 +563,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 <FilaDetall label="Renda neta del treball" valor={fmt(r.rendaTreball)} negrita destacat
                   nota="Art. 12-13 Llei 5/2014 · Ingressos bruts − cotitzacions CASS − 3% altres despeses (màx. 2.500 €)" />
                 {(() => {
-                  const TIPUS_SENSE_3PCT = ['PENSIO_CASS', 'PENSIO_CLASSES_PASSIVES', 'DIETES', 'INDEMNITZACIO_ACOMIADAMENT', 'BECA', 'PREMI'];
+                  const TIPUS_SENSE_3PCT = ['PENSIO_CASS', 'PENSIO_CLASSES_PASSIVES', 'PENSIO_PRIVADA', 'DIETES', 'INDEMNITZACIO_ACOMIADAMENT', 'BECA', 'PREMI'];
+                  const TIPUS_LABEL = { SALARI_GENERAL: 'Salari / Nòmina', ADMINISTRADOR: 'Retribució administrador', PENSIO_PRIVADA: 'Pensió privada / estrangera', ALTRES_TREBALL: 'Altres rendes del treball', DIETES: 'Dietes', INDEMNITZACIO_ACOMIADAMENT: 'Indemnització acomiadament', BECA: 'Beca / Ajut recerca', PREMI: 'Premi literari / artístic' };
                   const totalGravat3pct = (dades.rendesTreball || []).reduce((sum, f) => {
                     if (TIPUS_SENSE_3PCT.includes(f.tipus)) return sum;
                     return sum + (f.importBrut || 0);
@@ -613,7 +614,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   const rendaNeta = brut - (f.cotitzacionsCASS || 0) - desp3pctFont;
                   return (
                     <React.Fragment key={i}>
-                      <FilaDetall label={`Font ${i + 1}: ${f.tipus || 'Treball'}`} valor={fmt(brut)} nota="Ingressos bruts" />
+                      <FilaDetall label={`Font ${i + 1}: ${TIPUS_LABEL[f.tipus] || f.tipus || 'Treball'}`} valor={fmt(brut)} nota="Ingressos bruts" />
                       {(f.cotitzacionsCASS || 0) > 0 && <FilaDetall label="  − Cotitzacions CASS" valor={fmt(-(f.cotitzacionsCASS || 0))} negatiu />}
                       {aplicaDespeses3pct && desp3pctFont > 0 && <FilaDetall label="  − Altres despeses (3%, Art. 13.2.b)" valor={fmt(-desp3pctFont)} negatiu nota={`Art. 13.2.b Llei 5/2014 · Base 3%: ${fmt(totalGravat3pct)} → límit global 2.500 €`} />}
                       {!aplicaDespeses3pct && <FilaDetall label="  Altres despeses (3%)" valor="No aplica" nota={`Art. 13.2.b Llei 5/2014 — el tipus '${f.tipus}' està exclòs de la deducció del 3%`} />}
