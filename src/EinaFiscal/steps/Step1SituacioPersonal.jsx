@@ -6,7 +6,7 @@ const InputNum = ({ label, value, onChange, min = 0, hint = '' }) => (
   <div>
     <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
     <input
-      type="number"
+      type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()}
       min={min}
       step="0.01"
       value={value === 0 ? '' : value}

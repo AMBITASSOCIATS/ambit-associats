@@ -95,7 +95,7 @@ const rendaNetaTotal = (activitat) =>
 
 const Num = ({ value, onChange, className = '' }) => (
   <input
-    type="number"
+    type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()}
     min={0}
     step="0.01"
     value={value === 0 ? '' : value}
@@ -419,12 +419,17 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">
-                Retencions i ingressos a compte (€)
+                Retencions i ingressos a compte (300-C)
               </label>
               <Num
                 value={activitat.retencions || 0}
                 onChange={(v) => updateCamp('retencions', v)}
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Import retingut pel pagador sobre les rendes d'activitat econòmica.
+                No confondre amb el pagament fraccionat (Formulari 320), que es consigna al Pas 8.
+                Nota: al Govern d'Andorra, el pagament fraccionat apareix al 300-C però es gestiona separadament mitjançant el Formulari 320.
+              </p>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">

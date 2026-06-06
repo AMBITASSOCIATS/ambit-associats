@@ -1,5 +1,5 @@
 // steps/Step9Liquidacio.jsx — Pas 10: Liquidació i informe professional (300-L)
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { generarCaselles300L } from '../engine/liquidacioEngine';
 
 const AMBIT = {
@@ -136,6 +136,12 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
   };
 
   const esAmbit = CAP.nom === AMBIT.nom;
+
+  const [blocsExclosos, setBlocsExclosos] = useState({
+    treball: false, activitats: false, immobiliari: false,
+    mobiliari: false, transmissions: false, ddi: false,
+  });
+  const toggleBloc = (bloc) => setBlocsExclosos(prev => ({ ...prev, [bloc]: !prev[bloc] }));
 
   // Components interns que tanquen sobre CAP per usar els colors personalitzats
   const SeccioBlocNormatiu = ({ titol, children }) => (
@@ -291,6 +297,50 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               <span className="ml-4"><strong>Exercici:</strong> {exercici}</span>
             </div>
           )}
+
+          {/* Configuració de l'informe */}
+          <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 mb-4">
+            <p className="text-xs font-semibold text-gray-600 mb-3">⚙️ Configuració de l'informe — Blocs a mostrar</p>
+            <div className="flex flex-wrap gap-3">
+              {tensTreball && (
+                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                  <input type="checkbox" checked={!blocsExclosos.treball} onChange={() => toggleBloc('treball')} className="accent-[#009B9C]" />
+                  Rendes del treball
+                </label>
+              )}
+              {tensActivitats && (
+                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                  <input type="checkbox" checked={!blocsExclosos.activitats} onChange={() => toggleBloc('activitats')} className="accent-[#009B9C]" />
+                  Activitats econòmiques
+                </label>
+              )}
+              {tensImmobles && (
+                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                  <input type="checkbox" checked={!blocsExclosos.immobiliari} onChange={() => toggleBloc('immobiliari')} className="accent-[#009B9C]" />
+                  Capital immobiliari
+                </label>
+              )}
+              {tensMobiliaris && (
+                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                  <input type="checkbox" checked={!blocsExclosos.mobiliari} onChange={() => toggleBloc('mobiliari')} className="accent-[#009B9C]" />
+                  Capital mobiliari
+                </label>
+              )}
+              {tensTransmissions && (
+                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                  <input type="checkbox" checked={!blocsExclosos.transmissions} onChange={() => toggleBloc('transmissions')} className="accent-[#009B9C]" />
+                  Guanys i pèrdues de capital
+                </label>
+              )}
+              {tensDDI && (
+                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                  <input type="checkbox" checked={!blocsExclosos.ddi} onChange={() => toggleBloc('ddi')} className="accent-[#009B9C]" />
+                  Deducció doble imposició (DDI)
+                </label>
+              )}
+            </div>
+            <p className="text-xs text-gray-400 mt-2">Els blocs desmarcats no apareixeran al PDF però el càlcul 300-L no canvia.</p>
+          </div>
 
           {/* Resum 300-L en pantalla */}
           <div className="space-y-1">
@@ -508,7 +558,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
 
             {/* Rendes del treball */}
-            {tensTreball && (
+            {tensTreball && !blocsExclosos.treball && (
               <SeccioBlocNormatiu titol="1. Rendes del treball — Formulari 300-B sec.1">
                 <FilaDetall label="Renda neta del treball" valor={fmt(r.rendaTreball)} negrita destacat
                   nota="Art. 12-13 Llei 5/2014 · Ingressos bruts − cotitzacions CASS − 3% altres despeses (màx. 2.500 €)" />
@@ -566,7 +616,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             )}
 
             {/* Activitats econòmiques */}
-            {tensActivitats && (
+            {tensActivitats && !blocsExclosos.activitats && (
               <SeccioBlocNormatiu titol="2. Rendes d'activitats econòmiques — Formulari 300-C">
                 <FilaDetall label="Renda neta d'activitats econòmiques" valor={fmt(r.rendaActivitat)} negrita destacat
                   nota="Art. 14-19 Llei 5/2014 · Casella (3) del 300-C" />
@@ -612,7 +662,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             )}
 
             {/* Capital immobiliari */}
-            {tensImmobles && (
+            {tensImmobles && !blocsExclosos.immobiliari && (
               <SeccioBlocNormatiu titol="3. Rendes del capital immobiliari — Formulari 300-B sec.2">
                 <FilaDetall label="Renda neta del capital immobiliari" valor={fmt(r.rendaImmobiliaria)} negrita destacat
                   nota="Art. 20-22 Llei 5/2014 · Ingressos íntegres − despeses deduïbles" />
@@ -645,7 +695,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             )}
 
             {/* Capital mobiliari */}
-            {tensMobiliaris && (
+            {tensMobiliaris && !blocsExclosos.mobiliari && (
               <SeccioBlocNormatiu titol="4. Rendes del capital mobiliari — Formulari 300-D">
                 <FilaDetall label="Renda neta del capital mobiliari" valor={fmt(r.rendaMobiliaria)} negrita destacat
                   nota="Art. 23-29 Llei 5/2014 · Renda de l'estalvi · Mínim exempt 3.000 € (Art. 37)" />
@@ -667,7 +717,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             )}
 
             {/* Guanys capital gravats */}
-            {tensTransmissionsGravades && (
+            {tensTransmissionsGravades && !blocsExclosos.transmissions && (
               <SeccioBlocNormatiu titol="5. Guanys i pèrdues de capital — Formulari 300-E">
                 <FilaDetall label="Guanys i pèrdues de capital nets" valor={fmt(r.guanysCapital)} negrita destacat
                   nota="Art. 30-32 Llei 5/2014 · Valor transmissió − valor adquisició actualitzat" />
@@ -687,7 +737,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 <NotaNormativa refText="Art. 30 Llei 5/2014" text="Constitueixen guanys o pèrdues de capital les variacions en el valor del patrimoni de l'obligat tributari que es posin de manifest amb ocasió d'alteració en la composició d'aquell." />
               </SeccioBlocNormatiu>
             )}
-            {tensTransmissions && !tensTransmissionsGravades && (
+            {tensTransmissions && !tensTransmissionsGravades && !blocsExclosos.transmissions && (
               <SeccioBlocNormatiu titol="5. Guanys i pèrdues de capital — Formulari 300-E">
                 <FilaDetall label="Cap transmissió gravada" valor="0,00 €" negrita destacat
                   nota="Totes les transmissions declarades estan exemptes de tributació per aplicació de l'Art. 5 Llei 5/2014" />
@@ -696,7 +746,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             )}
 
             {/* DDI */}
-            {tensDDI && r.ddiDetall && r.ddiDetall.length > 0 && (
+            {tensDDI && r.ddiDetall && r.ddiDetall.length > 0 && !blocsExclosos.ddi && (
               <SeccioBlocNormatiu titol="6. Deducció per doble imposició (DDI) — Art. 48">
                 <FilaDetall label="Total DDI aplicada" valor={fmt(r.ddiDetall.reduce((s, d) => s + (d.ddi || 0), 0))} negrita destacat />
                 {r.ddiDetall.map((d, i) => (
@@ -923,18 +973,18 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
           <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Liquidació final — Formulari 300-L" cap={CAP} />
 
-          <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
+          <div className="page-content" style={{ flex: 1, padding: '10px 15px 15px 15px' }}>
             <div style={{ fontSize: '11px', fontWeight: '700', color: CAP.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: `2px solid ${CAP.color}`, paddingBottom: '6px' }}>
               Formulari 300-L · Liquidació de l'IRPF {exercici}
             </div>
 
             {/* Taula 300-L */}
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px', marginBottom: '20px' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9px', marginBottom: '20px' }}>
               <thead>
                 <tr style={{ backgroundColor: CAP.color, color: 'white' }}>
-                  <th style={{ padding: '7px 10px', textAlign: 'left', fontWeight: '600', width: '70px' }}>Casella</th>
-                  <th style={{ padding: '7px 10px', textAlign: 'left', fontWeight: '600' }}>Descripció</th>
-                  <th style={{ padding: '7px 10px', textAlign: 'right', fontWeight: '600', width: '120px' }}>Import</th>
+                  <th style={{ padding: '5px 8px', textAlign: 'left', fontWeight: '600', width: '70px' }}>Casella</th>
+                  <th style={{ padding: '5px 8px', textAlign: 'left', fontWeight: '600' }}>Descripció</th>
+                  <th style={{ padding: '5px 8px', textAlign: 'right', fontWeight: '600', width: '120px' }}>Import</th>
                 </tr>
               </thead>
               <tbody>
@@ -943,13 +993,13 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     backgroundColor: c.destacat ? CAP.colorClar : i % 2 === 0 ? '#fafafa' : 'white',
                     borderBottom: '1px solid #eee'
                   }}>
-                    <td style={{ padding: '6px 10px', fontFamily: 'monospace', fontSize: '9px', color: '#666', fontWeight: c.destacat ? '700' : '400' }}>
+                    <td style={{ padding: '4px 8px', fontFamily: 'monospace', fontSize: '9px', color: '#666', fontWeight: c.destacat ? '700' : '400' }}>
                       {c.casella}
                     </td>
-                    <td style={{ padding: '6px 10px', fontWeight: c.destacat ? '700' : '400', color: c.destacat ? CAP.colorFosc : '#333' }}>
+                    <td style={{ padding: '4px 8px', fontWeight: c.destacat ? '700' : '400', color: c.destacat ? CAP.colorFosc : '#333' }}>
                       {c.descripcio}
                     </td>
-                    <td style={{ padding: '6px 10px', textAlign: 'right', fontFamily: 'monospace', fontWeight: c.destacat ? '700' : '500', color: c.destacat ? CAP.color : typeof c.valor === 'number' && c.valor < 0 ? '#c0392b' : '#333' }}>
+                    <td style={{ padding: '4px 8px', textAlign: 'right', fontFamily: 'monospace', fontWeight: c.destacat ? '700' : '500', color: c.destacat ? CAP.color : typeof c.valor === 'number' && c.valor < 0 ? '#c0392b' : '#333' }}>
                       {fmt(c.valor)}
                     </td>
                   </tr>
@@ -961,13 +1011,13 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             <div style={{
               backgroundColor: r.resultatDeclaracio > 0 ? '#fff0f0' : r.resultatDeclaracio < 0 ? '#f0fff4' : '#f5f5f5',
               border: `2px solid ${r.resultatDeclaracio > 0 ? '#e74c3c' : r.resultatDeclaracio < 0 ? '#27ae60' : '#ccc'}`,
-              borderRadius: '8px', padding: '16px 24px',
+              borderRadius: '8px', padding: '10px 16px',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              marginBottom: '16px'
+              marginBottom: '8px'
             }}>
               <div>
                 <div style={{ fontSize: '10px', color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Resultat de la declaració</div>
-                <div style={{ fontSize: '24px', fontWeight: '800', color: r.resultatDeclaracio > 0 ? '#c0392b' : r.resultatDeclaracio < 0 ? '#27ae60' : '#555', fontFamily: 'monospace' }}>
+                <div style={{ fontSize: '20px', fontWeight: '800', color: r.resultatDeclaracio > 0 ? '#c0392b' : r.resultatDeclaracio < 0 ? '#27ae60' : '#555', fontFamily: 'monospace' }}>
                   {fmt(Math.abs(r.resultatDeclaracio))}
                 </div>
                 <div style={{ fontSize: '10px', color: '#888', marginTop: '2px' }}>
@@ -987,7 +1037,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             </div>
 
             {/* Formularis a presentar */}
-            <div style={{ marginBottom: '16px' }}>
+            <div style={{ marginBottom: '8px' }}>
               <div style={{ fontSize: '10px', fontWeight: '700', color: CAP.colorFosc, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Formularis a presentar al Portal Tributari
               </div>
@@ -1015,7 +1065,9 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </div>
             </div>
 
-            <NotaNormativa refText="Termini de presentació" text={`La declaració de l'IRPF de l'exercici ${exercici} s'ha de presentar entre l'1 d'abril i el 30 de setembre de ${exercici + 1}. El pagament fraccionat (formulari 320) es presenta a l'Administració tributària durant el mes de setembre de ${exercici}. Portal Tributari: www.eda.ad`} />
+            <div style={{ backgroundColor: CAP.colorClar, border: `1px solid ${CAP.colorBorde}`, borderRadius: '4px', padding: '4px 8px', marginTop: '6px', fontSize: '8px', color: CAP.colorFosc }}>
+              <span style={{ fontWeight: '700' }}>📋 Termini de presentació:</span> {`La declaració de l'IRPF de l'exercici ${exercici} s'ha de presentar entre l'1 d'abril i el 30 de setembre de ${exercici + 1}. El pagament fraccionat (formulari 320) es presenta a l'Administració tributària durant el mes de setembre de ${exercici}. Portal Tributari: www.eda.ad`}
+            </div>
           </div>
 
           <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>

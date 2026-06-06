@@ -127,7 +127,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                     </td>
                     <td className="px-3 py-2">
                       <input
-                        type="number" min="0" step="0.01"
+                        type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()} min="0" step="0.01"
                         value={partida.importBrut === 0 ? '' : partida.importBrut}
                         placeholder="0"
                         onChange={e => { const v = e.target.value; updatePartida(pd.tipus, 'importBrut', v === '' ? 0 : parseFloat(v) || 0); }}
@@ -136,7 +136,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                     </td>
                     <td className="px-3 py-2">
                       <input
-                        type="number" min="0" step="0.01"
+                        type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()} min="0" step="0.01"
                         value={partida.despeses === 0 ? '' : partida.despeses}
                         placeholder="0"
                         onChange={e => { const v = e.target.value; updatePartida(pd.tipus, 'despeses', v === '' ? 0 : parseFloat(v) || 0); }}
@@ -145,7 +145,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                     </td>
                     <td className="px-3 py-2">
                       <input
-                        type="number" min="0" step="0.01"
+                        type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()} min="0" step="0.01"
                         value={partida.retencioAndorra === 0 ? '' : partida.retencioAndorra}
                         placeholder="0"
                         onChange={e => { const v = e.target.value; updatePartida(pd.tipus, 'retencioAndorra', v === '' ? 0 : parseFloat(v) || 0); }}
@@ -154,7 +154,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                     </td>
                     <td className="px-3 py-2">
                       <input
-                        type="number" min="0" step="0.01"
+                        type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()} min="0" step="0.01"
                         value={partida.retencioOrigen === 0 ? '' : partida.retencioOrigen}
                         placeholder="0"
                         onChange={e => { const v = e.target.value; updatePartida(pd.tipus, 'retencioOrigen', v === '' ? 0 : parseFloat(v) || 0); }}
@@ -185,7 +185,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
               <td className="px-3 py-2" colSpan={1}></td>
               <td className="px-3 py-2">
                 <input
-                  type="number" min="0" step="0.01"
+                  type="text" inputMode="decimal" pattern="[0-9]*[.,]?[0-9]*" onWheel={e => e.target.blur()} min="0" step="0.01"
                   value={entitat.despesesCustodia === 0 ? '' : entitat.despesesCustodia}
                   placeholder="0"
                   onChange={e => { const v = e.target.value; update('despesesCustodia', v === '' ? 0 : parseFloat(v) || 0); }}

@@ -381,10 +381,11 @@ export function calcularIRPFDetallat(dades) {
 
   // Retencions
   const retencionsTreball = rendesTreball.reduce((acc, f) => acc + (f.retencions || 0), 0);
+  const retencionsActivitats = activitats.reduce((acc, a) => acc + (a.retencions || 0), 0);
   const retencionsImmobles = immobles.reduce((acc, im) => acc + (im.retencions || 0), 0);
   const retencionsTransmissions = transmissions.reduce((acc, t) => acc + (t.retencionsPagamentCompte || 0), 0);
   const retencionsAndorraMobiliaris = calcularRetencionsAndorraMobiliaris(mobiliaris);
-  const retencions = retencionsTreball + retencionsImmobles + retencionsTransmissions + retencionsAndorraMobiliaris;
+  const retencions = retencionsTreball + retencionsActivitats + retencionsImmobles + retencionsTransmissions + retencionsAndorraMobiliaris;
 
   const resultatDeclaracio = quotaFinal - retencions - (pagamentACompte || 0);
 
