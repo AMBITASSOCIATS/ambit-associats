@@ -562,7 +562,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               <SeccioBlocNormatiu titol="1. Rendes del treball — Formulari 300-B sec.1">
                 <FilaDetall label="Renda neta del treball" valor={fmt(r.rendaTreball)} negrita destacat
                   nota="Art. 12-13 Llei 5/2014 · Ingressos bruts − cotitzacions CASS − 3% altres despeses (màx. 2.500 €)" />
-                {(dades.rendesTreball || []).map((f, i) => {
+                {(() => {
+                  const TIPUS_SENSE_3PCT = ['PENSIO_CASS', 'PENSIO_CLASSES_PASSIVES', 'DIETES', 'INDEMNITZACIO_ACOMIADAMENT', 'BECA', 'PREMI'];
+                  const totalGravat3pct = (dades.rendesTreball || []).reduce((sum, f) => {
+                    if (TIPUS_SENSE_3PCT.includes(f.tipus)) return sum;
+                    return sum + (f.importBrut || 0);
+                  }, 0);
+                  const altresDespesesTotal = Math.min(totalGravat3pct * 0.03, 2500);
+                  return (dades.rendesTreball || []).map((f, i) => {
                   const brut = f.importBrut || 0;
 
                   if (f.tipus === 'PENSIO_CASS') {
@@ -599,18 +606,22 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     );
                   }
 
-                  const desp3pct = Math.min(brut * 0.03, 2500);
-                  const rendaNeta = brut - (f.cotitzacionsCASS || 0) - desp3pct;
+                  const aplicaDespeses3pct = !TIPUS_SENSE_3PCT.includes(f.tipus);
+                  const desp3pctFont = aplicaDespeses3pct && totalGravat3pct > 0
+                    ? altresDespesesTotal * (brut / totalGravat3pct)
+                    : 0;
+                  const rendaNeta = brut - (f.cotitzacionsCASS || 0) - desp3pctFont;
                   return (
                     <React.Fragment key={i}>
                       <FilaDetall label={`Font ${i + 1}: ${f.tipus || 'Treball'}`} valor={fmt(brut)} nota="Ingressos bruts" />
                       <FilaDetall label="  − Cotitzacions CASS" valor={fmt(-(f.cotitzacionsCASS || 0))} negatiu />
-                      <FilaDetall label="  − Despeses (3%, màx. 2.500 €)" valor={fmt(-desp3pct)} negatiu />
+                      {aplicaDespeses3pct && <FilaDetall label="  − Despeses (3% proporcional, límit global 2.500 €)" valor={fmt(-desp3pctFont)} negatiu nota={`Art. 13.2.b Llei 5/2014 · Base 3%: ${fmt(totalGravat3pct)} → límit global 2.500 €`} />}
                       <FilaDetall label="  = Renda neta font" valor={fmt(rendaNeta)} negrita
                         nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />
                     </React.Fragment>
                   );
-                })}
+                  });
+                })()}
                 <NotaNormativa refText="Art. 12 Llei 5/2014" text="Constitueixen rendes del treball totes les contraprestacions o utilitats, sigui quina sigui la seva denominació o naturalesa, que derivin de les relacions laborals o estatutàries." />
               </SeccioBlocNormatiu>
             )}
