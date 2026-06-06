@@ -624,6 +624,25 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   );
                   });
                 })()}
+                {/* Bloc de totals de les rendes del treball */}
+                {(dades.rendesTreball || []).length > 0 && (() => {
+                  const TIPUS_SENSE_3PCT = ['PENSIO_CASS', 'PENSIO_CLASSES_PASSIVES', 'PENSIO_PRIVADA', 'DIETES', 'INDEMNITZACIO_ACOMIADAMENT', 'BECA', 'PREMI'];
+                  const totalBrut = (dades.rendesTreball || []).reduce((s, f) => s + (f.importBrut || 0), 0);
+                  const totalCASS = (dades.rendesTreball || []).reduce((s, f) => s + (f.cotitzacionsCASS || 0), 0);
+                  const totalGravat3pct = (dades.rendesTreball || []).reduce((s, f) => {
+                    if (TIPUS_SENSE_3PCT.includes(f.tipus)) return s;
+                    return s + (f.importBrut || 0);
+                  }, 0);
+                  const altresDespesesTotal = Math.min(totalGravat3pct * 0.03, 2500);
+                  return (
+                    <div style={{ marginTop: '8px', borderTop: `2px solid ${CAP.color}`, paddingTop: '6px' }}>
+                      <FilaDetall label="TOTAL Ingressos bruts" valor={fmt(totalBrut)} negrita />
+                      {totalCASS > 0 && <FilaDetall label="− Total cotitzacions CASS" valor={fmt(-totalCASS)} negatiu />}
+                      {altresDespesesTotal > 0 && <FilaDetall label="− Total altres despeses (3%, Art. 13.2.b — límit global 2.500 €)" valor={fmt(-altresDespesesTotal)} negatiu nota={`Aplicat sobre ${fmt(totalGravat3pct)} de rendes ordinàries`} />}
+                      <FilaDetall label="= RENDA NETA DEL TREBALL (casella 300-B)" valor={fmt(r.rendaTreball)} negrita destacat nota="Import que s'integra a la Base de Tributació General (BTG)" />
+                    </div>
+                  );
+                })()}
                 <NotaNormativa refText="Art. 12 Llei 5/2014" text="Constitueixen rendes del treball totes les contraprestacions o utilitats, sigui quina sigui la seva denominació o naturalesa, que derivin de les relacions laborals o estatutàries." />
               </SeccioBlocNormatiu>
             )}
