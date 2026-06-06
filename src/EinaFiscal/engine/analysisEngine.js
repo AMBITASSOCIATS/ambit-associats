@@ -51,7 +51,13 @@ function calcularRendaNetaTreball(rendesTreball) {
       gravat = font.compleixRequisitsExempcio ? 0 : brut;
     }
 
-    totalGravat3pct += gravat;
+    // Art. 13.2.b Llei 5/2014: el 3% NOMÉS aplica a rendes ordinàries
+    // DIETES, INDEMNITZACIO_ACOMIADAMENT, BECA i PREMI no apliquen el 3%
+    if (['DIETES', 'INDEMNITZACIO_ACOMIADAMENT', 'BECA', 'PREMI'].includes(font.tipus)) {
+      totalGravatDirecte += gravat; // compta per a la base però no per al 3%
+    } else {
+      totalGravat3pct += gravat;    // SALARI_GENERAL, ADMINISTRADOR, ALTRES_TREBALL
+    }
   }
 
   // Despeses deduïbles: cotitzacions CASS + 3% altres (màx. 2.500)

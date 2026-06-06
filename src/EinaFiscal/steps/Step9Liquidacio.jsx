@@ -614,8 +614,9 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   return (
                     <React.Fragment key={i}>
                       <FilaDetall label={`Font ${i + 1}: ${f.tipus || 'Treball'}`} valor={fmt(brut)} nota="Ingressos bruts" />
-                      <FilaDetall label="  − Cotitzacions CASS" valor={fmt(-(f.cotitzacionsCASS || 0))} negatiu />
-                      {aplicaDespeses3pct && <FilaDetall label="  − Despeses (3% proporcional, límit global 2.500 €)" valor={fmt(-desp3pctFont)} negatiu nota={`Art. 13.2.b Llei 5/2014 · Base 3%: ${fmt(totalGravat3pct)} → límit global 2.500 €`} />}
+                      {(f.cotitzacionsCASS || 0) > 0 && <FilaDetall label="  − Cotitzacions CASS" valor={fmt(-(f.cotitzacionsCASS || 0))} negatiu />}
+                      {aplicaDespeses3pct && desp3pctFont > 0 && <FilaDetall label="  − Altres despeses (3%, Art. 13.2.b)" valor={fmt(-desp3pctFont)} negatiu nota={`Art. 13.2.b Llei 5/2014 · Base 3%: ${fmt(totalGravat3pct)} → límit global 2.500 €`} />}
+                      {!aplicaDespeses3pct && <FilaDetall label="  Altres despeses (3%)" valor="No aplica" nota={`Art. 13.2.b Llei 5/2014 — el tipus '${f.tipus}' està exclòs de la deducció del 3%`} />}
                       <FilaDetall label="  = Renda neta font" valor={fmt(rendaNeta)} negrita
                         nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />
                     </React.Fragment>

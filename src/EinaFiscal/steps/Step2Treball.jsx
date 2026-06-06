@@ -127,6 +127,13 @@ const FontTreball = ({ font, index, onUpdate, onEliminar }) => {
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </select>
+          {['PENSIO_CASS', 'PENSIO_CLASSES_PASSIVES', 'DIETES', 'INDEMNITZACIO_ACOMIADAMENT', 'BECA', 'PREMI'].includes(font.tipus) && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-1">
+              <p className="text-xs text-amber-700">
+                ⚠️ <strong>Sense deducció del 3%</strong> — Aquest tipus de renda està exclòs de la deducció d'altres despeses (3%, màx. 2.500 €) per l'Art. 13.2.b de la Llei 5/2014.
+              </p>
+            </div>
+          )}
         </div>
 
         <InputNum
