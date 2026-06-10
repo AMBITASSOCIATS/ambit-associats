@@ -83,6 +83,14 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
   const [clientNRT, setClientNRT] = useState(() => declaracioInicial?.clientNRT || '');
   const [exercici, setExercici] = useState(() => declaracioInicial?.exercici || 2025);
   const [estatActual, setEstatActual] = useState(() => declaracioInicial?.estat || 'esborrany');
+  const [mostrarErrorCASS, setMostrarErrorCASS] = useState(false);
+
+  // Validació CASS del pas 2: fonts subjectes a CASS amb cotitzacions = 0 sense confirmar
+  const TIPUS_SUBJECTES_CASS = ['SALARI_GENERAL', 'ADMINISTRADOR', 'ALTRES_TREBALL'];
+  const fontsCASSPendents = (dades.rendesTreball || []).filter(f =>
+    TIPUS_SUBJECTES_CASS.includes(f.tipus) && !f.cotitzacionsCASS && !f.cassConfirmadaZero
+  );
+  const bloquejatPerCASS = pas === 2 && fontsCASSPendents.length > 0;
 
   const updateDades = useCallback((clau, valor) => {
     setDades(prev => ({ ...prev, [clau]: valor }));
@@ -196,7 +204,7 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
           {/* Formulari del pas actiu */}
           <div className="flex-1 min-w-0">
             {pas === 1 && <Step1SituacioPersonal dades={dades} update={updateDades} />}
-            {pas === 2 && <Step2Treball dades={dades} update={updateDades} />}
+            {pas === 2 && <Step2Treball dades={dades} update={updateDades} mostrarErrorCASS={mostrarErrorCASS} />}
             {pas === 3 && <Step3Activitat dades={dades} update={updateDades} />}
             {pas === 4 && <Step4Immobiliari dades={dades} update={updateDades} />}
             {pas === 5 && <Step5Mobiliari dades={dades} update={updateDades} />}
@@ -245,7 +253,11 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
             Pas {pas} de {STEPS.length} — {STEPS[pas - 1]?.formulari}
           </span>
           <button
-            onClick={() => setPas(p => Math.min(STEPS.length, p + 1))}
+            onClick={() => {
+              if (bloquejatPerCASS) { setMostrarErrorCASS(true); return; } // bloqueja l'avanç fins confirmar CASS
+              setMostrarErrorCASS(false);
+              setPas(p => Math.min(STEPS.length, p + 1));
+            }}
             disabled={pas === STEPS.length}
             className="px-6 py-2 bg-[#009B9C] text-white rounded-lg font-semibold hover:bg-[#007A7B] disabled:opacity-40 transition"
           >

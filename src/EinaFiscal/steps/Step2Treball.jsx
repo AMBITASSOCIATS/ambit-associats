@@ -6,6 +6,9 @@ import { analizarRendaTreball } from '../engine/exemptions';
 import { IRPF_EF } from '../engine/constants';
 import { calcularIRPFDetallat } from '../engine/analysisEngine';
 
+// Tipus de renda subjectes a cotització CASS (cal validar si cotitzacions = 0)
+const TIPUS_SUBJECTES_CASS = ['SALARI_GENERAL', 'ADMINISTRADOR', 'ALTRES_TREBALL'];
+
 const TIPUS_TREBALL = [
   { value: 'SALARI_GENERAL', label: 'Salari / nòmina general' },
   { value: 'ADMINISTRADOR', label: "Retribució d'administrador" },
@@ -38,6 +41,7 @@ const DEFAULT_FONT_TREBALL = {
   anysParticipacio: 0,
   compleixRequisitsExempcio: false, // BECA / PREMI
   b: 0, c: 0, d: 0, dPrima: 0,     // PENSIO_CLASSES_PASSIVES
+  cassConfirmadaZero: false,        // confirmació conscient de CASS = 0
 };
 
 const InputNum = ({ label, value, onChange, min = 0, className = '' }) => (
@@ -55,7 +59,7 @@ const InputNum = ({ label, value, onChange, min = 0, className = '' }) => (
   </div>
 );
 
-const FontTreball = ({ font, index, onUpdate, onEliminar }) => {
+const FontTreball = ({ font, index, onUpdate, onUpdateFields, onEliminar }) => {
   const update = (camp, valor) => onUpdate(font.id, camp, valor);
 
   const anysTotalsEfectius = font.anysTotals || 0;
@@ -154,11 +158,24 @@ const FontTreball = ({ font, index, onUpdate, onEliminar }) => {
           onChange={v => update('importBrut', v)}
         />
         {font.tipus !== 'PENSIO_CASS' && font.tipus !== 'PENSIO_CLASSES_PASSIVES' && font.tipus !== 'PENSIO_PRIVADA' && (
-          <InputNum
-            label="Cotitzacions CASS treballador (€)"
-            value={font.cotitzacionsCASS}
-            onChange={v => update('cotitzacionsCASS', v)}
-          />
+          <div>
+            <InputNum
+              label="Cotitzacions CASS treballador (€)"
+              value={font.cotitzacionsCASS}
+              onChange={v => {
+                const changes = { cotitzacionsCASS: v };
+                if (v > 0) changes.cassConfirmadaZero = false; // reset confirmació si s'introdueix import
+                onUpdateFields(font.id, changes);
+              }}
+            />
+            {TIPUS_SUBJECTES_CASS.includes(font.tipus) && !(font.cotitzacionsCASS > 0) && (
+              <div className="bg-amber-50 border border-amber-300 rounded-lg px-3 py-2 mt-1">
+                <p className="text-xs text-amber-700">
+                  ⚠️ <strong>Cotitzacions CASS pendents de confirmar</strong> — Aquest tipus de renda està subjecte a cotització CASS. Si no hi ha cotitzacions (p. ex. autònom sense cotització o renda exempta), introdueix 0 per confirmar que ho has verificat.
+                </p>
+              </div>
+            )}
+          </div>
         )}
 
         {font.tipus === 'INDEMNITZACIO_ACOMIADAMENT' && (
@@ -271,7 +288,7 @@ const FontTreball = ({ font, index, onUpdate, onEliminar }) => {
   );
 };
 
-const Step2Treball = ({ dades, update }) => {
+const Step2Treball = ({ dades, update, mostrarErrorCASS = false }) => {
   const addFont = () => {
     update('rendesTreball', [
       ...dades.rendesTreball,
@@ -283,9 +300,19 @@ const Step2Treball = ({ dades, update }) => {
     update('rendesTreball', dades.rendesTreball.map(f => f.id === id ? { ...f, [camp]: valor } : f));
   };
 
+  // Actualitza diversos camps d'una font alhora (evita stale state amb crides successives)
+  const updateFontFields = (id, changes) => {
+    update('rendesTreball', dades.rendesTreball.map(f => f.id === id ? { ...f, ...changes } : f));
+  };
+
   const removeFont = (id) => {
     update('rendesTreball', dades.rendesTreball.filter(f => f.id !== id));
   };
+
+  // Fonts subjectes a CASS amb cotitzacions = 0 i sense confirmació conscient
+  const fontsCASSPendents = (dades.rendesTreball || []).filter(f =>
+    TIPUS_SUBJECTES_CASS.includes(f.tipus) && !f.cotitzacionsCASS && !f.cassConfirmadaZero
+  );
 
   return (
     <div className="space-y-4">
@@ -324,9 +351,35 @@ const Step2Treball = ({ dades, update }) => {
           font={font}
           index={i}
           onUpdate={updateFont}
+          onUpdateFields={updateFontFields}
           onEliminar={() => removeFont(font.id)}
         />
       ))}
+
+      {/* Validació CASS bloquejant — fonts subjectes a CASS amb cotitzacions = 0 sense confirmar */}
+      {mostrarErrorCASS && fontsCASSPendents.length > 0 && (
+        <div className="bg-red-50 border border-red-300 rounded-xl p-4">
+          <p className="text-sm font-semibold text-red-700 mb-2">
+            ⛔ Cotitzacions CASS no confirmades
+          </p>
+          <p className="text-xs text-red-600 mb-3">
+            Les fonts de renda següents estan subjectes a cotització CASS però el camp de cotitzacions és zero o buit. Verifica i confirma per poder continuar:
+          </p>
+          {fontsCASSPendents.map((f) => (
+            <label key={f.id} className="flex items-start gap-2 text-xs text-red-700 mb-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={f.cassConfirmadaZero || false}
+                onChange={e => updateFontFields(f.id, { cassConfirmadaZero: e.target.checked })}
+                className="accent-red-600 w-4 h-4 mt-0.5 flex-shrink-0"
+              />
+              <span>
+                <strong>{f.tipus}</strong>{f.descripcio ? ` — ${f.descripcio}` : ''}: confirmo que les cotitzacions CASS són 0,00 € per a aquest exercici
+              </span>
+            </label>
+          ))}
+        </div>
+      )}
 
       {/* Resum totals de rendes del treball */}
       {dades.rendesTreball.length > 0 && (() => {
