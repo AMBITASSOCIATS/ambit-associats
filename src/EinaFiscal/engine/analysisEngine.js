@@ -22,6 +22,7 @@ function calcularRendaNetaTreball(rendesTreball) {
         ? font.anysCotitzatsAbans2015 : (font.anysCotitzats || 0);
       const ratio = anysTotals >= 15 ? Math.min(anysCotAbans2015 * 0.01, 0.30) : 0;
       totalGravatDirecte += brut * (1 - ratio);
+      totalCASS += font.cotitzacionsCASS || 0; // cotització de salut retinguda de la pensió — redueix la renda neta
       continue;
     }
 

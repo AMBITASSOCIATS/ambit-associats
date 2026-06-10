@@ -579,14 +579,18 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     const ratio = anysTotals >= 15 ? Math.min(anysCotAbans2015 * 0.01, 0.30) : 0;
                     const importExempt = brut * ratio;
                     const importGravat = brut - importExempt;
+                    const cassPensio = f.cotitzacionsCASS || 0;
                     return (
                       <React.Fragment key={i}>
                         <FilaDetall label={`Font ${i + 1}: Pensió CASS`} valor={fmt(brut)} nota="Import brut · Disp. add. 5a Llei 5/2014" />
                         <FilaDetall label={`  − Reducció Disp. add. 5a (${anysCotAbans2015} anys × 1% = ${(ratio * 100).toFixed(0)}%, màx. 30%)`}
                           valor={fmt(-importExempt)} negatiu
                           nota={anysTotals < 15 ? `Anys totals cotitzats: ${anysTotals} (< 15 → reducció 0%)` : `Anys totals: ${anysTotals} · Anys abans 2015: ${anysCotAbans2015}`} />
-                        <FilaDetall label="  = Import gravat pensió CASS" valor={fmt(importGravat)} negrita
-                          nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />
+                        <FilaDetall label="  = Import gravat pensió CASS" valor={fmt(importGravat)} negrita={cassPensio === 0}
+                          nota={cassPensio > 0 ? undefined : `Retencions practicades: ${fmt(f.retencions || 0)}`} />
+                        {cassPensio > 0 && <FilaDetall label="  − Cotitzacions CASS (branca de salut)" valor={fmt(-cassPensio)} negatiu />}
+                        {cassPensio > 0 && <FilaDetall label="  = Renda neta pensió CASS" valor={fmt(importGravat - cassPensio)} negrita
+                          nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />}
                       </React.Fragment>
                     );
                   }

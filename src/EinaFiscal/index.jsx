@@ -86,7 +86,7 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
   const [mostrarErrorCASS, setMostrarErrorCASS] = useState(false);
 
   // Validació CASS del pas 2: fonts subjectes a CASS amb cotitzacions = 0 sense confirmar
-  const TIPUS_SUBJECTES_CASS = ['SALARI_GENERAL', 'ADMINISTRADOR', 'ALTRES_TREBALL'];
+  const TIPUS_SUBJECTES_CASS = ['SALARI_GENERAL', 'ADMINISTRADOR', 'ALTRES_TREBALL', 'PENSIO_CASS'];
   const fontsCASSPendents = (dades.rendesTreball || []).filter(f =>
     TIPUS_SUBJECTES_CASS.includes(f.tipus) && !f.cotitzacionsCASS && !f.cassConfirmadaZero
   );

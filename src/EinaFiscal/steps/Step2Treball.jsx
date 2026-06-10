@@ -7,7 +7,8 @@ import { IRPF_EF } from '../engine/constants';
 import { calcularIRPFDetallat } from '../engine/analysisEngine';
 
 // Tipus de renda subjectes a cotització CASS (cal validar si cotitzacions = 0)
-const TIPUS_SUBJECTES_CASS = ['SALARI_GENERAL', 'ADMINISTRADOR', 'ALTRES_TREBALL'];
+// PENSIO_CASS inclòs: el pensionista cotitza a la branca de salut, retingut de la pensió
+const TIPUS_SUBJECTES_CASS = ['SALARI_GENERAL', 'ADMINISTRADOR', 'ALTRES_TREBALL', 'PENSIO_CASS'];
 
 const TIPUS_TREBALL = [
   { value: 'SALARI_GENERAL', label: 'Salari / nòmina general' },
@@ -219,6 +220,30 @@ const FontTreball = ({ font, index, onUpdate, onUpdateFields, onEliminar }) => {
               className="w-4 h-4 accent-[#009B9C]"
             />
             <span className="text-xs text-gray-600">Pensionista CASS</span>
+          </div>
+        )}
+
+        {font.tipus === 'PENSIO_CASS' && (
+          <div className="col-span-2">
+            <InputNum
+              label="Cotitzacions CASS pagades (branca de salut) (€)"
+              value={font.cotitzacionsCASS}
+              onChange={v => {
+                const changes = { cotitzacionsCASS: v };
+                if (v > 0) changes.cassConfirmadaZero = false; // reset confirmació si s'introdueix import
+                onUpdateFields(font.id, changes);
+              }}
+            />
+            <p className="text-xs text-gray-400 mt-1">
+              Import retingut per la CASS de la pensió mensual en concepte de cotització de salut. Figura al resum anual de prestacions de la CASS. Redueix la renda neta.
+            </p>
+            {!(font.cotitzacionsCASS > 0) && (
+              <div className="bg-amber-50 border border-amber-300 rounded-lg px-3 py-2 mt-1">
+                <p className="text-xs text-amber-700">
+                  ⚠️ <strong>Cotitzacions CASS pendents de confirmar</strong> — La pensió CASS està subjecta a cotització de salut. Si no hi ha cotitzacions, introdueix 0 per confirmar que ho has verificat.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
