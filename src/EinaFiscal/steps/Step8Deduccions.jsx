@@ -144,6 +144,11 @@ const BlocDeducci = ({
 
 const Step8Deduccions = ({ dades, update, resultat }) => {
   const d = dades.deduccionsExercici || {};
+  // Les deduccions per incentius fiscals (mecenatge, projectes, llocs de treball,
+  // digitalització, patrocini) van ser introduïdes/reformades per la L2023005 i
+  // NO existien per a 2023 i anteriors. null/undefined → comportament 2024+.
+  const exerciciDeclarant = dades?.exercici || 2025;
+  const es2023oAnterior = exerciciDeclarant != null && exerciciDeclarant < 2024;
 
   const upd = (camp, valor) => {
     update('deduccionsExercici', { ...d, [camp]: valor });
@@ -271,7 +276,8 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
         </div>
       </div>
 
-      {/* ── DEDUCCIONS VOLUNTÀRIES ──────────────────────────────────────── */}
+      {/* ── DEDUCCIONS VOLUNTÀRIES (no disponibles per a exercicis < 2024) ── */}
+      {!es2023oAnterior && (
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
         <h3 className="font-semibold text-sm text-gray-700 mb-3 flex items-center gap-2">
           <span className="w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs flex items-center justify-center">B</span>
@@ -476,6 +482,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
         </div>
       </div>
+      )}
 
       {/* ── PAGAMENT FRACCIONAT (FORMULARI 320) ──────────────────────────── */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">

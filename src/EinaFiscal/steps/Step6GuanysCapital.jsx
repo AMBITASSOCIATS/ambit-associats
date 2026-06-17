@@ -82,7 +82,14 @@ const mapTipusElement = (codi300E) => {
   }
 };
 
-const analisiValors = (tipusElement, guanyNet, participacioPct, anysPropieta) => {
+const analisiValors = (tipusElement, guanyNet, participacioPct, anysPropieta, exercici = 2025) => {
+  // La branca d'exempció "participació > 25% + tinença ≥ 10 anys" la va introduir
+  // la L2023005 (en vigor 1/1/2024). Per a 2023 i anteriors (text refós 9) NO existia.
+  // null/undefined → comportament 2024+ (idèntic a l'actual).
+  const branca10AnysActiva = (exercici == null) || exercici >= 2024;
+  const refArt5k = (exercici != null && exercici < 2024)
+    ? 'Art. 5.k Llei 5/2014 (text refós 9 — vigent fins 31/12/2023)'
+    : 'Art. 5.k Llei 5/2014 · L2023005';
   if (tipusElement === 'OIC') {
     return {
       titol: 'Participacions OIC — Art. 5.k Llei 5/2014',
@@ -96,18 +103,20 @@ const analisiValors = (tipusElement, guanyNet, participacioPct, anysPropieta) =>
     };
   }
   if (tipusElement === 'COT') {
-    const esExempt = participacioPct <= 25 || (participacioPct > 25 && anysPropieta >= 10);
+    const esExempt = participacioPct <= 25 || (branca10AnysActiva && participacioPct > 25 && anysPropieta >= 10);
     const explicacio = participacioPct <= 25
       ? 'Participació ≤ 25%: guany EXEMPT per Art. 5.k Llei 5/2014. Podeu confirmar l\'exempció a continuació.'
-      : participacioPct > 25 && anysPropieta >= 10
+      : (branca10AnysActiva && participacioPct > 25 && anysPropieta >= 10)
         ? 'Participació > 25% però tinença ≥ 10 anys: EXEMPT per Art. 5.k Llei 5/2014. Podeu confirmar l\'exempció.'
-        : guanyNet <= 0
-          ? 'Participació > 25% i tinença < 10 anys. Pèrdua: analitzar si hi ha valors homogenis (Art. 32 + Reglament).'
-          : 'Participació > 25% i tinença < 10 anys: guany GRAVAT. Integrar a la base de l\'estalvi.';
+        : (!branca10AnysActiva && participacioPct > 25)
+          ? `Exercici ${exercici}: participació > 25% → GRAVAT. La branca d'exempció per tinença ≥ 10 anys va ser introduïda per la L2023005 i només aplica des de l'1/1/2024 (text refós 9 vigent fins 31/12/2023).`
+          : guanyNet <= 0
+            ? 'Participació > 25% i tinença < 10 anys. Pèrdua: analitzar si hi ha valors homogenis (Art. 32 + Reglament).'
+            : 'Participació > 25% i tinença < 10 anys: guany GRAVAT. Integrar a la base de l\'estalvi.';
     return {
       titol: 'Valors cotitzats (COT) — Art. 5.k Llei 5/2014',
       explicacio,
-      ref: 'Art. 5.k Llei 5/2014 · L2023005',
+      ref: refArt5k,
       formulari: '300-E',
       casella: 'COT',
       alertType: esExempt ? 'success' : guanyNet <= 0 ? 'warning' : 'info',
@@ -115,16 +124,18 @@ const analisiValors = (tipusElement, guanyNet, participacioPct, anysPropieta) =>
     };
   }
   if (tipusElement === 'NCT') {
-    const esExempt = participacioPct <= 25 || (participacioPct > 25 && anysPropieta >= 10);
+    const esExempt = participacioPct <= 25 || (branca10AnysActiva && participacioPct > 25 && anysPropieta >= 10);
     const explicacio = participacioPct <= 25
       ? 'Participació ≤ 25%: guany EXEMPT per Art. 5.k Llei 5/2014. Podeu confirmar l\'exempció a continuació.'
-      : participacioPct > 25 && anysPropieta >= 10
+      : (branca10AnysActiva && participacioPct > 25 && anysPropieta >= 10)
         ? 'Participació > 25% però tinença ≥ 10 anys: EXEMPT per Art. 5.k Llei 5/2014. Podeu confirmar l\'exempció.'
-        : 'Participació > 25% i tinença < 10 anys: guany GRAVAT. Analitzar substància i vinculació societària.';
+        : (!branca10AnysActiva && participacioPct > 25)
+          ? `Exercici ${exercici}: participació > 25% → GRAVAT. La branca d'exempció per tinença ≥ 10 anys va ser introduïda per la L2023005 i només aplica des de l'1/1/2024 (text refós 9 vigent fins 31/12/2023).`
+          : 'Participació > 25% i tinença < 10 anys: guany GRAVAT. Analitzar substància i vinculació societària.';
     return {
       titol: 'Participacions no cotitzades (NCT) — Art. 5.k Llei 5/2014',
       explicacio,
-      ref: 'Art. 5.k Llei 5/2014 · L2023005',
+      ref: refArt5k,
       formulari: '300-E',
       casella: 'NCT',
       alertType: esExempt ? 'success' : 'info',
@@ -159,7 +170,7 @@ const InputNum = ({ label, value, onChange, min = 0 }) => (
   </div>
 );
 
-const TransmissioForm = ({ trans, index, onUpdate, onEliminar }) => {
+const TransmissioForm = ({ trans, index, onUpdate, onEliminar, exercici = 2025 }) => {
   // Accepta update('camp', valor) o update({ camp1: v1, camp2: v2 })
   const update = (campOrObj, valor) => onUpdate(trans.id, campOrObj, valor);
   const { guanyNet, valorAdqActualitzat, coefAplicat, anysPropieta } = calcularGuany(trans);
@@ -174,7 +185,7 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar }) => {
         participacioPct: trans.participacioPct,
         reinverteix: trans.reinverteix,
       })
-    : analisiValors(trans.tipusElement, guanyNet, trans.participacioPct, trans.anysPropieta || anysPropieta);
+    : analisiValors(trans.tipusElement, guanyNet, trans.participacioPct, trans.anysPropieta || anysPropieta, exercici);
 
   return (
     <RentaBlock
@@ -527,6 +538,7 @@ const Step6GuanysCapital = ({ dades, update }) => {
           index={i}
           onUpdate={updateTransmissio}
           onEliminar={() => removeTransmissio(trans.id)}
+          exercici={dades?.exercici || 2025}
         />
       ))}
     </div>

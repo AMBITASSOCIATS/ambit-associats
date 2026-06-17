@@ -560,6 +560,12 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
           <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
 
+            {exercici < 2024 && (
+              <div style={{ backgroundColor: '#FEF3C7', border: '1px solid #F59E0B', borderRadius: '6px', padding: '8px 12px', marginBottom: '10px', fontSize: '9px', color: '#92400E' }}>
+                ⚠️ <strong>Exercici {exercici} — Normativa Llei 5/2014 text refós 9 (vigent fins 31/12/2023)</strong>: S'aplica la normativa anterior a la L2023005 (en vigor des de l'1/1/2024). Diferències aplicades: (1) Art. 5.k COT/NCT: exempció únicament si participació ≤ 25%; la branca de tinença ≥ 10 anys no aplica per a aquest exercici; (2) Deduccions de mecenatge, digitalització, llocs de treball i patrocini no disponibles.
+              </div>
+            )}
+
             {/* Rendes del treball */}
             {tensTreball && !blocsExclosos.treball && (
               <SeccioBlocNormatiu titol="1. Rendes del treball — Formulari 300-B sec.1">
