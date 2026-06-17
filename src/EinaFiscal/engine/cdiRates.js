@@ -160,64 +160,56 @@ export const CDI_RATES = {
     salaris: 'treball',
     notes: 'CDI Andorra-Letònia.'
   },
-  // ── CDI afegits (juny 2026). Tipus segons patró OCDE estàndard del fitxer
-  //    (dividends general 15% / qualif. 5%, interessos 5%, cànons 5%).
-  //    PENDENT: verificar els tipus exactes contra el text de cada conveni. ──
+  // ── CDI afegits (juny 2026). Reconeguts com a CDI vigent però SENSE tipus
+  //    prefixats: l'usuari introdueix el tipus màxim manualment al Step7DDI
+  //    (tipusMaxCDI) segons el text del conveni corresponent. ──
   'CY': {  // Xipre
-    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    dividends_general: null, dividends_qualif: null, interessos: null, canons: null,
     plusvalues_immobles: null, plusvalues_accions: null,
-    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
     vigentDes: '11/01/2019', bopa: 'BOPA 30/01/2019',
-    notes: 'CDI Andorra-Xipre. En vigor 11/01/2019. Tipus pendents de verificació.'
+    notes: 'CDI Andorra-Xipre. En vigor 11/01/2019.'
   },
   'HU': {  // Hongria
-    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    dividends_general: null, dividends_qualif: null, interessos: null, canons: null,
     plusvalues_immobles: null, plusvalues_accions: null,
-    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
     vigentDes: '01/01/2020', bopa: null,
-    notes: 'CDI Andorra-Hongria. En vigor 01/01/2020. Tipus pendents de verificació.'
+    notes: 'CDI Andorra-Hongria. En vigor 01/01/2020.'
   },
   'MC': {  // Mònaco
-    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    dividends_general: null, dividends_qualif: null, interessos: null, canons: null,
     plusvalues_immobles: null, plusvalues_accions: null,
-    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
     vigentDes: '22/07/2023', bopa: null,
-    notes: 'CDI Andorra-Mònaco. En vigor 22/07/2023. Tipus pendents de verificació.'
+    notes: 'CDI Andorra-Mònaco. En vigor 22/07/2023.'
   },
   'CZ': {  // República Txeca
-    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    dividends_general: null, dividends_qualif: null, interessos: null, canons: null,
     plusvalues_immobles: null, plusvalues_accions: null,
-    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
     vigentDes: '31/10/2023', bopa: null,
-    notes: 'CDI Andorra-República Txeca. En vigor 31/10/2023. Tipus pendents de verificació.'
+    notes: 'CDI Andorra-República Txeca. En vigor 31/10/2023.'
   },
   'HR': {  // Croàcia
-    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    dividends_general: null, dividends_qualif: null, interessos: null, canons: null,
     plusvalues_immobles: null, plusvalues_accions: null,
-    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
     vigentDes: '31/10/2023', bopa: null,
-    notes: 'CDI Andorra-Croàcia. En vigor 31/10/2023. Tipus pendents de verificació.'
+    notes: 'CDI Andorra-Croàcia. En vigor 31/10/2023.'
   },
   'NL': {  // Països Baixos
-    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    dividends_general: null, dividends_qualif: null, interessos: null, canons: null,
     plusvalues_immobles: null, plusvalues_accions: null,
-    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
     vigentDes: '01/01/2025', bopa: 'BOPA 29/11/2024',
-    notes: 'CDI Andorra-Països Baixos. En vigor 01/01/2025. Tipus pendents de verificació.'
+    notes: 'CDI Andorra-Països Baixos. En vigor 01/01/2025.'
   },
   'RO': {  // Romania
-    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    dividends_general: null, dividends_qualif: null, interessos: null, canons: null,
     plusvalues_immobles: null, plusvalues_accions: null,
-    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
     vigentDes: '11/12/2025', bopa: null,
-    notes: 'CDI Andorra-Romania. En vigor 11/12/2025. Tipus pendents de verificació.'
+    notes: 'CDI Andorra-Romania. En vigor 11/12/2025.'
   },
   'GB': {  // Regne Unit
-    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    dividends_general: null, dividends_qualif: null, interessos: null, canons: null,
     plusvalues_immobles: null, plusvalues_accions: null,
-    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
     vigentDes: '22/12/2025', bopa: null,
-    notes: 'CDI Andorra-Regne Unit. En vigor 22/12/2025. Tipus pendents de verificació.'
+    notes: 'CDI Andorra-Regne Unit. En vigor 22/12/2025.'
   },
   // Sense CDI — no hi ha límit de retenció convencional
   'DEFAULT': {
