@@ -35,6 +35,23 @@ const DEFAULT_TRANSMISSIO = {
   exempta: false,
   importExempt: 0,
   motivExempcio: '',
+  // Devolució de capital no subjecta (Art. 27.3)
+  esDevolucioCapital: false,
+};
+
+// Secció 1 del 300-E: variacions patrimonials no derivades de transmissió
+const TIPUS_RENDA_SENSE_TRANSMISSIO = [
+  { value: 'opcions_derivats', label: 'Opcions, derivats i altres instruments financers' },
+  { value: 'premis_concursos', label: 'Premis i concursos (no exempts)' },
+  { value: 'altres', label: 'Altres guanys/pèrdues no derivats de transmissió' },
+];
+
+const DEFAULT_RENDA_SENSE_TRANSMISSIO = {
+  id: null,
+  descripcio: '',
+  tipusRenda: '',
+  data: '',
+  resultat: 0, // positiu = guany, negatiu = pèrdua
 };
 
 const calcularGuany = (t) => {
@@ -246,6 +263,20 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar }) => {
           </div>
         )}
 
+        {(trans.tipusElement === 'OIC' || trans.tipusElement === 'COT' || trans.tipusElement === 'NCT') && (
+          <div className="col-span-2 flex items-center gap-2 mt-1">
+            <input
+              type="checkbox"
+              checked={trans.esDevolucioCapital || false}
+              onChange={e => update({ esDevolucioCapital: e.target.checked })}
+              className="w-4 h-4 accent-[#009B9C]"
+            />
+            <label className="text-xs text-gray-600">
+              Devolució de capital no subjecta (Art. 27.3 Llei 5/2014) — no genera guany ni pèrdua
+            </label>
+          </div>
+        )}
+
         <InputNum label="Valor de transmissio (euros)" value={trans.valorTransmissio} onChange={v => update('valorTransmissio', v)} />
         <InputNum label="Valor d'adquisicio (euros)" value={trans.valorAdquisicio} onChange={v => update('valorAdquisicio', v)} />
         <InputNum label="Any d'adquisicio" value={trans.anyAdquisicio} onChange={v => update('anyAdquisicio', v)} min={1900} />
@@ -337,7 +368,18 @@ const Step6GuanysCapital = ({ dades, update }) => {
     update('transmissions', dades.transmissions.filter(t => t.id !== id));
   };
 
-  const variacioSeccio1 = (dades.guanysNoTransmissio || 0) - (dades.perduessNoTransmissio || 0);
+  // Secció 1 — llista dinàmica de rendes no derivades de transmissió
+  const rendesSenseTransmissio = dades.rendesSenseTransmissio || [];
+  const addRendaSense = () => {
+    update('rendesSenseTransmissio', [...rendesSenseTransmissio, { ...DEFAULT_RENDA_SENSE_TRANSMISSIO, id: Date.now() }]);
+  };
+  const updateRendaSense = (id, camp, valor) => {
+    update('rendesSenseTransmissio', rendesSenseTransmissio.map(r => r.id === id ? { ...r, [camp]: valor } : r));
+  };
+  const removeRendaSense = (id) => {
+    update('rendesSenseTransmissio', rendesSenseTransmissio.filter(r => r.id !== id));
+  };
+  const totalSenseTransmissio = rendesSenseTransmissio.reduce((s, r) => s + (r.resultat || 0), 0);
 
   return (
     <div className="space-y-4">
@@ -360,44 +402,81 @@ const Step6GuanysCapital = ({ dades, update }) => {
 
         {/* Seccio 1 del 300-E: Guanys/perdues no derivats de transmissio */}
         <div className="mb-5 border border-gray-200 rounded-xl overflow-hidden">
-          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-700">
-              Seccio 1 — Variacions patrimonials no derivades de transmissio (300-E sec.1)
-            </h3>
-            <p className="text-xs text-gray-500 mt-0.5">
-              Guanys i perdues no generats per transmissio (premis, indemnitzacions, etc.)
-            </p>
+          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700">
+                Seccio 1 — Variacions patrimonials no derivades de transmissio (300-E sec.1)
+              </h3>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Opcions i derivats, premis no exempts, i altres guanys/pèrdues no generats per transmissió
+              </p>
+            </div>
+            <button
+              onClick={addRendaSense}
+              className="text-xs bg-[#009B9C] text-white px-3 py-1.5 rounded-lg hover:bg-[#007A7B] transition font-medium whitespace-nowrap"
+            >
+              + Afegir renda sense transmissió
+            </button>
           </div>
-          <div className="p-4 grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                Import dels guanys de capital generats (euros)
-              </label>
-              <input
-                type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
-                value={(dades.guanysNoTransmissio || 0) === 0 ? '' : dades.guanysNoTransmissio}
-                placeholder="0"
-                onChange={e => { const v = e.target.value; update('guanysNoTransmissio', v === '' ? 0 : parseFloat(v) || 0); }}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                Import de les perdues de capital generades (euros)
-              </label>
-              <input
-                type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
-                value={(dades.perduessNoTransmissio || 0) === 0 ? '' : dades.perduessNoTransmissio}
-                placeholder="0"
-                onChange={e => { const v = e.target.value; update('perduessNoTransmissio', v === '' ? 0 : parseFloat(v) || 0); }}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
-              />
-            </div>
-            {((dades.guanysNoTransmissio || 0) > 0 || (dades.perduessNoTransmissio || 0) > 0) && (
-              <div className="col-span-2 mt-1 bg-gray-50 rounded-lg p-3 text-sm">
-                <span className="font-medium">Variacio patrimonial neta (seccio 1): </span>
-                <span className={`font-mono ml-2 ${variacioSeccio1 >= 0 ? 'text-[#009B9C]' : 'text-red-600'}`}>
-                  {variacioSeccio1.toFixed(2)} euros
+          <div className="p-4 space-y-3">
+            {rendesSenseTransmissio.length === 0 && (
+              <p className="text-xs text-gray-400 text-center py-2">Cap renda sense transmissió afegida.</p>
+            )}
+            {rendesSenseTransmissio.map((r, i) => (
+              <div key={r.id} className="grid grid-cols-12 gap-2 items-start border border-gray-100 rounded-lg p-2">
+                <div className="col-span-4">
+                  <label className="block text-xs text-gray-500 mb-1">Descripció</label>
+                  <input
+                    type="text"
+                    value={r.descripcio}
+                    onChange={e => updateRendaSense(r.id, 'descripcio', e.target.value)}
+                    placeholder="Ex: Opcions accions empresa X"
+                    className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                  />
+                </div>
+                <div className="col-span-3">
+                  <label className="block text-xs text-gray-500 mb-1">Tipus</label>
+                  <select
+                    value={r.tipusRenda}
+                    onChange={e => updateRendaSense(r.id, 'tipusRenda', e.target.value)}
+                    className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                  >
+                    <option value="">—</option>
+                    {TIPUS_RENDA_SENSE_TRANSMISSIO.map(t => (
+                      <option key={t.value} value={t.value}>{t.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs text-gray-500 mb-1">Data</label>
+                  <input
+                    type="date"
+                    value={r.data}
+                    onChange={e => updateRendaSense(r.id, 'data', e.target.value)}
+                    className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs text-gray-500 mb-1">Resultat (€)</label>
+                  <input
+                    type="number" onWheel={e => e.target.blur()} step="0.01"
+                    value={r.resultat === 0 ? '' : r.resultat}
+                    placeholder="0"
+                    onChange={e => { const v = e.target.value; updateRendaSense(r.id, 'resultat', v === '' ? 0 : parseFloat(v) || 0); }}
+                    className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                  />
+                  <span className="block text-[10px] text-gray-400 mt-0.5">+ guany / − pèrdua</span>
+                </div>
+                <div className="col-span-1 flex items-end h-full">
+                  <button onClick={() => removeRendaSense(r.id)} className="text-gray-400 hover:text-red-500 text-xs pb-1">✕</button>
+                </div>
+              </div>
+            ))}
+            {rendesSenseTransmissio.length > 0 && (
+              <div className="bg-gray-50 rounded-lg p-3 text-sm flex justify-between">
+                <span className="font-medium">Variació patrimonial neta (secció 1):</span>
+                <span className={`font-mono ${totalSenseTransmissio >= 0 ? 'text-[#009B9C]' : 'text-red-600'}`}>
+                  {totalSenseTransmissio.toFixed(2)} €
                 </span>
               </div>
             )}

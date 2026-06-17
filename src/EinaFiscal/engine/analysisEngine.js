@@ -244,10 +244,13 @@ export function calcularIRPFDetallat(dades) {
   const rendaActivitat = calcularRendaNetaActivitat(activitats);
   const rendaImmobiliaria = calcularRendaNetaImmobiliaria(immobles);
   const rendaMobiliaria = calcularRendaNetaMobiliaria(mobiliaris);
-  // Separar transmissions exemptes (marcades manualment) de les gravades
-  const transmissionsGravades = transmissions.filter(t => !t.exempta);
+  // Separar transmissions: exemptes (Art. 5.k) i devolucions de capital (Art. 27.3) no computen
+  const transmissionsGravades = transmissions.filter(t => !t.exempta && !t.esDevolucioCapital);
   const transmissionsExemptes = transmissions.filter(t => t.exempta);
-  const guanysCapital = calcularGuanysCapitalNet(transmissionsGravades, guanysNoTransmissio, perduessNoTransmissio, basesNegativesAnteriors);
+  // Secció 1 — variacions no derivades de transmissió: nova llista + escalars antics (compat enrere)
+  const totalSenseTransmissio = (dades.rendesSenseTransmissio || []).reduce((s, r) => s + (r.resultat || 0), 0);
+  const variacioSense = (guanysNoTransmissio || 0) - (perduessNoTransmissio || 0) + totalSenseTransmissio;
+  const guanysCapital = calcularGuanysCapitalNet(transmissionsGravades, variacioSense, 0, basesNegativesAnteriors);
 
   // Compensacio 300-F
   const basesNegGeneralsAplicades = Math.max(0, basesNegGenerals.reduce((a, f) => a + (f.aplicat || 0), 0));

@@ -274,6 +274,9 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
   const tensTransmissionsGravades = (dades.transmissions || []).some(t => !t.exempta);
   const tensTransmissionsExemptes = (dades.transmissions || []).some(t => t.exempta);
   const tensDDI = (dades.rendesExterior || []).length > 0;
+  const tensRendesSenseTransmissio = (dades.rendesSenseTransmissio || []).length > 0;
+  const totalSenseTransmissio = (dades.rendesSenseTransmissio || []).reduce((s, rr) => s + (rr.resultat || 0), 0);
+  const tensDevolucionsCapital = (dades.transmissions || []).some(t => t.esDevolucioCapital);
 
   return (
     <div className="space-y-6">
@@ -752,34 +755,63 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </SeccioBlocNormatiu>
             )}
 
-            {/* Guanys capital gravats */}
-            {tensTransmissionsGravades && !blocsExclosos.transmissions && (
+            {/* Guanys de capital — Apartat 1 (sense transmissió) + Apartat 2 (transmissió) */}
+            {(tensRendesSenseTransmissio || tensTransmissions) && !blocsExclosos.transmissions && (() => {
+              const transGravades = (dades.transmissions || []).filter(t => !t.exempta && !t.esDevolucioCapital);
+              const subtotalApt2 = transGravades.reduce((s, t) =>
+                s + ((t.valorTransmissio || 0) - (t.despesesTransmissio || 0) - (t.valorAdquisicio || 0) - (t.despesesAdquisicio || 0)), 0);
+              return (
               <SeccioBlocNormatiu titol="5. Guanys i pèrdues de capital — Formulari 300-E">
-                <FilaDetall label="Guanys i pèrdues de capital nets" valor={fmt(r.guanysCapital)} negrita destacat
-                  nota="Art. 30-32 Llei 5/2014 · Valor transmissió − valor adquisició actualitzat" />
-                {(dades.transmissions || []).filter(t => !t.exempta).map((t, i) => {
-                  const guany = (t.valorTransmissio || 0) - (t.despesesTransmissio || 0) - (t.valorAdquisicio || 0) - (t.despesesAdquisicio || 0);
-                  return (
-                    <React.Fragment key={i}>
-                      <FilaDetall label={`Transmissió ${i + 1}: ${t.descripcio || ''} (${t.tipusElement || ''})`} valor={null} negrita />
-                      <FilaDetall label="  Valor de transmissió" valor={fmt(t.valorTransmissio || 0)} />
-                      {(t.despesesTransmissio || 0) > 0 && <FilaDetall label="  − Despeses transmissió" valor={fmt(-(t.despesesTransmissio || 0))} negatiu />}
-                      <FilaDetall label="  − Valor d'adquisició" valor={fmt(-(t.valorAdquisicio || 0))} negatiu nota={`Any adquisició: ${t.anyAdquisicio || '—'}`} />
-                      {(t.despesesAdquisicio || 0) > 0 && <FilaDetall label="  − Despeses adquisició" valor={fmt(-(t.despesesAdquisicio || 0))} negatiu />}
-                      <FilaDetall label="  = Guany / Pèrdua" valor={fmt(guany)} negrita nota={`Any transmissió: ${t.anyTransmissio || '—'}`} />
-                    </React.Fragment>
-                  );
-                })}
+
+                {/* Apartat 1 — guanys/pèrdues no derivats de transmissió */}
+                {tensRendesSenseTransmissio && (
+                  <>
+                    <FilaDetall label="Apartat 1 — Guanys/pèrdues NO derivats de transmissió" valor={null} negrita />
+                    {(dades.rendesSenseTransmissio || []).map((rs, i) => (
+                      <FilaDetall key={`s${i}`}
+                        label={`  ${rs.descripcio || rs.tipusRenda || `Renda ${i + 1}`}${rs.data ? ` (${rs.data})` : ''}`}
+                        valor={fmt(rs.resultat || 0)} negatiu={(rs.resultat || 0) < 0} />
+                    ))}
+                    <FilaDetall label="  Subtotal Apartat 1" valor={fmt(totalSenseTransmissio)} negrita />
+                  </>
+                )}
+
+                {/* Apartat 2 — guanys/pèrdues derivats de transmissió */}
+                {tensTransmissionsGravades && (
+                  <>
+                    <FilaDetall label="Apartat 2 — Guanys/pèrdues derivats de TRANSMISSIÓ" valor={null} negrita />
+                    {transGravades.map((t, i) => {
+                      const guany = (t.valorTransmissio || 0) - (t.despesesTransmissio || 0) - (t.valorAdquisicio || 0) - (t.despesesAdquisicio || 0);
+                      return (
+                        <React.Fragment key={i}>
+                          <FilaDetall label={`Transmissió ${i + 1}: ${t.descripcio || ''} (${t.tipusElement || ''})`} valor={null} negrita />
+                          <FilaDetall label="  Valor de transmissió" valor={fmt(t.valorTransmissio || 0)} />
+                          {(t.despesesTransmissio || 0) > 0 && <FilaDetall label="  − Despeses transmissió" valor={fmt(-(t.despesesTransmissio || 0))} negatiu />}
+                          <FilaDetall label="  − Valor d'adquisició" valor={fmt(-(t.valorAdquisicio || 0))} negatiu nota={`Any adquisició: ${t.anyAdquisicio || '—'}`} />
+                          {(t.despesesAdquisicio || 0) > 0 && <FilaDetall label="  − Despeses adquisició" valor={fmt(-(t.despesesAdquisicio || 0))} negatiu />}
+                          <FilaDetall label="  = Guany / Pèrdua" valor={fmt(guany)} negrita nota={`Any transmissió: ${t.anyTransmissio || '—'}`} />
+                        </React.Fragment>
+                      );
+                    })}
+                    <FilaDetall label="  Subtotal Apartat 2" valor={fmt(subtotalApt2)} negrita />
+                  </>
+                )}
+
+                {!tensTransmissionsGravades && tensTransmissions && (
+                  <FilaDetall label="Apartat 2 — Cap transmissió gravada" valor="0,00 €"
+                    nota="Les transmissions declarades estan exemptes (Art. 5) o són devolucions de capital (Art. 27.3). Vegeu l'apartat 5b." />
+                )}
+
+                {/* Reconciliació final */}
+                <div style={{ borderTop: `2px solid ${CAP.color}`, marginTop: '8px', paddingTop: '6px' }}>
+                  <FilaDetall label="TOTAL Guanys i pèrdues de capital (Apt. 1 + Apt. 2)" valor={fmt(r.guanysCapital)} negrita destacat
+                    nota="Integra a la Base de Tributació de l'Estalvi (BTE) · Art. 30-32 Llei 5/2014" />
+                </div>
+
                 <NotaNormativa refText="Art. 30 Llei 5/2014" text="Constitueixen guanys o pèrdues de capital les variacions en el valor del patrimoni de l'obligat tributari que es posin de manifest amb ocasió d'alteració en la composició d'aquell." />
               </SeccioBlocNormatiu>
-            )}
-            {tensTransmissions && !tensTransmissionsGravades && !blocsExclosos.transmissions && (
-              <SeccioBlocNormatiu titol="5. Guanys i pèrdues de capital — Formulari 300-E">
-                <FilaDetall label="Cap transmissió gravada" valor="0,00 €" negrita destacat
-                  nota="Totes les transmissions declarades estan exemptes de tributació per aplicació de l'Art. 5 Llei 5/2014" />
-                <NotaNormativa refText="Art. 5 Llei 5/2014" text="Les transmissions declarades estan acollides a una exempció legal. Vegeu l'apartat 5b per al detall." />
-              </SeccioBlocNormatiu>
-            )}
+              );
+            })()}
 
             {/* DDI — càlcul país per país (Art. 48.4) */}
             {tensDDI && r.ddiDetall && r.ddiDetall.length > 0 && !blocsExclosos.ddi && (
@@ -1120,38 +1152,51 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           </div>
         </div>
 
-        {/* ══ PÀGINA 5b — TRANSMISSIONS EXEMPTES (condicional) ══════════ */}
-        {tensTransmissionsExemptes && r.transmissionsExemptes && r.transmissionsExemptes.length > 0 && (
+        {/* ══ PÀGINA 5b — RENDES EXEMPTES (Art. 5.k) I NO SUBJECTES (Art. 27.3) ══ */}
+        {((tensTransmissionsExemptes && r.transmissionsExemptes && r.transmissionsExemptes.length > 0) || tensDevolucionsCapital) && (
           <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Rendes exemptes — Art. 5 Llei 5/2014" cap={CAP} />
+            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Rendes exemptes i no subjectes" cap={CAP} />
 
             <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
-              <SeccioBlocNormatiu titol="5b. Guanys i pèrdues de capital EXEMPTS — Art. 5 Llei 5/2014">
-                <FilaDetall
-                  label="Transmissions exemptes — NO computen a la base de l'estalvi"
-                  valor="EXEMPT"
-                  negrita destacat
-                  nota="Excloses de la base de tributació de l'estalvi per aplicació d'exempció legal"
-                />
-                {r.transmissionsExemptes.map((t, i) => (
-                  <React.Fragment key={i}>
-                    <FilaDetall
-                      label={`  ${t.descripcio || `Transmissió exempta ${i + 1}`} (${t.tipusElement || ''})`}
-                      valor={`${(t.importExempt || 0) >= 0 ? '+' : ''}${(t.importExempt || 0).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €`}
-                      nota={`EXEMPT · ${t.motivExempcio || 'Art. 5 Llei 5/2014'}`}
-                    />
-                  </React.Fragment>
-                ))}
+              <SeccioBlocNormatiu titol="5b. Rendes exemptes i no subjectes — Informació">
+
+                {/* Subsecció A — Exemptes Art. 5.k */}
+                {tensTransmissionsExemptes && r.transmissionsExemptes && r.transmissionsExemptes.length > 0 && (
+                  <>
+                    <FilaDetall label="A) Guanys exempts — Art. 5.k Llei 5/2014" valor={null} negrita destacat />
+                    {r.transmissionsExemptes.map((t, i) => (
+                      <FilaDetall key={`ex${i}`}
+                        label={`  ${t.descripcio || `Transmissió ${i + 1}`} (${t.tipusElement || ''})`}
+                        valor={fmt(t.importExempt || 0)}
+                        nota={`EXEMPT · ${t.motivExempcio || 'Art. 5.k'} · No computa a la BTE`} />
+                    ))}
+                    <FilaDetall label="  Total exempt Art. 5.k" valor={fmt(r.totalExempt)} negrita />
+                  </>
+                )}
+
+                {/* Subsecció B — No subjectes Art. 27.3 */}
+                {tensDevolucionsCapital && (
+                  <>
+                    <FilaDetall label="B) Devolucions de capital — Art. 27.3 Llei 5/2014" valor={null} negrita destacat />
+                    {(dades.transmissions || []).filter(t => t.esDevolucioCapital).map((t, i) => (
+                      <FilaDetall key={`dc${i}`}
+                        label={`  ${t.descripcio || `Devolució ${i + 1}`} (${t.tipusElement || ''})`}
+                        valor={fmt(t.valorTransmissio || 0)}
+                        nota="NO SUBJECTA · Art. 27.3 · Minora el valor d'adquisició dels valors restants" />
+                    ))}
+                  </>
+                )}
+
                 <NotaNormativa
-                  refText="Art. 5 Llei 5/2014"
-                  text="Els guanys de capital indicats estan exempts de tributació per aplicació de l'article 5 de la Llei 5/2014. No s'integren a la base de tributació de l'estalvi ni computen a efectes del càlcul de la quota."
+                  refText="Art. 5.k i Art. 27.3 Llei 5/2014"
+                  text="Les rendes d'aquest apartat no s'integren a la base de tributació. Es mostren exclusivament a efectes informatius i de traçabilitat."
                 />
               </SeccioBlocNormatiu>
             </div>
 
             <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
               <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
-              <span>Rendes exemptes · Art. 5 Llei 5/2014</span>
+              <span>Rendes exemptes i no subjectes</span>
             </div>
           </div>
         )}
