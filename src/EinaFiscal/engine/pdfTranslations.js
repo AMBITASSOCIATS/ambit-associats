@@ -1187,6 +1187,51 @@ export const T = {
     FR: "Les revenus de cette section ne sont pas intégrés à la base d'imposition. Ils sont présentés uniquement à des fins d'information et de traçabilité.",
     EN: "The income in this section is not included in the tax base. It is shown exclusively for informational and traceability purposes.",
   },
+
+  // ── A2 fase 3: textos amb interpolació (placeholders {x}) ─────────────────
+  fontPensioCassNum: {
+    CA: "Font {n}: Pensió CASS", ES: "Fuente {n}: Pensión CASS",
+    FR: "Source {n} : Pension CASS", EN: "Source {n}: CASS pension",
+  },
+  fontClassesPassivesNum: {
+    CA: "Font {n}: Pensió pública (Classes Passives)", ES: "Fuente {n}: Pensión pública (Clases Pasivas)",
+    FR: "Source {n} : Pension publique (Classes Passives)", EN: "Source {n}: Public pension (Classes Passives)",
+  },
+  fontNum: { CA: "Font {n}", ES: "Fuente {n}", FR: "Source {n}", EN: "Source {n}" },
+  immobleNum: { CA: "Immoble {n}", ES: "Inmueble {n}", FR: "Bien immobilier {n}", EN: "Property {n}" },
+  entitatNum: { CA: "Entitat {n}", ES: "Entidad {n}", FR: "Entité {n}", EN: "Entity {n}" },
+  transmissioNum: { CA: "Transmissió {n}", ES: "Transmisión {n}", FR: "Cession {n}", EN: "Transfer {n}" },
+  devolucioNum: { CA: "Devolució {n}", ES: "Devolución {n}", FR: "Remboursement {n}", EN: "Refund {n}" },
+  anyAdquisicio: { CA: "Any adquisició: {any}", ES: "Año adquisición: {any}", FR: "Année d'acquisition : {any}", EN: "Acquisition year: {any}" },
+  anyTransmissio: { CA: "Any transmissió: {any}", ES: "Año transmisión: {any}", FR: "Année de cession : {any}", EN: "Transfer year: {any}" },
+  exerciciPendentInici: { CA: "Exercici {any} — pendent inici", ES: "Ejercicio {any} — pendiente inicio", FR: "Exercice {any} — en attente début", EN: "Tax year {any} — pending start" },
+  aplicatEnExercici: { CA: "Aplicat en {any}", ES: "Aplicado en {any}", FR: "Appliqué en {any}", EN: "Applied in {any}" },
+  vencimentExercici: { CA: "Venciment: exercici {any}", ES: "Vencimiento: ejercicio {any}", FR: "Échéance : exercice {any}", EN: "Expiry: tax year {any}" },
+  retencionsPracticadesP: { CA: "Retencions practicades: {imp}", ES: "Retenciones practicadas: {imp}", FR: "Retenues pratiquées : {imp}", EN: "Withholdings applied: {imp}" },
+  notaBase3pct: {
+    CA: "Art. 13.2.b Llei 5/2014 · Base 3%: {base} → límit global 2.500 €",
+    ES: "Art. 13.2.b Llei 5/2014 · Base 3%: {base} → límite global 2.500 €",
+    FR: "Art. 13.2.b Llei 5/2014 · Base 3% : {base} → limite globale 2.500 €",
+    EN: "Art. 13.2.b Llei 5/2014 · 3% base: {base} → global cap 2,500 €",
+  },
+  aplicatSobreRendesOrd: {
+    CA: "Aplicat sobre {base} de rendes ordinàries", ES: "Aplicado sobre {base} de rentas ordinarias",
+    FR: "Appliqué sur {base} de revenus ordinaires", EN: "Applied on {base} of ordinary income",
+  },
+  exemptMotiu: {
+    CA: "EXEMPT · {motiu} · No computa a la BTE", ES: "EXENTO · {motiu} · No computa en la BTE",
+    FR: "EXONÉRÉ · {motiu} · Ne compte pas dans la BTE", EN: "EXEMPT · {motiu} · Not included in the savings base",
+  },
+  titol300LExercici: {
+    CA: "Formulari 300-L · Liquidació de l'IRPF {any}", ES: "Formulario 300-L · Liquidación del IRPF {any}",
+    FR: "Formulaire 300-L · Liquidation de l'IRPF {any}", EN: "Form 300-L · Personal Income Tax settlement {any}",
+  },
+  terminiPresentacioText: {
+    CA: "La declaració de l'IRPF de l'exercici {any} s'ha de presentar entre l'1 d'abril i el 30 de setembre de {anyseg}. El pagament fraccionat (formulari 320) es presenta a l'Administració tributària durant el mes de setembre de {any}. Portal Tributari: www.eda.ad",
+    ES: "La declaración del IRPF del ejercicio {any} debe presentarse entre el 1 de abril y el 30 de septiembre de {anyseg}. El pago fraccionado (formulario 320) se presenta a la Administración tributaria durante el mes de septiembre de {any}. Portal Tributario: www.eda.ad",
+    FR: "La déclaration de l'IRPF de l'exercice {any} doit être présentée entre le 1er avril et le 30 septembre {anyseg}. L'acompte (formulaire 320) est présenté à l'Administration fiscale au cours du mois de septembre {any}. Portail Fiscal : www.eda.ad",
+    EN: "The {any} Personal Income Tax return must be filed between 1 April and 30 September {anyseg}. The instalment payment (form 320) is filed with the Tax Administration during September {any}. Tax Portal: www.eda.ad",
+  },
 };
 
 // Helper per obtenir un text en un idioma

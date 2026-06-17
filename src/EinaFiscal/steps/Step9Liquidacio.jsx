@@ -141,6 +141,12 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
   const [idiomaInforme, setIdiomaInforme] = useState('CA');
   // Helper de traducció lligat a l'idioma triat per a l'informe PDF
   const tr = (key) => t(key, idiomaInforme);
+  // Helper amb paràmetres: substitueix placeholders {x} de la traducció pels valors donats
+  const trp = (key, params = {}) => {
+    let s = t(key, idiomaInforme);
+    Object.keys(params).forEach(p => { s = s.split(`{${p}}`).join(params[p]); });
+    return s;
+  };
   const [blocsExclosos, setBlocsExclosos] = useState({
     treball: false, activitats: false, immobiliari: false,
     mobiliari: false, transmissions: false, ddi: false,
@@ -615,7 +621,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     const cassPensio = f.cotitzacionsCASS || 0;
                     return (
                       <React.Fragment key={i}>
-                        <FilaDetall label={`Font ${i + 1}: Pensió CASS`} valor={fmt(brut)} nota={tr('notaImportBrutDispAdd5a')} />
+                        <FilaDetall label={trp('fontPensioCassNum', { n: i + 1 })} valor={fmt(brut)} nota={tr('notaImportBrutDispAdd5a')} />
                         <FilaDetall label={`  − Reducció Disp. add. 5a (${anysCotAbans2015} anys × 1% = ${(ratio * 100).toFixed(0)}%, màx. 30%)`}
                           valor={fmt(-importExempt)} negatiu
                           nota={anysTotals < 15 ? `Anys totals cotitzats: ${anysTotals} (< 15 → reducció 0%)` : `Anys totals: ${anysTotals} · Anys abans 2015: ${anysCotAbans2015}`} />
@@ -635,7 +641,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     const e = b > 0 ? Math.min(Math.max(0, a * ((b - c) - (d - dPrima)) / b), a) : 0;
                     return (
                       <React.Fragment key={i}>
-                        <FilaDetall label={`Font ${i + 1}: Pensió pública (Classes Passives)`} valor={fmt(a)} nota={tr('notaRendaIntegraAnual')} />
+                        <FilaDetall label={trp('fontClassesPassivesNum', { n: i + 1 })} valor={fmt(a)} nota={tr('notaRendaIntegraAnual')} />
                         <FilaDetall label={tr('partExemptFins2014')} valor={fmt(-(a - e))} negatiu
                           nota={`b=${fmt(b)} · c=${fmt(c)} · d=${fmt(d)} · d'=${fmt(dPrima)}${b === c ? ' · b=c → tot exempt' : ''}`} />
                         <FilaDetall label={tr('importGravatE')} valor={fmt(e)} negrita
@@ -653,7 +659,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     <React.Fragment key={i}>
                       <FilaDetall label={`Font ${i + 1}: ${TIPUS_LABEL[f.tipus] || f.tipus || 'Treball'}`} valor={fmt(brut)} nota={tr('ingressosBrutsNota')} />
                       {(f.cotitzacionsCASS || 0) > 0 && <FilaDetall label={tr('cotitzacionsCass')} valor={fmt(-(f.cotitzacionsCASS || 0))} negatiu />}
-                      {aplicaDespeses3pct && desp3pctFont > 0 && <FilaDetall label={tr('altresDespeses3pctLabel')} valor={fmt(-desp3pctFont)} negatiu nota={`Art. 13.2.b Llei 5/2014 · Base 3%: ${fmt(totalGravat3pct)} → límit global 2.500 €`} />}
+                      {aplicaDespeses3pct && desp3pctFont > 0 && <FilaDetall label={tr('altresDespeses3pctLabel')} valor={fmt(-desp3pctFont)} negatiu nota={trp('notaBase3pct', { base: fmt(totalGravat3pct) })} />}
                       {!aplicaDespeses3pct && <FilaDetall label={tr('altresDespeses3pctNoAplica')} valor={tr('noAplica2')} nota={`Art. 13.2.b Llei 5/2014 — el tipus '${f.tipus}' està exclòs de la deducció del 3%`} />}
                       <FilaDetall label={tr('rendaNetaFont')} valor={fmt(rendaNeta)} negrita
                         nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />
@@ -675,7 +681,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     <div style={{ marginTop: '8px', borderTop: `2px solid ${CAP.color}`, paddingTop: '6px' }}>
                       <FilaDetall label={tr('totalIngressosBruts')} valor={fmt(totalBrut)} negrita />
                       {totalCASS > 0 && <FilaDetall label={tr('totalCotitzacionsCass')} valor={fmt(-totalCASS)} negatiu />}
-                      {altresDespesesTotal > 0 && <FilaDetall label={tr('totalAltresDespeses3pct')} valor={fmt(-altresDespesesTotal)} negatiu nota={`Aplicat sobre ${fmt(totalGravat3pct)} de rendes ordinàries`} />}
+                      {altresDespesesTotal > 0 && <FilaDetall label={tr('totalAltresDespeses3pct')} valor={fmt(-altresDespesesTotal)} negatiu nota={trp('aplicatSobreRendesOrd', { base: fmt(totalGravat3pct) })} />}
                       <FilaDetall label={tr('rendaNetaTreballCasella300B')} valor={fmt(r.rendaTreball)} negrita destacat nota={tr('notaIntegraBTG')} />
                     </div>
                   );
@@ -748,7 +754,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   const rendaNeta = (im.ingressosIntegres || 0) - despeses - (esForfet ? 0 : reduccioHab);
                   return (
                     <React.Fragment key={i}>
-                      <FilaDetall label={`Immoble ${i + 1}: ${im.descripcio || ''}`} valor={fmt(im.ingressosIntegres || 0)} nota={tr('ingressosIntegresNota')} />
+                      <FilaDetall label={`${trp('immobleNum', { n: i + 1 })}: ${im.descripcio || ''}`} valor={fmt(im.ingressosIntegres || 0)} nota={tr('ingressosIntegresNota')} />
                       {esForfet
                         ? <FilaDetall label={`  − Reducció forfetària (${Math.round(pctForfet * 100)}%)`} valor={fmt(-despesesForfet)} negatiu nota={tr('metodeForfetariNota')} />
                         : <FilaDetall label={tr('despesesDeduibles')} valor={fmt(-despesesDirecta)} negatiu />
@@ -770,7 +776,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   nota={tr('notaArt2329Mobiliari')} />
                 {(dades.mobiliaris || []).map((ent, i) => (
                   <React.Fragment key={i}>
-                    <FilaDetall label={`Entitat ${i + 1}: ${ent.entitat || ''}`} valor={null} negrita />
+                    <FilaDetall label={`${trp('entitatNum', { n: i + 1 })}: ${ent.entitat || ''}`} valor={null} negrita />
                     {(ent.partides || []).map((p, j) => (
                       <React.Fragment key={j}>
                         <FilaDetall label={`  ${MOBILIARI_NOMS[p.tipus] || p.tipusRenda || 'Renda'}`} valor={fmt(p.importBrut || 0)} nota={`Apartat ${(p.tipus || '?').toUpperCase()} del formulari 300-D`} />
@@ -814,12 +820,12 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                       const guany = (t.valorTransmissio || 0) - (t.despesesTransmissio || 0) - (t.valorAdquisicio || 0) - (t.despesesAdquisicio || 0);
                       return (
                         <React.Fragment key={i}>
-                          <FilaDetall label={`Transmissió ${i + 1}: ${t.descripcio || ''} (${t.tipusElement || ''})`} valor={null} negrita />
+                          <FilaDetall label={`${trp('transmissioNum', { n: i + 1 })}: ${t.descripcio || ''} (${t.tipusElement || ''})`} valor={null} negrita />
                           <FilaDetall label={tr('valorTransmissioLabel')} valor={fmt(t.valorTransmissio || 0)} />
                           {(t.despesesTransmissio || 0) > 0 && <FilaDetall label={tr('despesesTransmissioLabel')} valor={fmt(-(t.despesesTransmissio || 0))} negatiu />}
-                          <FilaDetall label={tr('valorAdquisicioLabel')} valor={fmt(-(t.valorAdquisicio || 0))} negatiu nota={`Any adquisició: ${t.anyAdquisicio || '—'}`} />
+                          <FilaDetall label={tr('valorAdquisicioLabel')} valor={fmt(-(t.valorAdquisicio || 0))} negatiu nota={trp('anyAdquisicio', { any: t.anyAdquisicio || '—' })} />
                           {(t.despesesAdquisicio || 0) > 0 && <FilaDetall label={tr('despesesAdquisicioLabel')} valor={fmt(-(t.despesesAdquisicio || 0))} negatiu />}
-                          <FilaDetall label={tr('guanyPerduaLabel')} valor={fmt(guany)} negrita nota={`Any transmissió: ${t.anyTransmissio || '—'}`} />
+                          <FilaDetall label={tr('guanyPerduaLabel')} valor={fmt(guany)} negrita nota={trp('anyTransmissio', { any: t.anyTransmissio || '—' })} />
                         </React.Fragment>
                       );
                     })}
@@ -1081,7 +1087,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
           <div className="page-content" style={{ flex: 1, padding: '10px 15px 15px 15px' }}>
             <div style={{ fontSize: '11px', fontWeight: '700', color: CAP.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: `2px solid ${CAP.color}`, paddingBottom: '6px' }}>
-              Formulari 300-L · Liquidació de l'IRPF {exercici}
+              {trp('titol300LExercici', { any: exercici })}
             </div>
 
             {/* Taula 300-L */}
@@ -1172,7 +1178,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             </div>
 
             <div style={{ backgroundColor: CAP.colorClar, border: `1px solid ${CAP.colorBorde}`, borderRadius: '4px', padding: '4px 8px', marginTop: '6px', fontSize: '8px', color: CAP.colorFosc }}>
-              <span style={{ fontWeight: '700' }}>📋 Termini de presentació:</span> {`La declaració de l'IRPF de l'exercici ${exercici} s'ha de presentar entre l'1 d'abril i el 30 de setembre de ${exercici + 1}. El pagament fraccionat (formulari 320) es presenta a l'Administració tributària durant el mes de setembre de ${exercici}. Portal Tributari: www.eda.ad`}
+              <span style={{ fontWeight: '700' }}>📋 {tr('terminiPresentacio')}:</span> {trp('terminiPresentacioText', { any: exercici, anyseg: exercici + 1 })}
             </div>
           </div>
 
@@ -1196,9 +1202,9 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     <FilaDetall label={tr('labelGuanysExemptsArt5k')} valor={null} negrita destacat />
                     {r.transmissionsExemptes.map((t, i) => (
                       <FilaDetall key={`ex${i}`}
-                        label={`  ${t.descripcio || `Transmissió ${i + 1}`} (${t.tipusElement || ''})`}
+                        label={`  ${t.descripcio || trp('transmissioNum', { n: i + 1 })} (${t.tipusElement || ''})`}
                         valor={fmt(t.importExempt || 0)}
-                        nota={`EXEMPT · ${t.motivExempcio || 'Art. 5.k'} · No computa a la BTE`} />
+                        nota={trp('exemptMotiu', { motiu: t.motivExempcio || 'Art. 5.k' })} />
                     ))}
                     <FilaDetall label={tr('labelTotalExemptArt5k')} valor={fmt(r.totalExempt)} negrita />
                   </>
@@ -1210,7 +1216,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     <FilaDetall label={tr('labelDevolucionsCapitalArt273')} valor={null} negrita destacat />
                     {(dades.transmissions || []).filter(t => t.esDevolucioCapital).map((t, i) => (
                       <FilaDetall key={`dc${i}`}
-                        label={`  ${t.descripcio || `Devolució ${i + 1}`} (${t.tipusElement || ''})`}
+                        label={`  ${t.descripcio || trp('devolucioNum', { n: i + 1 })} (${t.tipusElement || ''})`}
                         valor={fmt(t.valorTransmissio || 0)}
                         nota={tr('notaNoSubjectaArt273')} />
                     ))}
