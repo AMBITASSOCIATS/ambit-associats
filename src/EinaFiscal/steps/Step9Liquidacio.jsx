@@ -1,6 +1,7 @@
 // steps/Step9Liquidacio.jsx — Pas 10: Liquidació i informe professional (300-L)
 import React, { useRef, useState } from 'react';
 import { generarCaselles300L } from '../engine/liquidacioEngine';
+import { PDF_LANGS } from '../engine/pdfTranslations';
 
 const AMBIT = {
   nom: 'DEL SOTO – PALEARI & ASSOCIATS, S.L.',
@@ -137,6 +138,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
   const esAmbit = CAP.nom === AMBIT.nom;
 
+  const [idiomaInforme, setIdiomaInforme] = useState('CA');
   const [blocsExclosos, setBlocsExclosos] = useState({
     treball: false, activitats: false, immobiliari: false,
     mobiliari: false, transmissions: false, ddi: false,
@@ -374,6 +376,26 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             Tipus efectiu: <strong>{fmtPct(r.tipusEfectiu)}</strong> · Quota final: <strong>{fmt(r.quotaFinal)}</strong>
             {(r.pagamentACompte || 0) > 0 && <> · Pag. fraccionat (320): <strong>{fmt(r.pagamentACompte)}</strong></>}
           </p>
+        </div>
+
+        {/* Selector d'idioma de l'informe */}
+        <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 mb-4">
+          <p className="text-xs font-semibold text-gray-600 mb-3">🌐 Idioma de l'informe</p>
+          <div className="flex gap-2 flex-wrap">
+            {Object.entries(PDF_LANGS).map(([codi, nom]) => (
+              <button
+                key={codi}
+                onClick={() => setIdiomaInforme(codi)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                  idiomaInforme === codi
+                    ? 'bg-[#009B9C] text-white'
+                    : 'bg-white border border-gray-300 text-gray-600 hover:border-[#009B9C]'
+                }`}
+              >
+                {codi === 'CA' ? '🇦🇩' : codi === 'ES' ? '🇪🇸' : codi === 'FR' ? '🇫🇷' : '🇬🇧'} {nom}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Botó generar informe */}
