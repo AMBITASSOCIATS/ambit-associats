@@ -1,7 +1,7 @@
 // steps/Step9Liquidacio.jsx — Pas 10: Liquidació i informe professional (300-L)
 import React, { useRef, useState } from 'react';
 import { generarCaselles300L } from '../engine/liquidacioEngine';
-import { PDF_LANGS } from '../engine/pdfTranslations';
+import { PDF_LANGS, t } from '../engine/pdfTranslations';
 
 const AMBIT = {
   nom: 'DEL SOTO – PALEARI & ASSOCIATS, S.L.',
@@ -139,6 +139,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
   const esAmbit = CAP.nom === AMBIT.nom;
 
   const [idiomaInforme, setIdiomaInforme] = useState('CA');
+  // Helper de traducció lligat a l'idioma triat per a l'informe PDF
+  const tr = (key) => t(key, idiomaInforme);
   const [blocsExclosos, setBlocsExclosos] = useState({
     treball: false, activitats: false, immobiliari: false,
     mobiliari: false, transmissions: false, ddi: false,
@@ -487,13 +489,13 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             </div>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.3)', paddingTop: '30px' }}>
               <div style={{ fontSize: '11px', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
-                Informe de liquidació
+                {tr('subtitolInforme')}
               </div>
               <div style={{ fontSize: '28px', fontWeight: '700' }}>
-                Impost sobre la Renda de les Persones Físiques
+                {tr('titolInforme')}
               </div>
               <div style={{ fontSize: '22px', fontWeight: '400', opacity: 0.9, marginTop: '4px' }}>
-                Exercici {exercici}
+                {tr('exerciciFiscal')} {exercici}
               </div>
             </div>
           </div>
@@ -502,15 +504,15 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           <div style={{ padding: '30px 40px', backgroundColor: CAP.colorClar, borderBottom: `2px solid ${CAP.colorBorde}` }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               <div>
-                <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>Obligat Tributari</div>
+                <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>{tr('obligatTributari')}</div>
                 <div style={{ fontSize: '14px', fontWeight: '700', color: '#222' }}>{clientNom || '—'}</div>
-                {clientNRT && <div style={{ fontSize: '11px', color: '#555', marginTop: '2px' }}>NRT: {clientNRT}</div>}
+                {clientNRT && <div style={{ fontSize: '11px', color: '#555', marginTop: '2px' }}>{tr('nrt')}: {clientNRT}</div>}
               </div>
               <div>
-                <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>Dades de l'informe</div>
-                <div style={{ fontSize: '11px', color: '#333' }}>Exercici fiscal: <strong>{exercici}</strong></div>
-                <div style={{ fontSize: '11px', color: '#333' }}>Data de generació: <strong>{dataAvui()}</strong></div>
-                <div style={{ fontSize: '11px', color: '#333' }}>Normativa: <strong>Llei 5/2014 · L2023005 · L2025005</strong></div>
+                <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>{tr('dadesInforme')}</div>
+                <div style={{ fontSize: '11px', color: '#333' }}>{tr('exerciciFiscal')}: <strong>{exercici}</strong></div>
+                <div style={{ fontSize: '11px', color: '#333' }}>{tr('dataGeneracio')}: <strong>{dataAvui()}</strong></div>
+                <div style={{ fontSize: '11px', color: '#333' }}>{tr('normativa')}: <strong>Llei 5/2014 · L2023005 · L2025005</strong></div>
               </div>
             </div>
           </div>
@@ -518,16 +520,16 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           {/* Resum executiu portada */}
           <div style={{ padding: '30px 40px', flex: 1 }}>
             <div style={{ fontSize: '11px', fontWeight: '700', color: CAP.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: `2px solid ${CAP.color}`, paddingBottom: '6px' }}>
-              Resum executiu
+              {tr('resumExecutiu')}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '24px' }}>
               {[
-                { label: 'Base Tributació General', valor: fmt(r.baseTributacioGeneral) },
-                { label: 'Base Tributació Estalvi', valor: fmt(r.baseTributacioEstalvi) },
-                { label: 'Quota de Tributació', valor: fmt(r.quotaTributacio) },
-                { label: 'Bonificació Art. 46', valor: fmt(r.bonificacio) },
-                { label: 'Quota de Liquidació', valor: fmt(r.quotaLiquidacio) },
-                { label: 'Quota Final', valor: fmt(r.quotaFinal) },
+                { label: tr('baseTributacioGeneral'), valor: fmt(r.baseTributacioGeneral) },
+                { label: tr('baseTributacioEstalvi'), valor: fmt(r.baseTributacioEstalvi) },
+                { label: tr('quotaTributacio'), valor: fmt(r.quotaTributacio) },
+                { label: tr('bonificacioArt46'), valor: fmt(r.bonificacio) },
+                { label: tr('quotaLiquidacio'), valor: fmt(r.quotaLiquidacio) },
+                { label: tr('quotaFinal'), valor: fmt(r.quotaFinal) },
               ].map((item, i) => (
                 <div key={i} style={{
                   backgroundColor: 'white', border: `1px solid ${CAP.colorBorde}`,
@@ -548,7 +550,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
               <div>
-                <div style={{ fontSize: '10px', color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Resultat de la declaració</div>
+                <div style={{ fontSize: '10px', color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{tr('resultatDeclaracio')}</div>
                 <div style={{ fontSize: '22px', fontWeight: '800', color: r.resultatDeclaracio > 0 ? '#c0392b' : r.resultatDeclaracio < 0 ? '#27ae60' : '#555' }}>
                   {fmt(Math.abs(r.resultatDeclaracio))}
                 </div>
@@ -558,14 +560,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 color: 'white', padding: '8px 16px', borderRadius: '6px',
                 fontSize: '13px', fontWeight: '700'
               }}>
-                {r.resultatDeclaracio > 0 ? 'A INGRESSAR' : r.resultatDeclaracio < 0 ? 'A RETORNAR' : 'RESULTAT ZERO'}
+                {r.resultatDeclaracio > 0 ? tr('aIngressar') : r.resultatDeclaracio < 0 ? tr('aRetornar') : tr('quotaZero')}
               </div>
             </div>
 
             {/* Tipus efectiu */}
             <div style={{ marginTop: '12px', fontSize: '10px', color: '#666', textAlign: 'right' }}>
-              Tipus efectiu de tributació: <strong style={{ color: CAP.colorFosc }}>{fmtPct(r.tipusEfectiu)}</strong>
-              {' · '}Retencions practicades: <strong>{fmt(r.retencions)}</strong>
+              {tr('tipusEfectiu')}: <strong style={{ color: CAP.colorFosc }}>{fmtPct(r.tipusEfectiu)}</strong>
+              {' · '}{tr('retencions')}: <strong>{fmt(r.retencions)}</strong>
             </div>
           </div>
 
@@ -578,7 +580,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
         {/* ══ PÀGINA 2 — DETALL DE RENDES ════════════════════════════════ */}
         <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Detall de rendes" cap={CAP} />
+          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('detallRendes')} cap={CAP} />
 
           <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
 
@@ -590,7 +592,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
             {/* Rendes del treball */}
             {tensTreball && !blocsExclosos.treball && (
-              <SeccioBlocNormatiu titol="1. Rendes del treball — Formulari 300-B sec.1">
+              <SeccioBlocNormatiu titol={`1. ${tr('rendesTreball')}`}>
                 <FilaDetall label="Renda neta del treball" valor={fmt(r.rendaTreball)} negrita destacat
                   nota="Art. 12-13 Llei 5/2014 · Ingressos bruts − cotitzacions CASS − 3% altres despeses (màx. 2.500 €)" />
                 {(() => {
@@ -684,7 +686,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
             {/* Activitats econòmiques */}
             {tensActivitats && !blocsExclosos.activitats && (
-              <SeccioBlocNormatiu titol="2. Rendes d'activitats econòmiques — Formulari 300-C">
+              <SeccioBlocNormatiu titol={`2. ${tr('activitatsEconomiques')}`}>
                 <FilaDetall label="Renda neta d'activitats econòmiques" valor={fmt(r.rendaActivitat)} negrita destacat
                   nota="Art. 14-19 Llei 5/2014 · Casella (3) del 300-C" />
                 {(dades.activitats || []).map((a, i) => {
@@ -730,7 +732,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
             {/* Capital immobiliari */}
             {tensImmobles && !blocsExclosos.immobiliari && (
-              <SeccioBlocNormatiu titol="3. Rendes del capital immobiliari — Formulari 300-B sec.2">
+              <SeccioBlocNormatiu titol={`3. ${tr('capitalImmobiliari')}`}>
                 <FilaDetall label="Renda neta del capital immobiliari" valor={fmt(r.rendaImmobiliaria)} negrita destacat
                   nota="Art. 20-22 Llei 5/2014 · Ingressos íntegres − despeses deduïbles" />
                 {(dades.immobles || []).map((im, i) => {
@@ -763,7 +765,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
             {/* Capital mobiliari */}
             {tensMobiliaris && !blocsExclosos.mobiliari && (
-              <SeccioBlocNormatiu titol="4. Rendes del capital mobiliari — Formulari 300-D">
+              <SeccioBlocNormatiu titol={`4. ${tr('capitalMobiliari')}`}>
                 <FilaDetall label="Renda neta del capital mobiliari" valor={fmt(r.rendaMobiliaria)} negrita destacat
                   nota="Art. 23-29 Llei 5/2014 · Renda de l'estalvi · Mínim exempt 3.000 € (Art. 37)" />
                 {(dades.mobiliaris || []).map((ent, i) => (
@@ -789,7 +791,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               const subtotalApt2 = transGravades.reduce((s, t) =>
                 s + ((t.valorTransmissio || 0) - (t.despesesTransmissio || 0) - (t.valorAdquisicio || 0) - (t.despesesAdquisicio || 0)), 0);
               return (
-              <SeccioBlocNormatiu titol="5. Guanys i pèrdues de capital — Formulari 300-E">
+              <SeccioBlocNormatiu titol={`5. ${tr('guanysCapital')}`}>
 
                 {/* Apartat 1 — guanys/pèrdues no derivats de transmissió */}
                 {tensRendesSenseTransmissio && (
@@ -843,7 +845,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
             {/* DDI — càlcul país per país (Art. 48.4) */}
             {tensDDI && r.ddiDetall && r.ddiDetall.length > 0 && !blocsExclosos.ddi && (
-              <SeccioBlocNormatiu titol="6. Deducció per doble imposició (DDI) — Art. 48.4">
+              <SeccioBlocNormatiu titol={`6. ${tr('ddi')}`}>
                 <FilaDetall label="Total DDI aplicada (suma país per país)" valor={fmt(r.ddiDetall.reduce((s, d) => s + (d.ddi || 0), 0))} negrita destacat />
                 {r.ddiDetall.map((d, i) => {
                   const ret = d.retencioEfectiva ?? d.retencioOrigen ?? 0;
@@ -875,7 +877,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
         {/* ══ PÀGINA 3 — BASES I REDUCCIONS ══════════════════════════════ */}
         <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Bases i reduccions" cap={CAP} />
+          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('basesReduccions')} cap={CAP} />
 
           <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
 
@@ -1075,7 +1077,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
         {/* ══ PÀGINA 4 — LIQUIDACIÓ FINAL 300-L (INDEPENDENT) ════════════ */}
         <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Liquidació final — Formulari 300-L" cap={CAP} />
+          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('liquidacio')} cap={CAP} />
 
           <div className="page-content" style={{ flex: 1, padding: '10px 15px 15px 15px' }}>
             <div style={{ fontSize: '11px', fontWeight: '700', color: CAP.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: `2px solid ${CAP.color}`, paddingBottom: '6px' }}>
