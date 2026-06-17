@@ -593,8 +593,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             {/* Rendes del treball */}
             {tensTreball && !blocsExclosos.treball && (
               <SeccioBlocNormatiu titol={`1. ${tr('rendesTreball')}`}>
-                <FilaDetall label="Renda neta del treball" valor={fmt(r.rendaTreball)} negrita destacat
-                  nota="Art. 12-13 Llei 5/2014 · Ingressos bruts − cotitzacions CASS − 3% altres despeses (màx. 2.500 €)" />
+                <FilaDetall label={tr('rendaNetaTreballLabel')} valor={fmt(r.rendaTreball)} negrita destacat
+                  nota={tr('notaRendaNetaTreball')} />
                 {(() => {
                   const TIPUS_SENSE_3PCT = ['PENSIO_CASS', 'PENSIO_CLASSES_PASSIVES', 'PENSIO_PRIVADA', 'DIETES', 'INDEMNITZACIO_ACOMIADAMENT', 'BECA', 'PREMI'];
                   const TIPUS_LABEL = { SALARI_GENERAL: 'Salari / Nòmina', ADMINISTRADOR: 'Retribució administrador', PENSIO_PRIVADA: 'Pensió privada / estrangera', ALTRES_TREBALL: 'Altres rendes del treball', DIETES: 'Dietes', INDEMNITZACIO_ACOMIADAMENT: 'Indemnització acomiadament', BECA: 'Beca / Ajut recerca', PREMI: 'Premi literari / artístic' };
@@ -615,14 +615,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     const cassPensio = f.cotitzacionsCASS || 0;
                     return (
                       <React.Fragment key={i}>
-                        <FilaDetall label={`Font ${i + 1}: Pensió CASS`} valor={fmt(brut)} nota="Import brut · Disp. add. 5a Llei 5/2014" />
+                        <FilaDetall label={`Font ${i + 1}: Pensió CASS`} valor={fmt(brut)} nota={tr('notaImportBrutDispAdd5a')} />
                         <FilaDetall label={`  − Reducció Disp. add. 5a (${anysCotAbans2015} anys × 1% = ${(ratio * 100).toFixed(0)}%, màx. 30%)`}
                           valor={fmt(-importExempt)} negatiu
                           nota={anysTotals < 15 ? `Anys totals cotitzats: ${anysTotals} (< 15 → reducció 0%)` : `Anys totals: ${anysTotals} · Anys abans 2015: ${anysCotAbans2015}`} />
-                        <FilaDetall label="  = Import gravat pensió CASS" valor={fmt(importGravat)} negrita={cassPensio === 0}
+                        <FilaDetall label={tr('importGravatPensioCass')} valor={fmt(importGravat)} negrita={cassPensio === 0}
                           nota={cassPensio > 0 ? undefined : `Retencions practicades: ${fmt(f.retencions || 0)}`} />
-                        {cassPensio > 0 && <FilaDetall label="  − Cotitzacions CASS (branca de salut)" valor={fmt(-cassPensio)} negatiu />}
-                        {cassPensio > 0 && <FilaDetall label="  = Renda neta pensió CASS" valor={fmt(importGravat - cassPensio)} negrita
+                        {cassPensio > 0 && <FilaDetall label={tr('cotitzacionsCassBrancaSalut')} valor={fmt(-cassPensio)} negatiu />}
+                        {cassPensio > 0 && <FilaDetall label={tr('rendaNetaPensioCass')} valor={fmt(importGravat - cassPensio)} negrita
                           nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />}
                       </React.Fragment>
                     );
@@ -635,10 +635,10 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     const e = b > 0 ? Math.min(Math.max(0, a * ((b - c) - (d - dPrima)) / b), a) : 0;
                     return (
                       <React.Fragment key={i}>
-                        <FilaDetall label={`Font ${i + 1}: Pensió pública (Classes Passives)`} valor={fmt(a)} nota="Renda íntegra anual (a) · Art. 12.2.c + Disp. add. 4a ap.3 Llei 5/2014" />
-                        <FilaDetall label="  − Part exempt (generada fins 31/12/2014)" valor={fmt(-(a - e))} negatiu
+                        <FilaDetall label={`Font ${i + 1}: Pensió pública (Classes Passives)`} valor={fmt(a)} nota={tr('notaRendaIntegraAnual')} />
+                        <FilaDetall label={tr('partExemptFins2014')} valor={fmt(-(a - e))} negatiu
                           nota={`b=${fmt(b)} · c=${fmt(c)} · d=${fmt(d)} · d'=${fmt(dPrima)}${b === c ? ' · b=c → tot exempt' : ''}`} />
-                        <FilaDetall label="  = Import gravat (e)" valor={fmt(e)} negrita
+                        <FilaDetall label={tr('importGravatE')} valor={fmt(e)} negrita
                           nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />
                       </React.Fragment>
                     );
@@ -651,11 +651,11 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   const rendaNeta = brut - (f.cotitzacionsCASS || 0) - desp3pctFont;
                   return (
                     <React.Fragment key={i}>
-                      <FilaDetall label={`Font ${i + 1}: ${TIPUS_LABEL[f.tipus] || f.tipus || 'Treball'}`} valor={fmt(brut)} nota="Ingressos bruts" />
-                      {(f.cotitzacionsCASS || 0) > 0 && <FilaDetall label="  − Cotitzacions CASS" valor={fmt(-(f.cotitzacionsCASS || 0))} negatiu />}
-                      {aplicaDespeses3pct && desp3pctFont > 0 && <FilaDetall label="  − Altres despeses (3%, Art. 13.2.b)" valor={fmt(-desp3pctFont)} negatiu nota={`Art. 13.2.b Llei 5/2014 · Base 3%: ${fmt(totalGravat3pct)} → límit global 2.500 €`} />}
-                      {!aplicaDespeses3pct && <FilaDetall label="  Altres despeses (3%)" valor="No aplica" nota={`Art. 13.2.b Llei 5/2014 — el tipus '${f.tipus}' està exclòs de la deducció del 3%`} />}
-                      <FilaDetall label="  = Renda neta font" valor={fmt(rendaNeta)} negrita
+                      <FilaDetall label={`Font ${i + 1}: ${TIPUS_LABEL[f.tipus] || f.tipus || 'Treball'}`} valor={fmt(brut)} nota={tr('ingressosBrutsNota')} />
+                      {(f.cotitzacionsCASS || 0) > 0 && <FilaDetall label={tr('cotitzacionsCass')} valor={fmt(-(f.cotitzacionsCASS || 0))} negatiu />}
+                      {aplicaDespeses3pct && desp3pctFont > 0 && <FilaDetall label={tr('altresDespeses3pctLabel')} valor={fmt(-desp3pctFont)} negatiu nota={`Art. 13.2.b Llei 5/2014 · Base 3%: ${fmt(totalGravat3pct)} → límit global 2.500 €`} />}
+                      {!aplicaDespeses3pct && <FilaDetall label={tr('altresDespeses3pctNoAplica')} valor={tr('noAplica2')} nota={`Art. 13.2.b Llei 5/2014 — el tipus '${f.tipus}' està exclòs de la deducció del 3%`} />}
+                      <FilaDetall label={tr('rendaNetaFont')} valor={fmt(rendaNeta)} negrita
                         nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />
                     </React.Fragment>
                   );
@@ -673,22 +673,22 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   const altresDespesesTotal = Math.min(totalGravat3pct * 0.03, 2500);
                   return (
                     <div style={{ marginTop: '8px', borderTop: `2px solid ${CAP.color}`, paddingTop: '6px' }}>
-                      <FilaDetall label="TOTAL Ingressos bruts" valor={fmt(totalBrut)} negrita />
-                      {totalCASS > 0 && <FilaDetall label="− Total cotitzacions CASS" valor={fmt(-totalCASS)} negatiu />}
-                      {altresDespesesTotal > 0 && <FilaDetall label="− Total altres despeses (3%, Art. 13.2.b — límit global 2.500 €)" valor={fmt(-altresDespesesTotal)} negatiu nota={`Aplicat sobre ${fmt(totalGravat3pct)} de rendes ordinàries`} />}
-                      <FilaDetall label="= RENDA NETA DEL TREBALL (casella 300-B)" valor={fmt(r.rendaTreball)} negrita destacat nota="Import que s'integra a la Base de Tributació General (BTG)" />
+                      <FilaDetall label={tr('totalIngressosBruts')} valor={fmt(totalBrut)} negrita />
+                      {totalCASS > 0 && <FilaDetall label={tr('totalCotitzacionsCass')} valor={fmt(-totalCASS)} negatiu />}
+                      {altresDespesesTotal > 0 && <FilaDetall label={tr('totalAltresDespeses3pct')} valor={fmt(-altresDespesesTotal)} negatiu nota={`Aplicat sobre ${fmt(totalGravat3pct)} de rendes ordinàries`} />}
+                      <FilaDetall label={tr('rendaNetaTreballCasella300B')} valor={fmt(r.rendaTreball)} negrita destacat nota={tr('notaIntegraBTG')} />
                     </div>
                   );
                 })()}
-                <NotaNormativa refText="Art. 12 Llei 5/2014" text="Constitueixen rendes del treball totes les contraprestacions o utilitats, sigui quina sigui la seva denominació o naturalesa, que derivin de les relacions laborals o estatutàries." />
+                <NotaNormativa refText={tr('refArt12')} text={tr('citaArt12')} />
               </SeccioBlocNormatiu>
             )}
 
             {/* Activitats econòmiques */}
             {tensActivitats && !blocsExclosos.activitats && (
               <SeccioBlocNormatiu titol={`2. ${tr('activitatsEconomiques')}`}>
-                <FilaDetall label="Renda neta d'activitats econòmiques" valor={fmt(r.rendaActivitat)} negrita destacat
-                  nota="Art. 14-19 Llei 5/2014 · Casella (3) del 300-C" />
+                <FilaDetall label={tr('rendaNetaActivitatsLabel')} valor={fmt(r.rendaActivitat)} negrita destacat
+                  nota={tr('notaActivitatsArt14_19')} />
                 {(dades.activitats || []).map((a, i) => {
                   const ingressos = a.columnes
                     ? a.columnes.reduce((s, col) => s + (col.xifraNegocios || 0) + (col.ingressosFinancers || 0) + (col.altresIngressos || 0), 0)
@@ -703,38 +703,38 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   const rendaNeta = ingressos - despeses - radicacio;
                   return (
                     <React.Fragment key={i}>
-                      <FilaDetall label={`Activitat ${i + 1}${a.descripcio ? `: ${a.descripcio}` : ''}${a.tipusActivitat ? ` (${a.tipusActivitat})` : ''}`} valor={fmt(ingressos)} nota="Total ingressos" />
+                      <FilaDetall label={`Activitat ${i + 1}${a.descripcio ? `: ${a.descripcio}` : ''}${a.tipusActivitat ? ` (${a.tipusActivitat})` : ''}`} valor={fmt(ingressos)} nota={tr('totalIngressosNota')} />
                       {a.columnes ? a.columnes.map((col, ci) => {
                         const despExplotacio = (col.consumMercaderies || 0) + (col.arrendamentsCànons || 0) +
                           (col.reparacionsConservacio || 0) + (col.subministraments || 0) +
                           (col.tributsDeduibles || 0) + (col.serveisExteriors || 0);
                         return (
                           <React.Fragment key={ci}>
-                            {(col.despesesPersonal || 0) > 0 && <FilaDetall label="  − Despeses de personal" valor={fmt(-(col.despesesPersonal || 0))} negatiu />}
-                            {despExplotacio > 0 && <FilaDetall label="  − Despeses d'explotació" valor={fmt(-despExplotacio)} negatiu />}
-                            {(col.despesesFinanceres || 0) > 0 && <FilaDetall label="  − Despeses financeres" valor={fmt(-(col.despesesFinanceres || 0))} negatiu />}
-                            {(col.amortitzacions || 0) > 0 && <FilaDetall label="  − Amortitzacions" valor={fmt(-(col.amortitzacions || 0))} negatiu />}
-                            {(col.altresDespeses || 0) > 0 && <FilaDetall label="  − Altres despeses" valor={fmt(-(col.altresDespeses || 0))} negatiu />}
+                            {(col.despesesPersonal || 0) > 0 && <FilaDetall label={tr('despesesPersonal')} valor={fmt(-(col.despesesPersonal || 0))} negatiu />}
+                            {despExplotacio > 0 && <FilaDetall label={tr('despesesExplotacio')} valor={fmt(-despExplotacio)} negatiu />}
+                            {(col.despesesFinanceres || 0) > 0 && <FilaDetall label={tr('despesesFinanceres')} valor={fmt(-(col.despesesFinanceres || 0))} negatiu />}
+                            {(col.amortitzacions || 0) > 0 && <FilaDetall label={tr('amortitzacions')} valor={fmt(-(col.amortitzacions || 0))} negatiu />}
+                            {(col.altresDespeses || 0) > 0 && <FilaDetall label={tr('altresDespeses')} valor={fmt(-(col.altresDespeses || 0))} negatiu />}
                           </React.Fragment>
                         );
                       }) : (
-                        <FilaDetall label="  − Despeses deduïbles" valor={fmt(-despeses)} negatiu />
+                        <FilaDetall label={tr('despesesDeduibles')} valor={fmt(-despeses)} negatiu />
                       )}
-                      {radicacio > 0 && <FilaDetall label="  − Impost de Radicació" valor={fmt(-radicacio)} negatiu />}
-                      <FilaDetall label="  = Renda neta activitat" valor={fmt(rendaNeta)} negrita
+                      {radicacio > 0 && <FilaDetall label={tr('impostRadicacio')} valor={fmt(-radicacio)} negatiu />}
+                      <FilaDetall label={tr('rendaNetaActivitat')} valor={fmt(rendaNeta)} negrita
                         nota={`Mètode: ${a.tipusDeterminacio === 'directa' ? 'Determinació directa' : 'Determinació objectiva'}`} />
                     </React.Fragment>
                   );
                 })}
-                <NotaNormativa refText="Art. 14 Llei 5/2014" text="Constitueixen rendes d'activitats econòmiques les que provenen del treball personal i del capital conjuntament, o d'un sol d'aquests factors, suposant l'ordenació per compte propi de factors de producció i de recursos humans o d'un d'ambdós." />
+                <NotaNormativa refText={tr('refArt14')} text={tr('citaArt14')} />
               </SeccioBlocNormatiu>
             )}
 
             {/* Capital immobiliari */}
             {tensImmobles && !blocsExclosos.immobiliari && (
               <SeccioBlocNormatiu titol={`3. ${tr('capitalImmobiliari')}`}>
-                <FilaDetall label="Renda neta del capital immobiliari" valor={fmt(r.rendaImmobiliaria)} negrita destacat
-                  nota="Art. 20-22 Llei 5/2014 · Ingressos íntegres − despeses deduïbles" />
+                <FilaDetall label={tr('rendaNetaCapitalImmobiliariLabel')} valor={fmt(r.rendaImmobiliaria)} negrita destacat
+                  nota={tr('notaArt2022Immobiliari')} />
                 {(dades.immobles || []).map((im, i) => {
                   const pctForfet = im.esHabitatgeAssequible ? 0.50 : 0.40;
                   const despesesForfet = (im.ingressosIntegres || 0) * pctForfet;
@@ -748,40 +748,40 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   const rendaNeta = (im.ingressosIntegres || 0) - despeses - (esForfet ? 0 : reduccioHab);
                   return (
                     <React.Fragment key={i}>
-                      <FilaDetall label={`Immoble ${i + 1}: ${im.descripcio || ''}`} valor={fmt(im.ingressosIntegres || 0)} nota="Ingressos íntegres" />
+                      <FilaDetall label={`Immoble ${i + 1}: ${im.descripcio || ''}`} valor={fmt(im.ingressosIntegres || 0)} nota={tr('ingressosIntegresNota')} />
                       {esForfet
-                        ? <FilaDetall label={`  − Reducció forfetària (${Math.round(pctForfet * 100)}%)`} valor={fmt(-despesesForfet)} negatiu nota="Mètode forfetari" />
-                        : <FilaDetall label="  − Despeses deduïbles" valor={fmt(-despesesDirecta)} negatiu />
+                        ? <FilaDetall label={`  − Reducció forfetària (${Math.round(pctForfet * 100)}%)`} valor={fmt(-despesesForfet)} negatiu nota={tr('metodeForfetariNota')} />
+                        : <FilaDetall label={tr('despesesDeduibles')} valor={fmt(-despesesDirecta)} negatiu />
                       }
-                      {!esForfet && reduccioHab > 0 && <FilaDetall label="  − Reducció habitatge" valor={fmt(-reduccioHab)} negatiu />}
-                      <FilaDetall label="  = Renda neta immoble" valor={fmt(rendaNeta)} negrita />
-                      {(im.impostComunal || 0) > 0 && <FilaDetall label="  Impost comunal pagat (deducció Art. 47)" valor={fmt(im.impostComunal || 0)} nota="No és despesa deduïble de la renda. Deduïble directament de la quota de liquidació (Art. 47 Llei 5/2014)" />}
+                      {!esForfet && reduccioHab > 0 && <FilaDetall label={tr('reduccioHabitatgeLabel')} valor={fmt(-reduccioHab)} negatiu />}
+                      <FilaDetall label={tr('rendaNetaImmobleLabel')} valor={fmt(rendaNeta)} negrita />
+                      {(im.impostComunal || 0) > 0 && <FilaDetall label={tr('impostComunalLabel')} valor={fmt(im.impostComunal || 0)} nota={tr('notaImpostComunalArt47')} />}
                     </React.Fragment>
                   );
                 })}
-                <NotaNormativa refText="Art. 20-22 Llei 5/2014" text="Constitueixen rendes del capital immobiliari les procedents de béns immobles, tant rústics com urbans, que es trobin en el patrimoni de l'obligat tributari." />
+                <NotaNormativa refText={tr('refArt2022Immobiliari')} text={tr('citaArt2022Immobiliari')} />
               </SeccioBlocNormatiu>
             )}
 
             {/* Capital mobiliari */}
             {tensMobiliaris && !blocsExclosos.mobiliari && (
               <SeccioBlocNormatiu titol={`4. ${tr('capitalMobiliari')}`}>
-                <FilaDetall label="Renda neta del capital mobiliari" valor={fmt(r.rendaMobiliaria)} negrita destacat
-                  nota="Art. 23-29 Llei 5/2014 · Renda de l'estalvi · Mínim exempt 3.000 € (Art. 37)" />
+                <FilaDetall label={tr('rendaNetaCapitalMobiliariLabel')} valor={fmt(r.rendaMobiliaria)} negrita destacat
+                  nota={tr('notaArt2329Mobiliari')} />
                 {(dades.mobiliaris || []).map((ent, i) => (
                   <React.Fragment key={i}>
                     <FilaDetall label={`Entitat ${i + 1}: ${ent.entitat || ''}`} valor={null} negrita />
                     {(ent.partides || []).map((p, j) => (
                       <React.Fragment key={j}>
                         <FilaDetall label={`  ${MOBILIARI_NOMS[p.tipus] || p.tipusRenda || 'Renda'}`} valor={fmt(p.importBrut || 0)} nota={`Apartat ${(p.tipus || '?').toUpperCase()} del formulari 300-D`} />
-                        {(p.despeses || 0) > 0 && <FilaDetall label="    − Despeses custòdia/gestió" valor={fmt(-(p.despeses || 0))} negatiu />}
-                        {(p.retencioAndorra || 0) > 0 && <FilaDetall label="    Retenció Andorra (a compte)" valor={fmt(p.retencioAndorra || 0)} nota="Deduïble de la quota" />}
-                        {(p.retencioEstranger || 0) > 0 && <FilaDetall label="    Retenció estranger (DDI)" valor={fmt(p.retencioEstranger || 0)} nota="Base per al càlcul de la DDI" />}
+                        {(p.despeses || 0) > 0 && <FilaDetall label={tr('despesesCustodiaGestioLabel')} valor={fmt(-(p.despeses || 0))} negatiu />}
+                        {(p.retencioAndorra || 0) > 0 && <FilaDetall label={tr('retencioAndorraLabel')} valor={fmt(p.retencioAndorra || 0)} nota={tr('deduibleQuotaNota')} />}
+                        {(p.retencioEstranger || 0) > 0 && <FilaDetall label={tr('retencioEstrangerLabel')} valor={fmt(p.retencioEstranger || 0)} nota={tr('baseCalculDdiNota')} />}
                       </React.Fragment>
                     ))}
                   </React.Fragment>
                 ))}
-                <NotaNormativa refText="Art. 23-29 Llei 5/2014" text="Constitueixen rendes del capital mobiliari els rendiments procedents de la participació en fons propis d'entitats, cessió de capitals propis a tercers, operacions de capitalització i contractes d'assegurança." />
+                <NotaNormativa refText={tr('refArt2329Mobiliari')} text={tr('citaArt2329Mobiliari')} />
               </SeccioBlocNormatiu>
             )}
 
@@ -796,49 +796,49 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 {/* Apartat 1 — guanys/pèrdues no derivats de transmissió */}
                 {tensRendesSenseTransmissio && (
                   <>
-                    <FilaDetall label="Apartat 1 — Guanys/pèrdues NO derivats de transmissió" valor={null} negrita />
+                    <FilaDetall label={tr('apartat1Label')} valor={null} negrita />
                     {(dades.rendesSenseTransmissio || []).map((rs, i) => (
                       <FilaDetall key={`s${i}`}
                         label={`  ${rs.descripcio || rs.tipusRenda || `Renda ${i + 1}`}${rs.data ? ` (${rs.data})` : ''}`}
                         valor={fmt(rs.resultat || 0)} negatiu={(rs.resultat || 0) < 0} />
                     ))}
-                    <FilaDetall label="  Subtotal Apartat 1" valor={fmt(totalSenseTransmissio)} negrita />
+                    <FilaDetall label={tr('subtotalApartat1Label')} valor={fmt(totalSenseTransmissio)} negrita />
                   </>
                 )}
 
                 {/* Apartat 2 — guanys/pèrdues derivats de transmissió */}
                 {tensTransmissionsGravades && (
                   <>
-                    <FilaDetall label="Apartat 2 — Guanys/pèrdues derivats de TRANSMISSIÓ" valor={null} negrita />
+                    <FilaDetall label={tr('apartat2Label')} valor={null} negrita />
                     {transGravades.map((t, i) => {
                       const guany = (t.valorTransmissio || 0) - (t.despesesTransmissio || 0) - (t.valorAdquisicio || 0) - (t.despesesAdquisicio || 0);
                       return (
                         <React.Fragment key={i}>
                           <FilaDetall label={`Transmissió ${i + 1}: ${t.descripcio || ''} (${t.tipusElement || ''})`} valor={null} negrita />
-                          <FilaDetall label="  Valor de transmissió" valor={fmt(t.valorTransmissio || 0)} />
-                          {(t.despesesTransmissio || 0) > 0 && <FilaDetall label="  − Despeses transmissió" valor={fmt(-(t.despesesTransmissio || 0))} negatiu />}
-                          <FilaDetall label="  − Valor d'adquisició" valor={fmt(-(t.valorAdquisicio || 0))} negatiu nota={`Any adquisició: ${t.anyAdquisicio || '—'}`} />
-                          {(t.despesesAdquisicio || 0) > 0 && <FilaDetall label="  − Despeses adquisició" valor={fmt(-(t.despesesAdquisicio || 0))} negatiu />}
-                          <FilaDetall label="  = Guany / Pèrdua" valor={fmt(guany)} negrita nota={`Any transmissió: ${t.anyTransmissio || '—'}`} />
+                          <FilaDetall label={tr('valorTransmissioLabel')} valor={fmt(t.valorTransmissio || 0)} />
+                          {(t.despesesTransmissio || 0) > 0 && <FilaDetall label={tr('despesesTransmissioLabel')} valor={fmt(-(t.despesesTransmissio || 0))} negatiu />}
+                          <FilaDetall label={tr('valorAdquisicioLabel')} valor={fmt(-(t.valorAdquisicio || 0))} negatiu nota={`Any adquisició: ${t.anyAdquisicio || '—'}`} />
+                          {(t.despesesAdquisicio || 0) > 0 && <FilaDetall label={tr('despesesAdquisicioLabel')} valor={fmt(-(t.despesesAdquisicio || 0))} negatiu />}
+                          <FilaDetall label={tr('guanyPerduaLabel')} valor={fmt(guany)} negrita nota={`Any transmissió: ${t.anyTransmissio || '—'}`} />
                         </React.Fragment>
                       );
                     })}
-                    <FilaDetall label="  Subtotal Apartat 2" valor={fmt(subtotalApt2)} negrita />
+                    <FilaDetall label={tr('subtotalApartat2Label')} valor={fmt(subtotalApt2)} negrita />
                   </>
                 )}
 
                 {!tensTransmissionsGravades && tensTransmissions && (
-                  <FilaDetall label="Apartat 2 — Cap transmissió gravada" valor="0,00 €"
-                    nota="Les transmissions declarades estan exemptes (Art. 5) o són devolucions de capital (Art. 27.3). Vegeu l'apartat 5b." />
+                  <FilaDetall label={tr('apartat2CapTransmissioLabel')} valor="0,00 €"
+                    nota={tr('notaTransmissionsExemptes')} />
                 )}
 
                 {/* Reconciliació final */}
                 <div style={{ borderTop: `2px solid ${CAP.color}`, marginTop: '8px', paddingTop: '6px' }}>
-                  <FilaDetall label="TOTAL Guanys i pèrdues de capital (Apt. 1 + Apt. 2)" valor={fmt(r.guanysCapital)} negrita destacat
-                    nota="Integra a la Base de Tributació de l'Estalvi (BTE) · Art. 30-32 Llei 5/2014" />
+                  <FilaDetall label={tr('totalGuanysPerduesLabel')} valor={fmt(r.guanysCapital)} negrita destacat
+                    nota={tr('notaIntegraBte')} />
                 </div>
 
-                <NotaNormativa refText="Art. 30 Llei 5/2014" text="Constitueixen guanys o pèrdues de capital les variacions en el valor del patrimoni de l'obligat tributari que es posin de manifest amb ocasió d'alteració en la composició d'aquell." />
+                <NotaNormativa refText={tr('refArt30Guanys')} text={tr('citaArt30Guanys')} />
               </SeccioBlocNormatiu>
               );
             })()}
@@ -846,25 +846,25 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             {/* DDI — càlcul país per país (Art. 48.4) */}
             {tensDDI && r.ddiDetall && r.ddiDetall.length > 0 && !blocsExclosos.ddi && (
               <SeccioBlocNormatiu titol={`6. ${tr('ddi')}`}>
-                <FilaDetall label="Total DDI aplicada (suma país per país)" valor={fmt(r.ddiDetall.reduce((s, d) => s + (d.ddi || 0), 0))} negrita destacat />
+                <FilaDetall label={tr('totalDdiAplicadaLabel')} valor={fmt(r.ddiDetall.reduce((s, d) => s + (d.ddi || 0), 0))} negrita destacat />
                 {r.ddiDetall.map((d, i) => {
                   const ret = d.retencioEfectiva ?? d.retencioOrigen ?? 0;
                   const topCDI = (d.tipusMaxCDI || 0) / 100 * (d.importBrut || 0);
                   return (
                     <React.Fragment key={i}>
                       <FilaDetall label={`${d.pais || '—'} — ${d.tipusRenda || ''}`} valor={fmt(d.ddi)} negrita />
-                      <FilaDetall label="  Renda bruta obtinguda" valor={fmt(d.importBrut || 0)} />
-                      <FilaDetall label="  Retenció efectiva" valor={fmt(ret)} nota={d.tensCDI ? `CDI vigent — tipus màxim ${d.tipusMaxCDI || 0}%` : 'Sense CDI'} />
+                      <FilaDetall label={tr('rendaBrutaObtingudaLabel')} valor={fmt(d.importBrut || 0)} />
+                      <FilaDetall label={tr('retencioEfectivaLabel')} valor={fmt(ret)} nota={d.tensCDI ? `CDI vigent — tipus màxim ${d.tipusMaxCDI || 0}%` : 'Sense CDI'} />
                       {d.tensCDI && ret > topCDI && (
-                        <FilaDetall label="  Excés no computable (sobre tipus CDI)" valor={fmt(-(ret - (d.impostEtopat || 0)))} negatiu
+                        <FilaDetall label={tr('excesNoComputableLabel')} valor={fmt(-(ret - (d.impostEtopat || 0)))} negatiu
                           nota={`Tipus màxim CDI: ${d.tipusMaxCDI || 0}% — excés reclamable en origen`} />
                       )}
-                      <FilaDetall label="  Límit quota andorrana (10%)" valor={fmt(d.quotaAndorrana ?? d.quotaAndorra ?? 0)} />
-                      <FilaDetall label="  DDI aplicada (mínim dels dos)" valor={fmt(d.ddi)} destacat nota={d.explicacio} />
+                      <FilaDetall label={tr('limitQuotaAndorranaLabel')} valor={fmt(d.quotaAndorrana ?? d.quotaAndorra ?? 0)} />
+                      <FilaDetall label={tr('ddiAplicadaMinimLabel')} valor={fmt(d.ddi)} destacat nota={d.explicacio} />
                     </React.Fragment>
                   );
                 })}
-                <NotaNormativa refText="Art. 48.4 Llei 5/2014 (mod. L2023005)" text="La DDI es calcula país per país: per a cada renda, el mínim entre (a) l'impost estranger efectiu —topat al tipus màxim del CDI quan n'hi ha— i (b) la quota andorrana (10%) sobre aquella renda. Les rendes sense retenció efectiva no generen DDI ni entren a la base del límit." />
+                <NotaNormativa refText={tr('refArt484Ddi')} text={tr('citaArt484Ddi')} />
               </SeccioBlocNormatiu>
             )}
           </div>
@@ -881,27 +881,27 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
           <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
 
-            <SeccioBlocNormatiu titol="Bases de tributació">
-              <FilaDetall label="Renda del treball" valor={fmt(r.rendaTreball)} />
-              <FilaDetall label="Renda d'activitats econòmiques" valor={fmt(r.rendaActivitat)} />
-              <FilaDetall label="Renda del capital immobiliari" valor={fmt(r.rendaImmobiliaria)} />
-              <FilaDetall label="Base de Tributació General (BTG)" valor={fmt(r.baseTributacioGeneral)} negrita destacat nota="Art. 33 Llei 5/2014 · Suma de rendes generals" />
+            <SeccioBlocNormatiu titol={tr('basesTributacioTitol')}>
+              <FilaDetall label={tr('rendaTreballLabel')} valor={fmt(r.rendaTreball)} />
+              <FilaDetall label={tr('rendaActivitatsLabel')} valor={fmt(r.rendaActivitat)} />
+              <FilaDetall label={tr('rendaCapitalImmobiliariLabel')} valor={fmt(r.rendaImmobiliaria)} />
+              <FilaDetall label={tr('baseTributacioGeneralLabel')} valor={fmt(r.baseTributacioGeneral)} negrita destacat nota={tr('notaBtgArt33')} />
               <div style={{ height: '8px' }} />
-              <FilaDetall label="Renda del capital mobiliari" valor={fmt(r.rendaMobiliaria)} />
-              <FilaDetall label="Guanys i pèrdues de capital" valor={fmt(r.guanysCapital)} />
-              <FilaDetall label="Base de Tributació de l'Estalvi (BTE)" valor={fmt(r.baseTributacioEstalvi)} negrita destacat nota="Art. 37 Llei 5/2014 · Suma de rendes de l'estalvi · Mínim exempt 3.000 €" />
-              <NotaNormativa refText="Art. 33-37 Llei 5/2014" text="La base de tributació general integra les rendes del treball, activitats econòmiques i capital immobiliari. La base de tributació de l'estalvi integra les rendes del capital mobiliari i els guanys i pèrdues de capital." />
+              <FilaDetall label={tr('rendaCapitalMobiliariLabel')} valor={fmt(r.rendaMobiliaria)} />
+              <FilaDetall label={tr('guanysPerduesCapitalLabel')} valor={fmt(r.guanysCapital)} />
+              <FilaDetall label={tr('baseTributacioEstalviLabel')} valor={fmt(r.baseTributacioEstalvi)} negrita destacat nota={tr('notaBteArt37')} />
+              <NotaNormativa refText={tr('refArt3337')} text={tr('notaNormBasesTributacio')} />
             </SeccioBlocNormatiu>
 
             {dades.estatCivil === 'casat' && (
-              <SeccioBlocNormatiu titol="Formulari 300-A — Situació personal i familiar">
-                <FilaDetall label="Estat civil" valor="Casat/da o parella de fet" />
+              <SeccioBlocNormatiu titol={tr('formulari300ATitol')}>
+                <FilaDetall label={tr('estatCivilLabel')} valor={tr('casatParellaFetValor')} />
                 <FilaDetall
-                  label="Cònjuge / parella de fet"
+                  label={tr('conjugeParellaFetLabel')}
                   valor={`${dades.conjugeNom || '—'}${dades.conjugeNRT ? ` (NRT: ${dades.conjugeNRT})` : ''}`}
                 />
                 <FilaDetall
-                  label="Rendes generals del cònjuge"
+                  label={tr('rendesGeneralsConjugeLabel')}
                   valor={fmt(dades.conjugeRendesGenerals || 0)}
                   nota={
                     dades.conjugePercepRendes === false
@@ -914,33 +914,33 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </SeccioBlocNormatiu>
             )}
 
-            <SeccioBlocNormatiu titol="Mínim personal i reduccions — Formulari 300-A sec.2">
-              <FilaDetall label="Mínim personal exempt" valor={`− ${fmt(r.minimPersonal)}`} nota={`Art. 35.1 Llei 5/2014 · ${dades.estatCivil === 'casat' ? dades.conjugePercepRendes === false ? 'Casat/da · cònjuge sense rendes generals → mínim 40.000 €' : dades.conjugeRendesInf24k === false ? 'Casat/da · rendes cònjuge ≥ 24.000 € → mínim base 24.000 €' : `Casat/da · rendes cònjuge ${fmt(dades.conjugeRendesGenerals)} < 24.000 € → mínim incrementat` : 'Solter/a, vidu/a o divorciat/da'} · ${dades.obligatDiscapacitat ? 'Discapacitat CONAVA' : 'Sense discapacitat reconeguda'}`} />
-              {r.redFamiliar > 0 && <FilaDetall label="Reducció per càrregues familiars" valor={`− ${fmt(r.redFamiliar)}`} nota="Art. 35.2 Llei 5/2014 · Descendents, ascendents i tutela: 1.000 € per persona" />}
-              {r.redHabitatge > 0 && <FilaDetall label="Reducció per habitatge habitual" valor={`− ${fmt(r.redHabitatge)}`} nota="Art. 38 Llei 5/2014 · 50% quotes hipoteca o lloguer assequible, màx. 5.000 €/any" />}
-              {r.redPensions > 0 && <FilaDetall label="Reducció per plans de pensions" valor={`− ${fmt(r.redPensions)}`} nota="Art. 39 Llei 5/2014 · 100% aportació, màx. 5.000 €/any" />}
-              <FilaDetall label="Total reduccions" valor={`− ${fmt(r.totalReduccions)}`} negrita />
-              <NotaNormativa refText="Art. 35-39 Llei 5/2014" text="El mínim personal exempt no pot ser superior a la base de tributació general. Quan el cònjuge percep rendes inferiors a 24.000 €, el mínim s'incrementa fins a un màxim de 40.000 € (40.000 − rendes netes cònjuge)." />
+            <SeccioBlocNormatiu titol={tr('minimPersonalReduccionsTitol')}>
+              <FilaDetall label={tr('minimPersonalExemptLabel')} valor={`− ${fmt(r.minimPersonal)}`} nota={`Art. 35.1 Llei 5/2014 · ${dades.estatCivil === 'casat' ? dades.conjugePercepRendes === false ? 'Casat/da · cònjuge sense rendes generals → mínim 40.000 €' : dades.conjugeRendesInf24k === false ? 'Casat/da · rendes cònjuge ≥ 24.000 € → mínim base 24.000 €' : `Casat/da · rendes cònjuge ${fmt(dades.conjugeRendesGenerals)} < 24.000 € → mínim incrementat` : 'Solter/a, vidu/a o divorciat/da'} · ${dades.obligatDiscapacitat ? 'Discapacitat CONAVA' : 'Sense discapacitat reconeguda'}`} />
+              {r.redFamiliar > 0 && <FilaDetall label={tr('reduccioCarreguesFamiliarsLabel')} valor={`− ${fmt(r.redFamiliar)}`} nota={tr('notaCarreguesFamiliarsArt352')} />}
+              {r.redHabitatge > 0 && <FilaDetall label={tr('reduccioHabitatgeLabel2')} valor={`− ${fmt(r.redHabitatge)}`} nota={tr('notaHabitatgeArt38')} />}
+              {r.redPensions > 0 && <FilaDetall label={tr('reduccioPlansPensionsLabel')} valor={`− ${fmt(r.redPensions)}`} nota={tr('notaPensionsArt39')} />}
+              <FilaDetall label={tr('totalReduccionsLabel')} valor={`− ${fmt(r.totalReduccions)}`} negrita />
+              <NotaNormativa refText={tr('refArt3539')} text={tr('notaNormMinimPersonal')} />
             </SeccioBlocNormatiu>
 
-            <SeccioBlocNormatiu titol="Bases de liquidació">
+            <SeccioBlocNormatiu titol={tr('basesLiquidacioTitol')}>
               {/* Base general */}
-              <FilaDetall label="Base de Tributació General (BTG)" valor={fmt(r.baseTributacioGeneral)} />
-              <FilaDetall label="− Reduccions (mínim personal + familiars + habitatge + pensions)" valor={`− ${fmt(r.totalReduccions)}`} nota="Art. 35-39 Llei 5/2014" />
-              <FilaDetall label="Base de Liquidació General (BLG)" valor={fmt(r.baseLiquidacioGeneral)} negrita destacat nota="No pot ser negativa." />
+              <FilaDetall label={tr('baseTributacioGeneralLabel')} valor={fmt(r.baseTributacioGeneral)} />
+              <FilaDetall label={tr('reduccionsDesglossLabel')} valor={`− ${fmt(r.totalReduccions)}`} nota={tr('refArt3539')} />
+              <FilaDetall label={tr('baseLiquidacioGeneralLabel')} valor={fmt(r.baseLiquidacioGeneral)} negrita destacat nota={tr('notaNoNegativa')} />
               <div style={{ height: '10px' }} />
               {/* Base estalvi */}
-              <FilaDetall label="Base de Tributació de l'Estalvi (BTE)" valor={fmt(r.baseTributacioEstalvi)} />
-              <FilaDetall label="− Mínim exempt estalvi (3.000 €)" valor={`− ${fmt(Math.min(3000, Math.max(0, r.baseTributacioEstalvi)))}`} nota="Art. 37 Llei 5/2014 · Màxim 3.000 €/any sobre rendes de l'estalvi" />
-              <FilaDetall label="Base de Liquidació de l'Estalvi (BLE)" valor={fmt(r.baseLiquidacioEstalvi)} negrita destacat nota="No pot ser negativa." />
-              <NotaNormativa refText="Art. 33-39 Llei 5/2014" text="La BLG és el resultat de restar les reduccions (mínim personal, familiars, habitatge i pensions) a la BTG. La BLE és el resultat de restar el mínim exempt de 3.000 € a la BTE. Ambdues bases no poden ser negatives." />
+              <FilaDetall label={tr('baseTributacioEstalviLabel')} valor={fmt(r.baseTributacioEstalvi)} />
+              <FilaDetall label={tr('minimExemptEstalviLabel')} valor={`− ${fmt(Math.min(3000, Math.max(0, r.baseTributacioEstalvi)))}`} nota={tr('notaMinimEstalviArt37')} />
+              <FilaDetall label={tr('baseLiquidacioEstalviLabel')} valor={fmt(r.baseLiquidacioEstalvi)} negrita destacat nota={tr('notaNoNegativa')} />
+              <NotaNormativa refText={tr('refArt3339')} text={tr('notaNormBasesLiquidacio')} />
             </SeccioBlocNormatiu>
 
-            <SeccioBlocNormatiu titol="Quota de tributació i bonificació">
-              <FilaDetall label="Quota de tributació (10% sobre BLG + BLE)" valor={fmt(r.quotaTributacio)} nota="Art. 41-42 Llei 5/2014 · Tipus únic del 10% sobre la suma de BLG i BLE" />
-              <FilaDetall label="Bonificació Art. 46 (màx. 800 €)" valor={`− ${fmt(r.bonificacio)}`} nota="Art. 46 Llei 5/2014 · Bonificació per obligats amb BLG baixa. Per al càlcul s'usa el mínim personal base (24.000 €), no l'incrementat." />
-              <FilaDetall label="Quota de liquidació" valor={fmt(r.quotaLiquidacio)} negrita destacat />
-              <NotaNormativa refText="Art. 41-46 Llei 5/2014" text="El tipus de gravamen general és del 10%. La bonificació de l'Art. 46 redueix la quota per als obligats tributaris amb rendes moderades, però no pot generar quota negativa." />
+            <SeccioBlocNormatiu titol={tr('quotaTributacioBonificacioTitol')}>
+              <FilaDetall label={tr('quotaTributacioLabel')} valor={fmt(r.quotaTributacio)} nota={tr('notaQuotaArt4142')} />
+              <FilaDetall label={tr('bonificacioArt46Label')} valor={`− ${fmt(r.bonificacio)}`} nota={tr('notaBonificacioArt46')} />
+              <FilaDetall label={tr('quotaLiquidacioLabel')} valor={fmt(r.quotaLiquidacio)} negrita destacat />
+              <NotaNormativa refText={tr('refArt4146')} text={tr('notaNormQuotaBonificacio')} />
             </SeccioBlocNormatiu>
 
           </div>
@@ -988,52 +988,52 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             return (
               <React.Fragment key={key}>
                 <FilaDetall label={`${titol} (${ref})`} valor={null} negrita />
-                <FilaDetall label="    Deducció generada" valor={fmt(generades)} />
+                <FilaDetall label={tr('labelDeduccioGenerada')} valor={fmt(generades)} />
                 <FilaDetall label={`    Aplicada en ${exercici}`} valor={fmt(-aplicades)} negatiu={aplicades > 0} />
-                <FilaDetall label="    Pendent de diferir" valor={fmt(pendents)} negrita={pendents > 0} nota={notaPendent} />
+                <FilaDetall label={tr('labelPendentDeDiferir')} valor={fmt(pendents)} negrita={pendents > 0} nota={notaPendent} />
               </React.Fragment>
             );
           };
 
           return (
             <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-              <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Formulari 300-F — Bases negatives i deduccions" cap={CAP} />
+              <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('seccioFormulari300F')} cap={CAP} />
 
               <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
 
                 {/* Bases negatives generals */}
                 {(dades.basesNegGenerals || []).length > 0 && (
-                  <SeccioBlocNormatiu titol="300-F · Bases de tributació general negatives d'exercicis anteriors">
+                  <SeccioBlocNormatiu titol={tr('titolBasesNegGenerals')}>
                     {(dades.basesNegGenerals || []).map((f, i) => (
                       <React.Fragment key={i}>
                         <FilaDetall label={`Exercici ${f.exercici} — pendent inici`} valor={fmt(f.pendentInici || 0)} />
                         <FilaDetall label={`  Aplicat en ${exercici}`} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
-                        <FilaDetall label="  Pendent exercicis futurs" valor={fmt(Math.max(0, (f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? `Venciment: exercici ${f.exercici + 10}` : undefined} />
+                        <FilaDetall label={tr('labelPendentExercicisFuturs')} valor={fmt(Math.max(0, (f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? `Venciment: exercici ${f.exercici + 10}` : undefined} />
                       </React.Fragment>
                     ))}
-                    <FilaDetall label="Total aplicat exercici" valor={fmt(-(dades.basesNegGenerals||[]).reduce((a,f)=>a+(f.aplicat||0),0))} negrita destacat negatiu />
-                    <NotaNormativa refText="Art. 33 + 300-F Llei 5/2014" text="Les bases negatives generals es compensen durant els 10 exercicis posteriors al de la seva generació." />
+                    <FilaDetall label={tr('labelTotalAplicatExercici')} valor={fmt(-(dades.basesNegGenerals||[]).reduce((a,f)=>a+(f.aplicat||0),0))} negrita destacat negatiu />
+                    <NotaNormativa refText={tr('refArt33Llei')} text={tr('textBasesNegGeneralsCompensacio')} />
                   </SeccioBlocNormatiu>
                 )}
 
                 {/* Bases negatives estalvi */}
                 {(dades.basesNegEstalvi || []).length > 0 && (
-                  <SeccioBlocNormatiu titol="300-F · Bases de tributació de l'estalvi negatives d'exercicis anteriors">
+                  <SeccioBlocNormatiu titol={tr('titolBasesNegEstalvi')}>
                     {(dades.basesNegEstalvi || []).map((f, i) => (
                       <React.Fragment key={i}>
                         <FilaDetall label={`Exercici ${f.exercici} — pendent inici`} valor={fmt(f.pendentInici || 0)} />
                         <FilaDetall label={`  Aplicat en ${exercici}`} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
-                        <FilaDetall label="  Pendent exercicis futurs" valor={fmt(Math.max(0,(f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? `Venciment: exercici ${f.exercici + 10}` : undefined} />
+                        <FilaDetall label={tr('labelPendentExercicisFuturs')} valor={fmt(Math.max(0,(f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? `Venciment: exercici ${f.exercici + 10}` : undefined} />
                       </React.Fragment>
                     ))}
-                    <FilaDetall label="Total aplicat exercici" valor={fmt(-(dades.basesNegEstalvi||[]).reduce((a,f)=>a+(f.aplicat||0),0))} negrita destacat negatiu />
-                    <NotaNormativa refText="Art. 37 + 300-F Llei 5/2014" text="Les bases negatives de l'estalvi es compensen durant els 10 exercicis posteriors." />
+                    <FilaDetall label={tr('labelTotalAplicatExercici')} valor={fmt(-(dades.basesNegEstalvi||[]).reduce((a,f)=>a+(f.aplicat||0),0))} negrita destacat negatiu />
+                    <NotaNormativa refText={tr('refArt37Llei')} text={tr('textBasesNegEstalviCompensacio')} />
                   </SeccioBlocNormatiu>
                 )}
 
                 {/* Deduccions pendents exercicis anteriors */}
                 {(dades.deduccionsAnteriors || []).length > 0 && (
-                  <SeccioBlocNormatiu titol="300-F · Deduccions pendents d'exercicis anteriors">
+                  <SeccioBlocNormatiu titol={tr('titolDeduccionsPendentsAnteriors')}>
                     {(dades.deduccionsAnteriors || []).map((ded, i) =>
                       deduccioRows(
                         `ded-ant-${i}`,
@@ -1046,7 +1046,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                         ded.exercici || (exercici - 1)
                       )
                     )}
-                    <FilaDetall label="Total deduccions anteriors aplicades" valor={fmt(-r.deduccionsAnteriorsAplicades)} negrita destacat negatiu />
+                    <FilaDetall label={tr('labelTotalDeduccionsAnteriorsAplicades')} valor={fmt(-r.deduccionsAnteriorsAplicades)} negrita destacat negatiu />
                   </SeccioBlocNormatiu>
                 )}
 
@@ -1060,8 +1060,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     {deduccioRows('dig', "Inversions en digitalització", 'Art. 44 bis', digGen, d8.aplicatDigital || 0, 5)}
                     {deduccioRows('pat', "Patrocini esportiu i cultural", 'Art. 44 ter', patGen, d8.aplicatPatrocini || 0, 5)}
                     {deduccioRows('llocs', "Creació de llocs de treball", 'Art. 44 quater', llocsGen, d8.aplicatLlocs || 0, 5)}
-                    <FilaDetall label="Total deduccions aplicades a la quota" valor={fmt(-r.totalDeduccionsExercici)} negrita destacat negatiu />
-                    <NotaNormativa refText="Arts. 43 bis – 48 Llei 5/2014" text={`Deduccions pendents diferibles fins a exercici ${exercici + 5} (general) o ${exercici + 10} (DDI). L'impost comunal (Art. 47) no és diferible: la part que excedeixi la quota s'extingeix.`} />
+                    <FilaDetall label={tr('labelTotalDeduccionsAplicadesQuota')} valor={fmt(-r.totalDeduccionsExercici)} negrita destacat negatiu />
+                    <NotaNormativa refText={tr('refArts43Bis48Llei')} text={`Deduccions pendents diferibles fins a exercici ${exercici + 5} (general) o ${exercici + 10} (DDI). L'impost comunal (Art. 47) no és diferible: la part que excedeixi la quota s'extingeix.`} />
                   </SeccioBlocNormatiu>
                 )}
 
@@ -1185,41 +1185,41 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         {/* ══ PÀGINA 5b — RENDES EXEMPTES (Art. 5.k) I NO SUBJECTES (Art. 27.3) ══ */}
         {((tensTransmissionsExemptes && r.transmissionsExemptes && r.transmissionsExemptes.length > 0) || tensDevolucionsCapital) && (
           <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio="Rendes exemptes i no subjectes" cap={CAP} />
+            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('seccioRendesExemptesNoSubjectes')} cap={CAP} />
 
             <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
-              <SeccioBlocNormatiu titol="5b. Rendes exemptes i no subjectes — Informació">
+              <SeccioBlocNormatiu titol={tr('titol5bRendesExemptes')}>
 
                 {/* Subsecció A — Exemptes Art. 5.k */}
                 {tensTransmissionsExemptes && r.transmissionsExemptes && r.transmissionsExemptes.length > 0 && (
                   <>
-                    <FilaDetall label="A) Guanys exempts — Art. 5.k Llei 5/2014" valor={null} negrita destacat />
+                    <FilaDetall label={tr('labelGuanysExemptsArt5k')} valor={null} negrita destacat />
                     {r.transmissionsExemptes.map((t, i) => (
                       <FilaDetall key={`ex${i}`}
                         label={`  ${t.descripcio || `Transmissió ${i + 1}`} (${t.tipusElement || ''})`}
                         valor={fmt(t.importExempt || 0)}
                         nota={`EXEMPT · ${t.motivExempcio || 'Art. 5.k'} · No computa a la BTE`} />
                     ))}
-                    <FilaDetall label="  Total exempt Art. 5.k" valor={fmt(r.totalExempt)} negrita />
+                    <FilaDetall label={tr('labelTotalExemptArt5k')} valor={fmt(r.totalExempt)} negrita />
                   </>
                 )}
 
                 {/* Subsecció B — No subjectes Art. 27.3 */}
                 {tensDevolucionsCapital && (
                   <>
-                    <FilaDetall label="B) Devolucions de capital — Art. 27.3 Llei 5/2014" valor={null} negrita destacat />
+                    <FilaDetall label={tr('labelDevolucionsCapitalArt273')} valor={null} negrita destacat />
                     {(dades.transmissions || []).filter(t => t.esDevolucioCapital).map((t, i) => (
                       <FilaDetall key={`dc${i}`}
                         label={`  ${t.descripcio || `Devolució ${i + 1}`} (${t.tipusElement || ''})`}
                         valor={fmt(t.valorTransmissio || 0)}
-                        nota="NO SUBJECTA · Art. 27.3 · Minora el valor d'adquisició dels valors restants" />
+                        nota={tr('notaNoSubjectaArt273')} />
                     ))}
                   </>
                 )}
 
                 <NotaNormativa
-                  refText="Art. 5.k i Art. 27.3 Llei 5/2014"
-                  text="Les rendes d'aquest apartat no s'integren a la base de tributació. Es mostren exclusivament a efectes informatius i de traçabilitat."
+                  refText={tr('refTextArt5kArt273')}
+                  text={tr('textRendesNoIntegradesBase')}
                 />
               </SeccioBlocNormatiu>
             </div>
