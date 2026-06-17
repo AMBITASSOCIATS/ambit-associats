@@ -1232,6 +1232,25 @@ export const T = {
     FR: "La déclaration de l'IRPF de l'exercice {any} doit être présentée entre le 1er avril et le 30 septembre {anyseg}. L'acompte (formulaire 320) est présenté à l'Administration fiscale au cours du mois de septembre {any}. Portail Fiscal : www.eda.ad",
     EN: "The {any} Personal Income Tax return must be filed between 1 April and 30 September {anyseg}. The instalment payment (form 320) is filed with the Tax Administration during September {any}. Tax Portal: www.eda.ad",
   },
+
+  // ── A2 fase 3b ────────────────────────────────────────────────────────────
+  metodeDeterminacioP: { CA: "Mètode: {metode}", ES: "Método: {metode}", FR: "Méthode : {metode}", EN: "Method: {metode}" },
+  metodeDirecta: { CA: "Determinació directa", ES: "Determinación directa", FR: "Détermination directe", EN: "Direct assessment" },
+  metodeObjectiva: { CA: "Determinació objectiva", ES: "Determinación objetiva", FR: "Détermination objective", EN: "Objective assessment" },
+  reduccioForfetariaP: { CA: "  − Reducció forfetària ({pct}%)", ES: "  − Reducción a tanto alzado ({pct}%)", FR: "  − Réduction forfaitaire ({pct}%)", EN: "  − Flat-rate reduction ({pct}%)" },
+  apartat300D: { CA: "Apartat {ap} del formulari 300-D", ES: "Apartado {ap} del formulario 300-D", FR: "Section {ap} du formulaire 300-D", EN: "Section {ap} of form 300-D" },
+  notaDiferibleP: {
+    CA: "Diferible fins a exercici {any} (generat {gen} · {anys} anys · {ref} Llei 5/2014)",
+    ES: "Diferible hasta ejercicio {any} (generado {gen} · {anys} años · {ref} Llei 5/2014)",
+    FR: "Reportable jusqu'à l'exercice {any} (généré {gen} · {anys} ans · {ref} Llei 5/2014)",
+    EN: "Carry-forward until tax year {any} (generated {gen} · {anys} years · {ref} Llei 5/2014)",
+  },
+  deduccionsGeneradesTitolP: {
+    CA: "Deduccions generades en l'exercici {any} — Generades / Aplicades / Pendents",
+    ES: "Deducciones generadas en el ejercicio {any} — Generadas / Aplicadas / Pendientes",
+    FR: "Déductions générées au cours de l'exercice {any} — Générées / Appliquées / En attente",
+    EN: "Deductions generated in tax year {any} — Generated / Applied / Pending",
+  },
 };
 
 // Helper per obtenir un text en un idioma

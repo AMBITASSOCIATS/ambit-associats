@@ -728,7 +728,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                       )}
                       {radicacio > 0 && <FilaDetall label={tr('impostRadicacio')} valor={fmt(-radicacio)} negatiu />}
                       <FilaDetall label={tr('rendaNetaActivitat')} valor={fmt(rendaNeta)} negrita
-                        nota={`Mètode: ${a.tipusDeterminacio === 'directa' ? 'Determinació directa' : 'Determinació objectiva'}`} />
+                        nota={trp('metodeDeterminacioP', { metode: a.tipusDeterminacio === 'directa' ? tr('metodeDirecta') : tr('metodeObjectiva') })} />
                     </React.Fragment>
                   );
                 })}
@@ -756,7 +756,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     <React.Fragment key={i}>
                       <FilaDetall label={`${trp('immobleNum', { n: i + 1 })}: ${im.descripcio || ''}`} valor={fmt(im.ingressosIntegres || 0)} nota={tr('ingressosIntegresNota')} />
                       {esForfet
-                        ? <FilaDetall label={`  − Reducció forfetària (${Math.round(pctForfet * 100)}%)`} valor={fmt(-despesesForfet)} negatiu nota={tr('metodeForfetariNota')} />
+                        ? <FilaDetall label={trp('reduccioForfetariaP', { pct: Math.round(pctForfet * 100) })} valor={fmt(-despesesForfet)} negatiu nota={tr('metodeForfetariNota')} />
                         : <FilaDetall label={tr('despesesDeduibles')} valor={fmt(-despesesDirecta)} negatiu />
                       }
                       {!esForfet && reduccioHab > 0 && <FilaDetall label={tr('reduccioHabitatgeLabel')} valor={fmt(-reduccioHab)} negatiu />}
@@ -779,7 +779,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     <FilaDetall label={`${trp('entitatNum', { n: i + 1 })}: ${ent.entitat || ''}`} valor={null} negrita />
                     {(ent.partides || []).map((p, j) => (
                       <React.Fragment key={j}>
-                        <FilaDetall label={`  ${MOBILIARI_NOMS[p.tipus] || p.tipusRenda || 'Renda'}`} valor={fmt(p.importBrut || 0)} nota={`Apartat ${(p.tipus || '?').toUpperCase()} del formulari 300-D`} />
+                        <FilaDetall label={`  ${MOBILIARI_NOMS[p.tipus] || p.tipusRenda || 'Renda'}`} valor={fmt(p.importBrut || 0)} nota={trp('apartat300D', { ap: (p.tipus || '?').toUpperCase() })} />
                         {(p.despeses || 0) > 0 && <FilaDetall label={tr('despesesCustodiaGestioLabel')} valor={fmt(-(p.despeses || 0))} negatiu />}
                         {(p.retencioAndorra || 0) > 0 && <FilaDetall label={tr('retencioAndorraLabel')} valor={fmt(p.retencioAndorra || 0)} nota={tr('deduibleQuotaNota')} />}
                         {(p.retencioEstranger || 0) > 0 && <FilaDetall label={tr('retencioEstrangerLabel')} valor={fmt(p.retencioEstranger || 0)} nota={tr('baseCalculDdiNota')} />}
@@ -989,7 +989,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             const notaPendent = pendents > 0
               ? (noDiferable
                 ? "Import no diferible — s'extingeix si la quota és insuficient"
-                : `Diferible fins a exercici ${anyBase + anysVig} (generat ${anyBase} · ${anysVig} anys · ${ref} Llei 5/2014)`)
+                : trp('notaDiferibleP', { any: anyBase + anysVig, gen: anyBase, anys: anysVig, ref }))
               : 'Totalment aplicada en l\'exercici';
             return (
               <React.Fragment key={key}>
@@ -1012,9 +1012,9 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   <SeccioBlocNormatiu titol={tr('titolBasesNegGenerals')}>
                     {(dades.basesNegGenerals || []).map((f, i) => (
                       <React.Fragment key={i}>
-                        <FilaDetall label={`Exercici ${f.exercici} — pendent inici`} valor={fmt(f.pendentInici || 0)} />
-                        <FilaDetall label={`  Aplicat en ${exercici}`} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
-                        <FilaDetall label={tr('labelPendentExercicisFuturs')} valor={fmt(Math.max(0, (f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? `Venciment: exercici ${f.exercici + 10}` : undefined} />
+                        <FilaDetall label={trp('exerciciPendentInici', { any: f.exercici })} valor={fmt(f.pendentInici || 0)} />
+                        <FilaDetall label={trp('aplicatEnExercici', { any: exercici })} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
+                        <FilaDetall label={tr('labelPendentExercicisFuturs')} valor={fmt(Math.max(0, (f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? trp('vencimentExercici', { any: f.exercici + 10 }) : undefined} />
                       </React.Fragment>
                     ))}
                     <FilaDetall label={tr('labelTotalAplicatExercici')} valor={fmt(-(dades.basesNegGenerals||[]).reduce((a,f)=>a+(f.aplicat||0),0))} negrita destacat negatiu />
@@ -1027,9 +1027,9 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   <SeccioBlocNormatiu titol={tr('titolBasesNegEstalvi')}>
                     {(dades.basesNegEstalvi || []).map((f, i) => (
                       <React.Fragment key={i}>
-                        <FilaDetall label={`Exercici ${f.exercici} — pendent inici`} valor={fmt(f.pendentInici || 0)} />
-                        <FilaDetall label={`  Aplicat en ${exercici}`} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
-                        <FilaDetall label={tr('labelPendentExercicisFuturs')} valor={fmt(Math.max(0,(f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? `Venciment: exercici ${f.exercici + 10}` : undefined} />
+                        <FilaDetall label={trp('exerciciPendentInici', { any: f.exercici })} valor={fmt(f.pendentInici || 0)} />
+                        <FilaDetall label={trp('aplicatEnExercici', { any: exercici })} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
+                        <FilaDetall label={tr('labelPendentExercicisFuturs')} valor={fmt(Math.max(0,(f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? trp('vencimentExercici', { any: f.exercici + 10 }) : undefined} />
                       </React.Fragment>
                     ))}
                     <FilaDetall label={tr('labelTotalAplicatExercici')} valor={fmt(-(dades.basesNegEstalvi||[]).reduce((a,f)=>a+(f.aplicat||0),0))} negrita destacat negatiu />
@@ -1058,7 +1058,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
                 {/* Deduccions generades en l'exercici — detall per partida */}
                 {hiHaDedExerc && (
-                  <SeccioBlocNormatiu titol={`Deduccions generades en l'exercici ${exercici} — Generades / Aplicades / Pendents`}>
+                  <SeccioBlocNormatiu titol={trp('deduccionsGeneradesTitolP', { any: exercici })}>
                     {deduccioRows('comunal', "Impost comunal arrendaments i radicació", 'Art. 43 bis', impostComunalGenerat, r.deduccioImpostComunal || 0, 6, false)}
                     {deduccioRows('ddi', "Deducció per Doble Imposició Internacional", 'Art. 48', ddiGenerat, r.ddi || 0, 10)}
                     {deduccioRows('mecen', "Mecenatge i donacions", 'Art. 43 bis', mecenGen, d8.aplicatMecenatge || 0, 5)}
