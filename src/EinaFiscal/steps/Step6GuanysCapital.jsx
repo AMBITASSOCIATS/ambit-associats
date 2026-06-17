@@ -1,5 +1,5 @@
 // steps/Step6GuanysCapital.jsx — Pas 6: Guanys i perdues de capital (300-E)
-import React from 'react';
+import React, { useEffect } from 'react';
 import RentaBlock from '../components/RentaBlock';
 import AnalysisAlert from '../components/AnalysisAlert';
 import { analizarGuanyCapital } from '../engine/exemptions';
@@ -349,6 +349,24 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar }) => {
 };
 
 const Step6GuanysCapital = ({ dades, update }) => {
+  // Migració única de declaracions antigues: els camps escalars
+  // guanysNoTransmissio / perduessNoTransmissio passen a ser entrades de la
+  // llista rendesSenseTransmissio, i s'anul·len els escalars (evita que el
+  // motor els sumi DOS COPS — un per l'escalar i un per la nova entrada).
+  useEffect(() => {
+    const g = dades.guanysNoTransmissio || 0;
+    const p = dades.perduessNoTransmissio || 0;
+    if (g === 0 && p === 0) return; // res a migrar
+    const base = Date.now();
+    const migrades = [];
+    if (g !== 0) migrades.push({ ...DEFAULT_RENDA_SENSE_TRANSMISSIO, id: base, descripcio: 'Guany (migrat automàticament)', tipusRenda: 'altres', resultat: g });
+    if (p !== 0) migrades.push({ ...DEFAULT_RENDA_SENSE_TRANSMISSIO, id: base + 1, descripcio: 'Pèrdua (migrada automàticament)', tipusRenda: 'altres', resultat: -p });
+    update('rendesSenseTransmissio', [...(dades.rendesSenseTransmissio || []), ...migrades]);
+    update('guanysNoTransmissio', 0);
+    update('perduessNoTransmissio', 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const addTransmissio = () => {
     update('transmissions', [
       ...dades.transmissions,
