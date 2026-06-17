@@ -1,54 +1,91 @@
-// steps/Step7DDI.jsx — Pas 7: Deduccio per doble imposicio internacional (Art. 48)
+// steps/Step7DDI.jsx — Pas 7: Deduccio per doble imposicio internacional (Art. 48.4)
+// Càlcul PAÍS PER PAÍS: una entrada per cada renda estrangera (país + tipus de renda).
 import React from 'react';
 import RentaBlock from '../components/RentaBlock';
 import AnalysisAlert from '../components/AnalysisAlert';
-import { PAISOS } from '../engine/cdiRates';
+import { PAISOS, CDI_RATES } from '../engine/cdiRates';
 import { calcularDDI } from '../engine/exemptions';
 
-const DEFAULT_RENDA_EXT = {
+const DEFAULT_RENDA_ESTRANGERA = {
   id: null,
-  descripcio: '',
-  pais: 'ES',
-  tipusRenda: 'DIVIDENDS',
-  importBrut: 0,
-  retencioOrigen: 0,
-  importNet: 0,
+  pais: '',            // selector de país/CDI
+  tipusRenda: '',      // 'dividends', 'interessos', 'canons', 'guanys_capital', 'altres'
+  importBrut: 0,       // renda bruta obtinguda
+  retencioEfectiva: 0, // retenció practicada efectivament a l'origen
+  tensCDI: false,      // si hi ha CDI vigent amb aquest país
+  tipusMaxCDI: 0,      // tipus màxim de retenció del CDI (%) per aquest tipus de renda
 };
 
-const TIPUS_RENDA_EXT = [
-  { value: 'DIVIDENDS', label: 'Dividends' },
-  { value: 'INTERESSOS', label: 'Interessos' },
-  { value: 'CANONS', label: 'Canons' },
-  { value: 'SALARIS', label: 'Salaris / rendes del treball' },
-  { value: 'PENSIONS', label: 'Pensions' },
-  { value: 'IMMOBLES', label: 'Rendiments immobles estrangers' },
-  { value: 'PLUSVALUES', label: 'Plusvalues' },
-  { value: 'ALTRES', label: 'Altres rendes exteriors' },
+const TIPUS_RENDA = [
+  { value: 'dividends', label: 'Dividends' },
+  { value: 'interessos', label: 'Interessos' },
+  { value: 'canons', label: 'Cànons' },
+  { value: 'guanys_capital', label: 'Guanys de capital' },
+  { value: 'altres', label: 'Altres rendes' },
 ];
 
-const InputNum = ({ label, value, onChange, min = 0 }) => (
+const TIPUS_LABEL = TIPUS_RENDA.reduce((m, t) => { m[t.value] = t.label; return m; }, {});
+
+// Tipus màxim de retenció (%) que el CDI permet a l'origen, segons el tipus de renda.
+const cdiMaxPerTipus = (codiPais, tipusRenda) => {
+  const rates = CDI_RATES[codiPais];
+  if (!rates) return 0;
+  const v = {
+    dividends: rates.dividends_general,
+    interessos: rates.interessos,
+    canons: rates.canons,
+    guanys_capital: rates.plusvalues_accions,
+    altres: null,
+  }[tipusRenda];
+  return typeof v === 'number' ? Math.round(v * 100) : 0;
+};
+
+const InputNum = ({ label, value, onChange, min = 0, sufix }) => (
   <div>
     <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
-    <input
-      type="number" onWheel={e => e.target.blur()}
-      min={min}
-      step="0.01"
-      value={value === 0 ? '' : value}
-      placeholder="0"
-      onChange={e => { const v = e.target.value; onChange(v === '' ? 0 : parseFloat(v) || 0); }}
-      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
-    />
+    <div className="relative">
+      <input
+        type="number" onWheel={e => e.target.blur()}
+        min={min}
+        step="0.01"
+        value={value === 0 ? '' : value}
+        placeholder="0"
+        onChange={e => { const v = e.target.value; onChange(v === '' ? 0 : parseFloat(v) || 0); }}
+        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+      />
+      {sufix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">{sufix}</span>}
+    </div>
   </div>
 );
 
-const RendaExtForm = ({ renda, index, onUpdate, onEliminar }) => {
+const RendaEstrangeraForm = ({ renda, index, onUpdate, onEliminar }) => {
   const update = (camp, valor) => onUpdate(renda.id, { ...renda, [camp]: valor });
 
-  const ddiResult = calcularDDI([renda]);
-  const ddiInfo = ddiResult[0];
+  // En canviar de país: marcar tensCDI segons el conveni i prefixar el tipus màxim CDI.
+  const onPaisChange = (codi) => {
+    const pais = PAISOS.find(p => p.codi === codi);
+    const tensCDI = !!pais?.cdi;
+    onUpdate(renda.id, {
+      ...renda,
+      pais: codi,
+      tensCDI,
+      tipusMaxCDI: tensCDI ? cdiMaxPerTipus(codi, renda.tipusRenda) : 0,
+    });
+  };
+
+  // En canviar el tipus de renda: re-prefixar el tipus màxim CDI si hi ha conveni.
+  const onTipusChange = (tipus) => {
+    onUpdate(renda.id, {
+      ...renda,
+      tipusRenda: tipus,
+      tipusMaxCDI: renda.tensCDI ? cdiMaxPerTipus(renda.pais, tipus) : renda.tipusMaxCDI,
+    });
+  };
+
+  const ddiInfo = calcularDDI([renda])[0];
 
   const analisi = ddiInfo ? {
-    titol: `DDI — ${PAISOS.find(p => p.codi === renda.pais)?.nom || renda.pais}`,
+    titol: `DDI — ${PAISOS.find(p => p.codi === renda.pais)?.nom || renda.pais || 'País sense especificar'}`,
     explicacio: ddiInfo.explicacio,
     ref: ddiInfo.ref,
     formulari: '300-G',
@@ -57,31 +94,20 @@ const RendaExtForm = ({ renda, index, onUpdate, onEliminar }) => {
     parcial: false,
   } : null;
 
-  return (
-    <RentaBlock
-      titol={renda.descripcio || `Renda exterior ${index + 1}`}
-      numero={index + 1}
-      onEliminar={onEliminar}
-    >
-      <div className="grid grid-cols-2 gap-4">
-        <div className="col-span-2">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Descripcio</label>
-          <input
-            type="text"
-            value={renda.descripcio}
-            onChange={e => update('descripcio', e.target.value)}
-            placeholder="Ex: Dividends Empresa Espanyola, Interessos Banc Frances..."
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
-          />
-        </div>
+  const titol = (PAISOS.find(p => p.codi === renda.pais)?.nom || 'Renda estrangera')
+    + (renda.tipusRenda ? ` — ${TIPUS_LABEL[renda.tipusRenda]}` : '');
 
+  return (
+    <RentaBlock titol={titol} numero={index + 1} onEliminar={onEliminar}>
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Pais d'origen</label>
+          <label className="block text-xs font-medium text-gray-600 mb-1">País d'origen</label>
           <select
             value={renda.pais}
-            onChange={e => update('pais', e.target.value)}
+            onChange={e => onPaisChange(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
           >
+            <option value="">— Selecciona país —</option>
             {PAISOS.map(p => (
               <option key={p.codi} value={p.codi}>
                 {p.nom}{p.cdi ? ' (CDI)' : ''}
@@ -94,41 +120,69 @@ const RendaExtForm = ({ renda, index, onUpdate, onEliminar }) => {
           <label className="block text-xs font-medium text-gray-600 mb-1">Tipus de renda</label>
           <select
             value={renda.tipusRenda}
-            onChange={e => update('tipusRenda', e.target.value)}
+            onChange={e => onTipusChange(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
           >
-            {TIPUS_RENDA_EXT.map(t => (
+            <option value="">— Selecciona tipus —</option>
+            {TIPUS_RENDA.map(t => (
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </select>
         </div>
 
         <InputNum
-          label="Import brut (euros)"
+          label="Renda bruta obtinguda (euros)"
           value={renda.importBrut}
-          onChange={v => onUpdate(renda.id, { ...renda, importBrut: v, importNet: v - renda.retencioOrigen })}
+          onChange={v => update('importBrut', v)}
         />
         <InputNum
-          label="Retencio practicada al pais d'origen (euros)"
-          value={renda.retencioOrigen}
-          onChange={v => onUpdate(renda.id, { ...renda, retencioOrigen: v, importNet: renda.importBrut - v })}
+          label="Retenció efectiva a l'origen (euros)"
+          value={renda.retencioEfectiva}
+          onChange={v => update('retencioEfectiva', v)}
         />
+
+        <div className="flex items-center gap-2 pt-1">
+          <input
+            id={`cdi-${renda.id}`}
+            type="checkbox"
+            checked={renda.tensCDI}
+            onChange={e => update('tensCDI', e.target.checked)}
+            className="w-4 h-4 accent-[#009B9C]"
+          />
+          <label htmlFor={`cdi-${renda.id}`} className="text-xs font-medium text-gray-600">
+            Hi ha CDI vigent amb aquest país
+          </label>
+        </div>
+        {renda.tensCDI && (
+          <InputNum
+            label="Tipus màxim de retenció del CDI (%)"
+            value={renda.tipusMaxCDI}
+            onChange={v => update('tipusMaxCDI', v)}
+            sufix="%"
+          />
+        )}
       </div>
 
       {ddiInfo && (
         <div className="mt-3 bg-gray-50 rounded-lg p-3 text-xs">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             <div>
-              <span className="text-gray-500">Quota andorrana:</span>
-              <p className="font-bold text-gray-800">{ddiInfo.quotaAndorra.toFixed(2)} euros</p>
+              <span className="text-gray-500">Impost estranger computable:</span>
+              <p className="font-bold text-gray-800">{ddiInfo.impostEtopat.toFixed(2)} €</p>
             </div>
             <div>
-              <span className="text-gray-500">Retencio origen:</span>
-              <p className="font-bold text-gray-800">{renda.retencioOrigen.toFixed(2)} euros</p>
+              <span className="text-gray-500">Límit quota andorrana (10%):</span>
+              <p className="font-bold text-gray-800">{ddiInfo.quotaAndorrana.toFixed(2)} €</p>
             </div>
+            {renda.tensCDI && ddiInfo.excesCDI > 0 && (
+              <div>
+                <span className="text-gray-500">Excés no computable:</span>
+                <p className="font-bold text-red-600">{ddiInfo.excesCDI.toFixed(2)} €</p>
+              </div>
+            )}
             <div>
               <span className="text-gray-500">DDI aplicable:</span>
-              <p className="font-bold text-[#009B9C]">{ddiInfo.ddi.toFixed(2)} euros</p>
+              <p className="font-bold text-[#009B9C]">{ddiInfo.ddi.toFixed(2)} €</p>
             </div>
           </div>
         </div>
@@ -143,7 +197,7 @@ const Step7DDI = ({ dades, update }) => {
   const addRenda = () => {
     update('rendesExterior', [
       ...dades.rendesExterior,
-      { ...DEFAULT_RENDA_EXT, id: Date.now() }
+      { ...DEFAULT_RENDA_ESTRANGERA, id: Date.now() }
     ]);
   };
 
@@ -169,14 +223,14 @@ const Step7DDI = ({ dades, update }) => {
 
   const importarDesMobiliaris = () => {
     const noves = retencionsOrigenMobiliaris.map(r => ({
-      ...DEFAULT_RENDA_EXT,
+      ...DEFAULT_RENDA_ESTRANGERA,
       id: Date.now() + Math.random(),
-      descripcio: r.descripcio,
+      pais: '',
+      tipusRenda: 'dividends',
       importBrut: r.importBrut,
-      retencioOrigen: r.retencioOrigen,
-      importNet: r.importBrut - r.retencioOrigen,
-      tipusRenda: 'DIVIDENDS',
-      pais: 'ES',
+      retencioEfectiva: r.retencioOrigen,
+      tensCDI: false,
+      tipusMaxCDI: 0,
     }));
     update('rendesExterior', [...dades.rendesExterior, ...noves]);
   };
@@ -192,19 +246,19 @@ const Step7DDI = ({ dades, update }) => {
             <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">7</span>
             <div>
               <h2 className="font-bold text-gray-800">Deduccio per doble imposicio (DDI)</h2>
-              <p className="text-xs text-gray-500">Art. 48 Llei 5/2014 · Convenis de doble imposicio</p>
+              <p className="text-xs text-gray-500">Art. 48.4 Llei 5/2014 (mod. L2023005) · Convenis de doble imposicio</p>
             </div>
           </div>
           <button
             onClick={addRenda}
             className="text-sm bg-[#009B9C] text-white px-4 py-2 rounded-xl hover:bg-[#007A7B] transition font-medium"
           >
-            + Afegir renda exterior
+            + Afegir renda estrangera
           </button>
         </div>
 
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-700 mb-4">
-          <strong>Art. 48 Llei 5/2014:</strong> La DDI = minim entre (a) l'impost efectivament pagat a l'estranger i (b) la quota andorrana que correspondria a aquella renda. Si hi ha CDI, la retencio al pais d'origen es limita al tipus maxim convencional.
+          <strong>Art. 48.4 Llei 5/2014 (mod. L2023005):</strong> la DDI es calcula <strong>país per país</strong>. Per a cada renda, DDI = mínim entre (a) l'impost estranger efectiu —topat al tipus màxim del CDI quan n'hi ha— i (b) la quota andorrana (10%) sobre aquella renda. Les rendes sense retenció efectiva no generen DDI ni entren a la base del límit.
         </div>
 
         {/* Alerta: retencions del pas 5 pendents d'importar */}
@@ -218,7 +272,7 @@ const Step7DDI = ({ dades, update }) => {
                 <p className="text-xs text-blue-600">
                   S'han detectat {retencionsOrigenMobiliaris.length} partida(es) amb retencio al pais d'origen
                   (total: <strong>{totalRetOrigenMobiliaris.toFixed(2)} euros</strong>) al capital mobiliari.
-                  Importeu-les aqui per declarar la DDI corresponent.
+                  Importeu-les aqui i completeu el país i el CDI per declarar la DDI corresponent.
                 </p>
                 <ul className="mt-1 space-y-0.5">
                   {retencionsOrigenMobiliaris.map((r, i) => (
@@ -240,14 +294,14 @@ const Step7DDI = ({ dades, update }) => {
 
         {dades.rendesExterior.length === 0 && (
           <div className="text-center py-8 text-gray-400">
-            <p className="text-sm">Cap renda exterior afegida.</p>
-            <p className="text-xs mt-1">Afegiu les rendes obtingudes a l'estranger amb retencio al pais d'origen.</p>
+            <p className="text-sm">Cap renda estrangera afegida.</p>
+            <p className="text-xs mt-1">Afegiu una entrada per cada renda obtinguda a l'estranger (país i tipus de renda).</p>
           </div>
         )}
 
         {dades.rendesExterior.length > 0 && (
           <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-3 text-sm">
-            <span className="font-semibold text-[#009B9C]">Total DDI deduible: </span>
+            <span className="font-semibold text-[#009B9C]">Total DDI deduible (suma país per país): </span>
             <span className="font-bold text-gray-800">
               {totalDDI.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros
             </span>
@@ -256,7 +310,7 @@ const Step7DDI = ({ dades, update }) => {
       </div>
 
       {dades.rendesExterior.map((renda, i) => (
-        <RendaExtForm
+        <RendaEstrangeraForm
           key={renda.id}
           renda={renda}
           index={i}

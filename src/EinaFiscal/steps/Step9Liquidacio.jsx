@@ -781,20 +781,28 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </SeccioBlocNormatiu>
             )}
 
-            {/* DDI */}
+            {/* DDI — càlcul país per país (Art. 48.4) */}
             {tensDDI && r.ddiDetall && r.ddiDetall.length > 0 && !blocsExclosos.ddi && (
-              <SeccioBlocNormatiu titol="6. Deducció per doble imposició (DDI) — Art. 48">
-                <FilaDetall label="Total DDI aplicada" valor={fmt(r.ddiDetall.reduce((s, d) => s + (d.ddi || 0), 0))} negrita destacat />
-                {r.ddiDetall.map((d, i) => (
-                  <React.Fragment key={i}>
-                    <FilaDetall label={`${d.pais} — ${d.tipusRenda}`} valor={fmt(d.ddi)} />
-                    <FilaDetall label="  Renda obtinguda a l'estranger" valor={fmt(d.importBrut || 0)} />
-                    <FilaDetall label="  Impost pagat a l'estranger" valor={fmt(d.retencioOrigen || 0)} nota="Retenció efectiva" />
-                    <FilaDetall label="  Quota andorrana equivalent" valor={fmt(d.quotaAndorra || 0)} nota="10% sobre la renda" />
-                    <FilaDetall label="  DDI = mínim dels dos" valor={fmt(d.ddi)} negrita nota={d.explicacio} />
-                  </React.Fragment>
-                ))}
-                <NotaNormativa refText="Art. 48 Llei 5/2014" text="La DDI és el mínim entre: (a) l'impost efectivament pagat a l'estranger i (b) la quota andorrana que correspondria a aquella renda si s'hagués obtingut a Andorra." />
+              <SeccioBlocNormatiu titol="6. Deducció per doble imposició (DDI) — Art. 48.4">
+                <FilaDetall label="Total DDI aplicada (suma país per país)" valor={fmt(r.ddiDetall.reduce((s, d) => s + (d.ddi || 0), 0))} negrita destacat />
+                {r.ddiDetall.map((d, i) => {
+                  const ret = d.retencioEfectiva ?? d.retencioOrigen ?? 0;
+                  const topCDI = (d.tipusMaxCDI || 0) / 100 * (d.importBrut || 0);
+                  return (
+                    <React.Fragment key={i}>
+                      <FilaDetall label={`${d.pais || '—'} — ${d.tipusRenda || ''}`} valor={fmt(d.ddi)} negrita />
+                      <FilaDetall label="  Renda bruta obtinguda" valor={fmt(d.importBrut || 0)} />
+                      <FilaDetall label="  Retenció efectiva" valor={fmt(ret)} nota={d.tensCDI ? `CDI vigent — tipus màxim ${d.tipusMaxCDI || 0}%` : 'Sense CDI'} />
+                      {d.tensCDI && ret > topCDI && (
+                        <FilaDetall label="  Excés no computable (sobre tipus CDI)" valor={fmt(-(ret - (d.impostEtopat || 0)))} negatiu
+                          nota={`Tipus màxim CDI: ${d.tipusMaxCDI || 0}% — excés reclamable en origen`} />
+                      )}
+                      <FilaDetall label="  Límit quota andorrana (10%)" valor={fmt(d.quotaAndorrana ?? d.quotaAndorra ?? 0)} />
+                      <FilaDetall label="  DDI aplicada (mínim dels dos)" valor={fmt(d.ddi)} destacat nota={d.explicacio} />
+                    </React.Fragment>
+                  );
+                })}
+                <NotaNormativa refText="Art. 48.4 Llei 5/2014 (mod. L2023005)" text="La DDI es calcula país per país: per a cada renda, el mínim entre (a) l'impost estranger efectiu —topat al tipus màxim del CDI quan n'hi ha— i (b) la quota andorrana (10%) sobre aquella renda. Les rendes sense retenció efectiva no generen DDI ni entren a la base del límit." />
               </SeccioBlocNormatiu>
             )}
           </div>

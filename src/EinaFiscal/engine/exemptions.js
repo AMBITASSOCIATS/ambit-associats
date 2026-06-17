@@ -2,7 +2,6 @@
 // Cada funció retorna: { exempt, parcial, ratio, importGravat, importExempt, ref, titol, explicacio, alertType, formulari, casella }
 
 import { IRPF_EF } from './constants.js';
-import { CDI_RATES } from './cdiRates.js';
 
 // ── 5.2 Exempcions de rendes del treball ──────────────────────────────────────
 export function analizarRendaTreball(renda) {
@@ -253,24 +252,51 @@ export function analizarGuanyCapital(transmissio) {
   };
 }
 
-// ── 5.5 DDI (Art. 48 Llei 5/2014) ────────────────────────────────────────────
-export function calcularDDI(rendesExt) {
-  // rendesExt: array de { pais, tipusRenda, importBrut, retencioOrigen, importNet }
-  return rendesExt.map(r => {
-    const cdi = CDI_RATES[r.pais] || CDI_RATES.DEFAULT;
-    const tipusAndorra = 0.10;
-    // Art. 48: la quota andorrana es calcula sobre l'import BRUT (no net),
-    // ja que la retenció en origen forma part de la renda gravada a Andorra.
-    const quotaAndorra = r.importBrut * tipusAndorra;
-    const ddi = Math.min(r.retencioOrigen, quotaAndorra);
-    const teCDI = r.pais in CDI_RATES && r.pais !== 'DEFAULT';
-    const explicacio = teCDI
-      ? `CDI ${cdi.notes}. La DDI es limita al menor entre la retenció pagada a ${r.pais} (${r.retencioOrigen.toFixed(2)} €) i la quota andorrana sobre aquesta renda (${quotaAndorra.toFixed(2)} €). DDI aplicable: ${ddi.toFixed(2)} €.`
-      : `Sense CDI amb ${r.pais}. S'aplica la normativa interna andorrana (Art. 48 Llei 5/2014). La DDI es limita a la quota andorrana sobre la renda estrangera: ${ddi.toFixed(2)} €.`;
+// ── 5.5 DDI — Deducció per doble imposició internacional ──────────────────────
+// Art. 48.4 Llei 5/2014 (redacció modificada per la Llei 5/2023, L2023005).
+// Càlcul PAÍS PER PAÍS (renda per renda), NO agregat. Per a cada renda estrangera:
+//   DDI_renda = min( impost_estranger_efectiu_topat_CDI , 10% × renda_bruta )
+// On impost_estranger_efectiu_topat_CDI =
+//   · amb CDI  → min(retenció efectiva, tipus_màx_CDI × renda bruta)   (l'excés sobre
+//                 el tipus del CDI no és computable; és reclamable en origen)
+//   · sense CDI → retenció efectiva
+// Les rendes amb retenció efectiva = 0 → DDI = 0 i NO entren a la base del límit.
+// La DDI total és la SUMA de les DDI de cada renda (la fan els consumidors via reduce).
+export function calcularDDI(rendesEstrangeres) {
+  return (rendesEstrangeres || []).map(r => {
+    const importBrut = r.importBrut || 0;
+    // Compatibilitat amb declaracions desades amb el camp antic `retencioOrigen`.
+    const retencioEfectiva = (r.retencioEfectiva ?? r.retencioOrigen) || 0;
+    const tensCDI = !!r.tensCDI;
+    const tipusMaxCDI = r.tipusMaxCDI || 0;
+    const quotaAndorrana = importBrut * 0.10; // límit b) — quota andorrana sobre la renda
+
+    if (retencioEfectiva <= 0) {
+      return {
+        ...r, retencioEfectiva, tensCDI, tipusMaxCDI,
+        impostEtopat: 0, excesCDI: 0, quotaAndorrana, ddi: 0, teCDI: tensCDI,
+        ref: 'Art. 48.4 Llei 5/2014 (mod. L2023005)',
+        explicacio: 'Retenció efectiva nul·la — aquesta renda no genera DDI i no entra a la base del límit (Art. 48.4).',
+      };
+    }
+
+    // Límit a) — impost estranger efectiu, topat al tipus màxim del CDI si n'hi ha.
+    const topCDI = (tipusMaxCDI / 100) * importBrut;
+    const impostEtopat = tensCDI ? Math.min(retencioEfectiva, topCDI) : retencioEfectiva;
+    const excesCDI = tensCDI ? Math.max(0, retencioEfectiva - impostEtopat) : 0;
+
+    // DDI = mínim entre límit a) i límit b).
+    const ddi = Math.min(impostEtopat, quotaAndorrana);
+
+    const explicacio = tensCDI
+      ? `CDI vigent amb ${r.pais}: la retenció computable es topa al ${tipusMaxCDI}% de la renda bruta (${topCDI.toFixed(2)} €). Impost estranger computable: ${impostEtopat.toFixed(2)} €${excesCDI > 0 ? ` (excés de ${excesCDI.toFixed(2)} € no computable, reclamable en origen)` : ''}. Límit quota andorrana (10%): ${quotaAndorrana.toFixed(2)} €. DDI = mínim dels dos = ${ddi.toFixed(2)} €.`
+      : `Sense CDI amb ${r.pais}: es computa la retenció efectiva (${retencioEfectiva.toFixed(2)} €) topada a la quota andorrana (10% = ${quotaAndorrana.toFixed(2)} €). DDI = mínim dels dos = ${ddi.toFixed(2)} €.`;
+
     return {
-      ...r, quotaAndorra, ddi, teCDI,
-      ref: `Art. 48 Llei 5/2014${teCDI ? ` + CDI Andorra-${r.pais}` : ''}`,
-      explicacio
+      ...r, retencioEfectiva, tensCDI, tipusMaxCDI,
+      impostEtopat, excesCDI, quotaAndorrana, ddi, teCDI: tensCDI,
+      ref: `Art. 48.4 Llei 5/2014 (mod. L2023005)${tensCDI ? ` + CDI Andorra-${r.pais}` : ''}`,
+      explicacio,
     };
   });
 }
