@@ -160,6 +160,65 @@ export const CDI_RATES = {
     salaris: 'treball',
     notes: 'CDI Andorra-Letònia.'
   },
+  // ── CDI afegits (juny 2026). Tipus segons patró OCDE estàndard del fitxer
+  //    (dividends general 15% / qualif. 5%, interessos 5%, cànons 5%).
+  //    PENDENT: verificar els tipus exactes contra el text de cada conveni. ──
+  'CY': {  // Xipre
+    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    plusvalues_immobles: null, plusvalues_accions: null,
+    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
+    vigentDes: '11/01/2019', bopa: 'BOPA 30/01/2019',
+    notes: 'CDI Andorra-Xipre. En vigor 11/01/2019. Tipus pendents de verificació.'
+  },
+  'HU': {  // Hongria
+    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    plusvalues_immobles: null, plusvalues_accions: null,
+    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
+    vigentDes: '01/01/2020', bopa: null,
+    notes: 'CDI Andorra-Hongria. En vigor 01/01/2020. Tipus pendents de verificació.'
+  },
+  'MC': {  // Mònaco
+    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    plusvalues_immobles: null, plusvalues_accions: null,
+    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
+    vigentDes: '22/07/2023', bopa: null,
+    notes: 'CDI Andorra-Mònaco. En vigor 22/07/2023. Tipus pendents de verificació.'
+  },
+  'CZ': {  // República Txeca
+    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    plusvalues_immobles: null, plusvalues_accions: null,
+    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
+    vigentDes: '31/10/2023', bopa: null,
+    notes: 'CDI Andorra-República Txeca. En vigor 31/10/2023. Tipus pendents de verificació.'
+  },
+  'HR': {  // Croàcia
+    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    plusvalues_immobles: null, plusvalues_accions: null,
+    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
+    vigentDes: '31/10/2023', bopa: null,
+    notes: 'CDI Andorra-Croàcia. En vigor 31/10/2023. Tipus pendents de verificació.'
+  },
+  'NL': {  // Països Baixos
+    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    plusvalues_immobles: null, plusvalues_accions: null,
+    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
+    vigentDes: '01/01/2025', bopa: 'BOPA 29/11/2024',
+    notes: 'CDI Andorra-Països Baixos. En vigor 01/01/2025. Tipus pendents de verificació.'
+  },
+  'RO': {  // Romania
+    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    plusvalues_immobles: null, plusvalues_accions: null,
+    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
+    vigentDes: '11/12/2025', bopa: null,
+    notes: 'CDI Andorra-Romania. En vigor 11/12/2025. Tipus pendents de verificació.'
+  },
+  'GB': {  // Regne Unit
+    dividends_general: 0.15, dividends_qualif: 0.05, interessos: 0.05, canons: 0.05,
+    plusvalues_immobles: null, plusvalues_accions: null,
+    pensions_privades: 'residencia', pensions_SS: 'origen', salaris: 'treball',
+    vigentDes: '22/12/2025', bopa: null,
+    notes: 'CDI Andorra-Regne Unit. En vigor 22/12/2025. Tipus pendents de verificació.'
+  },
   // Sense CDI — no hi ha límit de retenció convencional
   'DEFAULT': {
     dividends_general: null,
@@ -185,5 +244,13 @@ export const PAISOS = [
   { codi: 'LT', nom: 'Lituània', cdi: true },
   { codi: 'ME', nom: 'Montenegro', cdi: true },
   { codi: 'LV', nom: 'Letònia', cdi: true },
+  { codi: 'CY', nom: 'Xipre', cdi: true },
+  { codi: 'HU', nom: 'Hongria', cdi: true },
+  { codi: 'MC', nom: 'Mònaco', cdi: true },
+  { codi: 'CZ', nom: 'República Txeca', cdi: true },
+  { codi: 'HR', nom: 'Croàcia', cdi: true },
+  { codi: 'NL', nom: 'Països Baixos', cdi: true },
+  { codi: 'RO', nom: 'Romania', cdi: true },
+  { codi: 'GB', nom: 'Regne Unit', cdi: true },
   { codi: 'OTHER', nom: 'Altre país (sense CDI)', cdi: false },
 ];
