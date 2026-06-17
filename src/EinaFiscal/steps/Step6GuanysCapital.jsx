@@ -384,20 +384,12 @@ const Step6GuanysCapital = ({ dades, update }) => {
   return (
     <div className="space-y-4">
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">6</span>
-            <div>
-              <h2 className="font-bold text-gray-800">Guanys i perdues de capital</h2>
-              <p className="text-xs text-gray-500">Formulari 300-E · Art. 30-32 Llei 5/2014</p>
-            </div>
+        <div className="flex items-center gap-2 mb-4">
+          <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">6</span>
+          <div>
+            <h2 className="font-bold text-gray-800">Guanys i perdues de capital</h2>
+            <p className="text-xs text-gray-500">Formulari 300-E · Art. 30-32 Llei 5/2014</p>
           </div>
-          <button
-            onClick={addTransmissio}
-            className="text-sm bg-[#009B9C] text-white px-4 py-2 rounded-xl hover:bg-[#007A7B] transition font-medium"
-          >
-            + Afegir transmissio
-          </button>
         </div>
 
         {/* Seccio 1 del 300-E: Guanys/perdues no derivats de transmissio */}
@@ -415,7 +407,7 @@ const Step6GuanysCapital = ({ dades, update }) => {
               onClick={addRendaSense}
               className="text-xs bg-[#009B9C] text-white px-3 py-1.5 rounded-lg hover:bg-[#007A7B] transition font-medium whitespace-nowrap"
             >
-              + Afegir renda sense transmissió
+              + Afegir variació
             </button>
           </div>
           <div className="p-4 space-y-3">
@@ -425,12 +417,12 @@ const Step6GuanysCapital = ({ dades, update }) => {
             {rendesSenseTransmissio.map((r, i) => (
               <div key={r.id} className="grid grid-cols-12 gap-2 items-start border border-gray-100 rounded-lg p-2">
                 <div className="col-span-4">
-                  <label className="block text-xs text-gray-500 mb-1">Descripció</label>
+                  <label className="block text-xs text-gray-500 mb-1">Concepte de la variació</label>
                   <input
                     type="text"
                     value={r.descripcio}
                     onChange={e => updateRendaSense(r.id, 'descripcio', e.target.value)}
-                    placeholder="Ex: Opcions accions empresa X"
+                    placeholder="Ex: Rescat pla de pensions, indemnització, premi…"
                     className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
                   />
                 </div>
@@ -483,12 +475,31 @@ const Step6GuanysCapital = ({ dades, update }) => {
           </div>
         </div>
 
-        {dades.transmissions.length === 0 && (
-          <div className="text-center py-4 text-gray-400">
-            <p className="text-sm">Cap transmissio afegida.</p>
-            <p className="text-xs mt-1">Afegiu les transmissions d'immobles, accions, fons d'inversio, etc.</p>
+        {/* Seccio 2 del 300-E: Guanys/perdues derivats de transmissio patrimonial */}
+        <div className="border border-gray-200 rounded-xl overflow-hidden">
+          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700">
+                Secció 2 — Guanys i pèrdues derivats de transmissió patrimonial (300-E sec.2)
+              </h3>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Transmissions d'immobles, accions, fons d'inversió i altres elements patrimonials
+              </p>
+            </div>
+            <button
+              onClick={addTransmissio}
+              className="text-xs bg-[#009B9C] text-white px-3 py-1.5 rounded-lg hover:bg-[#007A7B] transition font-medium whitespace-nowrap"
+            >
+              + Afegir transmissió
+            </button>
           </div>
-        )}
+          {dades.transmissions.length === 0 && (
+            <div className="text-center py-4 text-gray-400">
+              <p className="text-sm">Cap transmissió afegida.</p>
+              <p className="text-xs mt-1">Afegiu les transmissions d'immobles, accions, fons d'inversió, etc.</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {dades.transmissions.map((trans, i) => (
