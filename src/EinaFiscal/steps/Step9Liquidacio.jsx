@@ -877,7 +877,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
           <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
             <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
-            <span>Pàgina 2 / 4</span>
+            <span>{trp('paginaNde', { n: 2, total: 4 })}</span>
           </div>
         </div>
 
@@ -953,7 +953,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
           <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
             <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
-            <span>Pàgina 3 / 4</span>
+            <span>{trp('paginaNde', { n: 3, total: 4 })}</span>
           </div>
         </div>
 
@@ -1075,7 +1075,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
               <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
                 <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
-                <span>Formulari 300-F</span>
+                <span>{tr('peuFormulari300F')}</span>
               </div>
             </div>
           );
@@ -1184,7 +1184,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
           <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
             <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
-            <span>Pàgina 4 / 4</span>
+            <span>{trp('paginaNde', { n: 4, total: 4 })}</span>
           </div>
         </div>
 
@@ -1232,7 +1232,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
             <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
               <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
-              <span>Rendes exemptes i no subjectes</span>
+              <span>{tr('peuRendesExemptes')}</span>
             </div>
           </div>
         )}
@@ -1264,19 +1264,19 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             {[
               {
                 titol: '1. Responsabilitat i limitació de responsabilitat',
-                text: `Els càlculs continguts en aquest informe s'han efectuat d'acord amb la Llei 5/2014, del 24 d'abril, de l'Impost sobre la Renda de les Persones Físiques del Principat d'Andorra, i les seves modificacions posteriors (L2023005 i L2025005), així com el Reglament de 29/12/2023. Tanmateix, l'eina pot no reflectir la totalitat de les particularitats normatives aplicables a cada situació individual. ${CAP.nomComercial || CAP.nom} no es fa responsable dels errors, omissions o inexactituds que poguessin derivar-se de les dades introduïdes per l'usuari o de canvis normatius posteriors a l'última actualització de l'eina.`
+                text: trp('disclaimerResponsabilitat', { nom: CAP.nomComercial || CAP.nom })
               },
               {
                 titol: '2. Naturalesa de l\'informe',
-                text: 'Aquest document és un informe de treball intern o de presentació al client, elaborat per un professional de l\'assessoria tributària. No substitueix en cap cas la declaració oficial de l\'IRPF, que s\'ha de presentar obligatòriament a través del Portal Tributari del Govern d\'Andorra (www.eda.ad) dins dels terminis legals establerts. La presentació d\'una liquidació incorrecta o fora de termini pot comportar sancions administratives.'
+                text: tr('disclaimerNaturalesa')
               },
               {
                 titol: '3. Protecció de dades personals (Llei 29/2021)',
-                text: `En compliment de la Llei 29/2021, del 28 d'octubre, qualificada de protecció de dades personals del Principat d'Andorra, i del Reglament (UE) 2016/679 (RGPD), s'informa que les dades personals contingudes en aquest informe (nom, NRT, dades fiscals) han estat introduïdes per l'assessor tributari en el marc de la relació professional establerta amb l'obligat tributari. Les dades es tracten únicament per a la finalitat de gestionar la liquidació de l'IRPF i no es cediran a tercers sense consentiment exprés. Les dades es guarden localment al navegador (localStorage) i no es transmeten a cap servidor extern. L'obligat tributari pot exercir els seus drets d'accés, rectificació i supressió dirigint-se a ${CAP.email}.`
+                text: trp('disclaimerProteccioDades', { email: CAP.email })
               },
               {
                 titol: '4. Confidencialitat',
-                text: 'Aquest informe conté dades fiscals de caràcter confidencial. La seva difusió, còpia o utilització per a finalitats diferents de les previstes queda expressament prohibida sense l\'autorització de l\'obligat tributari o del professional que l\'ha elaborat.'
+                text: tr('disclaimerConfidencialitat')
               },
               {
                 titol: '5. Normativa de referència',
