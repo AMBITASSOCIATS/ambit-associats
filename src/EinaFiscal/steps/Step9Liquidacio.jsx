@@ -253,10 +253,12 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
     .avoid-break { page-break-inside: avoid; break-inside: avoid; }
     .page-content { padding: 0 30px 30px 30px; }
     /* Capçalera i peu repetits a cada pàgina física d'una secció (thead/tfoot) */
-    .sec-table { width: 100%; border-collapse: collapse; }
+    /* height:297mm força la secció a omplir la pàgina → el peu queda al fons */
+    .sec-table { width: 100%; height: 297mm; border-collapse: collapse; }
     .sec-table > thead { display: table-header-group; }
     .sec-table > tfoot { display: table-footer-group; }
     .sec-table > thead > tr > td, .sec-table > tbody > tr > td, .sec-table > tfoot > tr > td { padding: 0; }
+    .sec-table > tbody > tr > td { vertical-align: top; }
     @page { margin: 0; size: A4 portrait; }
     @media print {
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
