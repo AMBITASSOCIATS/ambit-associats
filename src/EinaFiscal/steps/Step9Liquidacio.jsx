@@ -258,7 +258,9 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
     .sec-table > thead { display: table-header-group; }
     .sec-table > tfoot { display: table-footer-group; }
     .sec-table > thead > tr > td, .sec-table > tbody > tr > td, .sec-table > tfoot > tr > td { padding: 0; }
-    .sec-table > tbody > tr > td { vertical-align: top; }
+    .sec-table > tbody { height: 100%; }
+    .sec-table > tbody > tr { height: 100%; }
+    .sec-table > tbody > tr > td { vertical-align: top; height: 100%; }
     @page { margin: 0; size: A4 portrait; }
     @media print {
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
