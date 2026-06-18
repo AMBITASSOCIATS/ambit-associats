@@ -252,6 +252,11 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
     .page-break { page-break-before: always; break-before: page; }
     .avoid-break { page-break-inside: avoid; break-inside: avoid; }
     .page-content { padding: 0 30px 30px 30px; }
+    /* Capçalera i peu repetits a cada pàgina física d'una secció (thead/tfoot) */
+    .sec-table { width: 100%; border-collapse: collapse; }
+    .sec-table > thead { display: table-header-group; }
+    .sec-table > tfoot { display: table-footer-group; }
+    .sec-table > thead > tr > td, .sec-table > tbody > tr > td, .sec-table > tfoot > tr > td { padding: 0; }
     @page { margin: 0; size: A4 portrait; }
     @media print {
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -580,10 +585,13 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         </div>
 
         {/* ══ PÀGINA 2 — DETALL DE RENDES ════════════════════════════════ */}
-        <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('detallRendes')} cap={CAP} />
-
-          <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
+        <div className="page-break">
+         <table className="sec-table">
+          <thead><tr><td>
+            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('detallRendes')} cap={CAP} />
+          </td></tr></thead>
+          <tbody><tr><td>
+          <div className="page-content" style={{ padding: '10px 30px 20px 30px' }}>
 
             {exercici < 2024 && (
               <div style={{ backgroundColor: '#FEF3C7', border: '1px solid #F59E0B', borderRadius: '6px', padding: '8px 12px', marginBottom: '10px', fontSize: '9px', color: '#92400E' }}>
@@ -869,18 +877,24 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </SeccioBlocNormatiu>
             )}
           </div>
-
-          <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
+          </td></tr></tbody>
+          <tfoot><tr><td>
+          <div style={{ padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
             <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
-            <span>{trp('paginaNde', { n: 2, total: 4 })}</span>
+            <span>{tr('detallRendes')}</span>
           </div>
+          </td></tr></tfoot>
+         </table>
         </div>
 
         {/* ══ PÀGINA 3 — BASES I REDUCCIONS ══════════════════════════════ */}
-        <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('basesReduccions')} cap={CAP} />
-
-          <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
+        <div className="page-break">
+         <table className="sec-table">
+          <thead><tr><td>
+            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('basesReduccions')} cap={CAP} />
+          </td></tr></thead>
+          <tbody><tr><td>
+          <div className="page-content" style={{ padding: '10px 30px 20px 30px' }}>
 
             <SeccioBlocNormatiu titol={tr('basesTributacioTitol')}>
               <FilaDetall label={tr('rendaTreballLabel')} valor={fmt(r.rendaTreball)} />
@@ -945,11 +959,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             </SeccioBlocNormatiu>
 
           </div>
-
-          <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
+          </td></tr></tbody>
+          <tfoot><tr><td>
+          <div style={{ padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
             <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
-            <span>{trp('paginaNde', { n: 3, total: 4 })}</span>
+            <span>{tr('basesReduccions')}</span>
           </div>
+          </td></tr></tfoot>
+         </table>
         </div>
 
         {/* ══ PÀGINA 300-F — BASES NEGATIVES I DEDUCCIONS (condicional) ══ */}
@@ -997,10 +1014,13 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           };
 
           return (
-            <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-              <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('seccioFormulari300F')} cap={CAP} />
-
-              <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
+            <div className="page-break">
+             <table className="sec-table">
+              <thead><tr><td>
+                <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('seccioFormulari300F')} cap={CAP} />
+              </td></tr></thead>
+              <tbody><tr><td>
+              <div className="page-content" style={{ padding: '10px 30px 20px 30px' }}>
 
                 {/* Bases negatives generals */}
                 {(dades.basesNegGenerals || []).length > 0 && (
@@ -1067,20 +1087,26 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 )}
 
               </div>
-
-              <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
+              </td></tr></tbody>
+              <tfoot><tr><td>
+              <div style={{ padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
                 <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
                 <span>{tr('peuFormulari300F')}</span>
               </div>
+              </td></tr></tfoot>
+             </table>
             </div>
           );
         })()}
 
         {/* ══ PÀGINA 4 — LIQUIDACIÓ FINAL 300-L (INDEPENDENT) ════════════ */}
-        <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-          <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('liquidacio')} cap={CAP} />
-
-          <div className="page-content" style={{ flex: 1, padding: '10px 15px 15px 15px' }}>
+        <div className="page-break">
+         <table className="sec-table">
+          <thead><tr><td>
+            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('liquidacio')} cap={CAP} />
+          </td></tr></thead>
+          <tbody><tr><td>
+          <div className="page-content" style={{ padding: '10px 15px 15px 15px' }}>
             <div style={{ fontSize: '11px', fontWeight: '700', color: CAP.colorFosc, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: `2px solid ${CAP.color}`, paddingBottom: '6px' }}>
               {trp('titol300LExercici', { any: exercici })}
             </div>
@@ -1176,19 +1202,25 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               <span style={{ fontWeight: '700' }}>📋 {tr('terminiPresentacio')}:</span> {trp('terminiPresentacioText', { any: exercici, anyseg: exercici + 1 })}
             </div>
           </div>
-
-          <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
+          </td></tr></tbody>
+          <tfoot><tr><td>
+          <div style={{ padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
             <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
-            <span>{trp('paginaNde', { n: 4, total: 4 })}</span>
+            <span>{tr('liquidacio')}</span>
           </div>
+          </td></tr></tfoot>
+         </table>
         </div>
 
         {/* ══ PÀGINA 5b — RENDES EXEMPTES (Art. 5.k) I NO SUBJECTES (Art. 27.3) ══ */}
         {((tensTransmissionsExemptes && r.transmissionsExemptes && r.transmissionsExemptes.length > 0) || tensDevolucionsCapital) && (
-          <div className="page-break" style={{ minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
-            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('seccioRendesExemptesNoSubjectes')} cap={CAP} />
-
-            <div className="page-content" style={{ flex: 1, padding: '10px 30px 20px 30px' }}>
+          <div className="page-break">
+           <table className="sec-table">
+            <thead><tr><td>
+              <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('seccioRendesExemptesNoSubjectes')} cap={CAP} />
+            </td></tr></thead>
+            <tbody><tr><td>
+            <div className="page-content" style={{ padding: '10px 30px 20px 30px' }}>
               <SeccioBlocNormatiu titol={tr('titol5bRendesExemptes')}>
 
                 {/* Subsecció A — Exemptes Art. 5.k */}
@@ -1224,11 +1256,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 />
               </SeccioBlocNormatiu>
             </div>
-
-            <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
+            </td></tr></tbody>
+            <tfoot><tr><td>
+            <div style={{ padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between' }}>
               <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
               <span>{tr('peuRendesExemptes')}</span>
             </div>
+            </td></tr></tfoot>
+           </table>
           </div>
         )}
 
