@@ -108,13 +108,8 @@ const CapcaleraDocument = ({ clientNom, clientNRT, exercici, seccio, cap }) => {
   );
 };
 
-// Noms descriptius per a les partides de capital mobiliari (300-D)
-const MOBILIARI_NOMS = {
-  'a': 'Dividends i participació en patrimoni net',
-  'b': 'Interessos i cessió de capitals propis',
-  'c': 'Operacions de capitalització i assegurances de vida',
-  'd': 'Altres rendes de capital mobiliari',
-};
+// Noms descriptius de les partides de capital mobiliari (300-D): vegeu claus
+// mobiliariA-D a pdfTranslations.js (traduïts a 4 idiomes).
 
 // ─── COMPONENT PRINCIPAL ──────────────────────────────────────────────────────
 const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFinalitzar, onReobrir, estat, capcalera }) => {
@@ -779,7 +774,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     <FilaDetall label={`${trp('entitatNum', { n: i + 1 })}: ${ent.entitat || ''}`} valor={null} negrita />
                     {(ent.partides || []).map((p, j) => (
                       <React.Fragment key={j}>
-                        <FilaDetall label={`  ${MOBILIARI_NOMS[p.tipus] || p.tipusRenda || 'Renda'}`} valor={fmt(p.importBrut || 0)} nota={trp('apartat300D', { ap: (p.tipus || '?').toUpperCase() })} />
+                        <FilaDetall label={`  ${({ a: tr('mobiliariA'), b: tr('mobiliariB'), c: tr('mobiliariC'), d: tr('mobiliariD') })[p.tipus] || p.tipusRenda || 'Renda'}`} valor={fmt(p.importBrut || 0)} nota={trp('apartat300D', { ap: (p.tipus || '?').toUpperCase() })} />
                         {(p.despeses || 0) > 0 && <FilaDetall label={tr('despesesCustodiaGestioLabel')} valor={fmt(-(p.despeses || 0))} negatiu />}
                         {(p.retencioAndorra || 0) > 0 && <FilaDetall label={tr('retencioAndorraLabel')} valor={fmt(p.retencioAndorra || 0)} nota={tr('deduibleQuotaNota')} />}
                         {(p.retencioEstranger || 0) > 0 && <FilaDetall label={tr('retencioEstrangerLabel')} valor={fmt(p.retencioEstranger || 0)} nota={tr('baseCalculDdiNota')} />}
