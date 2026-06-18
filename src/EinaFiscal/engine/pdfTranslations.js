@@ -1251,6 +1251,44 @@ export const T = {
     FR: "Déductions générées au cours de l'exercice {any} — Générées / Appliquées / En attente",
     EN: "Deductions generated in tax year {any} — Generated / Applied / Pending",
   },
+
+  // ── A2 fase 3c: ternaris condicionals, peus i copyright ───────────────────
+  activitatNum: { CA: "Activitat {n}", ES: "Actividad {n}", FR: "Activité {n}", EN: "Activity {n}" },
+  rendaNum: { CA: "Renda {n}", ES: "Renta {n}", FR: "Revenu {n}", EN: "Income {n}" },
+  bcTotExempt: { CA: " · b=c → tot exempt", ES: " · b=c → todo exento", FR: " · b=c → tout exonéré", EN: " · b=c → fully exempt" },
+  informeIRPFAny: { CA: "Informe IRPF {any}", ES: "Informe IRPF {any}", FR: "Rapport IRPF {any}", EN: "Personal Income Tax report {any}" },
+  // Nota cònjuge (secció 300-A)
+  conjugeNoRendes: {
+    CA: "No percep rendes de la base general → mínim personal màxim: 40.000 €",
+    ES: "No percibe rentas de la base general → mínimo personal máximo: 40.000 €",
+    FR: "Ne perçoit pas de revenus de la base générale → minimum personnel maximum : 40.000 €",
+    EN: "Receives no general-base income → maximum personal allowance: 40,000 €",
+  },
+  conjugeMes24k: {
+    CA: "≥ 24.000 € → no s'aplica increment del mínim personal (es manté en 24.000 €)",
+    ES: "≥ 24.000 € → no se aplica incremento del mínimo personal (se mantiene en 24.000 €)",
+    FR: "≥ 24.000 € → pas d'augmentation du minimum personnel (maintenu à 24.000 €)",
+    EN: "≥ 24,000 € → no increase of the personal allowance (kept at 24,000 €)",
+  },
+  conjugeMenys24kP: {
+    CA: "< 24.000 € → mínim incrementat: {imp} (40.000 − rendes netes cònjuge)",
+    ES: "< 24.000 € → mínimo incrementado: {imp} (40.000 − rentas netas cónyuge)",
+    FR: "< 24.000 € → minimum augmenté : {imp} (40.000 − revenus nets conjoint)",
+    EN: "< 24,000 € → increased allowance: {imp} (40,000 − spouse net income)",
+  },
+  // Nota mínim personal (ramas)
+  mpCasatNoRendes: { CA: "Casat/da · cònjuge sense rendes generals → mínim 40.000 €", ES: "Casado/a · cónyuge sin rentas generales → mínimo 40.000 €", FR: "Marié(e) · conjoint sans revenus généraux → minimum 40.000 €", EN: "Married · spouse with no general income → 40,000 € allowance" },
+  mpCasatMes24k: { CA: "Casat/da · rendes cònjuge ≥ 24.000 € → mínim base 24.000 €", ES: "Casado/a · rentas cónyuge ≥ 24.000 € → mínimo base 24.000 €", FR: "Marié(e) · revenus conjoint ≥ 24.000 € → minimum de base 24.000 €", EN: "Married · spouse income ≥ 24,000 € → base allowance 24,000 €" },
+  mpCasatMenys24kP: { CA: "Casat/da · rendes cònjuge {imp} < 24.000 € → mínim incrementat", ES: "Casado/a · rentas cónyuge {imp} < 24.000 € → mínimo incrementado", FR: "Marié(e) · revenus conjoint {imp} < 24.000 € → minimum augmenté", EN: "Married · spouse income {imp} < 24,000 € → increased allowance" },
+  mpSolter: { CA: "Solter/a, vidu/a o divorciat/da", ES: "Soltero/a, viudo/a o divorciado/a", FR: "Célibataire, veuf/veuve ou divorcé(e)", EN: "Single, widowed or divorced" },
+  mpDiscapacitat: { CA: "Discapacitat CONAVA", ES: "Discapacidad CONAVA", FR: "Handicap CONAVA", EN: "CONAVA disability" },
+  mpSenseDiscapacitat: { CA: "Sense discapacitat reconeguda", ES: "Sin discapacidad reconocida", FR: "Sans handicap reconnu", EN: "No recognised disability" },
+  copyrightText: {
+    CA: "© {year} {nom} · Tots els drets reservats · Informe generat el {data} · Normativa: Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023",
+    ES: "© {year} {nom} · Todos los derechos reservados · Informe generado el {data} · Normativa: Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023",
+    FR: "© {year} {nom} · Tous droits réservés · Rapport généré le {data} · Réglementation : Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023",
+    EN: "© {year} {nom} · All rights reserved · Report generated on {data} · Regulations: Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023",
+  },
 };
 
 // Helper per obtenir un text en un idioma

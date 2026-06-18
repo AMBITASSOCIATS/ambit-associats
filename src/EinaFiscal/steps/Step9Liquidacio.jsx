@@ -643,7 +643,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                       <React.Fragment key={i}>
                         <FilaDetall label={trp('fontClassesPassivesNum', { n: i + 1 })} valor={fmt(a)} nota={tr('notaRendaIntegraAnual')} />
                         <FilaDetall label={tr('partExemptFins2014')} valor={fmt(-(a - e))} negatiu
-                          nota={`b=${fmt(b)} · c=${fmt(c)} · d=${fmt(d)} · d'=${fmt(dPrima)}${b === c ? ' · b=c → tot exempt' : ''}`} />
+                          nota={`b=${fmt(b)} · c=${fmt(c)} · d=${fmt(d)} · d'=${fmt(dPrima)}${b === c ? tr('bcTotExempt') : ''}`} />
                         <FilaDetall label={tr('importGravatE')} valor={fmt(e)} negrita
                           nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />
                       </React.Fragment>
@@ -709,7 +709,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   const rendaNeta = ingressos - despeses - radicacio;
                   return (
                     <React.Fragment key={i}>
-                      <FilaDetall label={`Activitat ${i + 1}${a.descripcio ? `: ${a.descripcio}` : ''}${a.tipusActivitat ? ` (${a.tipusActivitat})` : ''}`} valor={fmt(ingressos)} nota={tr('totalIngressosNota')} />
+                      <FilaDetall label={`${trp('activitatNum', { n: i + 1 })}${a.descripcio ? `: ${a.descripcio}` : ''}${a.tipusActivitat ? ` (${a.tipusActivitat})` : ''}`} valor={fmt(ingressos)} nota={tr('totalIngressosNota')} />
                       {a.columnes ? a.columnes.map((col, ci) => {
                         const despExplotacio = (col.consumMercaderies || 0) + (col.arrendamentsCànons || 0) +
                           (col.reparacionsConservacio || 0) + (col.subministraments || 0) +
@@ -805,7 +805,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     <FilaDetall label={tr('apartat1Label')} valor={null} negrita />
                     {(dades.rendesSenseTransmissio || []).map((rs, i) => (
                       <FilaDetall key={`s${i}`}
-                        label={`  ${rs.descripcio || rs.tipusRenda || `Renda ${i + 1}`}${rs.data ? ` (${rs.data})` : ''}`}
+                        label={`  ${rs.descripcio || rs.tipusRenda || trp('rendaNum', { n: i + 1 })}${rs.data ? ` (${rs.data})` : ''}`}
                         valor={fmt(rs.resultat || 0)} negatiu={(rs.resultat || 0) < 0} />
                     ))}
                     <FilaDetall label={tr('subtotalApartat1Label')} valor={fmt(totalSenseTransmissio)} negrita />
@@ -876,7 +876,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           </div>
 
           <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
-            <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
+            <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
             <span>Pàgina 2 / 4</span>
           </div>
         </div>
@@ -911,17 +911,17 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   valor={fmt(dades.conjugeRendesGenerals || 0)}
                   nota={
                     dades.conjugePercepRendes === false
-                      ? 'No percep rendes de la base general → mínim personal màxim: 40.000 €'
+                      ? tr('conjugeNoRendes')
                       : (dades.conjugeRendesInf24k === false || (dades.conjugeRendesGenerals || 0) >= 24000)
-                      ? '≥ 24.000 € → no s\'aplica increment del mínim personal (es manté en 24.000 €)'
-                      : `< 24.000 € → mínim incrementat: ${fmt(Math.max(24000, 40000 - (dades.conjugeRendesGenerals || 0)))} (40.000 − rendes netes cònjuge)`
+                      ? tr('conjugeMes24k')
+                      : trp('conjugeMenys24kP', { imp: fmt(Math.max(24000, 40000 - (dades.conjugeRendesGenerals || 0))) })
                   }
                 />
               </SeccioBlocNormatiu>
             )}
 
             <SeccioBlocNormatiu titol={tr('minimPersonalReduccionsTitol')}>
-              <FilaDetall label={tr('minimPersonalExemptLabel')} valor={`− ${fmt(r.minimPersonal)}`} nota={`Art. 35.1 Llei 5/2014 · ${dades.estatCivil === 'casat' ? dades.conjugePercepRendes === false ? 'Casat/da · cònjuge sense rendes generals → mínim 40.000 €' : dades.conjugeRendesInf24k === false ? 'Casat/da · rendes cònjuge ≥ 24.000 € → mínim base 24.000 €' : `Casat/da · rendes cònjuge ${fmt(dades.conjugeRendesGenerals)} < 24.000 € → mínim incrementat` : 'Solter/a, vidu/a o divorciat/da'} · ${dades.obligatDiscapacitat ? 'Discapacitat CONAVA' : 'Sense discapacitat reconeguda'}`} />
+              <FilaDetall label={tr('minimPersonalExemptLabel')} valor={`− ${fmt(r.minimPersonal)}`} nota={`Art. 35.1 Llei 5/2014 · ${dades.estatCivil === 'casat' ? dades.conjugePercepRendes === false ? tr('mpCasatNoRendes') : dades.conjugeRendesInf24k === false ? tr('mpCasatMes24k') : trp('mpCasatMenys24kP', { imp: fmt(dades.conjugeRendesGenerals) }) : tr('mpSolter')} · ${dades.obligatDiscapacitat ? tr('mpDiscapacitat') : tr('mpSenseDiscapacitat')}`} />
               {r.redFamiliar > 0 && <FilaDetall label={tr('reduccioCarreguesFamiliarsLabel')} valor={`− ${fmt(r.redFamiliar)}`} nota={tr('notaCarreguesFamiliarsArt352')} />}
               {r.redHabitatge > 0 && <FilaDetall label={tr('reduccioHabitatgeLabel2')} valor={`− ${fmt(r.redHabitatge)}`} nota={tr('notaHabitatgeArt38')} />}
               {r.redPensions > 0 && <FilaDetall label={tr('reduccioPlansPensionsLabel')} valor={`− ${fmt(r.redPensions)}`} nota={tr('notaPensionsArt39')} />}
@@ -952,7 +952,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           </div>
 
           <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
-            <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
+            <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
             <span>Pàgina 3 / 4</span>
           </div>
         </div>
@@ -1074,7 +1074,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </div>
 
               <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
-                <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
+                <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
                 <span>Formulari 300-F</span>
               </div>
             </div>
@@ -1183,7 +1183,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           </div>
 
           <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
-            <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
+            <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
             <span>Pàgina 4 / 4</span>
           </div>
         </div>
@@ -1231,7 +1231,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             </div>
 
             <div style={{ marginTop: 'auto', padding: '10px 40px', backgroundColor: '#f0f0f0', borderTop: '1px solid #ddd', fontSize: '9px', color: '#888', display: 'flex', justifyContent: 'space-between', flexShrink: 0, pageBreakBefore: 'avoid', breakBefore: 'avoid' }}>
-              <span>{CAP.nomComercial || CAP.nom} · Informe IRPF {exercici} · {clientNom || '—'}</span>
+              <span>{CAP.nomComercial || CAP.nom} · {trp('informeIRPFAny', { any: exercici })} · {clientNom || '—'}</span>
               <span>Rendes exemptes i no subjectes</span>
             </div>
           </div>
@@ -1313,7 +1313,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </div>
             </div>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '10px', fontSize: '8px', opacity: 0.6, textAlign: 'center' }}>
-              © {new Date().getFullYear()} {CAP.nom} · Tots els drets reservats · Informe generat el {dataAvui()} · Normativa: Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023
+              {trp('copyrightText', { year: new Date().getFullYear(), nom: CAP.nom, data: dataAvui() })}
             </div>
             {!esAmbit && (
               <div style={{ textAlign: 'center', fontSize: '7px', opacity: 0.4, color: 'white', paddingBottom: '4px' }}>
