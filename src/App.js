@@ -7,6 +7,7 @@ import legalBottomRightImg from './legal-bottom-right.png';
 import IrpfCalculadora from './irpf/IrpfCalculadora';
 import EinaFiscalRouter from './EinaFiscal/EinaFiscalRouter';
 import CalendariLaboral from './pages/CalendariLaboral';
+import PdfATextMd from './pages/PdfATextMd';
 import { useAuth } from './auth/AuthContext';
 
 
@@ -68,6 +69,7 @@ const translations = {
       professionals: "Zona Professionals",
       einaFiscal: "Eina Fiscal IRPF",
       calendari: "Calendari Laboral",
+      pdfmd: "PDF a text",
       blog: "Blog",
       contacte: "Contacte",
     },
@@ -124,6 +126,7 @@ const translations = {
       professionals: "Zona Profesionales",
       einaFiscal: "Herramienta Fiscal IRPF",
       calendari: "Calendario Laboral",
+      pdfmd: "PDF a texto",
       blog: "Blog",
       contacte: "Contacto",
     },
@@ -180,6 +183,7 @@ const translations = {
       professionals: "Professional Area",
       einaFiscal: "IRPF Tax Tool",
       calendari: "Labour Calendar",
+      pdfmd: "PDF to text",
       blog: "Blog",
       contacte: "Contact",
     },
@@ -236,6 +240,7 @@ const translations = {
       professionals: "Espace Professionnels",
       einaFiscal: "Outil Fiscal IRPF",
       calendari: "Calendrier du Travail",
+      pdfmd: "PDF en texte",
       blog: "Blog",
       contacte: "Contact",
     },
@@ -899,6 +904,7 @@ const App = () => {
   const [showIrpf, setShowIrpf] = useState(false);
   const [showEinaFiscal, setShowEinaFiscal] = useState(false);
   const [showCalendari, setShowCalendari] = useState(false);
+  const [showPdfMd, setShowPdfMd] = useState(false);
   const [showCookieBanner, setShowCookieBanner] = useState(() => {
     const savedConsent = localStorage.getItem('cookieConsent');
     return savedConsent === null;
@@ -915,6 +921,8 @@ const App = () => {
       window.history.pushState({ vista: 'irpf' }, '');
     } else if (showCalendari) {
       window.history.pushState({ vista: 'calendari' }, '');
+    } else if (showPdfMd) {
+      window.history.pushState({ vista: 'pdfmd' }, '');
     } else if (currentBlogPost) {
       window.history.pushState({ vista: 'blog', slug: currentBlogPost.slug }, '');
     } else if (currentService) {
@@ -922,7 +930,7 @@ const App = () => {
     } else {
       window.history.pushState({ vista: 'home' }, '');
     }
-  }, [showEinaFiscal, showIrpf, showCalendari, currentBlogPost, currentService]);
+  }, [showEinaFiscal, showIrpf, showCalendari, showPdfMd, currentBlogPost, currentService]);
 
   // ── Historial navegador: gestionar fletxa enrere ─────────────────────────
   useEffect(() => {
@@ -932,30 +940,43 @@ const App = () => {
         setShowEinaFiscal(false);
         setShowIrpf(false);
         setShowCalendari(false);
+        setShowPdfMd(false);
         setCurrentService(null);
         setCurrentBlogPost(null);
       } else if (vista === 'einaFiscal') {
         setShowIrpf(false);
         setShowCalendari(false);
+        setShowPdfMd(false);
         setCurrentService(null);
         setCurrentBlogPost(null);
       } else if (vista === 'irpf') {
         setShowEinaFiscal(false);
         setShowCalendari(false);
+        setShowPdfMd(false);
         setCurrentService(null);
         setCurrentBlogPost(null);
       } else if (vista === 'calendari') {
         setShowEinaFiscal(false);
         setShowIrpf(false);
+        setShowPdfMd(false);
+        setCurrentService(null);
+        setCurrentBlogPost(null);
+      } else if (vista === 'pdfmd') {
+        setShowPdfMd(true);
+        setShowEinaFiscal(false);
+        setShowIrpf(false);
+        setShowCalendari(false);
         setCurrentService(null);
         setCurrentBlogPost(null);
       } else if (vista === 'blog') {
         setShowEinaFiscal(false);
         setShowIrpf(false);
+        setShowPdfMd(false);
         setCurrentService(null);
       } else if (vista === 'service') {
         setShowEinaFiscal(false);
         setShowIrpf(false);
+        setShowPdfMd(false);
         setCurrentBlogPost(null);
       }
     };
@@ -974,6 +995,7 @@ const App = () => {
     setShowIrpf(false);
     setShowEinaFiscal(false);
     setShowCalendari(false);
+    setShowPdfMd(false);
     setMenuOpen(false);
     setServicesDropdown(false);
   };
@@ -992,6 +1014,10 @@ const App = () => {
 
   if (showCalendari) {
     return <CalendariLaboral onBack={() => setShowCalendari(false)} language={language} />;
+  }
+
+  if (showPdfMd) {
+    return <PdfATextMd onBack={() => setShowPdfMd(false)} language={language} />;
   }
 
   if (showEinaFiscal) {
@@ -1069,6 +1095,9 @@ const App = () => {
               <button onClick={() => setShowCalendari(true)} className="hover:text-white hover:underline">
                 {t.nav?.calendari}
               </button>
+              <button onClick={() => setShowPdfMd(true)} className="hover:text-white hover:underline">
+                {t.nav?.pdfmd}
+              </button>
               <button onClick={() => document.getElementById("blog")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-white hover:underline">
                 {t.nav?.blog}
               </button>
@@ -1101,6 +1130,7 @@ const App = () => {
                   <button onClick={() => { document.getElementById("professionals")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="hover:underline">{t.nav?.professionals}</button>
                   <button onClick={() => { setShowEinaFiscal(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.einaFiscal}</button>
                   <button onClick={() => { setShowCalendari(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.calendari}</button>
+                  <button onClick={() => { setShowPdfMd(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.pdfmd}</button>
                   <button onClick={() => { document.getElementById("blog")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="hover:underline">{t.nav?.blog}</button>
                   <button onClick={() => { document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="bg-white/20 px-4 py-1.5 rounded-full font-semibold">{t.nav?.contacte}</button>
                 </div>
