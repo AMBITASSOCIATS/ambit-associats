@@ -1095,8 +1095,9 @@ const App = () => {
               <button onClick={() => setShowCalendari(true)} className="hover:text-white hover:underline">
                 {t.nav?.calendari}
               </button>
-              <button onClick={() => setShowPdfMd(true)} className="hover:text-white hover:underline">
+              <button onClick={() => setShowPdfMd(true)} className="text-white font-semibold hover:underline flex items-center gap-1" style={{ textShadow: '0 0 8px rgba(255,255,255,0.75)' }}>
                 {t.nav?.pdfmd}
+                <span className="text-xs bg-teal-300 text-teal-900 font-semibold px-1.5 py-0.5 rounded-full">Nou</span>
               </button>
               <button onClick={() => document.getElementById("blog")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-white hover:underline">
                 {t.nav?.blog}
@@ -1130,7 +1131,7 @@ const App = () => {
                   <button onClick={() => { document.getElementById("professionals")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="hover:underline">{t.nav?.professionals}</button>
                   <button onClick={() => { setShowEinaFiscal(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.einaFiscal}</button>
                   <button onClick={() => { setShowCalendari(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.calendari}</button>
-                  <button onClick={() => { setShowPdfMd(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.pdfmd}</button>
+                  <button onClick={() => { setShowPdfMd(true); setMenuOpen(false); }} className="text-white font-semibold hover:underline flex items-center gap-1" style={{ textShadow: '0 0 8px rgba(255,255,255,0.75)' }}>{t.nav?.pdfmd}<span className="text-xs bg-teal-300 text-teal-900 font-semibold px-1.5 py-0.5 rounded-full">Nou</span></button>
                   <button onClick={() => { document.getElementById("blog")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="hover:underline">{t.nav?.blog}</button>
                   <button onClick={() => { document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="bg-white/20 px-4 py-1.5 rounded-full font-semibold">{t.nav?.contacte}</button>
                 </div>
