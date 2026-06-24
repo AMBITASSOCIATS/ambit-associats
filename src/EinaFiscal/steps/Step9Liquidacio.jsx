@@ -792,6 +792,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                         {(p.retencioEstranger || 0) > 0 && <FilaDetall label={tr('retencioEstrangerLabel')} valor={fmt(p.retencioEstranger || 0)} nota={tr('baseCalculDdiNota')} />}
                       </React.Fragment>
                     ))}
+                    {(ent.despesesCustodia || 0) > 0 && (
+                      <FilaDetall
+                        label={tr('despesesAdministracioCustodia')}
+                        valor={fmt(-(ent.despesesCustodia || 0))}
+                        negatiu
+                        nota={tr('notaDespesesAdministracioCustodia')}
+                      />
+                    )}
                   </React.Fragment>
                 ))}
                 <NotaNormativa refText={tr('refArt2329Mobiliari')} text={tr('citaArt2329Mobiliari')} />

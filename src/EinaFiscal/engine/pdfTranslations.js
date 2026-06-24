@@ -605,6 +605,18 @@ export const T = {
     FR: "    − Frais de garde/gestion",
     EN: "    − Custody/management expenses",
   },
+  despesesAdministracioCustodia: {
+    CA: "  − Despeses d'administració i custòdia",
+    ES: "  − Gastos de administración y custodia",
+    FR: "  − Frais d'administration et de garde",
+    EN: "  − Administration and custody fees",
+  },
+  notaDespesesAdministracioCustodia: {
+    CA: "Despeses generals d'administració i custòdia de l'entitat (300-D)",
+    ES: "Gastos generales de administración y custodia de la entidad (300-D)",
+    FR: "Frais généraux d'administration et de garde de l'entité (300-D)",
+    EN: "General administration and custody fees of the entity (300-D)",
+  },
   retencioAndorraLabel: {
     CA: "    Retenció Andorra (a compte)",
     ES: "    Retención Andorra (a cuenta)",
