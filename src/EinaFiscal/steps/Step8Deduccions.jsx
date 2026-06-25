@@ -43,6 +43,7 @@ const BlocDeducci = ({
   importAplicat,
   onChangeAplicat,
   readOnlyGenerat = false,
+  anysVig = 6, // anys de diferiment al 300-F (default 2024+)
   children, // camps addicionals de càlcul
 }) => {
   const [expandit, setExpandit] = useState(false);
@@ -127,7 +128,7 @@ const BlocDeducci = ({
               </div>
               {importPendent > 0 && (
                 <p className="text-xs text-amber-600 mt-0.5">
-                  Diferir al 300-F de l'exercici SEGÜENT (màx. 6 exercicis)
+                  Diferir al 300-F de l'exercici SEGÜENT (màx. {anysVig} exercicis)
                 </p>
               )}
             </div>
@@ -149,6 +150,9 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
   // NO existien per a 2023 i anteriors. null/undefined → comportament 2024+.
   const exerciciDeclarant = dades?.exercici || 2025;
   const es2023oAnterior = exerciciDeclarant != null && exerciciDeclarant < 2024;
+  // Termini de diferiment de les deduccions de quota segons exercici
+  // (Reglament 29/12/2023): 5 exercicis fins 2023, 6 des de 2024. null/undefined → 2024+.
+  const anysVigDeduccions = exerciciDeclarant < 2024 ? 5 : 6;
 
   const upd = (camp, valor) => {
     update('deduccionsExercici', { ...d, [camp]: valor });
@@ -221,7 +225,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-700 mb-4">
           <strong>⚠️ Atenció:</strong> Les deduccions generades que no s'apliquen per insuficiència de quota
-          es poden diferir als <strong>6 exercicis posteriors</strong> (Art. 45 Llei 5/2014 · Reglament 29/12/2023).
+          es poden diferir als <strong>{anysVigDeduccions} exercicis posteriors</strong> (Art. 45 Llei 5/2014 · Reglament 29/12/2023).
           La part no aplicada s'ha de consignar al formulari <strong>300-F</strong> de la declaració de l'exercici <strong>SEGÜENT</strong>,
           no en aquesta declaració.
         </div>
@@ -247,6 +251,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
         </h3>
         <div className="space-y-3">
           <BlocDeducci
+            anysVig={anysVigDeduccions}
             titol="Impost comunal arrendaments — Art. 47"
             referencia="Del pas 4 (Capital immobiliari)"
             descripcio="L'impost comunal sobre arrendaments efectivament pagat és deduïble de la quota de l'IRPF (Art. 47 Llei 5/2014). El valor generat prové dels imports introduïts al pas 4."
@@ -256,6 +261,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
             readOnlyGenerat={true}
           />
           <BlocDeducci
+            anysVig={anysVigDeduccions}
             titol="Impost comunal de radicació — Art. 47"
             referencia="Del pas 3 (Activitats econòmiques)"
             descripcio="L'impost comunal de radicació efectivament pagat per l'activitat econòmica és deduïble de la quota de l'IRPF (Art. 47 Llei 5/2014). El valor generat prové dels imports introduïts al pas 3."
@@ -265,6 +271,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
             readOnlyGenerat={true}
           />
           <BlocDeducci
+            anysVig={anysVigDeduccions}
             titol="Deducció per doble imposició internacional (DDI) — Art. 48"
             referencia="Del pas 7 (DDI)"
             descripcio="La deducció per doble imposició internacional (DDI) evita que les rendes obtingudes a l'estranger tributin dos cops. L'import és el mínim entre l'impost pagat a l'origen i la quota andorrana corresponent (Art. 48 Llei 5/2014). El valor generat prové del pas 7."
@@ -292,6 +299,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
           {/* 1 — MECENATGE */}
           <BlocDeducci
+            anysVig={anysVigDeduccions}
             titol="Deducció per incentius fiscals al mecenatge"
             referencia="Art. 44 Llei 5/2014"
             descripcio="Els obligats tributaris poden deduir de la quota els donatius dineraris irrevocables, purs i simples realitzats a favor d'entitats sense ànim de lucre d'utilitat pública andorrana o entitats equivalents. La deducció és del 20% del valor del donatiu amb caràcter general. Per a donatius dineraris d'un import total no superior a 100 euros en l'exercici, la deducció és del 90%."
@@ -326,6 +334,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
           {/* 2 — PROJECTES D'INTERÈS NACIONAL */}
           <BlocDeducci
+            anysVig={anysVigDeduccions}
             titol="Deducció per participació en projectes d'interès nacional"
             referencia="Art. 44 bis Llei 5/2014"
             descripcio="Els obligats tributaris que participin en projectes declarats d'interès nacional per part del Govern d'Andorra poden deduir de la quota el 75% del valor de les aportacions realitzades en el període impositiu. Les aportacions han de destinar-se al finançament dels projectes i han de complir els requisits establerts reglamentàriament."
@@ -349,6 +358,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
           {/* 3 — CREACIÓ LLOCS DE TREBALL */}
           <BlocDeducci
+            anysVig={anysVigDeduccions}
             titol="Deducció per creació de llocs de treball"
             referencia="Art. 44 Llei 5/2014 — Exclusiu obligats amb activitat econòmica"
             descripcio="Els obligats tributaris que realitzin activitats econòmiques i incrementin la seva plantilla mitjana respecte de l'exercici anterior poden deduir: 1.000 € per cada treballador addicional no inscrit al Servei d'Ocupació. 3.500 € per cada treballador addicional inscrit al Servei d'Ocupació (entre 25 i 55 anys sense discapacitat, o menors de 25 anys, majors de 55 anys o amb discapacitat). L'increment s'ha de mantenir durant l'exercici posterior."
@@ -436,6 +446,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
           {/* 4 — DIGITALITZACIÓ */}
           <BlocDeducci
+            anysVig={anysVigDeduccions}
             titol="Deducció per digitalització"
             referencia="Art. 44 bis Llei 5/2014 — Exclusiu obligats amb activitat econòmica"
             descripcio="Els obligats tributaris que realitzin activitats econòmiques i efectuïn inversions en projectes de digitalització declarats favorables pel Govern d'Andorra poden deduir el 2% de l'import de les inversions realitzades en el període impositiu. Les inversions han de complir els requisits establerts reglamentàriament i han d'estar relacionades amb la transformació digital de l'activitat."
@@ -459,6 +470,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
           {/* 5 — PATROCINI I ESPONSORITZACIÓ */}
           <BlocDeducci
+            anysVig={anysVigDeduccions}
             titol="Deducció per incentius fiscals al patrocini i l'esponsorització"
             referencia="Art. 44 bis Llei 5/2014 — Exclusiu obligats amb activitat econòmica"
             descripcio="Els obligats tributaris que realitzin activitats econòmiques i efectuïn despeses o inversions en concepte de patrocini o esponsorització d'activitats culturals, esportives o d'interès social a Andorra poden deduir el 10% del valor de les despeses o inversions efectuades. Les activitats patrocinades han de complir els requisits establerts reglamentàriament."
@@ -554,7 +566,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
           <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
             <strong>⚠️ {fmt(totalGenerat - totalAplicat)} € pendents d'aplicar</strong> — A la declaració de l'exercici SEGÜENT,
             introduir aquest import al Pas 9 (300-F), apartat 3 "Deduccions de quota d'exercicis anteriors".
-            Sense declarar-les, el dret prescriu als 6 exercicis (Art. 45 Llei 5/2014 · Reglament 29/12/2023).
+            Sense declarar-les, el dret prescriu als {anysVigDeduccions} exercicis (Art. 45 Llei 5/2014 · Reglament 29/12/2023).
           </div>
         )}
       </div>

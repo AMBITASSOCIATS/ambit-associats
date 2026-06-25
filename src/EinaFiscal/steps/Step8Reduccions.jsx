@@ -17,6 +17,9 @@ const InputNum = ({ label, value, onChange, hint = '', min = 0 }) => (
 );
 
 const Step8Reduccions = ({ dades, update }) => {
+  // Termini de compensació de bases negatives generals segons exercici
+  // (Reglament 29/12/2023): 4 fins 2023, 10 des de 2024. null/undefined → 2024+.
+  const anysVigBNGeneral = (dades?.exercici || 2025) < 2024 ? 4 : 10;
   const redHabitatge = Math.min(
     (dades.quotesHabitatge || 0) * IRPF.RED_HABITATGE_PCT,
     IRPF.RED_HABITATGE_MAX
@@ -140,7 +143,7 @@ const Step8Reduccions = ({ dades, update }) => {
             label="BTG negativa d'exercicis anteriors a compensar (€)"
             value={dades.basesNegativesGenerals}
             onChange={v => update('basesNegativesGenerals', v)}
-            hint="Art. 33 Llei 5/2014 — compensació en els 4 exercicis posteriors"
+            hint={`Art. 33 Llei 5/2014 — compensació en els ${anysVigBNGeneral} exercicis posteriors`}
           />
         </div>
       </div>

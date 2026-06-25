@@ -130,6 +130,10 @@ const TaulaBasesNeg = ({ titol, descr, dades, onUpdate, maxFiles = 10, casellaTo
 };
 
 const Step8Bases300F = ({ dades, update }) => {
+  // Terminis segons exercici declarat (Reglament 29/12/2023). null/undefined → 2024+.
+  const exerciciDeclarant = dades?.exercici || 2025;
+  const anysVigBNGeneral = exerciciDeclarant < 2024 ? 4 : 10; // bases neg. generals
+  const anysVigDeducc = exerciciDeclarant < 2024 ? 5 : 6;     // deduccions de quota
   const basesNegGenerals = dades.basesNegGenerals || [];
   const basesNegEstalvi = dades.basesNegEstalvi || [];
   const deduccionsAnteriors = dades.deduccionsAnteriors || [];
@@ -172,7 +176,7 @@ const Step8Bases300F = ({ dades, update }) => {
         </div>
 
         <div className="bg-blue-50 rounded-xl p-3 text-xs text-blue-700 mb-5">
-          <strong>Art. 33 Llei 5/2014:</strong> Les bases de tributacio negatives es poden compensar en els <strong>4 exercicis</strong> fiscals posteriors (base general) o en els <strong>10 exercicis</strong> posteriors (base de l'estalvi). Art. 34: les deduccions de quota pendents es poden aplicar en els 5 exercicis posteriors.
+          <strong>Art. 33 Llei 5/2014:</strong> Les bases de tributacio negatives es poden compensar en els <strong>{anysVigBNGeneral} exercicis</strong> fiscals posteriors (base general) o en els <strong>10 exercicis</strong> posteriors (base de l'estalvi). Art. 34: les deduccions de quota pendents es poden aplicar en els {anysVigDeducc} exercicis posteriors.
         </div>
 
         {/* Apartat 1: Bases negatives generals */}
