@@ -168,7 +168,7 @@ const Step8Bases300F = ({ dades, update }) => {
     <div className="space-y-4">
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
         <div className="flex items-center gap-2 mb-5">
-          <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">8</span>
+          <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">9</span>
           <div>
             <h2 className="font-bold text-gray-800">Bases negatives i deduccions anteriors</h2>
             <p className="text-xs text-gray-500">Formulari 300-F · Art. 33-34 Llei 5/2014</p>

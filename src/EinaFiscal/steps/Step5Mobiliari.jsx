@@ -319,6 +319,55 @@ const Step5Mobiliari = ({ dades, update }) => {
           onEliminar={() => removeEntitat(entitat.id)}
         />
       ))}
+
+      {/* Resum total al final — només si hi ha més d'una entitat */}
+      {dades.mobiliaris.length > 1 && (() => {
+        const totalBrut = dades.mobiliaris.reduce((s, e) =>
+          s + e.partides.reduce((a, p) => a + (p.importBrut || 0), 0), 0);
+        const totalDespesesPartida = dades.mobiliaris.reduce((s, e) =>
+          s + e.partides.reduce((a, p) => a + (p.despeses || 0), 0), 0);
+        const totalDespesesCustodia = dades.mobiliaris.reduce((s, e) =>
+          s + (e.despesesCustodia || 0), 0);
+        const totalDespeses = totalDespesesPartida + totalDespesesCustodia;
+        const totalNet = totalBrut - totalDespeses;
+        const f = (n) => n.toLocaleString('ca-AD', { minimumFractionDigits: 2 });
+
+        return (
+          <div className="mt-6 bg-[#f0fafa] border border-[#b2e0e0] rounded-xl p-4">
+            <p className="text-xs font-bold text-[#007A7B] uppercase tracking-wide mb-3">
+              Resum total capital mobiliari — totes les entitats
+            </p>
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs text-gray-700">
+                <span>Total ingressos bruts</span>
+                <span className="font-mono">{f(totalBrut)} €</span>
+              </div>
+              {totalDespesesPartida > 0 && (
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>  − Despeses per partida</span>
+                  <span className="font-mono text-red-600">−{f(totalDespesesPartida)} €</span>
+                </div>
+              )}
+              {totalDespesesCustodia > 0 && (
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>  − Despeses d'administració i custòdia</span>
+                  <span className="font-mono text-red-600">−{f(totalDespesesCustodia)} €</span>
+                </div>
+              )}
+              {totalDespeses > 0 && (
+                <div className="flex justify-between text-xs text-gray-500 border-t border-[#b2e0e0] pt-1 mt-1">
+                  <span>  − Total despeses deduïbles</span>
+                  <span className="font-mono text-red-600">−{f(totalDespeses)} €</span>
+                </div>
+              )}
+              <div className="flex justify-between text-sm font-bold text-[#007A7B] border-t-2 border-[#009B9C] pt-2 mt-2">
+                <span>= Renda neta total capital mobiliari</span>
+                <span className="font-mono">{f(totalNet)} €</span>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
