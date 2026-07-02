@@ -14,6 +14,7 @@ const DEFAULT_RENDA_ESTRANGERA = {
   retencioEfectiva: 0, // retenció practicada efectivament a l'origen
   tensCDI: false,      // si hi ha CDI vigent amb aquest país
   tipusMaxCDI: 0,      // tipus màxim de retenció del CDI (%) per aquest tipus de renda
+  paisLliure: '',      // nom lliure del país quan no hi ha CDI (codi 'OTHER')
 };
 
 const TIPUS_RENDA = [
@@ -84,8 +85,12 @@ const RendaEstrangeraForm = ({ renda, index, onUpdate, onEliminar }) => {
 
   const ddiInfo = calcularDDI([renda])[0];
 
+  const nomPais = renda.pais === 'OTHER' && renda.paisLliure
+    ? renda.paisLliure
+    : PAISOS.find(p => p.codi === renda.pais)?.nom || renda.pais || 'País sense especificar';
+
   const analisi = ddiInfo ? {
-    titol: `DDI — ${PAISOS.find(p => p.codi === renda.pais)?.nom || renda.pais || 'País sense especificar'}`,
+    titol: `DDI — ${nomPais}`,
     explicacio: ddiInfo.explicacio,
     ref: ddiInfo.ref,
     formulari: '300-G',
@@ -94,8 +99,11 @@ const RendaEstrangeraForm = ({ renda, index, onUpdate, onEliminar }) => {
     parcial: false,
   } : null;
 
-  const titol = (PAISOS.find(p => p.codi === renda.pais)?.nom || 'Renda estrangera')
-    + (renda.tipusRenda ? ` — ${TIPUS_LABEL[renda.tipusRenda]}` : '');
+  const titol = (
+    renda.pais === 'OTHER' && renda.paisLliure
+      ? renda.paisLliure
+      : PAISOS.find(p => p.codi === renda.pais)?.nom || 'Renda estrangera'
+  ) + (renda.tipusRenda ? ` — ${TIPUS_LABEL[renda.tipusRenda]}` : '');
 
   return (
     <RentaBlock titol={titol} numero={index + 1} onEliminar={onEliminar}>
@@ -115,6 +123,24 @@ const RendaEstrangeraForm = ({ renda, index, onUpdate, onEliminar }) => {
             ))}
           </select>
         </div>
+
+        {!renda.tensCDI && renda.pais === 'OTHER' && (
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Nom del país (sense CDI amb Andorra)
+            </label>
+            <input
+              type="text"
+              value={renda.paisLliure || ''}
+              onChange={e => update('paisLliure', e.target.value)}
+              placeholder="Ex: Austràlia, Brasil, Estats Units..."
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+            />
+            <p className="text-xs text-gray-400 mt-1">
+              Sense CDI, la DDI = mínim entre la retenció efectiva i el 10% andorrà (Art. 48.1 Llei 5/2014).
+            </p>
+          </div>
+        )}
 
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Tipus de renda</label>
@@ -322,6 +348,89 @@ const Step7DDI = ({ dades, update }) => {
           onEliminar={() => removeRenda(renda.id)}
         />
       ))}
+
+      {ddiResults.length > 0 && totalDDI > 0 && (
+        <div className="bg-white rounded-2xl border border-[#009B9C]/30 shadow-sm p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="w-8 h-8 rounded-full bg-[#009B9C]/10 text-[#009B9C] text-sm font-bold flex items-center justify-center">Σ</span>
+            <div>
+              <h3 className="font-bold text-gray-800">Resum DDI — país per país</h3>
+              <p className="text-xs text-gray-500">Art. 48.4 Llei 5/2014 · Càlcul detallat</p>
+            </div>
+          </div>
+
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 text-gray-500 font-medium">País</th>
+                <th className="text-left py-2 text-gray-500 font-medium">Tipus renda</th>
+                <th className="text-right py-2 text-gray-500 font-medium">Renda bruta</th>
+                <th className="text-right py-2 text-gray-500 font-medium">Ret. efectiva</th>
+                <th className="text-right py-2 text-gray-500 font-medium">Límit 10% AND</th>
+                {ddiResults.some(r => r.excesCDI > 0) && (
+                  <th className="text-right py-2 text-gray-500 font-medium">Excés CDI</th>
+                )}
+                <th className="text-right py-2 text-[#009B9C] font-bold">DDI</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ddiResults.map((r, i) => {
+                const renda = dades.rendesExterior[i];
+                const nomPais = renda?.pais === 'OTHER' && renda?.paisLliure
+                  ? renda.paisLliure
+                  : PAISOS.find(p => p.codi === renda?.pais)?.nom || renda?.pais || '—';
+                return (
+                  <tr key={i} className="border-b border-gray-100">
+                    <td className="py-2 text-gray-700">
+                      {nomPais}
+                      {renda?.tensCDI && (
+                        <span className="ml-1 text-green-600 text-xs">(CDI)</span>
+                      )}
+                    </td>
+                    <td className="py-2 text-gray-600">
+                      {TIPUS_LABEL[renda?.tipusRenda] || '—'}
+                    </td>
+                    <td className="py-2 text-right font-mono text-gray-700">
+                      {(renda?.importBrut || 0).toFixed(2)} €
+                    </td>
+                    <td className="py-2 text-right font-mono text-gray-700">
+                      {(renda?.retencioEfectiva || 0).toFixed(2)} €
+                    </td>
+                    <td className="py-2 text-right font-mono text-gray-700">
+                      {r.quotaAndorrana.toFixed(2)} €
+                    </td>
+                    {ddiResults.some(d => d.excesCDI > 0) && (
+                      <td className="py-2 text-right font-mono text-red-500">
+                        {r.excesCDI > 0 ? `${r.excesCDI.toFixed(2)} €` : '—'}
+                      </td>
+                    )}
+                    <td className="py-2 text-right font-mono font-bold text-[#009B9C]">
+                      {r.ddi.toFixed(2)} €
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot>
+              <tr className="border-t-2 border-[#009B9C]">
+                <td colSpan={ddiResults.some(r => r.excesCDI > 0) ? 6 : 5}
+                  className="py-2 font-bold text-gray-800">
+                  TOTAL DDI deduïble (300-G)
+                </td>
+                <td className="py-2 text-right font-mono font-bold text-[#009B9C] text-sm">
+                  {totalDDI.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+
+          {ddiResults.some(r => r.excesCDI > 0) && (
+            <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700">
+              ⚠️ <strong>Excés de retenció sobre el tipus CDI:</strong> l'import que supera el tipus màxim del conveni és reclamable al país d'origen, no deduïble a Andorra.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
