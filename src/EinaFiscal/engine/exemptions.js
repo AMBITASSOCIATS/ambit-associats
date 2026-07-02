@@ -148,31 +148,11 @@ export function analizarRendaTreball(renda) {
 
 // ── 5.3 Exempcions de capital mobiliari ──────────────────────────────────────
 export function analizarRCM(renda) {
-  const { apartat, importNet, participacioPct, anysParticipacio } = renda;
+  const { apartat, importNet } = renda;
 
-  if (apartat === 'DIVIDENDS_OIC') {
-    const exemptPerParticipacio = participacioPct < 25;
-    const exemptPerAnys = anysParticipacio >= 10;
-    if (exemptPerParticipacio || exemptPerAnys) {
-      return {
-        exempt: true, parcial: false, ratio: 1.0,
-        importGravat: 0, importExempt: importNet,
-        ref: 'Art. 5.k Llei 5/2014 + CT 04/03/2015',
-        titol: 'Dividends OIC — exempts',
-        explicacio: `Els rendiments de participacions en organismes d'inversió col·lectiva (OIC) estan exempts d'IRPF quan la participació de l'obligat tributari és inferior al 25% del patrimoni de l'organisme (${participacioPct}% < 25%) o quan la participació s'ha mantingut durant 10 anys o més (${anysParticipacio} anys). Font: Art. 5.k Llei 5/2014 i Comunicat Tècnic 04/03/2015.`,
-        alertType: 'success', formulari: '300-D', casella: 'a'
-      };
-    } else {
-      return {
-        exempt: false, parcial: false, ratio: 0,
-        importGravat: importNet, importExempt: 0,
-        ref: 'Art. 5.k Llei 5/2014 + CT 04/03/2015',
-        titol: 'Dividends OIC — gravats',
-        explicacio: `La participació en l'OIC (${participacioPct}%) és igual o superior al 25% i la tinença és inferior a 10 anys (${anysParticipacio} anys). Per tant no s'aplica l'exempció de l'Art. 5.k. Els rendiments tributen com a rendes de l'estalvi al 10%.`,
-        alertType: 'warning', formulari: '300-D', casella: 'a'
-      };
-    }
-  }
+  // Nota: els dividends/rendiments d'OIC tributen com a renda de l'estalvi.
+  // L'exempció de l'Art. 5.k aplica a la TRANSMISSIÓ de participacions (guanys de
+  // capital), no al dividend — es tracta a analizarGuanyCapital / Step6.
 
   if (apartat === 'ASSEGURANCA_VIDA_HIPOTECA') {
     return {

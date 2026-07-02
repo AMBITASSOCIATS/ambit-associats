@@ -69,19 +69,6 @@ const DEFAULT_ENTITAT = {
   rendesExemptes: [],
 };
 
-// Analisi d'exempcio per OIC (partida a — dividends)
-const analisiOIC = (brut) => {
-  if (brut <= 0) return null;
-  return {
-    titol: 'Dividends OIC — Art. 5.k Llei 5/2014',
-    explicacio: 'Els dividends i participacions en OIC (fons d\'inversio) estan exempts si la participacio es inferior al 25% O si la tinenca es igual o superior a 10 anys (CT 04/03/2015).',
-    ref: 'Art. 5.k Llei 5/2014',
-    formulari: '300-D',
-    casella: 'a',
-    alertType: 'info',
-  };
-};
-
 // Analisi d'exempcio per assegurances (partida c)
 const analisiAsseguranca = (brut) => {
   if (brut <= 0) return null;
@@ -180,9 +167,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
             {entitat.partides.map((partida) => {
               const linies = partida.linies || [];
               const brutPartida = linies.reduce((s, l) => s + (l.importBrut || 0), 0);
-              const analisi = partida.tipus === 'a' ? analisiOIC(brutPartida)
-                            : partida.tipus === 'c' ? analisiAsseguranca(brutPartida)
-                            : null;
+              const analisi = partida.tipus === 'c' ? analisiAsseguranca(brutPartida) : null;
               return (
                 <React.Fragment key={partida.tipus}>
                   {linies.map((linia) => {
