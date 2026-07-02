@@ -413,6 +413,30 @@ export const T = {
     FR: "TOTAL Revenus bruts",
     EN: "TOTAL Gross income",
   },
+  resumGlobalCapMobiliari: {
+    CA: 'RESUM GLOBAL — Totes les entitats',
+    ES: 'RESUMEN GLOBAL — Todas las entidades',
+    FR: 'RÉSUMÉ GLOBAL — Toutes les entités',
+    EN: 'GLOBAL SUMMARY — All entities',
+  },
+  totalDespesesDeduibles: {
+    CA: '− Total despeses deduïbles',
+    ES: '− Total gastos deducibles',
+    FR: '− Total charges déductibles',
+    EN: '− Total deductible expenses',
+  },
+  rendaNetaCapMobiliariLabel: {
+    CA: 'Renda neta total capital mobiliari (300-D)',
+    ES: 'Renta neta total capital mobiliario (300-D)',
+    FR: 'Revenu net total capital mobilier (300-D)',
+    EN: 'Total net movable capital income (300-D)',
+  },
+  notaMinimExemptEstalvi: {
+    CA: "Art. 37 Llei 5/2014 · Mínim exempt 3.000 € sobre total rendes de l'estalvi",
+    ES: 'Art. 37 Ley 5/2014 · Mínimo exento 3.000 € sobre total rentas del ahorro',
+    FR: "Art. 37 Loi 5/2014 · Minimum exonéré 3.000 € sur total revenus de l'épargne",
+    EN: 'Art. 37 Law 5/2014 · Tax-free minimum 3.000 € on total savings income',
+  },
   totalCotitzacionsCass: {
     CA: "− Total cotitzacions CASS",
     ES: "− Total cotizaciones CASS",

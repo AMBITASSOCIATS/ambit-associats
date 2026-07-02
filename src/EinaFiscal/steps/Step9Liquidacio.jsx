@@ -11,6 +11,14 @@ const nomPaisDDI = (renda) =>
     ? renda.paisLliure
     : PAISOS.find(p => p.codi === renda?.pais)?.nom || renda?.pais || '—';
 
+// Etiquetes de les partides 300-D (definides localment; no exportades des de Step5Mobiliari).
+const PARTIDA_LABELS = {
+  a: 'Dividends i altres rendiments per participació en fons propis',
+  b: 'Interessos i altres rendiments per cessió de capitals',
+  c: 'Operacions de capitalització i assegurances de vida',
+  d: 'Altres rendiments del capital mobiliari',
+};
+
 const AMBIT = {
   nom: 'DEL SOTO – PALEARI & ASSOCIATS, S.L.',
   nomComercial: 'ÀMBIT Associats',
@@ -825,6 +833,24 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                         </React.Fragment>
                       );
                     })}
+                    {/* Subtotals per tipus de partida de l'entitat */}
+                    {(['a','b','c','d']).map(t => {
+                      const p = (ent.partides || []).find(p => p.tipus === t);
+                      if (!p) return null;
+                      const brutT = (p.linies || []).reduce((s, l) => s + (l.importBrut || 0), 0);
+                      const despT = (p.linies || []).reduce((s, l) => s + (l.despeses || 0), 0);
+                      if (brutT === 0 && despT === 0) return null;
+                      return (
+                        <React.Fragment key={t}>
+                          <FilaDetall
+                            label={`  Subtotal partida ${t.toUpperCase()} — ${PARTIDA_LABELS[t]}`}
+                            valor={fmt(brutT - despT)}
+                            negrita
+                            nota={despT > 0 ? `Brut: ${fmt(brutT)} − Despeses: ${fmt(despT)}` : `Brut: ${fmt(brutT)}`}
+                          />
+                        </React.Fragment>
+                      );
+                    })}
                     {(ent.despesesCustodia || 0) > 0 && (
                       <FilaDetall
                         label={tr('despesesAdministracioCustodia')}
@@ -835,6 +861,43 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     )}
                   </React.Fragment>
                 ))}
+                {/* Resum global per tipus de partida */}
+                {(dades.mobiliaris || []).length > 1 && (() => {
+                  const tipusKeys = ['a','b','c','d'];
+                  const totalPerTipus = tipusKeys.reduce((acc, t) => {
+                    acc[t] = (dades.mobiliaris || []).reduce((s, e) => {
+                      const p = (e.partides || []).find(p => p.tipus === t);
+                      return s + (p ? (p.linies || []).reduce((a, l) => a + (l.importBrut || 0), 0) : 0);
+                    }, 0);
+                    return acc;
+                  }, {});
+                  const totalDespeses = (dades.mobiliaris || []).reduce((s, e) =>
+                    s + (e.partides || []).reduce((a, p) => a + (p.linies || []).reduce((x, l) => x + (l.despeses || 0), 0), 0)
+                    + (e.despesesCustodia || 0), 0);
+                  const totalBrut = tipusKeys.reduce((s, t) => s + totalPerTipus[t], 0);
+
+                  return (
+                    <div style={{ marginTop: '8px', borderTop: `2px solid ${CAP.color}`, paddingTop: '6px' }}>
+                      <FilaDetall label={tr('resumGlobalCapMobiliari') || 'RESUM GLOBAL — Totes les entitats'} valor={null} negrita />
+                      {tipusKeys.map(t => totalPerTipus[t] > 0 && (
+                        <FilaDetall key={t}
+                          label={`  ${t.toUpperCase()} — ${PARTIDA_LABELS[t]}`}
+                          valor={fmt(totalPerTipus[t])}
+                        />
+                      ))}
+                      <FilaDetall label={tr('totalIngressosBruts') || 'Total ingressos bruts'} valor={fmt(totalBrut)} negrita />
+                      {totalDespeses > 0 && (
+                        <FilaDetall label={tr('totalDespesesDeduibles') || '− Total despeses deduïbles'} valor={fmt(-totalDespeses)} negatiu />
+                      )}
+                      <FilaDetall
+                        label={tr('rendaNetaCapMobiliariLabel') || 'Renda neta total capital mobiliari (300-D)'}
+                        valor={fmt(r.rendaMobiliaria)}
+                        negrita destacat
+                        nota={tr('notaMinimExemptEstalvi') || `Art. 37 Llei 5/2014 · Mínim exempt 3.000 € sobre total rendes de l'estalvi`}
+                      />
+                    </div>
+                  );
+                })()}
                 <NotaNormativa refText={tr('refArt2329Mobiliari')} text={tr('citaArt2329Mobiliari')} />
               </SeccioBlocNormatiu>
             )}

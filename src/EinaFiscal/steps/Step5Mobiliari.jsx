@@ -466,8 +466,15 @@ const Step5Mobiliari = ({ dades, update }) => {
 
       {/* Resum total al final — només si hi ha més d'una entitat */}
       {dades.mobiliaris.length > 1 && (() => {
-        const totalBrut = dades.mobiliaris.reduce((s, e) =>
-          s + e.partides.reduce((a, p) => a + sumaPartida(p, 'importBrut'), 0), 0);
+        const tipusKeys = ['a', 'b', 'c', 'd'];
+        const totalPerTipus = tipusKeys.reduce((acc, t) => {
+          acc[t] = dades.mobiliaris.reduce((s, e) => {
+            const p = e.partides.find(p => p.tipus === t);
+            return s + (p ? sumaPartida(p, 'importBrut') : 0);
+          }, 0);
+          return acc;
+        }, {});
+        const totalBrut = tipusKeys.reduce((s, t) => s + totalPerTipus[t], 0);
         const totalDespesesPartida = dades.mobiliaris.reduce((s, e) =>
           s + e.partides.reduce((a, p) => a + sumaPartida(p, 'despeses'), 0), 0);
         const totalDespesesCustodia = dades.mobiliaris.reduce((s, e) =>
@@ -482,7 +489,16 @@ const Step5Mobiliari = ({ dades, update }) => {
               Resum total capital mobiliari — totes les entitats
             </p>
             <div className="space-y-1">
-              <div className="flex justify-between text-xs text-gray-700">
+              {tipusKeys.map(t => totalPerTipus[t] > 0 && (
+                <div key={t} className="flex justify-between text-xs text-gray-600">
+                  <span>
+                    <span className="inline-block bg-[#009B9C]/10 text-[#009B9C] text-xs font-bold rounded px-1 mr-1">{t.toUpperCase()}</span>
+                    {PARTIDA_LABELS[t]}
+                  </span>
+                  <span className="font-mono">{f(totalPerTipus[t])} €</span>
+                </div>
+              ))}
+              <div className="flex justify-between text-xs text-gray-700 font-semibold border-t border-[#b2e0e0] pt-1 mt-1">
                 <span>Total ingressos bruts</span>
                 <span className="font-mono">{f(totalBrut)} €</span>
               </div>
