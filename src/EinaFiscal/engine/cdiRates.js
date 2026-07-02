@@ -199,6 +199,12 @@ export const CDI_RATES = {
     vigentDes: '22/12/2025', bopa: null,
     notes: 'CDI Andorra-Regne Unit. En vigor 22/12/2025.'
   },
+  'IS': {  // Islàndia
+    dividends_general: null, dividends_qualif: null, interessos: null, canons: null,
+    plusvalues_immobles: null, plusvalues_accions: null,
+    vigentDes: '10/05/2024', bopa: 'BOPA núm. 7/2024 (17/01/2024)',
+    notes: 'CDI Andorra-Islàndia. En vigor 10/05/2024; aplicació des de 01/01/2025 (Art. 28).'
+  },
   // Sense CDI — no hi ha límit de retenció convencional
   'DEFAULT': {
     dividends_general: null,
@@ -231,5 +237,6 @@ export const PAISOS = [
   { codi: 'NL', nom: 'Països Baixos', cdi: true },
   { codi: 'RO', nom: 'Romania', cdi: true },
   { codi: 'GB', nom: 'Regne Unit', cdi: true },
+  { codi: 'IS', nom: 'Islàndia', cdi: true },
   { codi: 'OTHER', nom: 'Altre país (sense CDI)', cdi: false },
 ];
