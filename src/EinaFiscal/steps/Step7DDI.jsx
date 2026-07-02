@@ -209,15 +209,19 @@ const Step7DDI = ({ dades, update }) => {
     update('rendesExterior', dades.rendesExterior.filter(r => r.id !== id));
   };
 
-  // Detectar retencions a l'origen del pas 5 (capital mobiliari)
+  // Detectar retencions a l'origen del pas 5 (capital mobiliari).
+  // Nova estructura: cada partida té `linies`; compatibilitat cap enrere amb valors directes.
   const retencionsOrigenMobiliaris = (dades.mobiliaris || []).flatMap(entitat =>
-    entitat.partides
-      .filter(p => (p.retencioOrigen || 0) > 0)
-      .map(p => ({
-        descripcio: `${entitat.entitat || 'Entitat'} — partida ${p.tipus.toUpperCase()}`,
-        retencioOrigen: p.retencioOrigen,
-        importBrut: p.importBrut,
-      }))
+    (entitat.partides || []).flatMap(p => {
+      const linies = p.linies || [{ concepte: '', importBrut: p.importBrut, retencioOrigen: p.retencioOrigen }];
+      return linies
+        .filter(l => (l.retencioOrigen || 0) > 0)
+        .map(l => ({
+          descripcio: `${entitat.entitat || 'Entitat'} — partida ${p.tipus.toUpperCase()}${l.concepte ? ' · ' + l.concepte : ''}`,
+          retencioOrigen: l.retencioOrigen,
+          importBrut: l.importBrut,
+        }));
+    })
   );
   const totalRetOrigenMobiliaris = retencionsOrigenMobiliaris.reduce((a, r) => a + r.retencioOrigen, 0);
 

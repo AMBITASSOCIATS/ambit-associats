@@ -3,21 +3,62 @@
 import React from 'react';
 import AnalysisAlert from '../components/AnalysisAlert';
 
-const PARTIDES_300D = [
-  { tipus: 'a', nom: 'Dividends i participacio en patrimoni net', codi: 'DIV' },
-  { tipus: 'b', nom: 'Interessos i cessio de capitals propis', codi: 'INT' },
-  { tipus: 'c', nom: 'Operacions de capitalitzacio i assegurances', codi: 'CAP' },
-  { tipus: 'd', nom: 'Altres rendes de capital mobiliari', codi: 'ALT' },
+const PARTIDA_LABELS = {
+  a: 'Dividends i altres rendiments per participació en fons propis',
+  b: 'Interessos i altres rendiments per cessió de capitals',
+  c: 'Operacions de capitalització i assegurances de vida',
+  d: 'Altres rendiments del capital mobiliari',
+};
+
+const novaLinia = () => ({
+  id: Date.now() + Math.random(),
+  concepte: '',
+  importBrut: 0,
+  despeses: 0,
+  retencioAndorra: 0,
+  retencioOrigen: 0,
+});
+
+const crearPartidesDefaults = () => [
+  { tipus: 'a', label: PARTIDA_LABELS.a, linies: [novaLinia()] },
+  { tipus: 'b', label: PARTIDA_LABELS.b, linies: [novaLinia()] },
+  { tipus: 'c', label: PARTIDA_LABELS.c, linies: [novaLinia()] },
+  { tipus: 'd', label: PARTIDA_LABELS.d, linies: [novaLinia()] },
 ];
 
-const crearPartidesDefaults = () =>
-  PARTIDES_300D.map(p => ({
+// Compatibilitat amb dades antigues de Supabase (partides sense `linies`):
+// crea una línia única a partir dels valors directes de la partida.
+const normalitzarPartida = (p) => {
+  const label = p.label || PARTIDA_LABELS[p.tipus] || '';
+  if (p.linies && p.linies.length > 0) {
+    return p.label ? p : { ...p, label };
+  }
+  return {
     tipus: p.tipus,
-    importBrut: 0,
-    despeses: 0,
-    retencioAndorra: 0,
-    retencioOrigen: 0,
-  }));
+    label,
+    linies: [{
+      id: Date.now() + Math.random(),
+      concepte: '',
+      importBrut: p.importBrut || 0,
+      despeses: p.despeses || 0,
+      retencioAndorra: p.retencioAndorra || 0,
+      retencioOrigen: p.retencioOrigen || 0,
+    }],
+  };
+};
+
+// Suma d'un camp sobre les línies d'una partida (amb fallback al valor directe antic).
+const sumaPartida = (p, camp) =>
+  (p.linies && p.linies.length > 0)
+    ? p.linies.reduce((s, l) => s + (l[camp] || 0), 0)
+    : (p[camp] || 0);
+
+const DEFAULT_RENDA_EXEMPTA = {
+  id: null,
+  tipus: 'DEVOLUCIO_CAPITAL', // 'DEVOLUCIO_CAPITAL' | 'ALTRES_EXEMPT'
+  concepte: '',
+  import: 0,
+};
 
 const DEFAULT_ENTITAT = {
   id: null,
@@ -25,6 +66,7 @@ const DEFAULT_ENTITAT = {
   exercici: 2025,
   partides: crearPartidesDefaults(),
   despesesCustodia: 0,
+  rendesExemptes: [],
 };
 
 // Analisi d'exempcio per OIC (partida a — dividends)
@@ -64,10 +106,34 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
 
   const update = (camp, valor) => onUpdate(entitat.id, camp, valor);
 
-  const totalBrut = entitat.partides.reduce((a, p) => a + (p.importBrut || 0), 0);
-  const totalDespeses = entitat.partides.reduce((a, p) => a + (p.despeses || 0), 0) + (entitat.despesesCustodia || 0);
-  const totalRetAndorra = entitat.partides.reduce((a, p) => a + (p.retencioAndorra || 0), 0);
-  const totalRetOrigen = entitat.partides.reduce((a, p) => a + (p.retencioOrigen || 0), 0);
+  // Gestió de línies dins de cada partida
+  const addLinia = (tipusPartida) => {
+    const p = entitat.partides.find(x => x.tipus === tipusPartida);
+    updatePartida(tipusPartida, 'linies', [...(p?.linies || []), novaLinia()]);
+  };
+  const removeLinia = (tipusPartida, liniaId) => {
+    const p = entitat.partides.find(x => x.tipus === tipusPartida);
+    updatePartida(tipusPartida, 'linies', (p?.linies || []).filter(l => l.id !== liniaId));
+  };
+  const updateLinia = (tipusPartida, liniaId, camp, valor) => {
+    const p = entitat.partides.find(x => x.tipus === tipusPartida);
+    updatePartida(tipusPartida, 'linies', (p?.linies || []).map(l =>
+      l.id === liniaId ? { ...l, [camp]: valor } : l
+    ));
+  };
+
+  // Rendes exemptes / no subjectes de l'entitat
+  const addRendaExempta = () =>
+    update('rendesExemptes', [...(entitat.rendesExemptes || []), { ...DEFAULT_RENDA_EXEMPTA, id: Date.now() + Math.random() }]);
+  const removeRendaExempta = (rendaId) =>
+    update('rendesExemptes', (entitat.rendesExemptes || []).filter(re => re.id !== rendaId));
+  const updateRendaExempta = (rendaId, camp, valor) =>
+    update('rendesExemptes', (entitat.rendesExemptes || []).map(re => re.id === rendaId ? { ...re, [camp]: valor } : re));
+
+  const totalBrut = entitat.partides.reduce((a, p) => a + sumaPartida(p, 'importBrut'), 0);
+  const totalDespeses = entitat.partides.reduce((a, p) => a + sumaPartida(p, 'despeses'), 0) + (entitat.despesesCustodia || 0);
+  const totalRetAndorra = entitat.partides.reduce((a, p) => a + sumaPartida(p, 'retencioAndorra'), 0);
+  const totalRetOrigen = entitat.partides.reduce((a, p) => a + sumaPartida(p, 'retencioOrigen'), 0);
   const totalNet = totalBrut - totalDespeses;
 
   return (
@@ -107,73 +173,102 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
               <th className="text-right px-3 py-2 font-medium text-gray-600">Ret. Andorra (euros)</th>
               <th className="text-right px-3 py-2 font-medium text-gray-600">Ret. Origen (euros)</th>
               <th className="text-right px-3 py-2 font-medium text-gray-600">Net (euros)</th>
+              <th className="px-2 py-2 w-8"></th>
             </tr>
           </thead>
           <tbody>
-            {PARTIDES_300D.map((pd) => {
-              const partida = entitat.partides.find(p => p.tipus === pd.tipus) || {};
-              const net = (partida.importBrut || 0) - (partida.despeses || 0);
-              const analisi = pd.tipus === 'a' ? analisiOIC(partida.importBrut)
-                            : pd.tipus === 'c' ? analisiAsseguranca(partida.importBrut)
+            {entitat.partides.map((partida) => {
+              const linies = partida.linies || [];
+              const brutPartida = linies.reduce((s, l) => s + (l.importBrut || 0), 0);
+              const analisi = partida.tipus === 'a' ? analisiOIC(brutPartida)
+                            : partida.tipus === 'c' ? analisiAsseguranca(brutPartida)
                             : null;
               return (
-                <React.Fragment key={pd.tipus}>
-                  <tr className="border-b border-gray-100 hover:bg-gray-50/50">
-                    <td className="px-4 py-2">
-                      <div>
-                        <span className="inline-block bg-[#009B9C]/10 text-[#009B9C] text-xs font-bold rounded px-1.5 py-0.5 mr-1.5">{pd.tipus.toUpperCase()}</span>
-                        <span className="text-gray-700">{pd.nom}</span>
-                      </div>
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
-                        value={partida.importBrut === 0 ? '' : partida.importBrut}
-                        placeholder="0"
-                        onChange={e => { const v = e.target.value; updatePartida(pd.tipus, 'importBrut', v === '' ? 0 : parseFloat(v) || 0); }}
-                        className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs"
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
-                        value={partida.despeses === 0 ? '' : partida.despeses}
-                        placeholder="0"
-                        onChange={e => { const v = e.target.value; updatePartida(pd.tipus, 'despeses', v === '' ? 0 : parseFloat(v) || 0); }}
-                        className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs"
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
-                        value={partida.retencioAndorra === 0 ? '' : partida.retencioAndorra}
-                        placeholder="0"
-                        onChange={e => { const v = e.target.value; updatePartida(pd.tipus, 'retencioAndorra', v === '' ? 0 : parseFloat(v) || 0); }}
-                        className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs"
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
-                        value={partida.retencioOrigen === 0 ? '' : partida.retencioOrigen}
-                        placeholder="0"
-                        onChange={e => { const v = e.target.value; updatePartida(pd.tipus, 'retencioOrigen', v === '' ? 0 : parseFloat(v) || 0); }}
-                        className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs"
-                      />
-                    </td>
-                    <td className="px-3 py-2 text-right">
-                      <span className={`font-mono font-medium ${net >= 0 ? 'text-gray-700' : 'text-red-600'}`}>
-                        {net.toFixed(2)}
-                      </span>
-                    </td>
-                  </tr>
-                  {analisi && (partida.importBrut || 0) > 0 && (
+                <React.Fragment key={partida.tipus}>
+                  {linies.map((linia) => {
+                    const net = (linia.importBrut || 0) - (linia.despeses || 0);
+                    return (
+                      <tr key={linia.id} className="border-b border-gray-100 hover:bg-gray-50/50">
+                        <td className="px-4 py-2">
+                          <div className="font-medium text-gray-700 text-xs mb-1">
+                            <span className="inline-block bg-[#009B9C]/10 text-[#009B9C] text-xs font-bold rounded px-1.5 py-0.5 mr-1.5">{partida.tipus.toUpperCase()}</span>
+                            {partida.label}
+                          </div>
+                          <input
+                            type="text"
+                            value={linia.concepte}
+                            onChange={e => updateLinia(partida.tipus, linia.id, 'concepte', e.target.value)}
+                            placeholder="Concepte / descripció"
+                            className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]/40"
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
+                            value={linia.importBrut === 0 ? '' : linia.importBrut}
+                            placeholder="0"
+                            onChange={e => { const v = e.target.value; updateLinia(partida.tipus, linia.id, 'importBrut', v === '' ? 0 : parseFloat(v) || 0); }}
+                            className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs font-mono"
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
+                            value={linia.despeses === 0 ? '' : linia.despeses}
+                            placeholder="0"
+                            onChange={e => { const v = e.target.value; updateLinia(partida.tipus, linia.id, 'despeses', v === '' ? 0 : parseFloat(v) || 0); }}
+                            className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs font-mono"
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
+                            value={linia.retencioAndorra === 0 ? '' : linia.retencioAndorra}
+                            placeholder="0"
+                            onChange={e => { const v = e.target.value; updateLinia(partida.tipus, linia.id, 'retencioAndorra', v === '' ? 0 : parseFloat(v) || 0); }}
+                            className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs font-mono"
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
+                            value={linia.retencioOrigen === 0 ? '' : linia.retencioOrigen}
+                            placeholder="0"
+                            onChange={e => { const v = e.target.value; updateLinia(partida.tipus, linia.id, 'retencioOrigen', v === '' ? 0 : parseFloat(v) || 0); }}
+                            className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs font-mono text-amber-600"
+                          />
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          <span className={`font-mono font-medium ${net >= 0 ? 'text-gray-700' : 'text-red-600'}`}>
+                            {net.toFixed(2)}
+                          </span>
+                        </td>
+                        <td className="px-2 py-2 text-center">
+                          {linies.length > 1 && (
+                            <button onClick={() => removeLinia(partida.tipus, linia.id)}
+                              className="text-red-400 hover:text-red-600 text-xs">✕</button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {analisi && brutPartida > 0 && (
                     <tr>
-                      <td colSpan={6} className="px-4 pb-2">
+                      <td colSpan={7} className="px-4 pb-2">
                         <AnalysisAlert analisi={analisi} />
                       </td>
                     </tr>
                   )}
+                  <tr>
+                    <td colSpan={7} className="px-4 py-1">
+                      <button
+                        onClick={() => addLinia(partida.tipus)}
+                        className="text-xs text-[#009B9C] hover:text-[#007A7B] font-medium"
+                      >
+                        + Afegir línia a {partida.label}
+                      </button>
+                    </td>
+                  </tr>
                 </React.Fragment>
               );
             })}
@@ -192,7 +287,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                   className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs"
                 />
               </td>
-              <td colSpan={3}></td>
+              <td colSpan={4}></td>
             </tr>
             {/* Total */}
             <tr className="bg-[#009B9C]/5 font-semibold text-sm">
@@ -211,10 +306,59 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                   {totalNet.toFixed(2)}
                 </span>
               </td>
+              <td className="px-2 py-2"></td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      {/* Rendes exemptes / no subjectes de l'entitat */}
+      {(entitat.rendesExemptes || []).length > 0 && (
+        <div className="mx-4 mb-3 mt-2 border border-green-200 rounded-xl p-3 bg-green-50">
+          <p className="text-xs font-semibold text-green-700 mb-2">
+            Rendes exemptes / no subjectes (informatiu — no computen a la base)
+          </p>
+          {(entitat.rendesExemptes || []).map((re) => (
+            <div key={re.id} className="flex gap-2 items-center mb-2">
+              <select
+                value={re.tipus}
+                onChange={e => updateRendaExempta(re.id, 'tipus', e.target.value)}
+                className="border border-green-300 rounded px-2 py-1 text-xs"
+              >
+                <option value="DEVOLUCIO_CAPITAL">Devolució de capital (Art. 27.3)</option>
+                <option value="ALTRES_EXEMPT">Altra renda exempta</option>
+              </select>
+              <input
+                type="text"
+                value={re.concepte}
+                onChange={e => updateRendaExempta(re.id, 'concepte', e.target.value)}
+                placeholder="Concepte / descripció"
+                className="flex-1 border border-green-300 rounded px-2 py-1 text-xs"
+              />
+              <input
+                type="number" onWheel={e => e.target.blur()} min="0" step="0.01"
+                value={re.import === 0 ? '' : re.import}
+                onChange={e => { const v = e.target.value; updateRendaExempta(re.id, 'import', v === '' ? 0 : parseFloat(v) || 0); }}
+                placeholder="0.00"
+                className="w-24 border border-green-300 rounded px-2 py-1 text-xs text-right font-mono"
+              />
+              <button onClick={() => removeRendaExempta(re.id)}
+                className="text-red-400 hover:text-red-600 text-xs">✕</button>
+            </div>
+          ))}
+          {(entitat.rendesExemptes || []).some(re => re.tipus === 'DEVOLUCIO_CAPITAL') && (
+            <p className="text-xs text-green-600 mt-1">
+              ℹ️ La devolució de capital (Art. 27.3 Llei 5/2014) no és renda: minora el valor d'adquisició dels valors restants. No computa a la base de l'estalvi.
+            </p>
+          )}
+        </div>
+      )}
+      <button
+        onClick={addRendaExempta}
+        className="mx-4 mb-3 text-xs text-green-600 hover:text-green-800 font-medium"
+      >
+        + Afegir renda exempta / no subjecta
+      </button>
 
       {totalRetOrigen > 0 && (
         <div className="mx-4 mb-3 mt-1 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700">
@@ -241,15 +385,30 @@ const Step5Mobiliari = ({ dades, update }) => {
     update('mobiliaris', dades.mobiliaris.filter(e => e.id !== id));
   };
 
+  // Migració de dades antigues (partides sense `linies`, entitats sense `rendesExemptes`).
+  // S'executa un cop per càrrega; després `normalitzarPartida` retorna la partida sense canvis.
+  React.useEffect(() => {
+    let cal = false;
+    const migrats = (dades.mobiliaris || []).map(e => {
+      const partidesNorm = (e.partides || []).map(normalitzarPartida);
+      const canviPartides = partidesNorm.some((p, i) => p !== (e.partides || [])[i]);
+      const calExemptes = !Array.isArray(e.rendesExemptes);
+      if (canviPartides || calExemptes) cal = true;
+      return { ...e, partides: partidesNorm, rendesExemptes: e.rendesExemptes || [] };
+    });
+    if (cal) update('mobiliaris', migrats);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dades.mobiliaris]);
+
   const totalBrutGlobal = dades.mobiliaris.reduce((acc, e) =>
-    acc + e.partides.reduce((a, p) => a + (p.importBrut || 0), 0), 0);
+    acc + e.partides.reduce((a, p) => a + sumaPartida(p, 'importBrut'), 0), 0);
   const totalNetGlobal = dades.mobiliaris.reduce((acc, e) => {
-    const brut = e.partides.reduce((a, p) => a + (p.importBrut || 0), 0);
-    const desp = e.partides.reduce((a, p) => a + (p.despeses || 0), 0) + (e.despesesCustodia || 0);
+    const brut = e.partides.reduce((a, p) => a + sumaPartida(p, 'importBrut'), 0);
+    const desp = e.partides.reduce((a, p) => a + sumaPartida(p, 'despeses'), 0) + (e.despesesCustodia || 0);
     return acc + brut - desp;
   }, 0);
   const totalRetOrigenGlobal = dades.mobiliaris.reduce((acc, e) =>
-    acc + e.partides.reduce((a, p) => a + (p.retencioOrigen || 0), 0), 0);
+    acc + e.partides.reduce((a, p) => a + sumaPartida(p, 'retencioOrigen'), 0), 0);
 
   return (
     <div className="space-y-4">
@@ -323,9 +482,9 @@ const Step5Mobiliari = ({ dades, update }) => {
       {/* Resum total al final — només si hi ha més d'una entitat */}
       {dades.mobiliaris.length > 1 && (() => {
         const totalBrut = dades.mobiliaris.reduce((s, e) =>
-          s + e.partides.reduce((a, p) => a + (p.importBrut || 0), 0), 0);
+          s + e.partides.reduce((a, p) => a + sumaPartida(p, 'importBrut'), 0), 0);
         const totalDespesesPartida = dades.mobiliaris.reduce((s, e) =>
-          s + e.partides.reduce((a, p) => a + (p.despeses || 0), 0), 0);
+          s + e.partides.reduce((a, p) => a + sumaPartida(p, 'despeses'), 0), 0);
         const totalDespesesCustodia = dades.mobiliaris.reduce((s, e) =>
           s + (e.despesesCustodia || 0), 0);
         const totalDespeses = totalDespesesPartida + totalDespesesCustodia;

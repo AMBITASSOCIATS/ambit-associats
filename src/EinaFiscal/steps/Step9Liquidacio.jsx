@@ -291,6 +291,15 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
   const tensRendesSenseTransmissio = (dades.rendesSenseTransmissio || []).length > 0;
   const totalSenseTransmissio = (dades.rendesSenseTransmissio || []).reduce((s, rr) => s + (rr.resultat || 0), 0);
   const tensDevolucionsCapital = (dades.transmissions || []).some(t => t.esDevolucioCapital);
+  const tensMobiliariExemptes = (dades.mobiliaris || []).some(e => (e.rendesExemptes || []).length > 0);
+
+  // Textos locals per a les rendes exemptes de capital mobiliari (no centralitzats a pdfTranslations).
+  const TXT_MOB_EXEMPT = {
+    titol: { CA: 'Rendes exemptes / no subjectes — Capital mobiliari', ES: 'Rentas exentas / no sujetas — Capital mobiliario', FR: 'Revenus exonérés / non soumis — Capital mobilier', EN: 'Exempt / non-taxable income — Movable capital' },
+    devolucio: { CA: "NO SUBJECTA · Art. 27.3 Llei 5/2014 — minora el valor d'adquisició", ES: 'NO SUJETA · Art. 27.3 Ley 5/2014 — minora el valor de adquisición', FR: "NON SOUMISE · Art. 27.3 Loi 5/2014 — réduit la valeur d'acquisition", EN: 'NON-TAXABLE · Art. 27.3 Law 5/2014 — reduces the acquisition value' },
+    altres: { CA: "EXEMPTA — no computa a la base de l'estalvi", ES: 'EXENTA — no computa en la base del ahorro', FR: "EXONÉRÉE — n'entre pas dans la base de l'épargne", EN: 'EXEMPT — not included in the savings base' },
+  };
+  const trMob = (k) => TXT_MOB_EXEMPT[k][idiomaInforme] || TXT_MOB_EXEMPT[k].CA;
 
   return (
     <div className="space-y-6">
@@ -784,14 +793,30 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 {(dades.mobiliaris || []).map((ent, i) => (
                   <React.Fragment key={i}>
                     <FilaDetall label={`${trp('entitatNum', { n: i + 1 })}: ${ent.entitat || ''}`} valor={null} negrita />
-                    {(ent.partides || []).map((p, j) => (
-                      <React.Fragment key={j}>
-                        <FilaDetall label={`  ${({ a: tr('mobiliariA'), b: tr('mobiliariB'), c: tr('mobiliariC'), d: tr('mobiliariD') })[p.tipus] || p.tipusRenda || 'Renda'}`} valor={fmt(p.importBrut || 0)} nota={trp('apartat300D', { ap: (p.tipus || '?').toUpperCase() })} />
-                        {(p.despeses || 0) > 0 && <FilaDetall label={tr('despesesCustodiaGestioLabel')} valor={fmt(-(p.despeses || 0))} negatiu />}
-                        {(p.retencioAndorra || 0) > 0 && <FilaDetall label={tr('retencioAndorraLabel')} valor={fmt(p.retencioAndorra || 0)} nota={tr('deduibleQuotaNota')} />}
-                        {(p.retencioEstranger || 0) > 0 && <FilaDetall label={tr('retencioEstrangerLabel')} valor={fmt(p.retencioEstranger || 0)} nota={tr('baseCalculDdiNota')} />}
-                      </React.Fragment>
-                    ))}
+                    {(ent.partides || []).map((p, j) => {
+                      // Compatibilitat: partides noves (amb `linies`) i antigues (valors directes)
+                      const linies = p.linies || [{ concepte: '', importBrut: p.importBrut, despeses: p.despeses, retencioAndorra: p.retencioAndorra, retencioOrigen: p.retencioOrigen || p.retencioEstranger }];
+                      const brutPartida = linies.reduce((s, l) => s + (l.importBrut || 0), 0);
+                      const despPartida = linies.reduce((s, l) => s + (l.despeses || 0), 0);
+                      const retAndPartida = linies.reduce((s, l) => s + (l.retencioAndorra || 0), 0);
+                      if (brutPartida === 0 && despPartida === 0 && retAndPartida === 0) return null;
+                      const etiqueta = ({ a: tr('mobiliariA'), b: tr('mobiliariB'), c: tr('mobiliariC'), d: tr('mobiliariD') })[p.tipus] || p.tipusRenda || 'Renda';
+                      const liniesDetall = linies.filter(l => (l.importBrut || 0) !== 0 || l.concepte);
+                      const mostrarDetall = liniesDetall.length > 1 || liniesDetall.some(l => l.concepte || (l.retencioOrigen || 0) > 0);
+                      return (
+                        <React.Fragment key={j}>
+                          <FilaDetall label={`  ${etiqueta}`} valor={fmt(brutPartida)} negrita nota={trp('apartat300D', { ap: (p.tipus || '?').toUpperCase() })} />
+                          {mostrarDetall && liniesDetall.map((l, li) => (
+                            <React.Fragment key={`l${li}`}>
+                              <FilaDetall label={`    ${l.concepte || `${etiqueta} ${li + 1}`}`} valor={fmt(l.importBrut || 0)} />
+                              {(l.retencioOrigen || 0) > 0 && <FilaDetall label={`      ${tr('retencioEstrangerLabel')}`} valor={fmt(l.retencioOrigen || 0)} nota={tr('baseCalculDdiNota')} />}
+                            </React.Fragment>
+                          ))}
+                          {despPartida > 0 && <FilaDetall label={tr('despesesCustodiaGestioLabel')} valor={fmt(-despPartida)} negatiu />}
+                          {retAndPartida > 0 && <FilaDetall label={tr('retencioAndorraLabel')} valor={fmt(retAndPartida)} nota={tr('deduibleQuotaNota')} />}
+                        </React.Fragment>
+                      );
+                    })}
                     {(ent.despesesCustodia || 0) > 0 && (
                       <FilaDetall
                         label={tr('despesesAdministracioCustodia')}
@@ -1232,7 +1257,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         </div>
 
         {/* ══ PÀGINA 5b — RENDES EXEMPTES (Art. 5.k) I NO SUBJECTES (Art. 27.3) ══ */}
-        {((tensTransmissionsExemptes && r.transmissionsExemptes && r.transmissionsExemptes.length > 0) || tensDevolucionsCapital) && (
+        {((tensTransmissionsExemptes && r.transmissionsExemptes && r.transmissionsExemptes.length > 0) || tensDevolucionsCapital || tensMobiliariExemptes) && (
           <div className="page-break">
            <table className="sec-table">
             <thead><tr><td>
@@ -1266,6 +1291,21 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                         valor={fmt(t.valorTransmissio || 0)}
                         nota={tr('notaNoSubjectaArt273')} />
                     ))}
+                  </>
+                )}
+
+                {/* Subsecció C — Capital mobiliari exempt / no subjecte (per entitat) */}
+                {tensMobiliariExemptes && (
+                  <>
+                    <FilaDetall label={trMob('titol')} valor={null} negrita destacat />
+                    {(dades.mobiliaris || []).map((e, ei) =>
+                      (e.rendesExemptes || []).map((re, ri) => (
+                        <FilaDetall key={`me${ei}-${ri}`}
+                          label={`  ${e.entitat || trp('entitatNum', { n: ei + 1 })} — ${re.concepte || re.tipus}`}
+                          valor={fmt(re.import || 0)}
+                          nota={re.tipus === 'DEVOLUCIO_CAPITAL' ? trMob('devolucio') : trMob('altres')} />
+                      ))
+                    )}
                   </>
                 )}
 

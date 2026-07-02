@@ -141,9 +141,11 @@ function calcularRendaNetaMobiliaria(mobiliaris) {
     if (!entitat.partides) continue;
     const despesesCustodia = entitat.despesesCustodia || 0;
     for (const partida of entitat.partides) {
-      const brut = partida.importBrut || 0;
-      const desp = partida.despeses || 0;
-      totalNet += brut - desp;
+      // Nova estructura: suma de línies. Compatibilitat cap enrere amb valors directes.
+      const linies = partida.linies || [{ importBrut: partida.importBrut, despeses: partida.despeses }];
+      for (const l of linies) {
+        totalNet += (l.importBrut || 0) - (l.despeses || 0);
+      }
     }
     totalNet -= despesesCustodia;
   }
@@ -155,7 +157,10 @@ function calcularRetencionsAndorraMobiliaris(mobiliaris) {
   for (const entitat of mobiliaris) {
     if (!entitat.partides) continue;
     for (const partida of entitat.partides) {
-      total += partida.retencioAndorra || 0;
+      const linies = partida.linies || [{ retencioAndorra: partida.retencioAndorra }];
+      for (const l of linies) {
+        total += l.retencioAndorra || 0;
+      }
     }
   }
   return total;
