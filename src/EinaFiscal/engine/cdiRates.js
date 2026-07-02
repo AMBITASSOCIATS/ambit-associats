@@ -100,18 +100,6 @@ export const CDI_RATES = {
     salaris: 'treball',
     notes: 'CDI Andorra-Malta.'
   },
-  'UY': {  // Uruguai
-    dividends_general: 0.15,
-    dividends_qualif: 0.05,
-    interessos: 0.05,
-    canons: 0.05,
-    plusvalues_immobles: null,
-    plusvalues_accions: null,
-    pensions_privades: 'residencia',
-    pensions_SS: 'origen',
-    salaris: 'treball',
-    notes: 'CDI Andorra-Uruguai.'
-  },
   'KR': {  // Corea del Sud
     dividends_general: 0.15,
     dividends_qualif: 0.05,
@@ -231,7 +219,6 @@ export const PAISOS = [
   { codi: 'AE', nom: 'Emirats Àrabs Units', cdi: true },
   { codi: 'SM', nom: 'San Marino', cdi: true },
   { codi: 'MT', nom: 'Malta', cdi: true },
-  { codi: 'UY', nom: 'Uruguai', cdi: true },
   { codi: 'KR', nom: 'Corea del Sud', cdi: true },
   { codi: 'LT', nom: 'Lituània', cdi: true },
   { codi: 'ME', nom: 'Montenegro', cdi: true },
