@@ -2,6 +2,14 @@
 import React, { useRef, useState } from 'react';
 import { generarCaselles300L } from '../engine/liquidacioEngine';
 import { PDF_LANGS, t } from '../engine/pdfTranslations';
+import { PAISOS } from '../engine/cdiRates';
+
+// Nom del país d'una renda DDI: quan no hi ha CDI (codi 'OTHER') s'usa el text
+// lliure introduït per l'usuari; altrament es resol el codi a nom via PAISOS.
+const nomPaisDDI = (renda) =>
+  renda?.pais === 'OTHER' && renda?.paisLliure
+    ? renda.paisLliure
+    : PAISOS.find(p => p.codi === renda?.pais)?.nom || renda?.pais || '—';
 
 const AMBIT = {
   nom: 'DEL SOTO – PALEARI & ASSOCIATS, S.L.',
@@ -898,7 +906,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   const topCDI = (d.tipusMaxCDI || 0) / 100 * (d.importBrut || 0);
                   return (
                     <React.Fragment key={i}>
-                      <FilaDetall label={`${d.pais || '—'} — ${d.tipusRenda || ''}`} valor={fmt(d.ddi)} negrita />
+                      <FilaDetall label={`${nomPaisDDI(d)} — ${d.tipusRenda || ''}`} valor={fmt(d.ddi)} negrita />
                       <FilaDetall label={tr('rendaBrutaObtingudaLabel')} valor={fmt(d.importBrut || 0)} />
                       <FilaDetall label={tr('retencioEfectivaLabel')} valor={fmt(ret)} nota={d.tensCDI ? `CDI vigent — tipus màxim ${d.tipusMaxCDI || 0}%` : 'Sense CDI'} />
                       {d.tensCDI && ret > topCDI && (
