@@ -72,7 +72,7 @@ const DEFAULT_DADES = {
   deduccionsAnteriors: [],
 };
 
-const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesChange, onSortir, ultimDesat, onLogout, onAdminPanel, pendents = 0 }) => {
+const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient = [], onCanviarExercici, onDesar, onDadesChange, onSortir, ultimDesat, onLogout, onAdminPanel, pendents = 0 }) => {
   const { perfil } = useAuth();
   const [pas, setPas] = useState(1);
   const [dades, setDades] = useState(() => ({
@@ -81,7 +81,9 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
   }));
   const [clientNom, setClientNom] = useState(() => declaracioInicial?.clientNom || '');
   const [clientNRT, setClientNRT] = useState(() => declaracioInicial?.clientNRT || '');
-  const [exercici, setExercici] = useState(() => declaracioInicial?.exercici || 2025);
+  // L'exercici d'una declaració és FIX un cop creada. El selector de la capçalera
+  // ja no reetiqueta aquest any: navega entre declaracions del client (onCanviarExercici).
+  const [exercici] = useState(() => declaracioInicial?.exercici || 2025);
   const [estatActual, setEstatActual] = useState(() => declaracioInicial?.estat || 'esborrany');
   const [mostrarErrorCASS, setMostrarErrorCASS] = useState(false);
 
@@ -130,6 +132,11 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
             <p className="text-white/80 text-xs">
               Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023
             </p>
+            {exercicisClient.length > 1 && (
+              <p className="text-white/60 text-xs mt-0.5">
+                Aquest client té declaracions a: {exercicisClient.map(e => e.exercici).slice().sort((a, b) => a - b).join(', ')}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <input
@@ -147,13 +154,17 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
               className="bg-white/20 text-white placeholder-white/60 border border-white/30 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 w-32"
             />
             <select
-              value={exercici}
-              onChange={e => setExercici(Number(e.target.value))}
-              className="bg-white/20 text-white border border-white/30 rounded-lg px-3 py-2 text-sm focus:outline-none"
+              value={declaracioId || ''}
+              onChange={e => { if (onCanviarExercici) onCanviarExercici(e.target.value); }}
+              disabled={!onCanviarExercici || exercicisClient.length <= 1}
+              title="Exercici de la declaració — navega entre declaracions del mateix client"
+              className="bg-white/20 text-white border border-white/30 rounded-lg px-3 py-2 text-sm focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <option value={2025}>2025</option>
-              <option value={2024}>2024</option>
-              <option value={2023}>2023</option>
+              {exercicisClient.length > 0
+                ? exercicisClient.map(ex => (
+                    <option key={ex.id} value={ex.id} className="text-gray-800">{ex.exercici}</option>
+                  ))
+                : <option value={declaracioId || ''} className="text-gray-800">{exercici}</option>}
             </select>
             {onDesar && (
               <button

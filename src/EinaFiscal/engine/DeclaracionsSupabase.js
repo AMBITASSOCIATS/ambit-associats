@@ -25,6 +25,13 @@ function mapRow(row) {
   };
 }
 
+// Normalitza un NRT per comparar identitat de client: majúscules, sense guions
+// ni espais. NOMÉS per comparar — el NRT es desa i es mostra tal com l'introdueix
+// l'usuari (amb guions).
+export function normalitzarNRT(nrt) {
+  return (nrt || '').toUpperCase().replace(/[\s-]/g, '');
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // API PÚBLICA
 // ─────────────────────────────────────────────────────────────────────────────

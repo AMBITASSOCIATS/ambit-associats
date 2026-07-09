@@ -1,13 +1,14 @@
 // EinaFiscal/EinaFiscalRouter.jsx
 // Router intern: mostra la llista o el wizard segons l'estat
 // Substitueix l'import directe de EinaFiscal/index.jsx a App.js
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import LlistaDeclaracions from './LlistaDeclaracions';
 import EinaFiscal from './index';
 import {
   llistarDeclaracions,
   obtenirDeclaracio,
   desarDeclaracio,
+  normalitzarNRT,
 } from './engine/DeclaracionsSupabase';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../auth/AuthContext';
@@ -244,6 +245,52 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     setUltimDesat(null);
     handleRecarregar();
   }, [declaracioId, handleRecarregar]);
+
+  // ── Exercicis del client obert (mateix NRT normalitzat + mateix user_id) ─────
+  // Retorna [{ exercici, id, estat }] incloent sempre la declaració actual.
+  const exercicisClient = useMemo(() => {
+    if (!declaracioActual) return [];
+    const nrtRef = normalitzarNRT(declaracioActual.clientNRT);
+    const mapa = new Map();
+    // Sempre incloure la declaració actual (encara que la llista local sigui obsoleta)
+    mapa.set(declaracioActual.id, {
+      exercici: declaracioActual.exercici,
+      id: declaracioActual.id,
+      estat: declaracioActual.estat,
+    });
+    if (nrtRef) {
+      declaracions
+        .filter(d => d.userId === declaracioActual.userId && normalitzarNRT(d.clientNRT) === nrtRef)
+        .forEach(d => mapa.set(d.id, { exercici: d.exercici, id: d.id, estat: d.estat }));
+    }
+    return Array.from(mapa.values()).sort((a, b) => (b.exercici || 0) - (a.exercici || 0));
+  }, [declaracions, declaracioActual]);
+
+  // ── Canviar d'exercici = navegar a una altra declaració del mateix client ────
+  // Desa l'actual (mateix flux d'autodesat) i obre la destí (fresca de Supabase).
+  const handleCanviarExercici = useCallback(async (idDesti) => {
+    if (!idDesti || idDesti === declaracioId) return;
+    // 1. Desar l'actual reutilitzant el flux de desat existent (dadesRef/metaRef)
+    if (declaracioId && dadesRef.current) {
+      await desarDeclaracio(declaracioId, {
+        dades: dadesRef.current,
+        clientNom: metaRef.current.clientNom,
+        clientNRT: metaRef.current.clientNRT,
+        exercici: metaRef.current.exercici,
+      }).catch(e => console.error('Error desant abans de canviar d\'exercici:', e));
+    }
+    // 2. Obtenir la destí FRESCA (evita la llista local obsoleta) i obrir-la
+    const dest = await obtenirDeclaracio(idDesti);
+    if (dest) {
+      // Preparar els refs amb la destí abans del remount (evita autodesat amb dades velles)
+      dadesRef.current = dest.dades || {};
+      metaRef.current = { clientNom: dest.clientNom, clientNRT: dest.clientNRT, exercici: dest.exercici };
+      setUltimDesat(null);
+      handleObrirDeclaracio(idDesti, dest);
+    }
+    // 3. Refrescar la llista en segon pla (per a exercicisClient i la llista)
+    handleRecarregar();
+  }, [declaracioId, handleObrirDeclaracio, handleRecarregar]);
 
   // ── Autenticació ─────────────────────────────────────────────────────────
   if (carregant) return (
@@ -499,8 +546,11 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     }
     return (
       <EinaFiscal
+        key={declaracioId}
         declaracioId={declaracioId}
         declaracioInicial={declaracioActual}
+        exercicisClient={exercicisClient}
+        onCanviarExercici={handleCanviarExercici}
         onDesar={handleDesar}
         onDadesChange={handleDadesChange}
         onSortir={handleSortirWizard}
