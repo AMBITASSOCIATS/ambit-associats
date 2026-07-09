@@ -800,6 +800,75 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     </React.Fragment>
                   );
                 })}
+                {/* Resum del capital immobiliari — només amb més d'un immoble */}
+                {(dades.immobles || []).length > 1 && (() => {
+                  let totalIngressos = 0, totalDespesesDirecta = 0, totalDespesesForfet = 0,
+                      totalReduccio = 0, totalRendaNeta = 0, totalImpostComunal = 0, teForfet = false;
+                  const c = { despesaReparacio: 0, despesaFinancera: 0, serveisPrestatsTercers: 0,
+                              amortitzacio: 0, tributs: 0, asseguranca: 0, comunitat: 0, altresDespeses: 0 };
+                  (dades.immobles || []).forEach(im => {
+                    const esForfet = im.tipusDeterminacio === 'forfetaria';
+                    const pctForfet = im.esHabitatgeAssequible ? 0.50 : 0.40;
+                    const despesesForfet = (im.ingressosIntegres || 0) * pctForfet;
+                    const despesesDirecta = (im.despesaReparacio || 0) + (im.despesaFinancera || 0) +
+                      (im.serveisPrestatsTercers || 0) + (im.amortitzacio || 0) +
+                      (im.tributs || 0) + (im.asseguranca || 0) +
+                      (im.comunitat || 0) + (im.altresDespeses || 0);
+                    const reduccioHab = im.aplicarReduccioHabitatge ? (im.reduccioHabitatge || 0) : 0;
+                    const despeses = esForfet ? despesesForfet : despesesDirecta;
+                    const rendaNeta = (im.ingressosIntegres || 0) - despeses - (esForfet ? 0 : reduccioHab);
+                    totalIngressos += (im.ingressosIntegres || 0);
+                    totalRendaNeta += rendaNeta;
+                    totalImpostComunal += (im.impostComunal || 0);
+                    if (esForfet) {
+                      teForfet = true;
+                      totalDespesesForfet += despesesForfet;
+                    } else {
+                      totalDespesesDirecta += despesesDirecta;
+                      totalReduccio += reduccioHab;
+                      c.despesaReparacio += (im.despesaReparacio || 0);
+                      c.despesaFinancera += (im.despesaFinancera || 0);
+                      c.serveisPrestatsTercers += (im.serveisPrestatsTercers || 0);
+                      c.amortitzacio += (im.amortitzacio || 0);
+                      c.tributs += (im.tributs || 0);
+                      c.asseguranca += (im.asseguranca || 0);
+                      c.comunitat += (im.comunitat || 0);
+                      c.altresDespeses += (im.altresDespeses || 0);
+                    }
+                  });
+                  const totalDespeses = totalDespesesDirecta + totalDespesesForfet;
+                  const conceptes = [
+                    ['Reparació i conservació', c.despesaReparacio],
+                    ['Interessos financers', c.despesaFinancera],
+                    ['Serveis prestats per tercers', c.serveisPrestatsTercers],
+                    ['Amortització', c.amortitzacio],
+                    ['Tributs i taxes deduïbles', c.tributs],
+                    ['Assegurança', c.asseguranca],
+                    ['Comunitat', c.comunitat],
+                    ['Altres despeses fiscalment deduïbles', c.altresDespeses],
+                  ];
+                  return (
+                    <div style={{ marginTop: '8px', borderTop: `2px solid ${CAP.color}`, paddingTop: '6px' }}>
+                      <FilaDetall label="RESUM DEL CAPITAL IMMOBILIARI — Tots els immobles" valor={null} negrita />
+                      <FilaDetall label="Total ingressos íntegres" valor={fmt(totalIngressos)} negrita />
+                      {conceptes.map(([label, val]) => val > 0 && (
+                        <FilaDetall key={label} label={`  ${label}`} valor={fmt(-val)} negatiu />
+                      ))}
+                      {teForfet && totalDespesesForfet > 0 && (
+                        <FilaDetall label="  Despeses (mètode forfetari 40/50%)" valor={fmt(-totalDespesesForfet)} negatiu />
+                      )}
+                      <FilaDetall label="Total despeses deduïbles" valor={fmt(-totalDespeses)} negrita negatiu />
+                      {totalReduccio > 0 && (
+                        <FilaDetall label="Total reducció per arrendament d'habitatge" valor={fmt(-totalReduccio)} negatiu />
+                      )}
+                      <FilaDetall label="Total renda neta del capital immobiliari" valor={fmt(totalRendaNeta)} negrita destacat />
+                      {totalImpostComunal > 0 && (
+                        <FilaDetall label="Total impost comunal sobre els rendiments arrendataris" valor={fmt(totalImpostComunal)}
+                          nota="Es dedueix de la quota via DDI (Art. 47 Llei 5/2014) — NO minora la renda neta" />
+                      )}
+                    </div>
+                  );
+                })()}
                 <NotaNormativa refText={tr('refArt2022Immobiliari')} text={tr('citaArt2022Immobiliari')} />
               </SeccioBlocNormatiu>
             )}
