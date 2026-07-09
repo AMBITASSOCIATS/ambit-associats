@@ -23,12 +23,15 @@ const PARTIDA_LABELS = {
 // Línies d'una partida amb compatibilitat cap enrere (dades antigues sense `linies`).
 const liniesDePartida = (p) => p.linies || [{ importBrut: p.importBrut || 0, despeses: p.despeses || 0 }];
 
-// Normativa aplicable segons l'exercici (font única). El Reglament 29/12/2023 es cita a part.
-const normativaAplicable = (ex) => {
+// Normativa aplicable segons l'exercici (font única). El Reglament 29/12/2023
+// desplega la L2023005 (vigor 1/1/2024) → només aplica a exercicis >= 2024.
+const normativaAplicable = (ex, ambReglament = false) => {
   const e = ex || 2025;
-  if (e >= 2025) return 'Llei 5/2014 · L2023005 · L2025005';
-  if (e === 2024) return 'Llei 5/2014 · L2023005';
-  return 'Llei 5/2014';
+  const parts = ['Llei 5/2014'];
+  if (e >= 2024) parts.push('L2023005');
+  if (e >= 2025) parts.push('L2025005');
+  if (ambReglament && e >= 2024) parts.push('Reglament 29/12/2023');
+  return parts.join(' · ');
 };
 
 const AMBIT = {
@@ -1062,7 +1065,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     </React.Fragment>
                   );
                 })}
-                <NotaNormativa refText={tr('refArt484Ddi')} text={tr('citaArt484Ddi')} />
+                <NotaNormativa refText={tr('refArt483Ddi')} text={tr('citaArt483Ddi')} />
               </SeccioBlocNormatiu>
             )}
           </div>
@@ -1089,12 +1092,12 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               <FilaDetall label={tr('rendaTreballLabel')} valor={fmt(r.rendaTreball)} />
               <FilaDetall label={tr('rendaActivitatsLabel')} valor={fmt(r.rendaActivitat)} />
               <FilaDetall label={tr('rendaCapitalImmobiliariLabel')} valor={fmt(r.rendaImmobiliaria)} />
-              <FilaDetall label={tr('baseTributacioGeneralLabel')} valor={fmt(r.baseTributacioGeneral)} negrita destacat nota={tr('notaBtgArt33')} />
+              <FilaDetall label={tr('baseTributacioGeneralLabel')} valor={fmt(r.baseTributacioGeneral)} negrita destacat nota={tr('notaBtgArt31')} />
               <div style={{ height: '8px' }} />
               <FilaDetall label={tr('rendaCapitalMobiliariLabel')} valor={fmt(r.rendaMobiliaria)} />
               <FilaDetall label={tr('guanysPerduesCapitalLabel')} valor={fmt(r.guanysCapital)} />
-              <FilaDetall label={tr('baseTributacioEstalviLabel')} valor={fmt(r.baseTributacioEstalvi)} negrita destacat nota={tr('notaBteArt37')} />
-              <NotaNormativa refText={tr('refArt3337')} text={tr('notaNormBasesTributacio')} />
+              <FilaDetall label={tr('baseTributacioEstalviLabel')} valor={fmt(r.baseTributacioEstalvi)} negrita destacat nota={tr('notaBteArt32')} />
+              <NotaNormativa refText={tr('refArt3132')} text={tr('notaNormBasesTributacio')} />
             </SeccioBlocNormatiu>
 
             {dades.estatCivil === 'casat' && (
@@ -1141,10 +1144,10 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             </SeccioBlocNormatiu>
 
             <SeccioBlocNormatiu titol={tr('quotaTributacioBonificacioTitol')}>
-              <FilaDetall label={tr('quotaTributacioLabel')} valor={fmt(r.quotaTributacio)} nota={tr('notaQuotaArt4142')} />
+              <FilaDetall label={tr('quotaTributacioLabel')} valor={fmt(r.quotaTributacio)} nota={tr('notaQuotaArt4344')} />
               <FilaDetall label={tr('bonificacioArt46Label')} valor={`− ${fmt(r.bonificacio)}`} nota={tr('notaBonificacioArt46')} />
               <FilaDetall label={tr('quotaLiquidacioLabel')} valor={fmt(r.quotaLiquidacio)} negrita destacat />
-              <NotaNormativa refText={tr('refArt4146')} text={tr('notaNormQuotaBonificacio')} />
+              <NotaNormativa refText={tr('refArt4346')} text={tr('notaNormQuotaBonificacio')} />
             </SeccioBlocNormatiu>
 
           </div>
@@ -1505,7 +1508,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             {[
               {
                 titol: '1. Responsabilitat i limitació de responsabilitat',
-                text: trp('disclaimerResponsabilitat', { nom: CAP.nomComercial || CAP.nom })
+                text: trp('disclaimerResponsabilitat', { nom: CAP.nomComercial || CAP.nom, normativa: normativaAplicable(exercici, true) })
               },
               {
                 titol: '2. Naturalesa de l\'informe',
@@ -1521,7 +1524,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               },
               {
                 titol: '5. Normativa de referència',
-                text: `Llei 5/2014, del 24 d'abril, de l'impost sobre la renda de les persones físiques (IRPF) del Principat d'Andorra (BOPA núm. 30, del 30/04/2014). Normativa aplicada: ${normativaAplicable(exercici)}. Reglament de l'IRPF, del 29/12/2023 (BOPA R20231229B i R20231229D). Guia pràctica IRPF 2025 del Ministeri de Finances del Govern d'Andorra.`
+                text: `Llei 5/2014, del 24 d'abril, de l'impost sobre la renda de les persones físiques (IRPF) del Principat d'Andorra (BOPA núm. 30, del 30/04/2014). Normativa aplicada: ${normativaAplicable(exercici)}.${(exercici || 2025) >= 2024 ? ` Reglament de l'IRPF, del 29/12/2023 (BOPA R20231229B i R20231229D).` : ''} Guia pràctica IRPF 2025 del Ministeri de Finances del Govern d'Andorra.`
               }
             ].map((item, i) => (
               <div key={i} style={{ marginBottom: '14px' }} className="avoid-break">
@@ -1554,7 +1557,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </div>
             </div>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '10px', fontSize: '8px', opacity: 0.6, textAlign: 'center' }}>
-              {trp('copyrightText', { year: new Date().getFullYear(), nom: CAP.nom, data: dataAvui(), normativa: normativaAplicable(exercici) })}
+              {trp('copyrightText', { year: new Date().getFullYear(), nom: CAP.nom, data: dataAvui(), normativa: normativaAplicable(exercici, true) })}
             </div>
             {!esAmbit && (
               <div style={{ textAlign: 'center', fontSize: '7px', opacity: 0.4, color: 'white', paddingBottom: '4px' }}>

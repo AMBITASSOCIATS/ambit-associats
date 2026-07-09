@@ -803,13 +803,13 @@ export const T = {
     FR: "  DDI appliquée (minimum des deux)",
     EN: "  DDI applied (lower of the two)",
   },
-  refArt484Ddi: {
+  refArt483Ddi: {
     CA: "Art. 48.3 Llei 5/2014 (mod. L2023005)",
     ES: "Art. 48.3 Llei 5/2014 (mod. L2023005)",
     FR: "Art. 48.3 Llei 5/2014 (mod. L2023005)",
     EN: "Art. 48.3 Llei 5/2014 (mod. L2023005)",
   },
-  citaArt484Ddi: {
+  citaArt483Ddi: {
     CA: "La DDI es calcula país per país: per a cada renda, el mínim entre (a) l'impost estranger efectiu —topat al tipus màxim del CDI quan n'hi ha— i (b) la quota andorrana (10%) sobre aquella renda. Les rendes sense retenció efectiva no generen DDI ni entren a la base del límit.",
     ES: "La DDI se calcula país por país: para cada renta, el mínimo entre (a) el impuesto extranjero efectivo —limitado al tipo máximo del CDI cuando lo hay— y (b) la cuota andorrana (10%) sobre dicha renta. Las rentas sin retención efectiva no generan DDI ni entran en la base del límite.",
     FR: "La DDI se calcule pays par pays : pour chaque revenu, le minimum entre (a) l'impôt étranger effectif —plafonné au taux maximal du CDI lorsqu'il existe— et (b) la cotisation andorrane (10%) sur ce revenu. Les revenus sans retenue effective ne génèrent pas de DDI et n'entrent pas dans la base du plafond.",
@@ -845,7 +845,7 @@ export const T = {
     FR: "Base d'Imposition Générale (BTG)",
     EN: "General Tax Base (BTG)",
   },
-  notaBtgArt33: {
+  notaBtgArt31: {
     CA: "Art. 31 Llei 5/2014 · Suma de rendes generals",
     ES: "Art. 31 Llei 5/2014 · Suma de rentas generales",
     FR: "Art. 31 Llei 5/2014 · Somme des revenus généraux",
@@ -869,13 +869,13 @@ export const T = {
     FR: "Base d'Imposition de l'Épargne (BTE)",
     EN: "Savings Tax Base (BTE)",
   },
-  notaBteArt37: {
+  notaBteArt32: {
     CA: "Art. 32 Llei 5/2014 · Suma de rendes de l'estalvi · Mínim exempt 3.000 €",
     ES: "Art. 32 Llei 5/2014 · Suma de rentas del ahorro · Mínimo exento 3.000 €",
     FR: "Art. 32 Llei 5/2014 · Somme des revenus de l'épargne · Minimum exonéré 3.000 €",
     EN: "Art. 32 Llei 5/2014 · Sum of savings income · Exempt minimum 3.000 €",
   },
-  refArt3337: {
+  refArt3132: {
     CA: "Art. 31-32 Llei 5/2014",
     ES: "Art. 31-32 Llei 5/2014",
     FR: "Art. 31-32 Llei 5/2014",
@@ -1049,7 +1049,7 @@ export const T = {
     FR: "Cotisation d'imposition (10% sur BLG + BLE)",
     EN: "Tax liability (10% on BLG + BLE)",
   },
-  notaQuotaArt4142: {
+  notaQuotaArt4344: {
     CA: "Art. 43-44 Llei 5/2014 · Tipus únic del 10% sobre la suma de BLG i BLE",
     ES: "Art. 43-44 Llei 5/2014 · Tipo único del 10% sobre la suma de BLG y BLE",
     FR: "Art. 43-44 Llei 5/2014 · Taux unique de 10% sur la somme de BLG et BLE",
@@ -1073,7 +1073,7 @@ export const T = {
     FR: "Cotisation de liquidation",
     EN: "Net tax liability",
   },
-  refArt4146: {
+  refArt4346: {
     CA: "Art. 43-46 Llei 5/2014",
     ES: "Art. 43-46 Llei 5/2014",
     FR: "Art. 43-46 Llei 5/2014",
@@ -1320,10 +1320,10 @@ export const T = {
   mpDiscapacitat: { CA: "Discapacitat CONAVA", ES: "Discapacidad CONAVA", FR: "Handicap CONAVA", EN: "CONAVA disability" },
   mpSenseDiscapacitat: { CA: "Sense discapacitat reconeguda", ES: "Sin discapacidad reconocida", FR: "Sans handicap reconnu", EN: "No recognised disability" },
   copyrightText: {
-    CA: "© {year} {nom} · Tots els drets reservats · Informe generat el {data} · Normativa: {normativa} · Reglament 29/12/2023",
-    ES: "© {year} {nom} · Todos los derechos reservados · Informe generado el {data} · Normativa: {normativa} · Reglament 29/12/2023",
-    FR: "© {year} {nom} · Tous droits réservés · Rapport généré le {data} · Réglementation : {normativa} · Reglament 29/12/2023",
-    EN: "© {year} {nom} · All rights reserved · Report generated on {data} · Regulations: {normativa} · Reglament 29/12/2023",
+    CA: "© {year} {nom} · Tots els drets reservats · Informe generat el {data} · Normativa: {normativa}",
+    ES: "© {year} {nom} · Todos los derechos reservados · Informe generado el {data} · Normativa: {normativa}",
+    FR: "© {year} {nom} · Tous droits réservés · Rapport généré le {data} · Réglementation : {normativa}",
+    EN: "© {year} {nom} · All rights reserved · Report generated on {data} · Regulations: {normativa}",
   },
   mobiliariA: { CA: "Dividends i participació en patrimoni net", ES: "Dividendos y participación en patrimonio neto", FR: "Dividendes et participation aux fonds propres", EN: "Dividends and equity participation" },
   mobiliariB: { CA: "Interessos i cessió de capitals propis", ES: "Intereses y cesión de capitales propios", FR: "Intérêts et cession de capitaux propres", EN: "Interest and transfer of own capital" },
@@ -1346,10 +1346,10 @@ export const T = {
     EN: "This report contains confidential tax data. Its dissemination, copying or use for purposes other than those intended is expressly prohibited without the authorization of the taxpayer or of the professional who prepared it.",
   },
   disclaimerResponsabilitat: {
-    CA: "Els càlculs continguts en aquest informe s'han efectuat d'acord amb la Llei 5/2014, del 24 d'abril, de l'Impost sobre la Renda de les Persones Físiques del Principat d'Andorra, i les seves modificacions posteriors (L2023005 i L2025005), així com el Reglament de 29/12/2023. Tanmateix, l'eina pot no reflectir la totalitat de les particularitats normatives aplicables a cada situació individual. {nom} no es fa responsable dels errors, omissions o inexactituds que poguessin derivar-se de les dades introduïdes per l'usuari o de canvis normatius posteriors a l'última actualització de l'eina.",
-    ES: "Los cálculos contenidos en este informe se han efectuado de acuerdo con la Ley 5/2014, del 24 de abril, del Impuesto sobre la Renta de las Personas Físicas del Principado de Andorra, y sus modificaciones posteriores (L2023005 y L2025005), así como el Reglamento de 29/12/2023. No obstante, la herramienta puede no reflejar la totalidad de las particularidades normativas aplicables a cada situación individual. {nom} no se hace responsable de los errores, omisiones o inexactitudes que pudieran derivarse de los datos introducidos por el usuario o de cambios normativos posteriores a la última actualización de la herramienta.",
-    FR: "Les calculs contenus dans ce rapport ont été effectués conformément à la Loi 5/2014, du 24 avril, relative à l'Impôt sur le Revenu des Personnes Physiques de la Principauté d'Andorre, et à ses modifications ultérieures (L2023005 et L2025005), ainsi qu'au Règlement du 29/12/2023. Toutefois, l'outil peut ne pas refléter la totalité des particularités réglementaires applicables à chaque situation individuelle. {nom} ne saurait être tenu responsable des erreurs, omissions ou inexactitudes pouvant découler des données saisies par l'utilisateur ou de modifications réglementaires postérieures à la dernière mise à jour de l'outil.",
-    EN: "The calculations contained in this report have been carried out in accordance with Law 5/2014, of 24 April, on Personal Income Tax of the Principality of Andorra, and its subsequent amendments (L2023005 and L2025005), as well as the Regulation of 29/12/2023. However, the tool may not reflect all the regulatory particularities applicable to each individual situation. {nom} is not responsible for errors, omissions or inaccuracies that may arise from the data entered by the user or from regulatory changes subsequent to the last update of the tool.",
+    CA: "Els càlculs continguts en aquest informe s'han efectuat d'acord amb la normativa de l'IRPF del Principat d'Andorra aplicable a l'exercici ({normativa}). Tanmateix, l'eina pot no reflectir la totalitat de les particularitats normatives aplicables a cada situació individual. {nom} no es fa responsable dels errors, omissions o inexactituds que poguessin derivar-se de les dades introduïdes per l'usuari o de canvis normatius posteriors a l'última actualització de l'eina.",
+    ES: "Los cálculos contenidos en este informe se han efectuado de acuerdo con la normativa del IRPF del Principado de Andorra aplicable al ejercicio ({normativa}). No obstante, la herramienta puede no reflejar la totalidad de las particularidades normativas aplicables a cada situación individual. {nom} no se hace responsable de los errores, omisiones o inexactitudes que pudieran derivarse de los datos introducidos por el usuario o de cambios normativos posteriores a la última actualización de la herramienta.",
+    FR: "Les calculs contenus dans ce rapport ont été effectués conformément à la réglementation de l'IRPF de la Principauté d'Andorre applicable à l'exercice ({normativa}). Toutefois, l'outil peut ne pas refléter la totalité des particularités réglementaires applicables à chaque situation individuelle. {nom} ne saurait être tenu responsable des erreurs, omissions ou inexactitudes pouvant découler des données saisies par l'utilisateur ou de modifications réglementaires postérieures à la dernière mise à jour de l'outil.",
+    EN: "The calculations contained in this report have been carried out in accordance with the Andorran personal income tax (IRPF) regulations applicable to the tax year ({normativa}). However, the tool may not reflect all the regulatory particularities applicable to each individual situation. {nom} is not responsible for errors, omissions or inaccuracies that may arise from the data entered by the user or from regulatory changes subsequent to the last update of the tool.",
   },
   disclaimerProteccioDades: {
     CA: "En compliment de la Llei 29/2021, del 28 d'octubre, qualificada de protecció de dades personals del Principat d'Andorra, i del Reglament (UE) 2016/679 (RGPD), s'informa que les dades personals contingudes en aquest informe (nom, NRT, dades fiscals) han estat introduïdes per l'assessor tributari en el marc de la relació professional establerta amb l'obligat tributari. Les dades es tracten únicament per a la finalitat de gestionar la liquidació de l'IRPF i no es cediran a tercers sense consentiment exprés. Les dades es guarden localment al navegador (localStorage) i no es transmeten a cap servidor extern. L'obligat tributari pot exercir els seus drets d'accés, rectificació i supressió dirigint-se a {email}.",
