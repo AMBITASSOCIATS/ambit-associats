@@ -102,9 +102,9 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
 
   // Calcul en temps real
   const resultat = useMemo(() => {
-    try { return calcularIRPFDetallat(dades); }
+    try { return calcularIRPFDetallat({ ...dades, exercici }); }
     catch (e) { return null; }
-  }, [dades]);
+  }, [dades, exercici]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -206,7 +206,7 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, onDesar, onDadesC
             {pas === 1 && <Step1SituacioPersonal dades={dades} update={updateDades} />}
             {pas === 2 && <Step2Treball dades={dades} update={updateDades} mostrarErrorCASS={mostrarErrorCASS} />}
             {pas === 3 && <Step3Activitat dades={dades} update={updateDades} />}
-            {pas === 4 && <Step4Immobiliari dades={dades} update={updateDades} />}
+            {pas === 4 && <Step4Immobiliari dades={dades} update={updateDades} exercici={exercici} />}
             {pas === 5 && <Step5Mobiliari dades={dades} update={updateDades} />}
             {pas === 6 && <Step6GuanysCapital dades={dades} update={updateDades} />}
             {pas === 7 && <Step7DDI dades={dades} update={updateDades} />}

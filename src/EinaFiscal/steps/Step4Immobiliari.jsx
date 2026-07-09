@@ -1,6 +1,7 @@
 // steps/Step4Immobiliari.jsx — Pas 4: Capital immobiliari (300-B sec.2)
 import React from 'react';
 import RentaBlock from '../components/RentaBlock';
+import { pctForfetari, incrementForfetari, llindarEurosM2 } from '../engine/immobiliariHelpers';
 
 const DEFAULT_IMMOBLE = {
   id: null,
@@ -23,9 +24,9 @@ const DEFAULT_IMMOBLE = {
   retencions: 0,
 };
 
-const calcularRendaNetaImmoble = (immoble) => {
+const calcularRendaNetaImmoble = (immoble, exercici) => {
   if (immoble.tipusDeterminacio === 'forfetaria') {
-    const pct = immoble.esHabitatgeAssequible ? 0.50 : 0.40;
+    const pct = pctForfetari(immoble, exercici);
     const despeses = immoble.ingressosIntegres * pct;
     return { rendaNeta: immoble.ingressosIntegres - despeses, despeses, pct };
   } else {
@@ -54,12 +55,12 @@ const InputNum = ({ label, value, onChange, min = 0, hint = '' }) => (
   </div>
 );
 
-const ImmobleForm = ({ immoble, index, onUpdate, onEliminar }) => {
+const ImmobleForm = ({ immoble, index, onUpdate, onEliminar, exercici }) => {
   const update = (camp, valor) => onUpdate(immoble.id, camp, valor);
-  const { rendaNeta, despeses, pct } = calcularRendaNetaImmoble(immoble);
+  const { rendaNeta, despeses, pct } = calcularRendaNetaImmoble(immoble, exercici);
 
   // Compara mètodes
-  const despesesForft = immoble.ingressosIntegres * (immoble.esHabitatgeAssequible ? 0.50 : 0.40);
+  const despesesForft = immoble.ingressosIntegres * pctForfetari(immoble, exercici);
   const rendaForft = immoble.ingressosIntegres - despesesForft;
   const despesesReals = (immoble.despesaReparacio || 0) + (immoble.despesaFinancera || 0) +
                         (immoble.serveisPrestatsTercers || 0) + (immoble.amortitzacio || 0) +
@@ -112,13 +113,13 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar }) => {
             className="w-4 h-4 accent-[#009B9C]"
           />
           <span className="text-xs text-gray-600">
-            Habitatge assequible (50% forfetari, +10%) — Art. 21 Llei 5/2014
+            Habitatge llogat com a residència habitual i permanent (renda &lt; {llindarEurosM2(exercici)} €/m² i ≤ 1.250 €/mes) → increment de {Math.round(incrementForfetari(exercici) * 100)}% al percentatge forfetari — Art. 21.2 Llei 5/2014
           </span>
         </div>
 
         {immoble.esHabitatgeAssequible && (
           <div className="col-span-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-xs text-green-700">
-            <strong>S'aplica el percentatge del 50%</strong> (40% + 10% per habitatge assequible a preu de mercat assequible) — Art. 21 Llei 5/2014.
+            S'aplica el {Math.round(pctForfetari(immoble, exercici) * 100)}% (40% + {Math.round(incrementForfetari(exercici) * 100)}%) sobre habitatges destinats a residència habitual i permanent situats a Andorra, amb renda inferior a {llindarEurosM2(exercici)} €/m² i import total no superior a 1.250 €/mes — Art. 21.2 Llei 5/2014 · L2025005.
           </div>
         )}
 
@@ -161,8 +162,7 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar }) => {
             {immoble.aplicarReduccioHabitatge && (
               <div className="ml-6">
                 <p className="text-xs text-gray-500 mb-2">
-                  Habitatge destinat a residencia habitual i permanent del llogatari, a preu inferior a 8 euros/m2
-                  i renda total inferior a 1.250 euros/mes. Percentatge forfetari: 45% (en lloc del 40%). Font: 300-B nota 1.
+                  Reducció del 10% dels ingressos íntegres procedents de l'arrendament d'habitatge destinat a residència habitual i permanent del llogater, situat a Andorra. Només s'aplica als habitatges amb una renda inferior a {llindarEurosM2(exercici)} €/m² i un import total no superior a 1.250 €/mes; s'exclou de la base del 10% la repercussió de despeses de subministraments. La base no pot quedar negativa. Introduïu l'import de la reducció (10% dels ingressos que compleixin els requisits), tal com figura al 300-B. Font: Guia IRPF 2025, ap. 7.4 · L2025005.
                 </p>
                 <InputNum
                   label="Import de la reduccio per arrendament d'habitatge (euros)"
@@ -198,7 +198,7 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar }) => {
           <strong>Comparativa metodes:</strong>
           <div className="grid grid-cols-2 gap-2 mt-1">
             <span>Renda neta directa: <strong>{rendaDirecta.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong></span>
-            <span>Renda neta forfetari ({immoble.esHabitatgeAssequible ? '50' : '40'}%): <strong>{rendaForft.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong></span>
+            <span>Renda neta forfetari ({Math.round(pctForfetari(immoble, exercici) * 100)}%): <strong>{rendaForft.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong></span>
           </div>
           <p className="mt-1">
             <strong>Metode mes favorable: {metodeRecomanat === 'directa' ? 'Despeses reals' : 'Forfetari'}</strong>
@@ -220,7 +220,7 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar }) => {
   );
 };
 
-const Step4Immobiliari = ({ dades, update }) => {
+const Step4Immobiliari = ({ dades, update, exercici }) => {
   const addImmoble = () => {
     update('immobles', [
       ...dades.immobles,
@@ -236,7 +236,7 @@ const Step4Immobiliari = ({ dades, update }) => {
     update('immobles', dades.immobles.filter(im => im.id !== id));
   };
 
-  const totalRenda = dades.immobles.reduce((acc, im) => acc + calcularRendaNetaImmoble(im).rendaNeta, 0);
+  const totalRenda = dades.immobles.reduce((acc, im) => acc + calcularRendaNetaImmoble(im, exercici).rendaNeta, 0);
 
   return (
     <div className="space-y-4">
@@ -285,7 +285,7 @@ const Step4Immobiliari = ({ dades, update }) => {
             totalRetencions += (im.retencions || 0);
             if (im.tipusDeterminacio === 'forfetaria') {
               teForfet = true;
-              totalDespesesForfet += calcularRendaNetaImmoble(im).despeses;
+              totalDespesesForfet += calcularRendaNetaImmoble(im, exercici).despeses;
             } else {
               c.despesaReparacio += (im.despesaReparacio || 0);
               c.despesaFinancera += (im.despesaFinancera || 0);
@@ -327,7 +327,7 @@ const Step4Immobiliari = ({ dades, update }) => {
                 ))}
                 {teForfet && totalDespesesForfet > 0 && (
                   <div className="flex justify-between text-gray-500">
-                    <span>  − Despeses (mètode forfetari 40/50%)</span>
+                    <span>  − Despeses (mètode forfetari 40/{Math.round(pctForfetari({ esHabitatgeAssequible: true }, exercici) * 100)}%)</span>
                     <span className="font-mono text-red-600">−{f(totalDespesesForfet)} €</span>
                   </div>
                 )}
@@ -377,6 +377,7 @@ const Step4Immobiliari = ({ dades, update }) => {
           key={immoble.id}
           immoble={immoble}
           index={i}
+          exercici={exercici}
           onUpdate={updateImmoble}
           onEliminar={() => removeImmoble(immoble.id)}
         />

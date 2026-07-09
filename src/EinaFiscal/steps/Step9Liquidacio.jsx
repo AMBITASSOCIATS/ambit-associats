@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react';
 import { generarCaselles300L } from '../engine/liquidacioEngine';
 import { PDF_LANGS, t } from '../engine/pdfTranslations';
 import { PAISOS } from '../engine/cdiRates';
+import { pctForfetari } from '../engine/immobiliariHelpers';
 
 // Nom del país d'una renda DDI: quan no hi ha CDI (codi 'OTHER') s'usa el text
 // lliure introduït per l'usuari; altrament es resol el codi a nom via PAISOS.
@@ -777,7 +778,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 <FilaDetall label={tr('rendaNetaCapitalImmobiliariLabel')} valor={fmt(r.rendaImmobiliaria)} negrita destacat
                   nota={tr('notaArt2022Immobiliari')} />
                 {(dades.immobles || []).map((im, i) => {
-                  const pctForfet = im.esHabitatgeAssequible ? 0.50 : 0.40;
+                  const pctForfet = pctForfetari(im, exercici);
                   const despesesForfet = (im.ingressosIntegres || 0) * pctForfet;
                   const despesesDirecta = (im.despesaReparacio || 0) + (im.despesaFinancera || 0) +
                     (im.serveisPrestatsTercers || 0) + (im.amortitzacio || 0) +
@@ -808,7 +809,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                               amortitzacio: 0, tributs: 0, asseguranca: 0, comunitat: 0, altresDespeses: 0 };
                   (dades.immobles || []).forEach(im => {
                     const esForfet = im.tipusDeterminacio === 'forfetaria';
-                    const pctForfet = im.esHabitatgeAssequible ? 0.50 : 0.40;
+                    const pctForfet = pctForfetari(im, exercici);
                     const despesesForfet = (im.ingressosIntegres || 0) * pctForfet;
                     const despesesDirecta = (im.despesaReparacio || 0) + (im.despesaFinancera || 0) +
                       (im.serveisPrestatsTercers || 0) + (im.amortitzacio || 0) +
@@ -855,7 +856,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                         <FilaDetall key={label} label={`  ${label}`} valor={fmt(-val)} negatiu />
                       ))}
                       {teForfet && totalDespesesForfet > 0 && (
-                        <FilaDetall label="  Despeses (mètode forfetari 40/50%)" valor={fmt(-totalDespesesForfet)} negatiu />
+                        <FilaDetall label={`  Despeses (mètode forfetari 40/${Math.round(pctForfetari({ esHabitatgeAssequible: true }, exercici) * 100)}%)`} valor={fmt(-totalDespesesForfet)} negatiu />
                       )}
                       <FilaDetall label="Total despeses deduïbles" valor={fmt(-totalDespeses)} negrita negatiu />
                       {totalReduccio > 0 && (

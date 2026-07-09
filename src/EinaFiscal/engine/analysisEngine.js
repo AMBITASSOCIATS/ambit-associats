@@ -3,6 +3,7 @@
 
 import { IRPF, IRPF_EF } from './constants.js';
 import { calcularDDI } from './exemptions.js';
+import { pctForfetari } from './immobiliariHelpers.js';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -115,11 +116,11 @@ function calcularRendaNetaActivitat(activitats) {
   }, 0);
 }
 
-function calcularRendaNetaImmobiliaria(immobles) {
+function calcularRendaNetaImmobiliaria(immobles, exercici) {
   let total = 0;
   for (const immoble of immobles) {
     if (immoble.tipusDeterminacio === 'forfetaria') {
-      const pct = immoble.esHabitatgeAssequible ? 0.50 : 0.40;
+      const pct = pctForfetari(immoble, exercici);
       const despeses = immoble.ingressosIntegres * pct;
       total += immoble.ingressosIntegres - despeses;
     } else {
@@ -247,7 +248,7 @@ export function calcularIRPFDetallat(dades) {
   // PAS 1 — Rendes netes
   const rendaTreball = calcularRendaNetaTreball(rendesTreball);
   const rendaActivitat = calcularRendaNetaActivitat(activitats);
-  const rendaImmobiliaria = calcularRendaNetaImmobiliaria(immobles);
+  const rendaImmobiliaria = calcularRendaNetaImmobiliaria(immobles, exercici);
   const rendaMobiliaria = calcularRendaNetaMobiliaria(mobiliaris);
   // Separar transmissions: exemptes (Art. 5.k) i devolucions de capital (Art. 27.3) no computen
   const transmissionsGravades = transmissions.filter(t => !t.exempta && !t.esDevolucioCapital);
