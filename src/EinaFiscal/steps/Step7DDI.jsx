@@ -1,4 +1,4 @@
-// steps/Step7DDI.jsx — Pas 7: Deduccio per doble imposicio internacional (Art. 48.4)
+// steps/Step7DDI.jsx — Pas 7: Deduccio per doble imposicio internacional (Art. 48.3)
 // Càlcul PAÍS PER PAÍS: una entrada per cada renda estrangera (país + tipus de renda).
 import React from 'react';
 import RentaBlock from '../components/RentaBlock';
@@ -276,7 +276,7 @@ const Step7DDI = ({ dades, update }) => {
             <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">7</span>
             <div>
               <h2 className="font-bold text-gray-800">Deduccio per doble imposicio (DDI)</h2>
-              <p className="text-xs text-gray-500">Art. 48.4 Llei 5/2014 (mod. L2023005) · Convenis de doble imposicio</p>
+              <p className="text-xs text-gray-500">Art. 48.3 Llei 5/2014 (mod. L2023005) · Convenis de doble imposicio</p>
             </div>
           </div>
           <button
@@ -288,7 +288,7 @@ const Step7DDI = ({ dades, update }) => {
         </div>
 
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-700 mb-4">
-          <strong>Art. 48.4 Llei 5/2014 (mod. L2023005):</strong> la DDI es calcula <strong>país per país</strong>. Per a cada renda, DDI = mínim entre (a) l'impost estranger efectiu —topat al tipus màxim del CDI quan n'hi ha— i (b) la quota andorrana (10%) sobre aquella renda. Les rendes sense retenció efectiva no generen DDI ni entren a la base del límit.
+          <strong>Art. 48.3 Llei 5/2014 (mod. L2023005):</strong> la DDI es calcula <strong>país per país</strong>. Per a cada renda, DDI = mínim entre (a) l'impost estranger efectiu —topat al tipus màxim del CDI quan n'hi ha— i (b) la quota andorrana (10%) sobre aquella renda. Les rendes sense retenció efectiva no generen DDI ni entren a la base del límit.
         </div>
 
         {/* Alerta: retencions del pas 5 pendents d'importar */}
@@ -355,7 +355,7 @@ const Step7DDI = ({ dades, update }) => {
             <span className="w-8 h-8 rounded-full bg-[#009B9C]/10 text-[#009B9C] text-sm font-bold flex items-center justify-center">Σ</span>
             <div>
               <h3 className="font-bold text-gray-800">Resum DDI — país per país</h3>
-              <p className="text-xs text-gray-500">Art. 48.4 Llei 5/2014 · Càlcul detallat</p>
+              <p className="text-xs text-gray-500">Art. 48.3 Llei 5/2014 · Càlcul detallat</p>
             </div>
           </div>
 

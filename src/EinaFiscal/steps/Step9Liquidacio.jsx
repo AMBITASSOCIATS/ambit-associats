@@ -23,6 +23,14 @@ const PARTIDA_LABELS = {
 // Línies d'una partida amb compatibilitat cap enrere (dades antigues sense `linies`).
 const liniesDePartida = (p) => p.linies || [{ importBrut: p.importBrut || 0, despeses: p.despeses || 0 }];
 
+// Normativa aplicable segons l'exercici (font única). El Reglament 29/12/2023 es cita a part.
+const normativaAplicable = (ex) => {
+  const e = ex || 2025;
+  if (e >= 2025) return 'Llei 5/2014 · L2023005 · L2025005';
+  if (e === 2024) return 'Llei 5/2014 · L2023005';
+  return 'Llei 5/2014';
+};
+
 const AMBIT = {
   nom: 'DEL SOTO – PALEARI & ASSOCIATS, S.L.',
   nomComercial: 'ÀMBIT Associats',
@@ -551,7 +559,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>{tr('dadesInforme')}</div>
                 <div style={{ fontSize: '11px', color: '#333' }}>{tr('exerciciFiscal')}: <strong>{exercici}</strong></div>
                 <div style={{ fontSize: '11px', color: '#333' }}>{tr('dataGeneracio')}: <strong>{dataAvui()}</strong></div>
-                <div style={{ fontSize: '11px', color: '#333' }}>{tr('normativa')}: <strong>Llei 5/2014 · L2023005 · L2025005</strong></div>
+                <div style={{ fontSize: '11px', color: '#333' }}>{tr('normativa')}: <strong>{normativaAplicable(exercici)}</strong></div>
               </div>
             </div>
           </div>
@@ -1033,7 +1041,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               );
             })()}
 
-            {/* DDI — càlcul país per país (Art. 48.4) */}
+            {/* DDI — càlcul país per país (Art. 48.3) */}
             {tensDDI && r.ddiDetall && r.ddiDetall.length > 0 && !blocsExclosos.ddi && (
               <SeccioBlocNormatiu titol={`6. ${tr('ddi')}`}>
                 <FilaDetall label={tr('totalDdiAplicadaLabel')} valor={fmt(r.ddiDetall.reduce((s, d) => s + (d.ddi || 0), 0))} negrita destacat />
@@ -1263,14 +1271,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 {hiHaDedExerc && (
                   <SeccioBlocNormatiu titol={trp('deduccionsGeneradesTitolP', { any: exercici })}>
                     {deduccioRows('comunal', "Impost comunal arrendaments i radicació", 'Art. 47', impostComunalGenerat, r.deduccioImpostComunal || 0, anysVigDDIInterna, false)}
-                    {deduccioRows('ddi', "Deducció per Doble Imposició Internacional", 'Art. 48', ddiGenerat, r.ddi || 0, 10)}
+                    {deduccioRows('ddi', "Deducció per Doble Imposició Internacional", 'Art. 48', ddiGenerat, r.ddi || 0, 3)}
                     {deduccioRows('mecen', "Mecenatge i donacions", 'Art. 43 bis', mecenGen, d8.aplicatMecenatge || 0, anysVigDeduccions)}
                     {deduccioRows('proj', "Projectes d'interès nacional", 'Art. 44', projGen, d8.aplicatProjectes || 0, anysVigDeduccions)}
                     {deduccioRows('dig', "Inversions en digitalització", 'Art. 44 bis', digGen, d8.aplicatDigital || 0, anysVigDeduccions)}
                     {deduccioRows('pat', "Patrocini esportiu i cultural", 'Art. 44 ter', patGen, d8.aplicatPatrocini || 0, anysVigDeduccions)}
                     {deduccioRows('llocs', "Creació de llocs de treball", 'Art. 44 quater', llocsGen, d8.aplicatLlocs || 0, anysVigDeduccions)}
                     <FilaDetall label={tr('labelTotalDeduccionsAplicadesQuota')} valor={fmt(-r.totalDeduccionsExercici)} negrita destacat negatiu />
-                    <NotaNormativa refText={tr('refArts43Bis48Llei')} text={`Deduccions de quota diferibles fins a exercici ${exercici + anysVigDeduccions}; impost comunal / DDI interna (Art. 47) fins a ${exercici + anysVigDDIInterna}; DDI internacional (Art. 48) fins a ${exercici + 10}.`} />
+                    <NotaNormativa refText={tr('refArts43Bis48Llei')} text={`Deduccions de quota diferibles fins a exercici ${exercici + anysVigDeduccions}; impost comunal / DDI interna (Art. 47) fins a ${exercici + anysVigDDIInterna}; DDI internacional (Art. 48) fins a ${exercici + 3}.`} />
                   </SeccioBlocNormatiu>
                 )}
 
@@ -1513,7 +1521,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               },
               {
                 titol: '5. Normativa de referència',
-                text: `Llei 5/2014, del 24 d'abril, de l'impost sobre la renda de les persones físiques (IRPF) del Principat d'Andorra (BOPA núm. 30, del 30/04/2014). Modificació L2023005 (L2023005 BOPA). Modificació L2025005 (L2025005 BOPA). Reglament de l'IRPF, del 29/12/2023 (BOPA R20231229B i R20231229D). Guia pràctica IRPF 2025 del Ministeri de Finances del Govern d'Andorra.`
+                text: `Llei 5/2014, del 24 d'abril, de l'impost sobre la renda de les persones físiques (IRPF) del Principat d'Andorra (BOPA núm. 30, del 30/04/2014). Normativa aplicada: ${normativaAplicable(exercici)}. Reglament de l'IRPF, del 29/12/2023 (BOPA R20231229B i R20231229D). Guia pràctica IRPF 2025 del Ministeri de Finances del Govern d'Andorra.`
               }
             ].map((item, i) => (
               <div key={i} style={{ marginBottom: '14px' }} className="avoid-break">
@@ -1546,7 +1554,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </div>
             </div>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '10px', fontSize: '8px', opacity: 0.6, textAlign: 'center' }}>
-              {trp('copyrightText', { year: new Date().getFullYear(), nom: CAP.nom, data: dataAvui() })}
+              {trp('copyrightText', { year: new Date().getFullYear(), nom: CAP.nom, data: dataAvui(), normativa: normativaAplicable(exercici) })}
             </div>
             {!esAmbit && (
               <div style={{ textAlign: 'center', fontSize: '7px', opacity: 0.4, color: 'white', paddingBottom: '4px' }}>

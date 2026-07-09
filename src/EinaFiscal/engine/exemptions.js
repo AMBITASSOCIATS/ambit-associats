@@ -233,7 +233,7 @@ export function analizarGuanyCapital(transmissio) {
 }
 
 // ── 5.5 DDI — Deducció per doble imposició internacional ──────────────────────
-// Art. 48.4 Llei 5/2014 (redacció modificada per la Llei 5/2023, L2023005).
+// Art. 48.3 Llei 5/2014 (redacció modificada per la Llei 5/2023, L2023005).
 // Càlcul PAÍS PER PAÍS (renda per renda), NO agregat. Per a cada renda estrangera:
 //   DDI_renda = min( impost_estranger_efectiu_topat_CDI , 10% × renda_bruta )
 // On impost_estranger_efectiu_topat_CDI =
@@ -255,8 +255,8 @@ export function calcularDDI(rendesEstrangeres) {
       return {
         ...r, retencioEfectiva, tensCDI, tipusMaxCDI,
         impostEtopat: 0, excesCDI: 0, quotaAndorrana, ddi: 0, teCDI: tensCDI,
-        ref: 'Art. 48.4 Llei 5/2014 (mod. L2023005)',
-        explicacio: 'Retenció efectiva nul·la — aquesta renda no genera DDI i no entra a la base del límit (Art. 48.4).',
+        ref: 'Art. 48.3 Llei 5/2014 (mod. L2023005)',
+        explicacio: 'Retenció efectiva nul·la — aquesta renda no genera DDI i no entra a la base del límit (Art. 48.3).',
       };
     }
 
@@ -275,7 +275,7 @@ export function calcularDDI(rendesEstrangeres) {
     return {
       ...r, retencioEfectiva, tensCDI, tipusMaxCDI,
       impostEtopat, excesCDI, quotaAndorrana, ddi, teCDI: tensCDI,
-      ref: `Art. 48.4 Llei 5/2014 (mod. L2023005)${tensCDI ? ` + CDI Andorra-${r.pais}` : ''}`,
+      ref: `Art. 48.3 Llei 5/2014 (mod. L2023005)${tensCDI ? ` + CDI Andorra-${r.pais}` : ''}`,
       explicacio,
     };
   });
