@@ -264,7 +264,7 @@ const Step4Immobiliari = ({ dades, update }) => {
           </div>
         )}
 
-        {dades.immobles.length > 0 && (
+        {dades.immobles.length === 1 && (
           <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-3 text-sm">
             <span className="font-semibold text-[#009B9C]">Total renda neta immobiliaria: </span>
             <span className={`font-bold ${totalRenda >= 0 ? 'text-gray-800' : 'text-red-600'}`}>
@@ -272,6 +272,104 @@ const Step4Immobiliari = ({ dades, update }) => {
             </span>
           </div>
         )}
+
+        {dades.immobles.length > 1 && (() => {
+          const f = (n) => n.toLocaleString('ca-AD', { minimumFractionDigits: 2 });
+          let totalIngressos = 0, totalDespesesForfet = 0, totalReduccio = 0,
+              totalImpostComunal = 0, totalRetencions = 0, teForfet = false;
+          const c = { despesaReparacio: 0, despesaFinancera: 0, serveisPrestatsTercers: 0,
+                      amortitzacio: 0, tributs: 0, asseguranca: 0, comunitat: 0, altresDespeses: 0 };
+          dades.immobles.forEach(im => {
+            totalIngressos += (im.ingressosIntegres || 0);
+            totalImpostComunal += (im.impostComunal || 0);
+            totalRetencions += (im.retencions || 0);
+            if (im.tipusDeterminacio === 'forfetaria') {
+              teForfet = true;
+              totalDespesesForfet += calcularRendaNetaImmoble(im).despeses;
+            } else {
+              c.despesaReparacio += (im.despesaReparacio || 0);
+              c.despesaFinancera += (im.despesaFinancera || 0);
+              c.serveisPrestatsTercers += (im.serveisPrestatsTercers || 0);
+              c.amortitzacio += (im.amortitzacio || 0);
+              c.tributs += (im.tributs || 0);
+              c.asseguranca += (im.asseguranca || 0);
+              c.comunitat += (im.comunitat || 0);
+              c.altresDespeses += (im.altresDespeses || 0);
+              if (im.aplicarReduccioHabitatge) totalReduccio += (im.reduccioHabitatge || 0);
+            }
+          });
+          const totalDespesesDirecta = c.despesaReparacio + c.despesaFinancera + c.serveisPrestatsTercers +
+            c.amortitzacio + c.tributs + c.asseguranca + c.comunitat + c.altresDespeses;
+          const totalDespeses = totalDespesesDirecta + totalDespesesForfet;
+          const conceptes = [
+            ['Reparació i conservació', c.despesaReparacio],
+            ['Interessos financers', c.despesaFinancera],
+            ['Serveis prestats per tercers', c.serveisPrestatsTercers],
+            ['Amortització', c.amortitzacio],
+            ['Tributs i taxes', c.tributs],
+            ['Assegurança', c.asseguranca],
+            ['Comunitat de propietaris', c.comunitat],
+            ['Altres despeses fiscalment deduïbles', c.altresDespeses],
+          ];
+          return (
+            <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-3 text-sm">
+              <p className="font-semibold text-[#009B9C] mb-2">Resum capital immobiliari — tots els immobles</p>
+              <div className="space-y-1 text-xs">
+                <div className="flex justify-between text-gray-700">
+                  <span>Total ingressos íntegres</span>
+                  <span className="font-mono">{f(totalIngressos)} €</span>
+                </div>
+                {conceptes.map(([label, val]) => val > 0 && (
+                  <div key={label} className="flex justify-between text-gray-500">
+                    <span>  − {label}</span>
+                    <span className="font-mono text-red-600">−{f(val)} €</span>
+                  </div>
+                ))}
+                {teForfet && totalDespesesForfet > 0 && (
+                  <div className="flex justify-between text-gray-500">
+                    <span>  − Despeses (mètode forfetari 40/50%)</span>
+                    <span className="font-mono text-red-600">−{f(totalDespesesForfet)} €</span>
+                  </div>
+                )}
+                {totalDespeses > 0 && (
+                  <div className="flex justify-between text-gray-600 font-semibold border-t border-[#009B9C]/20 pt-1 mt-1">
+                    <span>Total despeses deduïbles</span>
+                    <span className="font-mono text-red-600">−{f(totalDespeses)} €</span>
+                  </div>
+                )}
+                {totalReduccio > 0 && (
+                  <div className="flex justify-between text-gray-500">
+                    <span>  − Reducció per arrendament d'habitatge</span>
+                    <span className="font-mono text-red-600">−{f(totalReduccio)} €</span>
+                  </div>
+                )}
+                <div className="flex justify-between font-bold text-[#009B9C] border-t-2 border-[#009B9C] pt-1 mt-1">
+                  <span>Total renda neta immobiliària</span>
+                  <span className="font-mono">{f(totalRenda)} €</span>
+                </div>
+                {(totalImpostComunal > 0 || totalRetencions > 0) && (
+                  <div className="border-t border-gray-200 pt-1 mt-2 space-y-1">
+                    {totalImpostComunal > 0 && (
+                      <>
+                        <div className="flex justify-between text-gray-500">
+                          <span>Total impost comunal arrendaments</span>
+                          <span className="font-mono">{f(totalImpostComunal)} €</span>
+                        </div>
+                        <p className="text-[11px] text-gray-400 italic">Es dedueix de la quota (Art. 47) — NO minora la renda neta</p>
+                      </>
+                    )}
+                    {totalRetencions > 0 && (
+                      <div className="flex justify-between text-gray-500">
+                        <span>Total retencions practicades</span>
+                        <span className="font-mono">{f(totalRetencions)} €</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       {dades.immobles.map((immoble, i) => (
