@@ -19,6 +19,9 @@ const PARTIDA_LABELS = {
   d: 'Altres rendiments del capital mobiliari',
 };
 
+// Línies d'una partida amb compatibilitat cap enrere (dades antigues sense `linies`).
+const liniesDePartida = (p) => p.linies || [{ importBrut: p.importBrut || 0, despeses: p.despeses || 0 }];
+
 const AMBIT = {
   nom: 'DEL SOTO – PALEARI & ASSOCIATS, S.L.',
   nomComercial: 'ÀMBIT Associats',
@@ -837,8 +840,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     {(['a','b','c','d']).map(t => {
                       const p = (ent.partides || []).find(p => p.tipus === t);
                       if (!p) return null;
-                      const brutT = (p.linies || []).reduce((s, l) => s + (l.importBrut || 0), 0);
-                      const despT = (p.linies || []).reduce((s, l) => s + (l.despeses || 0), 0);
+                      const brutT = liniesDePartida(p).reduce((s, l) => s + (l.importBrut || 0), 0);
+                      const despT = liniesDePartida(p).reduce((s, l) => s + (l.despeses || 0), 0);
                       if (brutT === 0 && despT === 0) return null;
                       return (
                         <React.Fragment key={t}>
@@ -867,12 +870,12 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   const totalPerTipus = tipusKeys.reduce((acc, t) => {
                     acc[t] = (dades.mobiliaris || []).reduce((s, e) => {
                       const p = (e.partides || []).find(p => p.tipus === t);
-                      return s + (p ? (p.linies || []).reduce((a, l) => a + (l.importBrut || 0), 0) : 0);
+                      return s + (p ? liniesDePartida(p).reduce((a, l) => a + (l.importBrut || 0), 0) : 0);
                     }, 0);
                     return acc;
                   }, {});
                   const totalDespeses = (dades.mobiliaris || []).reduce((s, e) =>
-                    s + (e.partides || []).reduce((a, p) => a + (p.linies || []).reduce((x, l) => x + (l.despeses || 0), 0), 0)
+                    s + (e.partides || []).reduce((a, p) => a + liniesDePartida(p).reduce((x, l) => x + (l.despeses || 0), 0), 0)
                     + (e.despesesCustodia || 0), 0);
                   const totalBrut = tipusKeys.reduce((s, t) => s + totalPerTipus[t], 0);
 
