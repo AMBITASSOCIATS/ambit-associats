@@ -3,6 +3,7 @@
 // Nou pas entre DDI (pas 7) i Bases negatives 300-F (pas 9)
 import React, { useState } from 'react';
 import { terminiDeduccionsQuota } from '../engine/terminisCaducitat';
+import { articleDeduccio } from '../engine/tipusDeduccions';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
@@ -167,28 +168,28 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
   const ddiTotal = resultat?.ddiCalculat || 0;
 
   // ── Mecenatge ────────────────────────────────────────────────────────────
-  // Art. 44 Llei 5/2014: 20% donatius generals, 90% donatius <= 100 € (dineraris, irrevocables)
+  // Art. 48 bis Llei 5/2014: 20% donatius generals, 90% donatius <= 100 € (dineraris, irrevocables)
   const mecenatge20 = (d.donatiu20 || 0) * 0.20;
   const mecenatge90 = Math.min(d.donatiu90 || 0, 100) * 0.90;
   const totalMecenatge = mecenatge20 + mecenatge90;
 
   // ── Projectes interès nacional ───────────────────────────────────────────
-  // Art. 44 bis Llei 5/2014: 75% aportacions
+  // Art. 49 Llei 5/2014: 75% aportacions
   const dedProjectes = (d.aportacionsProjectes || 0) * 0.75;
 
   // ── Creació llocs de treball ──────────────────────────────────────────────
-  // Art. 44 Llei 5/2014: increment plantilla × 1.000 € (no inscrits) o × 3.500 € (inscrits SOC)
+  // Art. 49 Llei 5/2014: increment plantilla × 1.000 € (no inscrits) o × 3.500 € (inscrits SOC)
   const incrementNoInscrits = Math.max(0, (d.plantillaNIActual || 0) - (d.plantillaNIAnterior || 0));
   const incrementInscritsNormal = Math.max(0, (d.plantillaINActual || 0) - (d.plantillaINAnterior || 0));
   const incrementInscritsEspecial = Math.max(0, (d.plantillaIEActual || 0) - (d.plantillaIEAnterior || 0));
   const dedLlocs = (incrementNoInscrits * 1000) + (incrementInscritsNormal * 3500) + (incrementInscritsEspecial * 3500);
 
   // ── Digitalització ───────────────────────────────────────────────────────
-  // Art. 44 bis Llei 5/2014: 2% de les inversions en digitalització
+  // Art. 49 Llei 5/2014: 2% de les inversions en digitalització
   const dedDigital = (d.inversionsDigital || 0) * 0.02;
 
   // ── Patrocini i esponsorització ──────────────────────────────────────────
-  // Art. 44 bis Llei 5/2014: 10% despeses o inversions
+  // Art. 49 Llei 5/2014: 10% despeses o inversions
   const dedPatrocini = (d.despesesPatrocini || 0) * 0.10;
 
   // ── Total deduccions generades ────────────────────────────────────────────
@@ -220,7 +221,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
           </span>
           <div>
             <h2 className="font-bold text-gray-800">Deduccions generades en l'exercici</h2>
-            <p className="text-xs text-gray-500">300-L sec.3 · Art. 43 bis, 44 i 44 bis Llei 5/2014</p>
+            <p className="text-xs text-gray-500">300-L sec.3 · Art. 47-49 Llei 5/2014</p>
           </div>
         </div>
 
@@ -302,7 +303,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
           <BlocDeducci
             anysVig={anysVigDeduccions}
             titol="Deducció per incentius fiscals al mecenatge"
-            referencia="Art. 44 Llei 5/2014"
+            referencia={`${articleDeduccio('MECENATGE')} Llei 5/2014`}
             descripcio="Els obligats tributaris poden deduir de la quota els donatius dineraris irrevocables, purs i simples realitzats a favor d'entitats sense ànim de lucre d'utilitat pública andorrana o entitats equivalents. La deducció és del 20% del valor del donatiu amb caràcter general. Per a donatius dineraris d'un import total no superior a 100 euros en l'exercici, la deducció és del 90%."
             limit="No hi ha límit legal explícit. S'aplica fins a la quota disponible."
             nota="Nota: El percentatge del 90% només s'aplica sobre l'import total de donatius fins a 100 €. Si el total de donatius supera 100 €, l'excés s'aplica al 20%."
@@ -337,7 +338,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
           <BlocDeducci
             anysVig={anysVigDeduccions}
             titol="Deducció per participació en projectes d'interès nacional"
-            referencia="Art. 44 bis Llei 5/2014"
+            referencia={`${articleDeduccio('PROJECTES')} Llei 5/2014`}
             descripcio="Els obligats tributaris que participin en projectes declarats d'interès nacional per part del Govern d'Andorra poden deduir de la quota el 75% del valor de les aportacions realitzades en el període impositiu. Les aportacions han de destinar-se al finançament dels projectes i han de complir els requisits establerts reglamentàriament."
             limit="75% del valor de les aportacions realitzades."
             nota="Exclusiu per a projectes declarats formalment d'interès nacional pel Govern. Verificar la resolució de declaració."
@@ -361,7 +362,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
           <BlocDeducci
             anysVig={anysVigDeduccions}
             titol="Deducció per creació de llocs de treball"
-            referencia="Art. 44 Llei 5/2014 — Exclusiu obligats amb activitat econòmica"
+            referencia={`${articleDeduccio('LLOCS_TREBALL')} Llei 5/2014 — Exclusiu obligats amb activitat econòmica`}
             descripcio="Els obligats tributaris que realitzin activitats econòmiques i incrementin la seva plantilla mitjana respecte de l'exercici anterior poden deduir: 1.000 € per cada treballador addicional no inscrit al Servei d'Ocupació. 3.500 € per cada treballador addicional inscrit al Servei d'Ocupació (entre 25 i 55 anys sense discapacitat, o menors de 25 anys, majors de 55 anys o amb discapacitat). L'increment s'ha de mantenir durant l'exercici posterior."
             limit="1.000 € per treballador (no inscrits SOC) / 3.500 € per treballador (inscrits SOC). L'increment s'ha de mantenir l'any següent."
             nota="Només per a contribuents que fan activitats econòmiques. L'increment de plantilla es calcula en termes de plantilla mitjana equivalent a jornada completa."
@@ -449,7 +450,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
           <BlocDeducci
             anysVig={anysVigDeduccions}
             titol="Deducció per digitalització"
-            referencia="Art. 44 bis Llei 5/2014 — Exclusiu obligats amb activitat econòmica"
+            referencia={`${articleDeduccio('DIGITALITZACIO')} Llei 5/2014 — Exclusiu obligats amb activitat econòmica`}
             descripcio="Els obligats tributaris que realitzin activitats econòmiques i efectuïn inversions en projectes de digitalització declarats favorables pel Govern d'Andorra poden deduir el 2% de l'import de les inversions realitzades en el període impositiu. Les inversions han de complir els requisits establerts reglamentàriament i han d'estar relacionades amb la transformació digital de l'activitat."
             limit="2% de l'import de les inversions en digitalització."
             nota="Exclusiu per a contribuents amb activitat econòmica. Les inversions han de ser en projectes de digitalització reconeguts pel Govern."
@@ -473,7 +474,7 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
           <BlocDeducci
             anysVig={anysVigDeduccions}
             titol="Deducció per incentius fiscals al patrocini i l'esponsorització"
-            referencia="Art. 44 bis Llei 5/2014 — Exclusiu obligats amb activitat econòmica"
+            referencia={`${articleDeduccio('PATROCINI')} Llei 5/2014 — Exclusiu obligats amb activitat econòmica`}
             descripcio="Els obligats tributaris que realitzin activitats econòmiques i efectuïn despeses o inversions en concepte de patrocini o esponsorització d'activitats culturals, esportives o d'interès social a Andorra poden deduir el 10% del valor de les despeses o inversions efectuades. Les activitats patrocinades han de complir els requisits establerts reglamentàriament."
             limit="10% del valor de les despeses o inversions de patrocini i esponsorització."
             nota="Exclusiu per a contribuents amb activitat econòmica. Cal disposar del contracte de patrocini i la justificació de les despeses."

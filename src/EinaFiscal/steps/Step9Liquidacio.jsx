@@ -11,6 +11,7 @@ import {
   terminiDDIInterna,
   terminiDDIInternacional,
 } from '../engine/terminisCaducitat';
+import { articleDeduccio } from '../engine/tipusDeduccions';
 
 // Nom del país d'una renda DDI: quan no hi ha CDI (codi 'OTHER') s'usa el text
 // lliure introduït per l'usuari; altrament es resol el codi a nom via PAISOS.
@@ -1265,7 +1266,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                       deduccioRows(
                         `ded-ant-${i}`,
                         ded.descripcio || `Deducció exercici ${ded.exercici}`,
-                        ded.ref || 'Art. 43',
+                        articleDeduccio(ded.tipus),
                         ded.pendentInici || 0,
                         ded.aplicat || 0,
                         ded.anysVig || anysVigDeduccions,
@@ -1280,13 +1281,13 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 {/* Deduccions generades en l'exercici — detall per partida */}
                 {hiHaDedExerc && (
                   <SeccioBlocNormatiu titol={trp('deduccionsGeneradesTitolP', { any: exercici })}>
-                    {deduccioRows('comunal', "Impost comunal arrendaments i radicació", 'Art. 47', impostComunalGenerat, r.deduccioImpostComunal || 0, anysVigDDIInterna, false)}
-                    {deduccioRows('ddi', "Deducció per Doble Imposició Internacional", 'Art. 48', ddiGenerat, r.ddi || 0, anysVigDDIInter)}
-                    {deduccioRows('mecen', "Mecenatge i donacions", 'Art. 43 bis', mecenGen, d8.aplicatMecenatge || 0, anysVigDeduccions)}
-                    {deduccioRows('proj', "Projectes d'interès nacional", 'Art. 44', projGen, d8.aplicatProjectes || 0, anysVigDeduccions)}
-                    {deduccioRows('dig', "Inversions en digitalització", 'Art. 44 bis', digGen, d8.aplicatDigital || 0, anysVigDeduccions)}
-                    {deduccioRows('pat', "Patrocini esportiu i cultural", 'Art. 44 ter', patGen, d8.aplicatPatrocini || 0, anysVigDeduccions)}
-                    {deduccioRows('llocs', "Creació de llocs de treball", 'Art. 44 quater', llocsGen, d8.aplicatLlocs || 0, anysVigDeduccions)}
+                    {deduccioRows('comunal', "Impost comunal arrendaments i radicació", articleDeduccio('DDI_INTERNA'), impostComunalGenerat, r.deduccioImpostComunal || 0, anysVigDDIInterna, false)}
+                    {deduccioRows('ddi', "Deducció per Doble Imposició Internacional", articleDeduccio('DDI_INTERNACIONAL'), ddiGenerat, r.ddi || 0, anysVigDDIInter)}
+                    {deduccioRows('mecen', "Mecenatge i donacions", articleDeduccio('MECENATGE'), mecenGen, d8.aplicatMecenatge || 0, anysVigDeduccions)}
+                    {deduccioRows('proj', "Projectes d'interès nacional", articleDeduccio('PROJECTES'), projGen, d8.aplicatProjectes || 0, anysVigDeduccions)}
+                    {deduccioRows('dig', "Inversions en digitalització", articleDeduccio('DIGITALITZACIO'), digGen, d8.aplicatDigital || 0, anysVigDeduccions)}
+                    {deduccioRows('pat', "Patrocini esportiu i cultural", articleDeduccio('PATROCINI'), patGen, d8.aplicatPatrocini || 0, anysVigDeduccions)}
+                    {deduccioRows('llocs', "Creació de llocs de treball", articleDeduccio('LLOCS_TREBALL'), llocsGen, d8.aplicatLlocs || 0, anysVigDeduccions)}
                     <FilaDetall label={tr('labelTotalDeduccionsAplicadesQuota')} valor={fmt(-r.totalDeduccionsExercici)} negrita destacat negatiu />
                     <NotaNormativa refText={tr('refArts43Bis48Llei')} text={`Deduccions de quota diferibles fins a exercici ${exercici + anysVigDeduccions}; impost comunal / DDI interna (Art. 47) fins a ${exercici + anysVigDDIInterna}; DDI internacional (Art. 48) fins a ${exercici + anysVigDDIInter}.`} />
                   </SeccioBlocNormatiu>

@@ -2,6 +2,7 @@
 // Formulari 300-F: compensacio de bases negatives d'exercicis anteriors i deduccions pendents
 import React from 'react';
 import { terminiBasesNegGenerals, terminiBasesNegEstalvi, terminiDeduccionsQuota } from '../engine/terminisCaducitat';
+import { tipusDeduccionsPerExercici } from '../engine/tipusDeduccions';
 
 const EXERCICIS_DISPONIBLES = [2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015];
 
@@ -147,7 +148,8 @@ const Step8Bases300F = ({ dades, update }) => {
   const addDeducc = () => {
     if (deduccionsAnteriors.length >= 3) return;
     const exerciciMax = deduccionsAnteriors.length > 0 ? Math.min(...deduccionsAnteriors.map(f => f.exercici)) - 1 : new Date().getFullYear() - 1;
-    update('deduccionsAnteriors', [...deduccionsAnteriors, { exercici: exerciciMax, pendentInici: 0, aplicat: 0, diferit: 0 }]);
+    const tipusDefault = tipusDeduccionsPerExercici(exerciciDeclarant)[0]?.id || 'DDI_INTERNACIONAL';
+    update('deduccionsAnteriors', [...deduccionsAnteriors, { exercici: exerciciMax, tipus: tipusDefault, pendentInici: 0, aplicat: 0, diferit: 0 }]);
   };
 
   const updateDeducc = (i, camp, valor) => {
@@ -226,6 +228,7 @@ const Step8Bases300F = ({ dades, update }) => {
               <table className="w-full text-xs border border-gray-200 rounded-xl overflow-hidden">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="text-left px-3 py-2 font-medium text-gray-600">Tipus de deducció</th>
                     <th className="text-left px-3 py-2 font-medium text-gray-600">Exercici</th>
                     <th className="text-right px-3 py-2 font-medium text-gray-600">Pendent inici (euros)</th>
                     <th className="text-right px-3 py-2 font-medium text-gray-600">Deduccio aplicada (euros)</th>
@@ -236,6 +239,18 @@ const Step8Bases300F = ({ dades, update }) => {
                 <tbody>
                   {deduccionsAnteriors.map((fila, i) => (
                     <tr key={i} className="border-b border-gray-100 hover:bg-gray-50/50">
+                      <td className="px-3 py-2">
+                        <select
+                          value={fila.tipus || ''}
+                          onChange={e => updateDeducc(i, 'tipus', e.target.value)}
+                          className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C] max-w-[220px]"
+                        >
+                          {!fila.tipus && <option value="">— Tipus —</option>}
+                          {tipusDeduccionsPerExercici(exerciciDeclarant).map(t => (
+                            <option key={t.id} value={t.id}>{t.label}</option>
+                          ))}
+                        </select>
+                      </td>
                       <td className="px-3 py-2">
                         <select
                           value={fila.exercici}
@@ -274,7 +289,7 @@ const Step8Bases300F = ({ dades, update }) => {
                 </tbody>
                 <tfoot>
                   <tr className="bg-[#009B9C]/5 font-semibold text-sm border-t border-gray-200">
-                    <td className="px-3 py-2 text-[#009B9C]">Total (casella 12)</td>
+                    <td className="px-3 py-2 text-[#009B9C]" colSpan={2}>Total (casella 12)</td>
                     <td className="px-3 py-2 text-right font-mono">{deduccionsAnteriors.reduce((a, f) => a + (f.pendentInici || 0), 0).toFixed(2)}</td>
                     <td className="px-3 py-2 text-right font-mono text-[#009B9C]">{totalDeduccions.toFixed(2)}</td>
                     <td className="px-3 py-2 text-right font-mono">{deduccionsAnteriors.reduce((a, f) => a + Math.max(0, (f.pendentInici || 0) - (f.aplicat || 0)), 0).toFixed(2)}</td>
