@@ -97,6 +97,59 @@ export async function novaDeclaracio(clientNom = '', clientNRT = '', exercici = 
 }
 
 /**
+ * Crea una nova declaració d'un altre exercici DERIVADA d'una d'existent.
+ * Copia sempre les dades de client i parella. Si ambSaldos=true (només cas
+ * posterior 2025→2025+), deriva els saldos pendents (bases negatives i
+ * deduccions) amb pendent = max(0, pendentInici − aplicat) > 0, conservant
+ * l'exercici de generació original. La resta de dades queden en blanc
+ * (el wizard aplica DEFAULT_DADES en obrir). Deixa marca d'origen (Fase 3).
+ * Retorna la fila creada (mapRow) o null si error.
+ */
+export async function crearDeclaracioDerivada({ origen, exerciciDesti, ambSaldos = false }) {
+  if (!origen) return null;
+  const d = origen.dades || {};
+
+  // Client + parella (sempre) + marca d'origen (preparació Fase 3)
+  const dades = {
+    estatCivil: d.estatCivil,
+    conjugeNom: d.conjugeNom,
+    conjugeNRT: d.conjugeNRT,
+    conjugeRendesGenerals: d.conjugeRendesGenerals,
+    origenExercici: origen.exercici,
+    origenId: origen.id,
+  };
+
+  // Saldos derivats (només posterior 2025→2025+)
+  if (ambSaldos) {
+    const derivar = (arr, campFutur) => (arr || [])
+      .map(f => ({ f, pendent: Math.max(0, (f.pendentInici || 0) - (f.aplicat || 0)) }))
+      .filter(x => x.pendent > 0)
+      .map(x => ({ exercici: x.f.exercici, pendentInici: x.pendent, aplicat: 0, [campFutur]: x.pendent }));
+    dades.basesNegGenerals = derivar(d.basesNegGenerals, 'pendentFuturs');
+    dades.basesNegEstalvi = derivar(d.basesNegEstalvi, 'pendentFuturs');
+    dades.deduccionsAnteriors = derivar(d.deduccionsAnteriors, 'diferit');
+  }
+
+  const now = new Date().toISOString();
+  const { data, error } = await supabase
+    .from('declaracions')
+    .insert({
+      user_id: origen.userId,
+      client_nom: origen.clientNom,
+      client_nrt: origen.clientNRT,
+      exercici: exerciciDesti,
+      estat: 'esborrany',
+      dades,
+      creat_el: now,
+      modificat_el: now,
+    })
+    .select()
+    .single();
+  if (error) { console.error('crearDeclaracioDerivada:', JSON.stringify(error)); return null; }
+  return mapRow(data);
+}
+
+/**
  * Desa (actualitza) una declaració existent.
  * Retorna true si OK, false si error.
  */

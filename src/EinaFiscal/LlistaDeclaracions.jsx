@@ -6,7 +6,13 @@ import {
   novaDeclaracio,
   duplicarDeclaracio,
   eliminarDeclaracio,
+  normalitzarNRT,
+  crearDeclaracioDerivada,
 } from './engine/DeclaracionsSupabase';
+
+// Rang d'exercicis oferts per a declaracions derivades
+const ANY_MIN_DERIVAT = 2022;
+const ANY_MAX_DERIVAT = 2026;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
@@ -164,6 +170,84 @@ const ModalEliminar = ({ declaracio, onConfirmar, onCancelar }) => (
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
+// MODAL NOU EXERCICI (declaració derivada)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const ModalNouExercici = ({ origen, direccio, anysDisponibles, onCrear, onCancelar, operant }) => {
+  const [any, setAny] = useState(anysDisponibles[0] ?? null);
+  const esPosterior = direccio === 'posterior';
+  const bothDes2025 = (origen.exercici >= 2025) && (any >= 2025);
+  const ambSaldos = esPosterior && bothDes2025;
+  const creuaCanviLlei = esPosterior && !bothDes2025;
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h3 className="font-bold text-gray-800 text-lg">
+            Nova declaració {esPosterior ? 'posterior' : 'anterior'}
+          </h3>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Client: <strong>{origen.clientNom || 'sense nom'}</strong>
+            {origen.clientNRT ? ` · NRT: ${origen.clientNRT}` : ''} · exercici d'origen {origen.exercici}
+          </p>
+        </div>
+        <div className="px-6 py-5 space-y-4">
+          {anysDisponibles.length === 0 ? (
+            <p className="text-sm text-gray-500">No queden anys disponibles en aquesta direcció.</p>
+          ) : (
+            <>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Exercici de destí</label>
+                <select
+                  value={any ?? ''}
+                  onChange={e => setAny(parseInt(e.target.value))}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+                >
+                  {anysDisponibles.map(a => <option key={a} value={a}>{a}</option>)}
+                </select>
+              </div>
+
+              {ambSaldos && (
+                <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-xs text-green-700">
+                  Es traspassaran les dades del client i la parella, i els <strong>saldos pendents</strong> (bases negatives i deduccions) de {origen.exercici} amb pendent &gt; 0.
+                </div>
+              )}
+              {!esPosterior && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-600">
+                  Es copiaran <strong>només</strong> les dades del client i la parella. Cap saldo.
+                </div>
+              )}
+              {creuaCanviLlei && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700">
+                  ⚠️ El traspàs de saldos només s'aplica entre exercicis de 2025 en endavant (canvi normatiu). Es crearà la declaració amb les dades del client, sense saldos.
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        <div className="px-6 py-4 border-t border-gray-100 flex gap-3 justify-end">
+          <button
+            onClick={onCancelar}
+            disabled={operant}
+            className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
+          >
+            Cancel·lar
+          </button>
+          <button
+            onClick={() => onCrear(any, ambSaldos)}
+            disabled={operant || !any || anysDisponibles.length === 0}
+            className="px-5 py-2 text-sm bg-[#009B9C] text-white rounded-lg font-semibold hover:bg-[#007A7B] transition disabled:opacity-50"
+          >
+            {operant ? 'Creant...' : `Crear ${any || ''} →`}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // COMPONENT PRINCIPAL
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -187,6 +271,8 @@ const LlistaDeclaracions = ({
   const [cerca, setCerca] = useState('');
   const [operant, setOperant] = useState(false);
   const [errorNova, setErrorNova] = useState('');
+  const [menuFila, setMenuFila] = useState(null);       // id de la fila amb el menú "Nou exercici" obert
+  const [nouExercici, setNouExercici] = useState(null); // { origen, direccio } o null
 
   const handleNova = async (clientNom, clientNRT, exercici) => {
     setOperant(true);
@@ -231,6 +317,61 @@ const LlistaDeclaracions = ({
       setOperant(false);
     }
   }, [confirmarEliminar, onRecarregar]);
+
+  // ── Nou exercici (declaració derivada) ────────────────────────────────────
+  // Anys que aquest client JA té (per NRT normalitzat + mateix user_id) → Map any→id
+  const anysDelClient = useCallback((origen) => {
+    const nrtRef = normalitzarNRT(origen.clientNRT);
+    const m = new Map();
+    if (!nrtRef) return m;
+    declaracions.forEach(x => {
+      if (x.userId === origen.userId && normalitzarNRT(x.clientNRT) === nrtRef && !m.has(x.exercici)) {
+        m.set(x.exercici, x.id);
+      }
+    });
+    return m;
+  }, [declaracions]);
+
+  // Anys lliures en una direcció (posterior: origen+1..2026 asc; anterior: origen−1..2022 desc)
+  const anysDireccio = useCallback((origen, direccio) => {
+    const existents = anysDelClient(origen);
+    const anys = [];
+    if (direccio === 'posterior') {
+      for (let y = origen.exercici + 1; y <= ANY_MAX_DERIVAT; y++) if (!existents.has(y)) anys.push(y);
+    } else {
+      for (let y = origen.exercici - 1; y >= ANY_MIN_DERIVAT; y--) if (!existents.has(y)) anys.push(y);
+    }
+    return anys;
+  }, [anysDelClient]);
+
+  const handleCrearNouExercici = async (origen, exerciciDesti, ambSaldos) => {
+    // Guard: l'any ja existeix (cursa entre pestanyes) → oferir obrir-la
+    const existents = anysDelClient(origen);
+    if (existents.has(exerciciDesti)) {
+      const idExistent = existents.get(exerciciDesti);
+      setNouExercici(null);
+      if (window.confirm(`Aquest client ja té una declaració de ${exerciciDesti}. Vols obrir-la?`) && idExistent) {
+        onObrirDeclaracio(idExistent);
+      }
+      return;
+    }
+    setOperant(true);
+    try {
+      const nova = await crearDeclaracioDerivada({ origen, exerciciDesti, ambSaldos });
+      setNouExercici(null);
+      if (nova) {
+        await onRecarregar();
+        onObrirDeclaracio(nova.id, nova);
+      } else {
+        alert('No s\'ha pogut crear la declaració derivada. Comprova els permisos.');
+      }
+    } catch (e) {
+      console.error('Error creant declaració derivada:', e);
+      alert('Error inesperat creant la declaració.');
+    } finally {
+      setOperant(false);
+    }
+  };
 
   // Filtrat
   const declaracionsFiltrades = declaracions.filter(d => {
@@ -455,6 +596,44 @@ const LlistaDeclaracions = ({
                   >
                     {d.estat === 'finalitzada' ? 'Veure' : 'Continuar'} →
                   </button>
+                  {(() => {
+                    const nrtBuit = !normalitzarNRT(d.clientNRT);
+                    const anysPost = nrtBuit ? [] : anysDireccio(d, 'posterior');
+                    const anysAnt = nrtBuit ? [] : anysDireccio(d, 'anterior');
+                    return (
+                      <div className="relative">
+                        <button
+                          onClick={() => setMenuFila(menuFila === d.id ? null : d.id)}
+                          disabled={operant || nrtBuit}
+                          title={nrtBuit ? 'Cal un NRT per vincular exercicis del client' : 'Crear declaració d\'un altre exercici del mateix client'}
+                          className="px-3 py-2 text-xs font-semibold text-[#009B9C] border border-[#009B9C]/30 rounded-lg hover:bg-[#009B9C]/10 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          ➕ Nou exercici
+                        </button>
+                        {menuFila === d.id && !nrtBuit && (
+                          <>
+                            <div className="fixed inset-0 z-10" onClick={() => setMenuFila(null)} />
+                            <div className="absolute right-0 mt-1 w-60 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1">
+                              <button
+                                onClick={() => { setMenuFila(null); setNouExercici({ origen: d, direccio: 'posterior' }); }}
+                                disabled={anysPost.length === 0}
+                                className="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                Crear declaració posterior{anysPost.length === 0 ? ' (cap any lliure)' : ''}
+                              </button>
+                              <button
+                                onClick={() => { setMenuFila(null); setNouExercici({ origen: d, direccio: 'anterior' }); }}
+                                disabled={anysAnt.length === 0}
+                                className="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                Crear declaració anterior{anysAnt.length === 0 ? ' (cap any lliure)' : ''}
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })()}
                   <button
                     onClick={() => handleDuplicar(d.id)}
                     disabled={operant}
@@ -501,6 +680,16 @@ const LlistaDeclaracions = ({
           declaracio={confirmarEliminar}
           onConfirmar={handleEliminar}
           onCancelar={() => setConfirmarEliminar(null)}
+        />
+      )}
+      {nouExercici && (
+        <ModalNouExercici
+          origen={nouExercici.origen}
+          direccio={nouExercici.direccio}
+          anysDisponibles={anysDireccio(nouExercici.origen, nouExercici.direccio)}
+          onCrear={(exerciciDesti, ambSaldos) => handleCrearNouExercici(nouExercici.origen, exerciciDesti, ambSaldos)}
+          onCancelar={() => setNouExercici(null)}
+          operant={operant}
         />
       )}
 
