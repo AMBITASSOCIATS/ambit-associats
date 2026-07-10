@@ -266,6 +266,16 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     return Array.from(mapa.values()).sort((a, b) => (b.exercici || 0) - (a.exercici || 0));
   }, [declaracions, declaracioActual]);
 
+  // ── Declaracions "filles" generades a partir de l'oberta (Fase 3) ────────────
+  // Detecció EN MEMÒRIA (sense query): declaracions amb dades.origenId === id actual.
+  const exercicisGenerats = useMemo(() => {
+    if (!declaracioActual) return [];
+    return declaracions
+      .filter(d => d.dades?.origenId === declaracioActual.id)
+      .map(d => ({ exercici: d.exercici, id: d.id }))
+      .sort((a, b) => (a.exercici || 0) - (b.exercici || 0));
+  }, [declaracions, declaracioActual]);
+
   // ── Canviar d'exercici = navegar a una altra declaració del mateix client ────
   // Desa l'actual (mateix flux d'autodesat) i obre la destí (fresca de Supabase).
   const handleCanviarExercici = useCallback(async (idDesti) => {
@@ -550,6 +560,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
         declaracioId={declaracioId}
         declaracioInicial={declaracioActual}
         exercicisClient={exercicisClient}
+        exercicisGenerats={exercicisGenerats}
         onCanviarExercici={handleCanviarExercici}
         onDesar={handleDesar}
         onDadesChange={handleDadesChange}

@@ -72,7 +72,7 @@ const DEFAULT_DADES = {
   deduccionsAnteriors: [],
 };
 
-const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient = [], onCanviarExercici, onDesar, onDadesChange, onSortir, ultimDesat, onLogout, onAdminPanel, pendents = 0 }) => {
+const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient = [], exercicisGenerats = [], onCanviarExercici, onDesar, onDadesChange, onSortir, ultimDesat, onLogout, onAdminPanel, pendents = 0 }) => {
   const { perfil } = useAuth();
   const [pas, setPas] = useState(1);
   const [dades, setDades] = useState(() => ({
@@ -86,6 +86,9 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient =
   const [exercici] = useState(() => declaracioInicial?.exercici || 2025);
   const [estatActual, setEstatActual] = useState(() => declaracioInicial?.estat || 'esborrany');
   const [mostrarErrorCASS, setMostrarErrorCASS] = useState(false);
+  // Avís (Fase 3): aquesta declaració ja ha generat exercicis posteriors. Es pot
+  // tancar durant la sessió; reapareix en reobrir (EinaFiscal remunta amb key).
+  const [avisFillesTancat, setAvisFillesTancat] = useState(false);
 
   // Validació CASS del pas 2: fonts subjectes a CASS amb cotitzacions = 0 sense confirmar
   const TIPUS_SUBJECTES_CASS = ['SALARI_GENERAL', 'ADMINISTRADOR', 'ALTRES_TREBALL', 'PENSIO_CASS'];
@@ -203,6 +206,28 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient =
           </div>
         </div>
       </header>
+
+      {/* Avís: aquesta declaració ja ha generat exercicis posteriors (Fase 3) */}
+      {exercicisGenerats.length > 0 && !avisFillesTancat && (() => {
+        const anys = exercicisGenerats.map(e => e.exercici).join(', ');
+        const multiple = exercicisGenerats.length > 1;
+        return (
+          <div className="no-print bg-amber-50 border-b border-amber-200">
+            <div className="container mx-auto max-w-7xl px-4 py-2.5 flex items-start gap-3">
+              <p className="flex-1 text-xs text-amber-800 leading-relaxed">
+                ⚠️ D'aquesta declaració se n'{multiple ? 'han' : 'ha'} generat {multiple ? 'exercicis posteriors' : 'un exercici posterior'} (<strong>{anys}</strong>). Els saldos pendents es van traspassar en el moment de crear-{multiple ? 'los' : 'lo'}; si modifiques imports que hi repercuteixin (bases negatives, deduccions pendents, DDI), hauràs d'actualitzar-los manualment a {multiple ? 'aquells exercicis' : 'aquell exercici'} ({anys}).
+              </p>
+              <button
+                onClick={() => setAvisFillesTancat(true)}
+                title="Amagar avís"
+                className="flex-shrink-0 text-amber-500 hover:text-amber-700 text-sm font-bold leading-none px-1"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Navegacio wizard */}
       <div className="no-print">
