@@ -248,6 +248,44 @@ const ModalNouExercici = ({ origen, direccio, anysDisponibles, onCrear, onCancel
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// MODAL SALDOS DESCARTATS PER CADUCITAT (informatiu)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const ModalSaldosDescartats = ({ any, descartats, onObrir }) => {
+  const f = (n) => (n || 0).toLocaleString('ca-AD', { minimumFractionDigits: 2 });
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h3 className="font-bold text-gray-800 text-lg">Declaració de {any} creada</h3>
+        </div>
+        <div className="px-6 py-5">
+          <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-3 text-xs text-amber-800 leading-relaxed">
+            ⚠️ No s'han traspassat automàticament <strong>{descartats.length}</strong> saldo{descartats.length !== 1 ? 's' : ''} per caducitat de termini:
+            <ul className="mt-1.5 space-y-0.5">
+              {descartats.map((s, i) => (
+                <li key={i}>• {s.tipus} ({s.exercici}): <strong>{f(s.import)} €</strong></li>
+              ))}
+            </ul>
+            <p className="mt-2">
+              Si cal, els pots <strong>afegir manualment</strong> al pas 300-F de la nova declaració, que segueix sent totalment editable.
+            </p>
+          </div>
+        </div>
+        <div className="px-6 py-4 border-t border-gray-100 flex justify-end">
+          <button
+            onClick={onObrir}
+            className="px-5 py-2 text-sm bg-[#009B9C] text-white rounded-lg font-semibold hover:bg-[#007A7B] transition"
+          >
+            Obrir la declaració →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // COMPONENT PRINCIPAL
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -273,6 +311,7 @@ const LlistaDeclaracions = ({
   const [errorNova, setErrorNova] = useState('');
   const [menuFila, setMenuFila] = useState(null);       // id de la fila amb el menú "Nou exercici" obert
   const [nouExercici, setNouExercici] = useState(null); // { origen, direccio } o null
+  const [saldosDescartats, setSaldosDescartats] = useState(null); // { nova, any, descartats } o null
 
   const handleNova = async (clientNom, clientNRT, exercici) => {
     setOperant(true);
@@ -357,11 +396,16 @@ const LlistaDeclaracions = ({
     }
     setOperant(true);
     try {
-      const nova = await crearDeclaracioDerivada({ origen, exerciciDesti, ambSaldos });
+      const res = await crearDeclaracioDerivada({ origen, exerciciDesti, ambSaldos });
       setNouExercici(null);
-      if (nova) {
+      if (res && res.row) {
         await onRecarregar();
-        onObrirDeclaracio(nova.id, nova);
+        if (res.descartats && res.descartats.length > 0) {
+          // Saldos caducats no prellenats → avís informatiu; s'obre en confirmar
+          setSaldosDescartats({ nova: res.row, any: exerciciDesti, descartats: res.descartats });
+        } else {
+          onObrirDeclaracio(res.row.id, res.row);
+        }
       } else {
         alert('No s\'ha pogut crear la declaració derivada. Comprova els permisos.');
       }
@@ -690,6 +734,17 @@ const LlistaDeclaracions = ({
           onCrear={(exerciciDesti, ambSaldos) => handleCrearNouExercici(nouExercici.origen, exerciciDesti, ambSaldos)}
           onCancelar={() => setNouExercici(null)}
           operant={operant}
+        />
+      )}
+      {saldosDescartats && (
+        <ModalSaldosDescartats
+          any={saldosDescartats.any}
+          descartats={saldosDescartats.descartats}
+          onObrir={() => {
+            const nova = saldosDescartats.nova;
+            setSaldosDescartats(null);
+            onObrirDeclaracio(nova.id, nova);
+          }}
         />
       )}
 

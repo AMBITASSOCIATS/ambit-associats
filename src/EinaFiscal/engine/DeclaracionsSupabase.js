@@ -3,6 +3,11 @@
 // Substitueix DeclaracionsStorage.js (localStorage)
 
 import { supabase } from '../../supabaseClient';
+import {
+  terminiBasesNegGenerals,
+  terminiBasesNegEstalvi,
+  terminiDeduccionsQuota,
+} from './terminisCaducitat';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS INTERNS
@@ -101,13 +106,18 @@ export async function novaDeclaracio(clientNom = '', clientNRT = '', exercici = 
  * Copia sempre les dades de client i parella. Si ambSaldos=true (només cas
  * posterior 2025→2025+), deriva els saldos pendents (bases negatives i
  * deduccions) amb pendent = max(0, pendentInici − aplicat) > 0, conservant
- * l'exercici de generació original. La resta de dades queden en blanc
- * (el wizard aplica DEFAULT_DADES en obrir). Deixa marca d'origen (Fase 3).
- * Retorna la fila creada (mapRow) o null si error.
+ * l'exercici de generació original. Els saldos CADUCATS (generats l'any G amb
+ * termini T i exerciciDesti > G + T) NO es prellenen: es retornen a `descartats`
+ * perquè la UI n'avisi. El descart afecta NOMÉS el prellenat: el pas 300-F de la
+ * nova declaració segueix sent totalment editable (l'usuari pot afegir-los a mà).
+ * La resta de dades queden en blanc (el wizard aplica DEFAULT_DADES en obrir).
+ * Deixa marca d'origen (Fase 3).
+ * Retorna { row: <mapRow>|null, descartats: [{ tipus, exercici, import }] }.
  */
 export async function crearDeclaracioDerivada({ origen, exerciciDesti, ambSaldos = false }) {
-  if (!origen) return null;
+  if (!origen) return { row: null, descartats: [] };
   const d = origen.dades || {};
+  const descartats = []; // saldos caducats no prellenats (informatiu per a la UI)
 
   // Client + parella (sempre) + marca d'origen (preparació Fase 3)
   const dades = {
@@ -119,15 +129,22 @@ export async function crearDeclaracioDerivada({ origen, exerciciDesti, ambSaldos
     origenId: origen.id,
   };
 
-  // Saldos derivats (només posterior 2025→2025+)
+  // Saldos derivats (només posterior 2025→2025+), descartant els caducats
   if (ambSaldos) {
-    const derivar = (arr, campFutur) => (arr || [])
+    const derivar = (arr, campFutur, termini, tipus) => (arr || [])
       .map(f => ({ f, pendent: Math.max(0, (f.pendentInici || 0) - (f.aplicat || 0)) }))
       .filter(x => x.pendent > 0)
+      .filter(x => {
+        // Generat l'any G, aplicable fins a G + termini inclòs
+        const caducat = exerciciDesti > (x.f.exercici || 0) + termini;
+        if (caducat) descartats.push({ tipus, exercici: x.f.exercici, import: x.pendent });
+        return !caducat;
+      })
       .map(x => ({ exercici: x.f.exercici, pendentInici: x.pendent, aplicat: 0, [campFutur]: x.pendent }));
-    dades.basesNegGenerals = derivar(d.basesNegGenerals, 'pendentFuturs');
-    dades.basesNegEstalvi = derivar(d.basesNegEstalvi, 'pendentFuturs');
-    dades.deduccionsAnteriors = derivar(d.deduccionsAnteriors, 'diferit');
+
+    dades.basesNegGenerals = derivar(d.basesNegGenerals, 'pendentFuturs', terminiBasesNegGenerals(exerciciDesti), 'Bases negatives generals');
+    dades.basesNegEstalvi = derivar(d.basesNegEstalvi, 'pendentFuturs', terminiBasesNegEstalvi(exerciciDesti), "Bases negatives de l'estalvi");
+    dades.deduccionsAnteriors = derivar(d.deduccionsAnteriors, 'diferit', terminiDeduccionsQuota(exerciciDesti), 'Deduccions de quota');
   }
 
   const now = new Date().toISOString();
@@ -145,8 +162,8 @@ export async function crearDeclaracioDerivada({ origen, exerciciDesti, ambSaldos
     })
     .select()
     .single();
-  if (error) { console.error('crearDeclaracioDerivada:', JSON.stringify(error)); return null; }
-  return mapRow(data);
+  if (error) { console.error('crearDeclaracioDerivada:', JSON.stringify(error)); return { row: null, descartats }; }
+  return { row: mapRow(data), descartats };
 }
 
 /**

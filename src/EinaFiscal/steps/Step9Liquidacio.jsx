@@ -4,6 +4,13 @@ import { generarCaselles300L } from '../engine/liquidacioEngine';
 import { PDF_LANGS, t } from '../engine/pdfTranslations';
 import { PAISOS } from '../engine/cdiRates';
 import { pctForfetari } from '../engine/immobiliariHelpers';
+import {
+  terminiBasesNegGenerals,
+  terminiBasesNegEstalvi,
+  terminiDeduccionsQuota,
+  terminiDDIInterna,
+  terminiDDIInternacional,
+} from '../engine/terminisCaducitat';
 
 // Nom del país d'una renda DDI: quan no hi ha CDI (codi 'OTHER') s'usa el text
 // lliure introduït per l'usuari; altrament es resol el codi a nom via PAISOS.
@@ -1185,12 +1192,12 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
           if (!hiHaBasesNeg && !hiHaDedAnts && !hiHaDedExerc) return null;
 
-          // Terminis de diferiment/compensació segons exercici (Reglament 29/12/2023).
-          // null/undefined → comportament 2024+ (fallback segur via `exercici || 2025`).
-          const exDecl = exercici || 2025;
-          const anysVigBNGeneral = exDecl < 2024 ? 4 : 10;   // bases negatives generals
-          const anysVigDeduccions = exDecl < 2024 ? 5 : 6;   // deduccions de quota
-          const anysVigDDIInterna = exDecl < 2024 ? 3 : 6;   // DDI interna / impost comunal (Art. 47)
+          // Terminis de caducitat/diferiment segons exercici (font única: terminisCaducitat).
+          const anysVigBNGeneral  = terminiBasesNegGenerals(exercici);  // Art. 31.2
+          const anysVigBNEstalvi  = terminiBasesNegEstalvi(exercici);   // Art. 32.2
+          const anysVigDeduccions = terminiDeduccionsQuota(exercici);   // Guia IRPF 2025 ap. 12.2
+          const anysVigDDIInterna = terminiDDIInterna(exercici);        // Art. 47.2
+          const anysVigDDIInter   = terminiDDIInternacional(exercici);  // Art. 48.4
 
           // Helper: mostra Generades / Aplicades / Pendents + venciment per a una partida
           const deduccioRows = (key, titol, ref, generades, aplicades, anysVig, noDiferable = false, anyGeneracio = null) => {
@@ -1243,7 +1250,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                       <React.Fragment key={i}>
                         <FilaDetall label={trp('exerciciPendentInici', { any: f.exercici })} valor={fmt(f.pendentInici || 0)} />
                         <FilaDetall label={trp('aplicatEnExercici', { any: exercici })} valor={fmt(-(f.aplicat || 0))} negatiu={f.aplicat > 0} />
-                        <FilaDetall label={tr('labelPendentExercicisFuturs')} valor={fmt(Math.max(0,(f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? trp('vencimentExercici', { any: f.exercici + 10 }) : undefined} />
+                        <FilaDetall label={tr('labelPendentExercicisFuturs')} valor={fmt(Math.max(0,(f.pendentInici||0)-(f.aplicat||0)))} negrita={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0} nota={Math.max(0,(f.pendentInici||0)-(f.aplicat||0)) > 0 ? trp('vencimentExercici', { any: f.exercici + anysVigBNEstalvi }) : undefined} />
                       </React.Fragment>
                     ))}
                     <FilaDetall label={tr('labelTotalAplicatExercici')} valor={fmt(-(dades.basesNegEstalvi||[]).reduce((a,f)=>a+(f.aplicat||0),0))} negrita destacat negatiu />
@@ -1261,7 +1268,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                         ded.ref || 'Art. 43',
                         ded.pendentInici || 0,
                         ded.aplicat || 0,
-                        ded.anysVig || 5,
+                        ded.anysVig || anysVigDeduccions,
                         false,
                         ded.exercici || (exercici - 1)
                       )
@@ -1274,14 +1281,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 {hiHaDedExerc && (
                   <SeccioBlocNormatiu titol={trp('deduccionsGeneradesTitolP', { any: exercici })}>
                     {deduccioRows('comunal', "Impost comunal arrendaments i radicació", 'Art. 47', impostComunalGenerat, r.deduccioImpostComunal || 0, anysVigDDIInterna, false)}
-                    {deduccioRows('ddi', "Deducció per Doble Imposició Internacional", 'Art. 48', ddiGenerat, r.ddi || 0, 3)}
+                    {deduccioRows('ddi', "Deducció per Doble Imposició Internacional", 'Art. 48', ddiGenerat, r.ddi || 0, anysVigDDIInter)}
                     {deduccioRows('mecen', "Mecenatge i donacions", 'Art. 43 bis', mecenGen, d8.aplicatMecenatge || 0, anysVigDeduccions)}
                     {deduccioRows('proj', "Projectes d'interès nacional", 'Art. 44', projGen, d8.aplicatProjectes || 0, anysVigDeduccions)}
                     {deduccioRows('dig', "Inversions en digitalització", 'Art. 44 bis', digGen, d8.aplicatDigital || 0, anysVigDeduccions)}
                     {deduccioRows('pat', "Patrocini esportiu i cultural", 'Art. 44 ter', patGen, d8.aplicatPatrocini || 0, anysVigDeduccions)}
                     {deduccioRows('llocs', "Creació de llocs de treball", 'Art. 44 quater', llocsGen, d8.aplicatLlocs || 0, anysVigDeduccions)}
                     <FilaDetall label={tr('labelTotalDeduccionsAplicadesQuota')} valor={fmt(-r.totalDeduccionsExercici)} negrita destacat negatiu />
-                    <NotaNormativa refText={tr('refArts43Bis48Llei')} text={`Deduccions de quota diferibles fins a exercici ${exercici + anysVigDeduccions}; impost comunal / DDI interna (Art. 47) fins a ${exercici + anysVigDDIInterna}; DDI internacional (Art. 48) fins a ${exercici + 3}.`} />
+                    <NotaNormativa refText={tr('refArts43Bis48Llei')} text={`Deduccions de quota diferibles fins a exercici ${exercici + anysVigDeduccions}; impost comunal / DDI interna (Art. 47) fins a ${exercici + anysVigDDIInterna}; DDI internacional (Art. 48) fins a ${exercici + anysVigDDIInter}.`} />
                   </SeccioBlocNormatiu>
                 )}
 
