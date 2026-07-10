@@ -2,6 +2,7 @@
 // Pas 8 — Deduccions generades en l'exercici (300-L secció 3)
 // Nou pas entre DDI (pas 7) i Bases negatives 300-F (pas 9)
 import React, { useState } from 'react';
+import { terminiDeduccionsQuota } from '../engine/terminisCaducitat';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
@@ -43,7 +44,7 @@ const BlocDeducci = ({
   importAplicat,
   onChangeAplicat,
   readOnlyGenerat = false,
-  anysVig = 6, // anys de diferiment al 300-F (default 2024+)
+  anysVig = 3, // anys de diferiment al 300-F (default 2024+, Art. 45 · Guia IRPF 2025)
   children, // camps addicionals de càlcul
 }) => {
   const [expandit, setExpandit] = useState(false);
@@ -150,9 +151,9 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
   // NO existien per a 2023 i anteriors. null/undefined → comportament 2024+.
   const exerciciDeclarant = dades?.exercici || 2025;
   const es2023oAnterior = exerciciDeclarant != null && exerciciDeclarant < 2024;
-  // Termini de diferiment de les deduccions de quota segons exercici
-  // (Reglament 29/12/2023): 5 exercicis fins 2023, 6 des de 2024. null/undefined → 2024+.
-  const anysVigDeduccions = exerciciDeclarant < 2024 ? 5 : 6;
+  // Termini de diferiment de les deduccions de quota (font única: terminisCaducitat):
+  // 3 exercicis (2024+, Guia IRPF 2025 ap. 12.2) · 5 per a exercicis anteriors.
+  const anysVigDeduccions = terminiDeduccionsQuota(exerciciDeclarant);
 
   const upd = (camp, valor) => {
     update('deduccionsExercici', { ...d, [camp]: valor });

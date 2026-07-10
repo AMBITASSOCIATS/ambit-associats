@@ -1,6 +1,7 @@
 // steps/Step8_300F.jsx — Pas 8: Bases negatives i deduccions anteriors (300-F)
 // Formulari 300-F: compensacio de bases negatives d'exercicis anteriors i deduccions pendents
 import React from 'react';
+import { terminiBasesNegGenerals, terminiBasesNegEstalvi, terminiDeduccionsQuota } from '../engine/terminisCaducitat';
 
 const EXERCICIS_DISPONIBLES = [2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015];
 
@@ -130,10 +131,11 @@ const TaulaBasesNeg = ({ titol, descr, dades, onUpdate, maxFiles = 10, casellaTo
 };
 
 const Step8Bases300F = ({ dades, update }) => {
-  // Terminis segons exercici declarat (Reglament 29/12/2023). null/undefined → 2024+.
+  // Terminis segons exercici declarat (font única: terminisCaducitat). null/undefined → 2024+.
   const exerciciDeclarant = dades?.exercici || 2025;
-  const anysVigBNGeneral = exerciciDeclarant < 2024 ? 4 : 10; // bases neg. generals
-  const anysVigDeducc = exerciciDeclarant < 2024 ? 5 : 6;     // deduccions de quota
+  const anysVigBNGeneral = terminiBasesNegGenerals(exerciciDeclarant); // bases neg. generals (Art. 31.2)
+  const anysVigBNEstalvi = terminiBasesNegEstalvi(exerciciDeclarant);  // bases neg. estalvi (Art. 32.2)
+  const anysVigDeducc = terminiDeduccionsQuota(exerciciDeclarant);     // deduccions de quota (Guia 2025 ap. 12.2)
   const basesNegGenerals = dades.basesNegGenerals || [];
   const basesNegEstalvi = dades.basesNegEstalvi || [];
   const deduccionsAnteriors = dades.deduccionsAnteriors || [];
@@ -176,7 +178,7 @@ const Step8Bases300F = ({ dades, update }) => {
         </div>
 
         <div className="bg-blue-50 rounded-xl p-3 text-xs text-blue-700 mb-5">
-          <strong>Art. 33 Llei 5/2014:</strong> Les bases de tributacio negatives es poden compensar en els <strong>{anysVigBNGeneral} exercicis</strong> fiscals posteriors (base general) o en els <strong>10 exercicis</strong> posteriors (base de l'estalvi). Art. 34: les deduccions de quota pendents es poden aplicar en els {anysVigDeducc} exercicis posteriors.
+          <strong>Art. 33 Llei 5/2014:</strong> Les bases de tributacio negatives es poden compensar en els <strong>{anysVigBNGeneral} exercicis</strong> fiscals posteriors (base general) o en els <strong>{anysVigBNEstalvi} exercicis</strong> posteriors (base de l'estalvi). Art. 34: les deduccions de quota pendents es poden aplicar en els {anysVigDeducc} exercicis posteriors.
         </div>
 
         {/* Apartat 1: Bases negatives generals */}
