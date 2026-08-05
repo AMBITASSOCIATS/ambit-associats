@@ -46,6 +46,8 @@ export const T = {
     FR: "CONTRIBUABLE",
     EN: "TAXPAYER",
   },
+  capClient: { CA: "Client", ES: "Cliente", FR: "Client", EN: "Client" },
+  capGenerat: { CA: "Generat", ES: "Generado", FR: "Généré", EN: "Generated" },
   dadesInforme: {
     CA: "DADES DE L'INFORME",
     ES: "DATOS DEL INFORME",

@@ -102,8 +102,9 @@ function colorBorde(hex) {
   return `#${rf}${gf}${bf}`;
 }
 
-const dataAvui = () => {
-  return new Date().toLocaleDateString('ca-AD', {
+const LOCALE_DATA = { CA: 'ca-AD', ES: 'es-ES', FR: 'fr-FR', EN: 'en-GB' };
+const dataAvui = (lang = 'CA') => {
+  return new Date().toLocaleDateString(LOCALE_DATA[lang] || 'ca-AD', {
     day: '2-digit', month: 'long', year: 'numeric'
   });
 };
@@ -113,8 +114,9 @@ const dataAvui = () => {
 // (definits dins Step9Liquidacio per tenir accés directe al CAP i als colors personalitzats)
 
 // ─── CAPÇALERA DEL DOCUMENT (rep cap com a prop per suportar capçalera personalitzada) ──
-const CapcaleraDocument = ({ clientNom, clientNRT, exercici, seccio, cap }) => {
+const CapcaleraDocument = ({ clientNom, clientNRT, exercici, seccio, cap, lang = 'CA' }) => {
   const C = cap || AMBIT;
+  const trc = (k) => t(k, lang);
   return (
     <div style={{ marginBottom: '20px' }}>
       <div style={{
@@ -131,7 +133,7 @@ const CapcaleraDocument = ({ clientNom, clientNRT, exercici, seccio, cap }) => {
         </div>
         <div style={{ textAlign: 'right' }}>
           <div style={{ color: 'white', fontSize: '13px', fontWeight: '700' }}>
-            Informe IRPF {exercici}
+            {trc('informeIRPFAny').replace('{any}', exercici)}
           </div>
           <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '9px' }}>{seccio}</div>
         </div>
@@ -140,8 +142,8 @@ const CapcaleraDocument = ({ clientNom, clientNRT, exercici, seccio, cap }) => {
         backgroundColor: '#f7fafa', borderBottom: '1px solid #d0eaea',
         padding: '8px 30px', display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: '#555'
       }}>
-        <span><strong>Client:</strong> {clientNom || '—'} {clientNRT ? `· NRT: ${clientNRT}` : ''}</span>
-        <span><strong>Exercici:</strong> {exercici} · <strong>Generat:</strong> {dataAvui()}</span>
+        <span><strong>{trc('capClient')}:</strong> {clientNom || '—'} {clientNRT ? `· ${trc('nrt')}: ${clientNRT}` : ''}</span>
+        <span><strong>{trc('exerciciFiscal')}:</strong> {exercici} · <strong>{trc('capGenerat')}:</strong> {dataAvui(lang)}</span>
       </div>
     </div>
   );
@@ -569,7 +571,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               <div>
                 <div style={{ fontSize: '9px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>{tr('dadesInforme')}</div>
                 <div style={{ fontSize: '11px', color: '#333' }}>{tr('exerciciFiscal')}: <strong>{exercici}</strong></div>
-                <div style={{ fontSize: '11px', color: '#333' }}>{tr('dataGeneracio')}: <strong>{dataAvui()}</strong></div>
+                <div style={{ fontSize: '11px', color: '#333' }}>{tr('dataGeneracio')}: <strong>{dataAvui(idiomaInforme)}</strong></div>
                 <div style={{ fontSize: '11px', color: '#333' }}>{tr('normativa')}: <strong>{normativaAplicable(exercici)}</strong></div>
               </div>
             </div>
@@ -640,7 +642,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         <div className="page-break">
          <table className="sec-table">
           <thead><tr><td>
-            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('detallRendes')} cap={CAP} />
+            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('detallRendes')} cap={CAP} lang={idiomaInforme} />
           </td></tr></thead>
           <tbody><tr><td>
           <div className="page-content" style={{ padding: '10px 30px 20px 30px' }}>
@@ -1091,7 +1093,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         <div className="page-break">
          <table className="sec-table">
           <thead><tr><td>
-            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('basesReduccions')} cap={CAP} />
+            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('basesReduccions')} cap={CAP} lang={idiomaInforme} />
           </td></tr></thead>
           <tbody><tr><td>
           <div className="page-content" style={{ padding: '10px 30px 20px 30px' }}>
@@ -1224,7 +1226,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             <div className="page-break">
              <table className="sec-table">
               <thead><tr><td>
-                <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('seccioFormulari300F')} cap={CAP} />
+                <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('seccioFormulari300F')} cap={CAP} lang={idiomaInforme} />
               </td></tr></thead>
               <tbody><tr><td>
               <div className="page-content" style={{ padding: '10px 30px 20px 30px' }}>
@@ -1310,7 +1312,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         <div className="page-break">
          <table className="sec-table">
           <thead><tr><td>
-            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('liquidacio')} cap={CAP} />
+            <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('liquidacio')} cap={CAP} lang={idiomaInforme} />
           </td></tr></thead>
           <tbody><tr><td>
           <div className="page-content" style={{ padding: '10px 15px 15px 15px' }}>
@@ -1424,7 +1426,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           <div className="page-break">
            <table className="sec-table">
             <thead><tr><td>
-              <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('seccioRendesExemptesNoSubjectes')} cap={CAP} />
+              <CapcaleraDocument clientNom={clientNom} clientNRT={clientNRT} exercici={exercici} seccio={tr('seccioRendesExemptesNoSubjectes')} cap={CAP} lang={idiomaInforme} />
             </td></tr></thead>
             <tbody><tr><td>
             <div className="page-content" style={{ padding: '10px 30px 20px 30px' }}>
@@ -1565,7 +1567,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               </div>
             </div>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '10px', fontSize: '8px', opacity: 0.6, textAlign: 'center' }}>
-              {trp('copyrightText', { year: new Date().getFullYear(), nom: CAP.nom, data: dataAvui(), normativa: normativaAplicable(exercici, true) })}
+              {trp('copyrightText', { year: new Date().getFullYear(), nom: CAP.nom, data: dataAvui(idiomaInforme), normativa: normativaAplicable(exercici, true) })}
             </div>
             {!esAmbit && (
               <div style={{ textAlign: 'center', fontSize: '7px', opacity: 0.4, color: 'white', paddingBottom: '4px' }}>
