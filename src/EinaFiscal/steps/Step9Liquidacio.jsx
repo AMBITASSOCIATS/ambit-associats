@@ -1503,43 +1503,43 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             padding: '30px 40px', color: 'white'
           }}>
             <div style={{ fontSize: '18px', fontWeight: '800' }}>{CAP.nomComercial || CAP.nom}</div>
-            <div style={{ fontSize: '11px', opacity: 0.8 }}>Informació legal i avisos importants</div>
+            <div style={{ fontSize: '11px', opacity: 0.8 }}>{tr('informacioLegal')}</div>
           </div>
 
           <div className="page-content" style={{ flex: 1, paddingTop: '30px' }}>
 
             {/* Avís principal */}
             <div style={{ backgroundColor: '#fff8e1', border: '2px solid #f9a825', borderRadius: '8px', padding: '16px 20px', marginBottom: '20px' }}>
-              <div style={{ fontSize: '11px', fontWeight: '700', color: '#e65100', marginBottom: '8px' }}>⚠️ AVÍS IMPORTANT</div>
+              <div style={{ fontSize: '11px', fontWeight: '700', color: '#e65100', marginBottom: '8px' }}>⚠️ {tr('avisImportant')}</div>
               <p style={{ fontSize: '10px', color: '#555', lineHeight: '1.6', margin: 0 }}>
                 {esAmbit
-                  ? `Aquest informe ha estat generat per l'Eina Fiscal IRPF d'ÀMBIT Associats a partir de les dades introduïdes per l'usuari.`
-                  : `Aquest informe ha estat generat per ${CAP.nomComercial || CAP.nom} a partir de les dades introduïdes per l'usuari.`
+                  ? tr('avisGeneratAmbit')
+                  : trp('avisGeneratAltreP', { nom: CAP.nomComercial || CAP.nom })
                 }
-                {` El seu contingut té caràcter merament informatiu i orientatiu, i no constitueix ni substitueix en cap cas l'assessorament fiscal professional personalitzat. ${CAP.nomComercial || CAP.nom} no assumeix cap responsabilitat sobre les decisions preses en base a aquest informe sense una revisió professional prèvia.`}
+                {trp('avisContingutP', { nom: CAP.nomComercial || CAP.nom })}
               </p>
             </div>
 
             {[
               {
-                titol: '1. Responsabilitat i limitació de responsabilitat',
+                titol: `1. ${tr('responsabilitat')}`,
                 text: trp('disclaimerResponsabilitat', { nom: CAP.nomComercial || CAP.nom, normativa: normativaAplicable(exercici, true) })
               },
               {
-                titol: '2. Naturalesa de l\'informe',
+                titol: `2. ${tr('naturalesa')}`,
                 text: tr('disclaimerNaturalesa')
               },
               {
-                titol: '3. Protecció de dades personals (Llei 29/2021)',
+                titol: `3. ${tr('proteccioDades')}`,
                 text: trp('disclaimerProteccioDades', { email: CAP.email })
               },
               {
-                titol: '4. Confidencialitat',
+                titol: `4. ${tr('confidencialitat')}`,
                 text: tr('disclaimerConfidencialitat')
               },
               {
-                titol: '5. Normativa de referència',
-                text: `Llei 5/2014, del 24 d'abril, de l'impost sobre la renda de les persones físiques (IRPF) del Principat d'Andorra (BOPA núm. 30, del 30/04/2014). Normativa aplicada: ${normativaAplicable(exercici)}.${(exercici || 2025) >= 2024 ? ` Reglament de l'IRPF, del 29/12/2023 (BOPA R20231229B i R20231229D).` : ''} Guia pràctica IRPF 2025 del Ministeri de Finances del Govern d'Andorra.`
+                titol: `5. ${tr('normativaReferencia')}`,
+                text: trp('disclaimerText5P', { normativa: normativaAplicable(exercici), reglament: (exercici || 2025) >= 2024 ? tr('reglamentIRPF2023') : '' })
               }
             ].map((item, i) => (
               <div key={i} style={{ marginBottom: '14px' }} className="avoid-break">
@@ -1556,17 +1556,17 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', fontSize: '9px', marginBottom: '12px' }}>
               <div>
-                <div style={{ fontWeight: '700', marginBottom: '4px', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '8px' }}>Entitat</div>
+                <div style={{ fontWeight: '700', marginBottom: '4px', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '8px' }}>{tr('peuEntitat')}</div>
                 <div>{CAP.nom}</div>
-                <div style={{ opacity: 0.75 }}>NRT: {CAP.nrt}</div>
+                <div style={{ opacity: 0.75 }}>{tr('nrt')}: {CAP.nrt}</div>
               </div>
               <div>
-                <div style={{ fontWeight: '700', marginBottom: '4px', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '8px' }}>Adreça</div>
+                <div style={{ fontWeight: '700', marginBottom: '4px', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '8px' }}>{tr('peuAdreca')}</div>
                 <div>{CAP.adreca}</div>
                 <div style={{ opacity: 0.75 }}>{CAP.poblacio}</div>
               </div>
               <div>
-                <div style={{ fontWeight: '700', marginBottom: '4px', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '8px' }}>Contacte</div>
+                <div style={{ fontWeight: '700', marginBottom: '4px', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '8px' }}>{tr('peuContacte')}</div>
                 <div>{CAP.email}</div>
                 <div style={{ opacity: 0.75 }}>{CAP.tel}{CAP.web ? ` · ${CAP.web}` : ''}</div>
               </div>
@@ -1576,7 +1576,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             </div>
             {!esAmbit && (
               <div style={{ textAlign: 'center', fontSize: '7px', opacity: 0.4, color: 'white', paddingBottom: '4px' }}>
-                Informe generat amb l'Eina Fiscal IRPF d'ÀMBIT Associats · DEL SOTO – PALEARI &amp; ASSOCIATS, S.L. · NRT L-720543-P · www.ambit.ad
+                {tr('generatAmbEinaAmbit')} · DEL SOTO – PALEARI &amp; ASSOCIATS, S.L. · NRT L-720543-P · www.ambit.ad
               </div>
             )}
           </div>
