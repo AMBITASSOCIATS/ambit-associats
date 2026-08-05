@@ -412,7 +412,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               <div key={i} className={`flex items-center justify-between py-2 px-3 rounded-lg ${c.destacat ? 'bg-[#009B9C]/10 font-semibold' : 'hover:bg-gray-50'}`}>
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-xs text-gray-500 w-16 text-right flex-shrink-0">{c.casella}</span>
-                  <span className={`text-sm ${c.destacat ? 'text-gray-800' : 'text-gray-600'}`}>{c.descripcio}</span>
+                  <span className={`text-sm ${c.destacat ? 'text-gray-800' : 'text-gray-600'}`}>{t(c.descripcioKey, 'CA')}</span>
                 </div>
                 <span className={`font-mono text-sm font-semibold flex-shrink-0 ml-4 ${c.destacat ? 'text-[#009B9C]' : typeof c.valor === 'number' && c.valor < 0 ? 'text-red-500' : 'text-gray-800'}`}>
                   {fmt(c.valor)}
@@ -1329,9 +1329,9 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9px', marginBottom: '20px' }}>
               <thead>
                 <tr style={{ backgroundColor: CAP.color, color: 'white' }}>
-                  <th style={{ padding: '5px 8px', textAlign: 'left', fontWeight: '600', width: '70px' }}>Casella</th>
-                  <th style={{ padding: '5px 8px', textAlign: 'left', fontWeight: '600' }}>Descripció</th>
-                  <th style={{ padding: '5px 8px', textAlign: 'right', fontWeight: '600', width: '120px' }}>Import</th>
+                  <th style={{ padding: '5px 8px', textAlign: 'left', fontWeight: '600', width: '70px' }}>{tr('casellaHeader')}</th>
+                  <th style={{ padding: '5px 8px', textAlign: 'left', fontWeight: '600' }}>{tr('descripcioHeader')}</th>
+                  <th style={{ padding: '5px 8px', textAlign: 'right', fontWeight: '600', width: '120px' }}>{tr('importHeader')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1344,7 +1344,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                       {c.casella}
                     </td>
                     <td style={{ padding: '4px 8px', fontWeight: c.destacat ? '700' : '400', color: c.destacat ? CAP.colorFosc : '#333' }}>
-                      {c.descripcio}
+                      {tr(c.descripcioKey)}
                     </td>
                     <td style={{ padding: '4px 8px', textAlign: 'right', fontFamily: 'monospace', fontWeight: c.destacat ? '700' : '500', color: c.destacat ? CAP.color : typeof c.valor === 'number' && c.valor < 0 ? '#c0392b' : '#333' }}>
                       {fmt(c.valor)}
@@ -1363,15 +1363,15 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               marginBottom: '8px'
             }}>
               <div>
-                <div style={{ fontSize: '10px', color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Resultat de la declaració</div>
+                <div style={{ fontSize: '10px', color: '#666', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{tr('caselleResultatDeclaracio')}</div>
                 <div style={{ fontSize: '20px', fontWeight: '800', color: r.resultatDeclaracio > 0 ? '#c0392b' : r.resultatDeclaracio < 0 ? '#27ae60' : '#555', fontFamily: 'monospace' }}>
                   {fmt(Math.abs(r.resultatDeclaracio))}
                 </div>
                 <div style={{ fontSize: '10px', color: '#888', marginTop: '2px' }}>
-                  Tipus efectiu: <strong>{fmtPct(r.tipusEfectiu)}</strong>
-                  {' · '}Quota final: <strong>{fmt(r.quotaFinal)}</strong>
-                  {' · '}Retencions: <strong>{fmt(r.retencions)}</strong>
-                  {(r.pagamentACompte || 0) > 0 && <>{' · '}Pag. fraccionat (320): <strong>{fmt(r.pagamentACompte)}</strong></>}
+                  {tr('tipusEfectiuLabel')}: <strong>{fmtPct(r.tipusEfectiu)}</strong>
+                  {' · '}{tr('quotaFinalLabel')}: <strong>{fmt(r.quotaFinal)}</strong>
+                  {' · '}{tr('retencionsCurtLabel')}: <strong>{fmt(r.retencions)}</strong>
+                  {(r.pagamentACompte || 0) > 0 && <>{' · '}{tr('pagFraccionatLabel')}: <strong>{fmt(r.pagamentACompte)}</strong></>}
                 </div>
               </div>
               <div style={{
@@ -1379,24 +1379,24 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 color: 'white', padding: '10px 20px', borderRadius: '6px',
                 fontSize: '16px', fontWeight: '800', textAlign: 'center'
               }}>
-                {r.resultatDeclaracio > 0 ? 'A INGRESSAR' : r.resultatDeclaracio < 0 ? 'A RETORNAR' : 'RESULTAT ZERO'}
+                {r.resultatDeclaracio > 0 ? tr('aIngressar') : r.resultatDeclaracio < 0 ? tr('aRetornar') : tr('resultatZero')}
               </div>
             </div>
 
             {/* Formularis a presentar */}
             <div style={{ marginBottom: '8px' }}>
               <div style={{ fontSize: '10px', fontWeight: '700', color: CAP.colorFosc, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Formularis a presentar al Portal Tributari
+                {tr('formularisPortalTitol')}
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {[
-                  { codi: '300-A', actiu: true, desc: 'Situació personal' },
-                  { codi: '300-B', actiu: tensTreball || tensImmobles, desc: 'Treball / Immobiliari' },
-                  { codi: '300-C', actiu: tensActivitats, desc: 'Activitats econòmiques' },
-                  { codi: '300-D', actiu: tensMobiliaris, desc: 'Capital mobiliari' },
-                  { codi: '300-E', actiu: tensTransmissions, desc: 'Guanys capital' },
-                  { codi: '300-F', actiu: (dades.basesNegGenerals || []).length > 0 || (dades.deduccionsAnteriors || []).length > 0, desc: 'Bases neg. anteriors' },
-                  { codi: '300-L', actiu: true, desc: 'Liquidació' },
+                  { codi: '300-A', actiu: true, desc: tr('form300ADesc') },
+                  { codi: '300-B', actiu: tensTreball || tensImmobles, desc: tr('form300BDesc') },
+                  { codi: '300-C', actiu: tensActivitats, desc: tr('form300CDesc') },
+                  { codi: '300-D', actiu: tensMobiliaris, desc: tr('form300DDesc') },
+                  { codi: '300-E', actiu: tensTransmissions, desc: tr('form300EDesc') },
+                  { codi: '300-F', actiu: (dades.basesNegGenerals || []).length > 0 || (dades.deduccionsAnteriors || []).length > 0, desc: tr('form300FDesc') },
+                  { codi: '300-L', actiu: true, desc: tr('form300LDesc') },
                 ].map(f => (
                   <div key={f.codi} style={{
                     backgroundColor: f.actiu ? CAP.colorClar : '#f5f5f5',
