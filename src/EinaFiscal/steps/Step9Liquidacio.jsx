@@ -20,13 +20,8 @@ const nomPaisDDI = (renda) =>
     ? renda.paisLliure
     : PAISOS.find(p => p.codi === renda?.pais)?.nom || renda?.pais || '—';
 
-// Etiquetes de les partides 300-D (definides localment; no exportades des de Step5Mobiliari).
-const PARTIDA_LABELS = {
-  a: 'Dividends i altres rendiments per participació en fons propis',
-  b: 'Interessos i altres rendiments per cessió de capitals',
-  c: 'Operacions de capitalització i assegurances de vida',
-  d: 'Altres rendiments del capital mobiliari',
-};
+// Etiquetes de les partides 300-D → claus de traducció (reutilitza mobiliariA-D).
+const ETIQUETA_PARTIDA = { a: 'mobiliariA', b: 'mobiliariB', c: 'mobiliariC', d: 'mobiliariD' };
 
 // Línies d'una partida amb compatibilitat cap enrere (dades antigues sense `linies`).
 const liniesDePartida = (p) => p.linies || [{ importBrut: p.importBrut || 0, despeses: p.despeses || 0 }];
@@ -861,33 +856,33 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   });
                   const totalDespeses = totalDespesesDirecta + totalDespesesForfet;
                   const conceptes = [
-                    ['Reparació i conservació', c.despesaReparacio],
-                    ['Interessos financers', c.despesaFinancera],
-                    ['Serveis prestats per tercers', c.serveisPrestatsTercers],
-                    ['Amortització', c.amortitzacio],
-                    ['Tributs i taxes deduïbles', c.tributs],
-                    ['Assegurança', c.asseguranca],
-                    ['Comunitat', c.comunitat],
-                    ['Altres despeses fiscalment deduïbles', c.altresDespeses],
+                    [tr('immoConcReparacio'), c.despesaReparacio],
+                    [tr('immoConcInteressos'), c.despesaFinancera],
+                    [tr('immoConcServeis'), c.serveisPrestatsTercers],
+                    [tr('immoConcAmortitzacio'), c.amortitzacio],
+                    [tr('immoConcTributs'), c.tributs],
+                    [tr('immoConcAssegurança'), c.asseguranca],
+                    [tr('immoConcComunitat'), c.comunitat],
+                    [tr('immoConcAltres'), c.altresDespeses],
                   ];
                   return (
                     <div style={{ marginTop: '8px', borderTop: `2px solid ${CAP.color}`, paddingTop: '6px' }}>
-                      <FilaDetall label="RESUM DEL CAPITAL IMMOBILIARI — Tots els immobles" valor={null} negrita />
-                      <FilaDetall label="Total ingressos íntegres" valor={fmt(totalIngressos)} negrita />
+                      <FilaDetall label={tr('resumImmobiliariTitol')} valor={null} negrita />
+                      <FilaDetall label={tr('totalIngressosIntegres')} valor={fmt(totalIngressos)} negrita />
                       {conceptes.map(([label, val]) => val > 0 && (
                         <FilaDetall key={label} label={`  ${label}`} valor={fmt(-val)} negatiu />
                       ))}
                       {teForfet && totalDespesesForfet > 0 && (
-                        <FilaDetall label={`  Despeses (mètode forfetari 40/${Math.round(pctForfetari({ esHabitatgeAssequible: true }, exercici) * 100)}%)`} valor={fmt(-totalDespesesForfet)} negatiu />
+                        <FilaDetall label={trp('despesesForfetariImmoP', { pct: Math.round(pctForfetari({ esHabitatgeAssequible: true }, exercici) * 100) })} valor={fmt(-totalDespesesForfet)} negatiu />
                       )}
-                      <FilaDetall label="Total despeses deduïbles" valor={fmt(-totalDespeses)} negrita negatiu />
+                      <FilaDetall label={tr('totalDespesesDeduibles')} valor={fmt(-totalDespeses)} negrita negatiu />
                       {totalReduccio > 0 && (
-                        <FilaDetall label="Total reducció per arrendament d'habitatge" valor={fmt(-totalReduccio)} negatiu />
+                        <FilaDetall label={tr('totalReduccioHabitatge')} valor={fmt(-totalReduccio)} negatiu />
                       )}
-                      <FilaDetall label="Total renda neta del capital immobiliari" valor={fmt(totalRendaNeta)} negrita destacat />
+                      <FilaDetall label={tr('rendaNetaTotalImmobiliari')} valor={fmt(totalRendaNeta)} negrita destacat />
                       {totalImpostComunal > 0 && (
-                        <FilaDetall label="Total impost comunal sobre els rendiments arrendataris" valor={fmt(totalImpostComunal)}
-                          nota="Es dedueix de la quota via DDI (Art. 47 Llei 5/2014) — NO minora la renda neta" />
+                        <FilaDetall label={tr('totalImpostComunalArrend')} valor={fmt(totalImpostComunal)}
+                          nota={tr('notaImpostComunalDDI')} />
                       )}
                     </div>
                   );
@@ -911,7 +906,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                       const despPartida = linies.reduce((s, l) => s + (l.despeses || 0), 0);
                       const retAndPartida = linies.reduce((s, l) => s + (l.retencioAndorra || 0), 0);
                       if (brutPartida === 0 && despPartida === 0 && retAndPartida === 0) return null;
-                      const etiqueta = ({ a: tr('mobiliariA'), b: tr('mobiliariB'), c: tr('mobiliariC'), d: tr('mobiliariD') })[p.tipus] || p.tipusRenda || 'Renda';
+                      const etiqueta = ({ a: tr('mobiliariA'), b: tr('mobiliariB'), c: tr('mobiliariC'), d: tr('mobiliariD') })[p.tipus] || p.tipusRenda || tr('rendaFallback');
                       const liniesDetall = linies.filter(l => (l.importBrut || 0) !== 0 || l.concepte);
                       const mostrarDetall = liniesDetall.length > 1 || liniesDetall.some(l => l.concepte || (l.retencioOrigen || 0) > 0);
                       return (
@@ -938,10 +933,10 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                       return (
                         <React.Fragment key={t}>
                           <FilaDetall
-                            label={`  Subtotal partida ${t.toUpperCase()} — ${PARTIDA_LABELS[t]}`}
+                            label={trp('subtotalPartidaP', { lletra: t.toUpperCase(), etiqueta: tr(ETIQUETA_PARTIDA[t]) })}
                             valor={fmt(brutT - despT)}
                             negrita
-                            nota={despT > 0 ? `Brut: ${fmt(brutT)} − Despeses: ${fmt(despT)}` : `Brut: ${fmt(brutT)}`}
+                            nota={despT > 0 ? trp('brutDespesesP', { brut: fmt(brutT), desp: fmt(despT) }) : trp('brutSolP', { brut: fmt(brutT) })}
                           />
                         </React.Fragment>
                       );
@@ -976,7 +971,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                       <FilaDetall label={tr('resumGlobalCapMobiliari') || 'RESUM GLOBAL — Totes les entitats'} valor={null} negrita />
                       {tipusKeys.map(t => totalPerTipus[t] > 0 && (
                         <FilaDetall key={t}
-                          label={`  ${t.toUpperCase()} — ${PARTIDA_LABELS[t]}`}
+                          label={`  ${t.toUpperCase()} — ${tr(ETIQUETA_PARTIDA[t])}`}
                           valor={fmt(totalPerTipus[t])}
                         />
                       ))}
