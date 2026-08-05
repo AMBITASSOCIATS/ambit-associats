@@ -5,6 +5,7 @@ import RentaBlock from '../components/RentaBlock';
 import AnalysisAlert from '../components/AnalysisAlert';
 import { PAISOS, CDI_RATES } from '../engine/cdiRates';
 import { calcularDDI } from '../engine/exemptions';
+import { tp } from '../engine/pdfTranslations';
 
 const DEFAULT_RENDA_ESTRANGERA = {
   id: null,
@@ -89,9 +90,23 @@ const RendaEstrangeraForm = ({ renda, index, onUpdate, onEliminar }) => {
     ? renda.paisLliure
     : PAISOS.find(p => p.codi === renda.pais)?.nom || renda.pais || 'País sense especificar';
 
+  // El text de l'explicació DDI viu a pdfTranslations (clau + params). El wizard el
+  // mostra en català. (Refactor bloc 4: exemptions retorna explicacioKey.)
+  const explicacioDDI = ddiInfo ? (() => {
+    const fmtE = (n) => (n || 0).toLocaleString('ca-AD', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    const topCDI = (ddiInfo.tipusMaxCDI || 0) / 100 * (ddiInfo.importBrut || 0);
+    const ret = ddiInfo.retencioEfectiva ?? ddiInfo.retencioOrigen ?? 0;
+    return tp(ddiInfo.explicacioKey || 'ddiExplicNul', {
+      pais: nomPais, pct: ddiInfo.tipusMaxCDI || 0, top: fmtE(topCDI),
+      computable: fmtE(ddiInfo.impostEtopat || 0),
+      exces: (ddiInfo.excesCDI || 0) > 0 ? tp('ddiExcesFraseP', { imp: fmtE(ddiInfo.excesCDI) }, 'CA') : '',
+      ret: fmtE(ret), limit: fmtE(ddiInfo.quotaAndorrana || 0), ddi: fmtE(ddiInfo.ddi || 0),
+    }, 'CA');
+  })() : '';
+
   const analisi = ddiInfo ? {
     titol: `DDI — ${nomPais}`,
-    explicacio: ddiInfo.explicacio,
+    explicacio: explicacioDDI,
     ref: ddiInfo.ref,
     formulari: '300-G',
     casella: 'DDI',

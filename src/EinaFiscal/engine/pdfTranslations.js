@@ -511,6 +511,44 @@ export const T = {
   },
   brutDespesesP: { CA: "Brut: {brut} − Despeses: {desp}", ES: "Bruto: {brut} − Gastos: {desp}", FR: "Brut : {brut} − Charges : {desp}", EN: "Gross: {brut} − Expenses: {desp}" },
   brutSolP: { CA: "Brut: {brut}", ES: "Bruto: {brut}", FR: "Brut : {brut}", EN: "Gross: {brut}" },
+  // ── Bloc 4: DDI ──
+  ddiTipusDividends: { CA: "Dividends", ES: "Dividendos", FR: "Dividendes", EN: "Dividends" },
+  ddiTipusInteressos: { CA: "Interessos", ES: "Intereses", FR: "Intérêts", EN: "Interest" },
+  ddiTipusCanons: { CA: "Cànons", ES: "Cánones", FR: "Redevances", EN: "Royalties" },
+  ddiTipusGuanys: { CA: "Guanys de capital", ES: "Ganancias de capital", FR: "Plus-values", EN: "Capital gains" },
+  ddiTipusAltres: { CA: "Altres rendes", ES: "Otras rentas", FR: "Autres revenus", EN: "Other income" },
+  ddiCDIVigentMaxP: { CA: "CDI vigent — tipus màxim {pct}%", ES: "CDI vigente — tipo máximo {pct}%", FR: "CDI en vigueur — taux maximal {pct} %", EN: "DTC in force — maximum rate {pct}%" },
+  ddiSenseCDI: { CA: "Sense CDI", ES: "Sin CDI", FR: "Sans CDI", EN: "No DTC" },
+  ddiTipusMaxExcesP: {
+    CA: "Tipus màxim CDI: {pct}% — excés reclamable en origen",
+    ES: "Tipo máximo CDI: {pct}% — exceso reclamable en origen",
+    FR: "Taux maximal CDI : {pct} % — excédent réclamable à l'origine",
+    EN: "Maximum DTC rate: {pct}% — excess reclaimable at source",
+  },
+  ddiExplicNul: {
+    CA: "Retenció efectiva nul·la — aquesta renda no genera DDI i no entra a la base del límit (Art. 48.3).",
+    ES: "Retención efectiva nula — esta renta no genera DDI y no entra en la base del límite (Art. 48.3).",
+    FR: "Retenue effective nulle — ce revenu ne génère pas de DDI et n'entre pas dans la base du plafond (Art. 48.3).",
+    EN: "Zero effective withholding — this income generates no DDI and does not enter the limit base (Art. 48.3).",
+  },
+  ddiExcesFraseP: {
+    CA: " (excés de {imp} no computable, reclamable en origen)",
+    ES: " (exceso de {imp} no computable, reclamable en origen)",
+    FR: " (excédent de {imp} non imputable, réclamable à l'origine)",
+    EN: " (excess of {imp} not creditable, reclaimable at source)",
+  },
+  ddiExplicCDIP: {
+    CA: "CDI vigent amb {pais}: la retenció computable es topa al {pct}% de la renda bruta ({top}). Impost estranger computable: {computable}{exces}. Límit quota andorrana (10%): {limit}. DDI = mínim dels dos = {ddi}.",
+    ES: "CDI vigente con {pais}: la retención computable se limita al {pct}% de la renta bruta ({top}). Impuesto extranjero computable: {computable}{exces}. Límite cuota andorrana (10%): {limit}. DDI = mínimo de los dos = {ddi}.",
+    FR: "CDI en vigueur avec {pais} : la retenue imputable est plafonnée à {pct} % du revenu brut ({top}). Impôt étranger imputable : {computable}{exces}. Plafond de la cotisation andorrane (10 %) : {limit}. DDI = minimum des deux = {ddi}.",
+    EN: "DTC in force with {pais}: the creditable withholding is capped at {pct}% of gross income ({top}). Creditable foreign tax: {computable}{exces}. Andorran tax limit (10%): {limit}. DDI = lower of the two = {ddi}.",
+  },
+  ddiExplicSenseCDIP: {
+    CA: "Sense CDI amb {pais}: es computa la retenció efectiva ({ret}) topada a la quota andorrana (10% = {limit}). DDI = mínim dels dos = {ddi}.",
+    ES: "Sin CDI con {pais}: se computa la retención efectiva ({ret}) limitada a la cuota andorrana (10% = {limit}). DDI = mínimo de los dos = {ddi}.",
+    FR: "Sans CDI avec {pais} : la retenue effective ({ret}) est prise en compte, plafonnée à la cotisation andorrane (10 % = {limit}). DDI = minimum des deux = {ddi}.",
+    EN: "No DTC with {pais}: the effective withholding ({ret}) is taken, capped at the Andorran tax (10% = {limit}). DDI = lower of the two = {ddi}.",
+  },
   totalIngressosBruts: {
     CA: "TOTAL Ingressos bruts",
     ES: "TOTAL Ingresos brutos",
@@ -1470,4 +1508,13 @@ export const t = (key, lang = 'CA') => {
     return key;
   }
   return T[key][lang] || T[key]['CA'];
+};
+
+// Versió amb paràmetres: substitueix {clau} pels valors de `params`.
+export const tp = (key, params = {}, lang = 'CA') => {
+  let s = t(key, lang);
+  for (const [k, v] of Object.entries(params)) {
+    s = s.replace(new RegExp(`\\{${k}\\}`, 'g'), v);
+  }
+  return s;
 };

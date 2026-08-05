@@ -256,7 +256,7 @@ export function calcularDDI(rendesEstrangeres) {
         ...r, retencioEfectiva, tensCDI, tipusMaxCDI,
         impostEtopat: 0, excesCDI: 0, quotaAndorrana, ddi: 0, teCDI: tensCDI,
         ref: 'Art. 48.3 Llei 5/2014 (mod. L2023005)',
-        explicacio: 'Retenció efectiva nul·la — aquesta renda no genera DDI i no entra a la base del límit (Art. 48.3).',
+        explicacioKey: 'ddiExplicNul',
       };
     }
 
@@ -268,15 +268,13 @@ export function calcularDDI(rendesEstrangeres) {
     // DDI = mínim entre límit a) i límit b).
     const ddi = Math.min(impostEtopat, quotaAndorrana);
 
-    const explicacio = tensCDI
-      ? `CDI vigent amb ${r.pais}: la retenció computable es topa al ${tipusMaxCDI}% de la renda bruta (${topCDI.toFixed(2)} €). Impost estranger computable: ${impostEtopat.toFixed(2)} €${excesCDI > 0 ? ` (excés de ${excesCDI.toFixed(2)} € no computable, reclamable en origen)` : ''}. Límit quota andorrana (10%): ${quotaAndorrana.toFixed(2)} €. DDI = mínim dels dos = ${ddi.toFixed(2)} €.`
-      : `Sense CDI amb ${r.pais}: es computa la retenció efectiva (${retencioEfectiva.toFixed(2)} €) topada a la quota andorrana (10% = ${quotaAndorrana.toFixed(2)} €). DDI = mínim dels dos = ${ddi.toFixed(2)} €.`;
-
+    // El text de l'explicació viu a pdfTranslations (clau + params calculats pel
+    // consumidor: Step9 PDF multiidioma, Step7 wizard en CA). Aquí només la clau.
     return {
       ...r, retencioEfectiva, tensCDI, tipusMaxCDI,
       impostEtopat, excesCDI, quotaAndorrana, ddi, teCDI: tensCDI,
       ref: `Art. 48.3 Llei 5/2014 (mod. L2023005)${tensCDI ? ` + CDI Andorra-${r.pais}` : ''}`,
-      explicacio,
+      explicacioKey: tensCDI ? 'ddiExplicCDIP' : 'ddiExplicSenseCDIP',
     };
   });
 }

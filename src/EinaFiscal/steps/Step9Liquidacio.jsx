@@ -22,6 +22,8 @@ const nomPaisDDI = (renda) =>
 
 // Etiquetes de les partides 300-D → claus de traducció (reutilitza mobiliariA-D).
 const ETIQUETA_PARTIDA = { a: 'mobiliariA', b: 'mobiliariB', c: 'mobiliariC', d: 'mobiliariD' };
+// Tipus de renda DDI → claus de traducció.
+const DDI_TIPUS_KEY = { dividends: 'ddiTipusDividends', interessos: 'ddiTipusInteressos', canons: 'ddiTipusCanons', guanys_capital: 'ddiTipusGuanys', altres: 'ddiTipusAltres' };
 
 // Línies d'una partida amb compatibilitat cap enrere (dades antigues sense `linies`).
 const liniesDePartida = (p) => p.linies || [{ importBrut: p.importBrut || 0, despeses: p.despeses || 0 }];
@@ -1057,17 +1059,24 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 {r.ddiDetall.map((d, i) => {
                   const ret = d.retencioEfectiva ?? d.retencioOrigen ?? 0;
                   const topCDI = (d.tipusMaxCDI || 0) / 100 * (d.importBrut || 0);
+                  const tipusR = DDI_TIPUS_KEY[d.tipusRenda] ? tr(DDI_TIPUS_KEY[d.tipusRenda]) : (d.tipusRenda || '');
+                  const explicNota = trp(d.explicacioKey || 'ddiExplicNul', {
+                    pais: nomPaisDDI(d), pct: d.tipusMaxCDI || 0, top: fmt(topCDI),
+                    computable: fmt(d.impostEtopat || 0),
+                    exces: (d.excesCDI || 0) > 0 ? trp('ddiExcesFraseP', { imp: fmt(d.excesCDI) }) : '',
+                    ret: fmt(ret), limit: fmt(d.quotaAndorrana ?? d.quotaAndorra ?? 0), ddi: fmt(d.ddi || 0),
+                  });
                   return (
                     <React.Fragment key={i}>
-                      <FilaDetall label={`${nomPaisDDI(d)} — ${d.tipusRenda || ''}`} valor={fmt(d.ddi)} negrita />
+                      <FilaDetall label={`${nomPaisDDI(d)} — ${tipusR}`} valor={fmt(d.ddi)} negrita />
                       <FilaDetall label={tr('rendaBrutaObtingudaLabel')} valor={fmt(d.importBrut || 0)} />
-                      <FilaDetall label={tr('retencioEfectivaLabel')} valor={fmt(ret)} nota={d.tensCDI ? `CDI vigent — tipus màxim ${d.tipusMaxCDI || 0}%` : 'Sense CDI'} />
+                      <FilaDetall label={tr('retencioEfectivaLabel')} valor={fmt(ret)} nota={d.tensCDI ? trp('ddiCDIVigentMaxP', { pct: d.tipusMaxCDI || 0 }) : tr('ddiSenseCDI')} />
                       {d.tensCDI && ret > topCDI && (
                         <FilaDetall label={tr('excesNoComputableLabel')} valor={fmt(-(ret - (d.impostEtopat || 0)))} negatiu
-                          nota={`Tipus màxim CDI: ${d.tipusMaxCDI || 0}% — excés reclamable en origen`} />
+                          nota={trp('ddiTipusMaxExcesP', { pct: d.tipusMaxCDI || 0 })} />
                       )}
                       <FilaDetall label={tr('limitQuotaAndorranaLabel')} valor={fmt(d.quotaAndorrana ?? d.quotaAndorra ?? 0)} />
-                      <FilaDetall label={tr('ddiAplicadaMinimLabel')} valor={fmt(d.ddi)} destacat nota={d.explicacio} />
+                      <FilaDetall label={tr('ddiAplicadaMinimLabel')} valor={fmt(d.ddi)} destacat nota={explicNota} />
                     </React.Fragment>
                   );
                 })}
