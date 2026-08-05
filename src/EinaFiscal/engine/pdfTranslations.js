@@ -610,8 +610,8 @@ export const T = {
   dedComunalTitol: {
     CA: "Impost comunal arrendaments i radicació",
     ES: "Impuesto comunal arrendamientos y radicación",
-    FR: "Impôt communal sur les loyers et la domiciliation d'activités",
-    EN: "Communal tax on rentals and business establishment",
+    FR: "Impôt communal sur les loyers et radicació",
+    EN: "Communal tax on rentals and radicació",
   },
   dedDDIInterTitol: {
     CA: "Deducció per Doble Imposició Internacional",
@@ -634,7 +634,7 @@ export const T = {
   dedDigitalitzacioTitol: {
     CA: "Inversions en digitalització",
     ES: "Inversiones en digitalización",
-    FR: "Investissements en numérisation",
+    FR: "Investissements en digitalisation",
     EN: "Digitalisation investments",
   },
   dedPatrociniTitol: {
