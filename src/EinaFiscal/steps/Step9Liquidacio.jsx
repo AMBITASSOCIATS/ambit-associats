@@ -649,7 +649,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
             {exercici < 2024 && (
               <div style={{ backgroundColor: '#FEF3C7', border: '1px solid #F59E0B', borderRadius: '6px', padding: '8px 12px', marginBottom: '10px', fontSize: '9px', color: '#92400E' }}>
-                ⚠️ <strong>Exercici {exercici} — Normativa Llei 5/2014 text refós 9 (vigent fins 31/12/2023)</strong>: S'aplica la normativa anterior a la L2023005 (en vigor des de l'1/1/2024). Diferències aplicades: (1) Art. 5.k COT/NCT: exempció únicament si participació ≤ 25%; la branca de tinença ≥ 10 anys no aplica per a aquest exercici; (2) Deduccions de mecenatge, digitalització, llocs de treball i patrocini no disponibles.
+                ⚠️ <strong>{trp('avisPre2024TitolP', { any: exercici })}</strong>: {tr('avisPre2024Text')}
               </div>
             )}
 
@@ -660,7 +660,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   nota={tr('notaRendaNetaTreball')} />
                 {(() => {
                   const TIPUS_SENSE_3PCT = ['PENSIO_CASS', 'PENSIO_CLASSES_PASSIVES', 'PENSIO_PRIVADA', 'DIETES', 'INDEMNITZACIO_ACOMIADAMENT', 'BECA', 'PREMI'];
-                  const TIPUS_LABEL = { SALARI_GENERAL: 'Salari / Nòmina', ADMINISTRADOR: 'Retribució administrador', PENSIO_PRIVADA: 'Pensió privada / estrangera', ALTRES_TREBALL: 'Altres rendes del treball', DIETES: 'Dietes', INDEMNITZACIO_ACOMIADAMENT: 'Indemnització acomiadament', BECA: 'Beca / Ajut recerca', PREMI: 'Premi literari / artístic' };
+                  const TIPUS_LABEL_KEY = { SALARI_GENERAL: 'treballSalariGeneral', ADMINISTRADOR: 'treballAdministrador', PENSIO_PRIVADA: 'treballPensioPrivada', ALTRES_TREBALL: 'treballAltres', DIETES: 'treballDietes', INDEMNITZACIO_ACOMIADAMENT: 'treballIndemnitzacio', BECA: 'treballBeca', PREMI: 'treballPremi' };
+                  const etiquetaTreball = (tp) => TIPUS_LABEL_KEY[tp] ? tr(TIPUS_LABEL_KEY[tp]) : (tp || tr('treballFallback'));
                   const totalGravat3pct = (dades.rendesTreball || []).reduce((sum, f) => {
                     if (TIPUS_SENSE_3PCT.includes(f.tipus)) return sum;
                     return sum + (f.importBrut || 0);
@@ -679,14 +680,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     return (
                       <React.Fragment key={i}>
                         <FilaDetall label={trp('fontPensioCassNum', { n: i + 1 })} valor={fmt(brut)} nota={tr('notaImportBrutDispAdd5a')} />
-                        <FilaDetall label={`  − Reducció Disp. add. 5a (${anysCotAbans2015} anys × 1% = ${(ratio * 100).toFixed(0)}%, màx. 30%)`}
+                        <FilaDetall label={trp('reduccioDispAdd5aP', { anys: anysCotAbans2015, pct: (ratio * 100).toFixed(0) })}
                           valor={fmt(-importExempt)} negatiu
-                          nota={anysTotals < 15 ? `Anys totals cotitzats: ${anysTotals} (< 15 → reducció 0%)` : `Anys totals: ${anysTotals} · Anys abans 2015: ${anysCotAbans2015}`} />
+                          nota={anysTotals < 15 ? trp('anysTotalsBaixaP', { anys: anysTotals }) : trp('anysTotalsAbans2015P', { total: anysTotals, abans: anysCotAbans2015 })} />
                         <FilaDetall label={tr('importGravatPensioCass')} valor={fmt(importGravat)} negrita={cassPensio === 0}
-                          nota={cassPensio > 0 ? undefined : `Retencions practicades: ${fmt(f.retencions || 0)}`} />
+                          nota={cassPensio > 0 ? undefined : trp('retencionsPracticadesP', { imp: fmt(f.retencions || 0) })} />
                         {cassPensio > 0 && <FilaDetall label={tr('cotitzacionsCassBrancaSalut')} valor={fmt(-cassPensio)} negatiu />}
                         {cassPensio > 0 && <FilaDetall label={tr('rendaNetaPensioCass')} valor={fmt(importGravat - cassPensio)} negrita
-                          nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />}
+                          nota={trp('retencionsPracticadesP', { imp: fmt(f.retencions || 0) })} />}
                       </React.Fragment>
                     );
                   }
@@ -702,7 +703,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                         <FilaDetall label={tr('partExemptFins2014')} valor={fmt(-(a - e))} negatiu
                           nota={`b=${fmt(b)} · c=${fmt(c)} · d=${fmt(d)} · d'=${fmt(dPrima)}${b === c ? tr('bcTotExempt') : ''}`} />
                         <FilaDetall label={tr('importGravatE')} valor={fmt(e)} negrita
-                          nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />
+                          nota={trp('retencionsPracticadesP', { imp: fmt(f.retencions || 0) })} />
                       </React.Fragment>
                     );
                   }
@@ -714,12 +715,12 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                   const rendaNeta = brut - (f.cotitzacionsCASS || 0) - desp3pctFont;
                   return (
                     <React.Fragment key={i}>
-                      <FilaDetall label={`Font ${i + 1}: ${TIPUS_LABEL[f.tipus] || f.tipus || 'Treball'}`} valor={fmt(brut)} nota={tr('ingressosBrutsNota')} />
+                      <FilaDetall label={trp('fontNumEtiquetaP', { n: i + 1, etiqueta: etiquetaTreball(f.tipus) })} valor={fmt(brut)} nota={tr('ingressosBrutsNota')} />
                       {(f.cotitzacionsCASS || 0) > 0 && <FilaDetall label={tr('cotitzacionsCass')} valor={fmt(-(f.cotitzacionsCASS || 0))} negatiu />}
                       {aplicaDespeses3pct && desp3pctFont > 0 && <FilaDetall label={tr('altresDespeses3pctLabel')} valor={fmt(-desp3pctFont)} negatiu nota={trp('notaBase3pct', { base: fmt(totalGravat3pct) })} />}
-                      {!aplicaDespeses3pct && <FilaDetall label={tr('altresDespeses3pctNoAplica')} valor={tr('noAplica2')} nota={`Art. 13.2.b Llei 5/2014 — el tipus '${f.tipus}' està exclòs de la deducció del 3%`} />}
+                      {!aplicaDespeses3pct && <FilaDetall label={tr('altresDespeses3pctNoAplica')} valor={tr('noAplica2')} nota={trp('notaExclos3pctP', { tipus: etiquetaTreball(f.tipus) })} />}
                       <FilaDetall label={tr('rendaNetaFont')} valor={fmt(rendaNeta)} negrita
-                        nota={`Retencions practicades: ${fmt(f.retencions || 0)}`} />
+                        nota={trp('retencionsPracticadesP', { imp: fmt(f.retencions || 0) })} />
                     </React.Fragment>
                   );
                   });
