@@ -1214,14 +1214,14 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             const anyBase = anyGeneracio || exercici;
             const notaPendent = pendents > 0
               ? (noDiferable
-                ? "Import no diferible — s'extingeix si la quota és insuficient"
+                ? tr('notaNoDiferible')
                 : trp('notaDiferibleP', { any: anyBase + anysVig, gen: anyBase, anys: anysVig, ref }))
-              : 'Totalment aplicada en l\'exercici';
+              : tr('notaTotalmentAplicada');
             return (
               <React.Fragment key={key}>
                 <FilaDetall label={`${titol} (${ref})`} valor={null} negrita />
                 <FilaDetall label={tr('labelDeduccioGenerada')} valor={fmt(generades)} />
-                <FilaDetall label={`    Aplicada en ${exercici}`} valor={fmt(-aplicades)} negatiu={aplicades > 0} />
+                <FilaDetall label={trp('labelAplicadaEnP', { any: exercici })} valor={fmt(-aplicades)} negatiu={aplicades > 0} />
                 <FilaDetall label={tr('labelPendentDeDiferir')} valor={fmt(pendents)} negrita={pendents > 0} nota={notaPendent} />
               </React.Fragment>
             );
@@ -1272,7 +1272,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     {(dades.deduccionsAnteriors || []).map((ded, i) =>
                       deduccioRows(
                         `ded-ant-${i}`,
-                        ded.descripcio || `Deducció exercici ${ded.exercici}`,
+                        ded.descripcio || trp('deduccioExerciciFallbackP', { any: ded.exercici }),
                         articleDeduccio(ded.tipus),
                         ded.pendentInici || 0,
                         ded.aplicat || 0,
@@ -1288,15 +1288,15 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 {/* Deduccions generades en l'exercici — detall per partida */}
                 {hiHaDedExerc && (
                   <SeccioBlocNormatiu titol={trp('deduccionsGeneradesTitolP', { any: exercici })}>
-                    {deduccioRows('comunal', "Impost comunal arrendaments i radicació", articleDeduccio('DDI_INTERNA'), impostComunalGenerat, r.deduccioImpostComunal || 0, anysVigDDIInterna, false)}
-                    {deduccioRows('ddi', "Deducció per Doble Imposició Internacional", articleDeduccio('DDI_INTERNACIONAL'), ddiGenerat, r.ddi || 0, anysVigDDIInter)}
-                    {deduccioRows('mecen', "Mecenatge i donacions", articleDeduccio('MECENATGE'), mecenGen, d8.aplicatMecenatge || 0, anysVigDeduccions)}
-                    {deduccioRows('proj', "Projectes d'interès nacional", articleDeduccio('PROJECTES'), projGen, d8.aplicatProjectes || 0, anysVigDeduccions)}
-                    {deduccioRows('dig', "Inversions en digitalització", articleDeduccio('DIGITALITZACIO'), digGen, d8.aplicatDigital || 0, anysVigDeduccions)}
-                    {deduccioRows('pat', "Patrocini esportiu i cultural", articleDeduccio('PATROCINI'), patGen, d8.aplicatPatrocini || 0, anysVigDeduccions)}
-                    {deduccioRows('llocs', "Creació de llocs de treball", articleDeduccio('LLOCS_TREBALL'), llocsGen, d8.aplicatLlocs || 0, anysVigDeduccions)}
+                    {deduccioRows('comunal', tr('dedComunalTitol'), articleDeduccio('DDI_INTERNA'), impostComunalGenerat, r.deduccioImpostComunal || 0, anysVigDDIInterna, false)}
+                    {deduccioRows('ddi', tr('dedDDIInterTitol'), articleDeduccio('DDI_INTERNACIONAL'), ddiGenerat, r.ddi || 0, anysVigDDIInter)}
+                    {deduccioRows('mecen', tr('dedMecenatgeTitol'), articleDeduccio('MECENATGE'), mecenGen, d8.aplicatMecenatge || 0, anysVigDeduccions)}
+                    {deduccioRows('proj', tr('dedProjectesTitol'), articleDeduccio('PROJECTES'), projGen, d8.aplicatProjectes || 0, anysVigDeduccions)}
+                    {deduccioRows('dig', tr('dedDigitalitzacioTitol'), articleDeduccio('DIGITALITZACIO'), digGen, d8.aplicatDigital || 0, anysVigDeduccions)}
+                    {deduccioRows('pat', tr('dedPatrociniTitol'), articleDeduccio('PATROCINI'), patGen, d8.aplicatPatrocini || 0, anysVigDeduccions)}
+                    {deduccioRows('llocs', tr('dedLlocsTitol'), articleDeduccio('LLOCS_TREBALL'), llocsGen, d8.aplicatLlocs || 0, anysVigDeduccions)}
                     <FilaDetall label={tr('labelTotalDeduccionsAplicadesQuota')} valor={fmt(-r.totalDeduccionsExercici)} negrita destacat negatiu />
-                    <NotaNormativa refText={tr('refArts43Bis48Llei')} text={`Deduccions de quota diferibles fins a exercici ${exercici + anysVigDeduccions}; impost comunal / DDI interna (Art. 47) fins a ${exercici + anysVigDDIInterna}; DDI internacional (Art. 48) fins a ${exercici + anysVigDDIInter}.`} />
+                    <NotaNormativa refText={tr('refArts43Bis48Llei')} text={trp('notaDeduccionsDiferiblesP', { a: exercici + anysVigDeduccions, b: exercici + anysVigDDIInterna, c: exercici + anysVigDDIInter })} />
                   </SeccioBlocNormatiu>
                 )}
 
