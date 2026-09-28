@@ -2,7 +2,7 @@
 // Formulari 300-F: compensacio de bases negatives d'exercicis anteriors i deduccions pendents
 import React from 'react';
 import { terminiBasesNegGenerals, terminiBasesNegEstalvi, terminiDeduccionsQuota } from '../engine/terminisCaducitat';
-import { tipusDeduccionsPerExercici } from '../engine/tipusDeduccions';
+import { tipusDeduccionsPerExercici, tipusDeduccioPerId } from '../engine/tipusDeduccions';
 
 const EXERCICIS_DISPONIBLES = [2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015];
 
@@ -145,11 +145,32 @@ const Step8Bases300F = ({ dades, update }) => {
   const totalAplicatEstalvi = basesNegEstalvi.reduce((a, f) => a + (f.aplicat || 0), 0);
   const totalDeduccions = deduccionsAnteriors.reduce((a, f) => a + (f.aplicat || 0), 0);
 
+  // Límit: fins a 3 ANYS DE GENERACIÓ diferents (no nombre de files). Es poden
+  // afegir diverses files del mateix exercici amb tipus/imports independents.
+  const MAX_ANYS_GENERACIO = 3;
+  const anysGeneracio = new Set(deduccionsAnteriors.map(f => f.exercici));
+  const exerciciNouDefault = deduccionsAnteriors.length > 0
+    ? Math.max(...deduccionsAnteriors.map(f => f.exercici))
+    : (exerciciDeclarant - 1);
+  const potAfegirDeducc = anysGeneracio.has(exerciciNouDefault) || anysGeneracio.size < MAX_ANYS_GENERACIO;
+
+  // Anys seleccionables per a una fila sense superar el límit d'anys distints.
+  // El valor actual de la fila sempre és seleccionable (compat. dades antigues).
+  const anysPermesosFila = (i) => {
+    const altres = new Set(deduccionsAnteriors.filter((_, idx) => idx !== i).map(f => f.exercici));
+    return EXERCICIS_DISPONIBLES.filter(y => {
+      if (y === deduccionsAnteriors[i].exercici) return true;
+      const s = new Set(altres); s.add(y);
+      return s.size <= MAX_ANYS_GENERACIO;
+    });
+  };
+
   const addDeducc = () => {
-    if (deduccionsAnteriors.length >= 3) return;
-    const exerciciMax = deduccionsAnteriors.length > 0 ? Math.min(...deduccionsAnteriors.map(f => f.exercici)) - 1 : new Date().getFullYear() - 1;
-    const tipusDefault = tipusDeduccionsPerExercici(exerciciDeclarant)[0]?.id || 'DDI_INTERNACIONAL';
-    update('deduccionsAnteriors', [...deduccionsAnteriors, { exercici: exerciciMax, tipus: tipusDefault, pendentInici: 0, aplicat: 0, diferit: 0 }]);
+    // Per defecte duplica l'any més recent existent (no introdueix un any nou);
+    // amb la llista buida, l'exercici declarant - 1.
+    if (!potAfegirDeducc) return;
+    const tipusDefault = tipusDeduccionsPerExercici(exerciciNouDefault)[0]?.id || 'DDI_INTERNACIONAL';
+    update('deduccionsAnteriors', [...deduccionsAnteriors, { exercici: exerciciNouDefault, tipus: tipusDefault, pendentInici: 0, aplicat: 0, diferit: 0 }]);
   };
 
   const updateDeducc = (i, camp, valor) => {
@@ -158,6 +179,14 @@ const Step8Bases300F = ({ dades, update }) => {
       const updated = { ...f, [camp]: valor };
       if (camp === 'pendentInici' || camp === 'aplicat') {
         updated.diferit = Math.max(0, (camp === 'pendentInici' ? valor : f.pendentInici) - (camp === 'aplicat' ? valor : f.aplicat));
+      }
+      // En canviar l'exercici, si el tipus actual ja no és vàlid per a aquell any
+      // de generació, reinicia'l al primer disponible (evita un tipus orfe).
+      if (camp === 'exercici') {
+        const disponibles = tipusDeduccionsPerExercici(valor);
+        if (updated.tipus && !disponibles.some(t => t.id === updated.tipus)) {
+          updated.tipus = disponibles[0]?.id || '';
+        }
       }
       return updated;
     });
@@ -212,10 +241,10 @@ const Step8Bases300F = ({ dades, update }) => {
             </div>
             <button
               onClick={addDeducc}
-              disabled={deduccionsAnteriors.length >= 3}
+              disabled={!potAfegirDeducc}
               className="text-xs bg-[#009B9C] text-white px-3 py-1.5 rounded-lg hover:bg-[#007A7B] transition disabled:opacity-40"
             >
-              + Afegir exercici
+              + Afegir deducció
             </button>
           </div>
 
@@ -246,10 +275,22 @@ const Step8Bases300F = ({ dades, update }) => {
                           className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C] max-w-[220px]"
                         >
                           {!fila.tipus && <option value="">— Tipus —</option>}
-                          {tipusDeduccionsPerExercici(exerciciDeclarant).map(t => (
+                          {fila.tipus && !tipusDeduccionsPerExercici(fila.exercici).some(t => t.id === fila.tipus) && (
+                            <option value={fila.tipus}>{tipusDeduccioPerId(fila.tipus)?.label || fila.tipus}</option>
+                          )}
+                          {tipusDeduccionsPerExercici(fila.exercici).map(t => (
                             <option key={t.id} value={t.id}>{t.label}</option>
                           ))}
                         </select>
+                        {fila.tipus === 'ALTRES' && (
+                          <input
+                            type="text"
+                            value={fila.descripcio || ''}
+                            onChange={e => updateDeducc(i, 'descripcio', e.target.value)}
+                            placeholder="Nom de la deducció"
+                            className="mt-1 block w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C] max-w-[220px]"
+                          />
+                        )}
                       </td>
                       <td className="px-3 py-2">
                         <select
@@ -257,7 +298,7 @@ const Step8Bases300F = ({ dades, update }) => {
                           onChange={e => updateDeducc(i, 'exercici', parseInt(e.target.value))}
                           className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
                         >
-                          {EXERCICIS_DISPONIBLES.map(ex => (
+                          {anysPermesosFila(i).map(ex => (
                             <option key={ex} value={ex}>{ex}</option>
                           ))}
                         </select>

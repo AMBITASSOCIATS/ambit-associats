@@ -5,6 +5,9 @@
 // NOTA: els articles 43 bis / 44 / 44 bis / 44 ter / 44 quater que s'usaven abans
 // a l'eina són de la Llei de l'impost sobre societats, NO de la Llei 5/2014 (IRPF).
 // desDeExercici = any mínim en què el tipus existeix (0 = des de sempre).
+// finsExercici = any màxim de GENERACIÓ en què el tipus es podia generar
+//   (opcional; absent = sense límit superior). Serveix per a deduccions
+//   suprimides que encara tenen saldos pendents d'exercicis anteriors.
 
 export const TIPUS_DEDUCCIONS = [
   { id: 'DDI_INTERNACIONAL', label: 'Deducció per doble imposició internacional', article: 'Art. 48', desDeExercici: 0 },
@@ -14,6 +17,11 @@ export const TIPUS_DEDUCCIONS = [
   { id: 'DIGITALITZACIO', label: 'Inversions en digitalització', article: 'Art. 49', desDeExercici: 2024 },
   { id: 'PATROCINI', label: 'Patrocini esportiu i cultural', article: 'Art. 49', desDeExercici: 2024 },
   { id: 'LLOCS_TREBALL', label: 'Creació de llocs de treball', article: 'Art. 49', desDeExercici: 2024 },
+  // Suprimida per la reforma L2023005 (en vigor 1/1/2024): no es pot generar a
+  // partir de 2024, però un saldo generat fins al 2023 encara es pot aplicar.
+  { id: 'NOVES_INVERSIONS', label: 'Deducció per noves inversions (5%)', article: 'Art. 49', desDeExercici: 0, finsExercici: 2023 },
+  // Text lliure (l'usuari escriu el nom a `descripcio`). Disponible sempre.
+  { id: 'ALTRES', label: 'Altres (especificar)', article: '—', desDeExercici: 0 },
 ];
 
 const PER_ID = TIPUS_DEDUCCIONS.reduce((m, t) => { m[t.id] = t; return m; }, {});
@@ -27,6 +35,11 @@ export const articleDeduccio = (id) => {
   return t ? t.article : 'Art. 47-48 (segons naturalesa)';
 };
 
-// Tipus disponibles per a un exercici (desDeExercici <= exercici).
-export const tipusDeduccionsPerExercici = (ex) =>
-  TIPUS_DEDUCCIONS.filter(t => t.desDeExercici <= (ex || 2025));
+// Tipus disponibles per a un exercici de GENERACIÓ de la deducció:
+// desDeExercici <= exercici <= finsExercici (finsExercici absent = sense límit superior).
+export const tipusDeduccionsPerExercici = (ex) => {
+  const any = ex || 2025;
+  return TIPUS_DEDUCCIONS.filter(
+    t => t.desDeExercici <= any && (t.finsExercici == null || any <= t.finsExercici)
+  );
+};

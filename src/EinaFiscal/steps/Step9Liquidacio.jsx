@@ -1272,8 +1272,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                     {(dades.deduccionsAnteriors || []).map((ded, i) =>
                       deduccioRows(
                         `ded-ant-${i}`,
-                        ded.descripcio || trp('deduccioExerciciFallbackP', { any: ded.exercici }),
-                        articleDeduccio(ded.tipus),
+                        trp('deduccioExerciciFallbackP', { any: ded.exercici }),
+                        ded.tipus === 'ALTRES' ? (ded.descripcio || articleDeduccio(ded.tipus)) : articleDeduccio(ded.tipus),
                         ded.pendentInici || 0,
                         ded.aplicat || 0,
                         ded.anysVig || anysVigDeduccions,
