@@ -318,10 +318,17 @@ export function calcularIRPFDetallat(dades) {
     IRPF.RED_HABITATGE_MAX
   );
 
-  const redPensions = Math.min(
-    (aportacioPensions + contribucioPensions) * IRPF.RED_PLA_PENSIONS_PCT,
+  // Art. 39.1 Llei 5/2014: la reducció és l'import aportat (aportació pròpia +
+  // contribució de l'empresa imputada fiscalment), limitat pel MENOR de:
+  //   a) 30% de la suma dels rendiments nets del treball i d'activitats econòmiques,
+  //   b) 5.000 € anuals.
+  // Si no hi ha rendes de treball ni d'activitats, el límit a) és 0 → reducció 0.
+  // (El Math.max(0, …) evita una reducció negativa si rendaActivitat fos una pèrdua.)
+  const redPensions = Math.max(0, Math.min(
+    aportacioPensions + contribucioPensions,
+    (rendaTreball + rendaActivitat) * IRPF.RED_PLA_PENSIONS_PCT,
     IRPF.RED_PLA_PENSIONS_MAX
-  );
+  ));
 
   const totalReduccions = minimPersonal + redFamiliar + redHabitatge + redPensions +
                           pensionsCompensatories + anualitatAliments;
