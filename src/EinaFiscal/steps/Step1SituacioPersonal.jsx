@@ -472,6 +472,9 @@ const Step1SituacioPersonal = ({ dades, update }) => {
                   hint="Contribucio imputada a l'obligat tributari"
                 />
               </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Els plans i instruments han de complir les característiques establertes reglamentàriament. La contribució de l'empresa només es computa si s'ha imputat fiscalment a l'obligat tributari (art. 39.1).
+              </p>
               {((dades.aportacioPensions || 0) + (dades.contribucioPensions || 0)) > 0 && (
                 <div className="mt-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-xs text-green-700">
                   Reduccio aplicada: <strong>{redPensions.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong>
@@ -495,12 +498,15 @@ const Step1SituacioPersonal = ({ dades, update }) => {
                   hint="Import satisfet per resolucio judicial — Art. 35.3 Llei 5/2014"
                 />
                 <InputNum
-                  label="Anualitats per aliments als fills (euros)"
+                  label="Anualitats per aliments (excepte les satisfetes als fills) (euros)"
                   value={dades.anualitatAliments}
                   onChange={v => update('anualitatAliments', v)}
                   hint="Import satisfet per resolucio judicial — Art. 35.3 Llei 5/2014"
                 />
               </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Cal que se satisfacin d'acord amb la legislació civil aplicable, en compliment d'una resolució judicial o en execució d'un conveni regulador homologat judicialment o protocol·litzat notarialment (art. 39.2).
+              </p>
             </div>
 
             {/* Resum reduccions sec.2 */}
