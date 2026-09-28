@@ -31,7 +31,7 @@ const InputText = ({ label, value, onChange, placeholder = '' }) => (
   </div>
 );
 
-const Step1SituacioPersonal = ({ dades, update }) => {
+const Step1SituacioPersonal = ({ dades, update, resultat }) => {
   const [showEconomiques, setShowEconomiques] = useState(false);
 
   const anyMeritacio = dades.exercici || 2025;
@@ -66,20 +66,11 @@ const Step1SituacioPersonal = ({ dades, update }) => {
     update('ascendents', dades.ascendents.filter(a => a.id !== id));
   };
 
-  const redHabitatge = Math.min(
-    (dades.quotesHabitatge || 0) * IRPF.RED_HABITATGE_PCT,
-    IRPF.RED_HABITATGE_MAX
-  );
-
-  const redLloguerAssequible = Math.min(
-    (dades.quotesLloguerAssequible || 0) * IRPF.RED_LLOGUER_ASSEQUIBLE_PCT,
-    IRPF.RED_LLOGUER_ASSEQUIBLE_MAX
-  );
-
-  const redPensions = Math.min(
-    ((dades.aportacioPensions || 0) + (dades.contribucioPensions || 0)) * IRPF.RED_PLA_PENSIONS_PCT,
-    IRPF.RED_PLA_PENSIONS_MAX
-  );
+  // Valors de reducció presos del motor (font única de càlcul), no recalculats
+  // a la UI. Evita que la pantalla divergeixi de la liquidació.
+  const redHabitatge = resultat?.redHabitatge || 0;
+  const redLloguerAssequible = resultat?.redLloguerAssequible || 0;
+  const redPensions = resultat?.redPensions || 0;
 
   return (
     <div className="space-y-6">
@@ -497,9 +488,7 @@ const Step1SituacioPersonal = ({ dades, update }) => {
               </p>
               {((dades.aportacioPensions || 0) + (dades.contribucioPensions || 0)) > 0 && (
                 <div className="mt-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-xs text-green-700">
-                  Reduccio aplicada: <strong>{redPensions.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong>
-                  {' '}(30% de {((dades.aportacioPensions || 0) + (dades.contribucioPensions || 0)).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros,
-                  max. {IRPF.RED_PLA_PENSIONS_MAX ? IRPF.RED_PLA_PENSIONS_MAX.toLocaleString('ca-AD') : '5.000'} euros) — Art. 39
+                  Reducció aplicada: <strong>{redPensions.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong>. Límit: el menor entre el 30% dels rendiments nets del treball i d'activitats econòmiques i 5.000 euros (art. 39.1).
                 </div>
               )}
             </div>

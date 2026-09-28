@@ -239,7 +239,7 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient =
         <div className="flex gap-6">
           {/* Formulari del pas actiu */}
           <div className="flex-1 min-w-0">
-            {pas === 1 && <Step1SituacioPersonal dades={dades} update={updateDades} />}
+            {pas === 1 && <Step1SituacioPersonal dades={dades} update={updateDades} resultat={resultat} />}
             {pas === 2 && <Step2Treball dades={dades} update={updateDades} mostrarErrorCASS={mostrarErrorCASS} />}
             {pas === 3 && <Step3Activitat dades={dades} update={updateDades} />}
             {pas === 4 && <Step4Immobiliari dades={dades} update={updateDades} exercici={exercici} />}
