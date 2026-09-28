@@ -44,7 +44,7 @@ const DEFAULT_DADES = {
   tutelats: [],
   // Reduccions 300-A sec.2 (ara al pas 1)
   quotesHabitatge: 0,
-  esHabitatgeCompra: true,
+  quotesLloguerAssequible: 0,
   aportacioPensions: 0,
   contribucioPensions: 0,
   pensionsCompensatories: 0,

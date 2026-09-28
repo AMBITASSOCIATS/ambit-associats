@@ -1140,6 +1140,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
               <FilaDetall label={tr('minimPersonalExemptLabel')} valor={`− ${fmt(r.minimPersonal)}`} nota={`Art. 35.1 Llei 5/2014 · ${dades.estatCivil === 'casat' ? dades.conjugePercepRendes === false ? tr('mpCasatNoRendes') : dades.conjugeRendesInf24k === false ? tr('mpCasatMes24k') : trp('mpCasatMenys24kP', { imp: fmt(dades.conjugeRendesGenerals) }) : tr('mpSolter')} · ${dades.obligatDiscapacitat ? tr('mpDiscapacitat') : tr('mpSenseDiscapacitat')}`} />
               {r.redFamiliar > 0 && <FilaDetall label={tr('reduccioCarreguesFamiliarsLabel')} valor={`− ${fmt(r.redFamiliar)}`} nota={tr('notaCarreguesFamiliarsArt352')} />}
               {r.redHabitatge > 0 && <FilaDetall label={tr('reduccioHabitatgeLabel2')} valor={`− ${fmt(r.redHabitatge)}`} nota={tr('notaHabitatgeArt38')} />}
+              {r.redLloguerAssequible > 0 && <FilaDetall label={tr('reduccioLloguerAssequibleLabel')} valor={`− ${fmt(r.redLloguerAssequible)}`} nota={tr('notaLloguerAssequibleArt38bis')} />}
               {r.redPensions > 0 && <FilaDetall label={tr('reduccioPlansPensionsLabel')} valor={`− ${fmt(r.redPensions)}`} nota={tr('notaPensionsArt39')} />}
               <FilaDetall label={tr('totalReduccionsLabel')} valor={`− ${fmt(r.totalReduccions)}`} negrita />
               <NotaNormativa refText={tr('refArt3539')} text={tr('notaNormMinimPersonal')} />

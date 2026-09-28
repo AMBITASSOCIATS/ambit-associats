@@ -663,6 +663,7 @@ export const T = {
   caselleMinimPersonalExempt: { CA: "Mínim personal exempt", ES: "Mínimo personal exento", FR: "Minimum personnel exonéré", EN: "Personal exempt minimum" },
   caselleReduccioCarreguesFamiliars: { CA: "Reducció càrregues familiars", ES: "Reducción cargas familiares", FR: "Réduction pour charges familiales", EN: "Family-burden reduction" },
   caselleReduccioHabitatge: { CA: "Reducció habitatge habitual", ES: "Reducción vivienda habitual", FR: "Réduction résidence principale", EN: "Primary-residence reduction" },
+  caselleReduccioLloguerAssequible: { CA: "Reducció habitatge de lloguer assequible", ES: "Reducción vivienda de alquiler asequible", FR: "Réduction logement locatif abordable", EN: "Affordable-rental housing reduction" },
   caselleReduccioPensions: { CA: "Reducció plans de pensions", ES: "Reducción planes de pensiones", FR: "Réduction plans de retraite", EN: "Pension-plan reduction" },
   caselleBaseLiquidacioGeneral: { CA: "Base de liquidació general", ES: "Base de liquidación general", FR: "Base de liquidation générale", EN: "General taxable base" },
   caselleRendaNetaMobiliari: { CA: "Renda neta capital mobiliari", ES: "Renta neta capital mobiliario", FR: "Revenu net du capital mobilier", EN: "Net movable-capital income" },
@@ -1239,6 +1240,18 @@ export const T = {
     ES: "Art. 38 Llei 5/2014 · 50% cuotas hipoteca o alquiler asequible, máx. 5.000 €/año",
     FR: "Art. 38 Llei 5/2014 · 50% des échéances d'hypothèque ou loyer abordable, max. 5.000 €/an",
     EN: "Art. 38 Llei 5/2014 · 50% of mortgage instalments or affordable rent, max. 5.000 €/year",
+  },
+  reduccioLloguerAssequibleLabel: {
+    CA: "Reducció per habitatge de lloguer a preu assequible",
+    ES: "Reducción por vivienda de alquiler a precio asequible",
+    FR: "Réduction pour logement en location à prix abordable",
+    EN: "Reduction for affordable-rental housing",
+  },
+  notaLloguerAssequibleArt38bis: {
+    CA: "Art. 38 bis Llei 5/2014 · 50% de les quantitats satisfetes per a l'adquisició, màx. 5.000 €/any",
+    ES: "Art. 38 bis Llei 5/2014 · 50% de las cantidades satisfechas para la adquisición, máx. 5.000 €/año",
+    FR: "Art. 38 bis Llei 5/2014 · 50% des sommes versées pour l'acquisition, max. 5.000 €/an",
+    EN: "Art. 38 bis Llei 5/2014 · 50% of amounts paid for the acquisition, max. 5.000 €/year",
   },
   reduccioPlansPensionsLabel: {
     CA: "Reducció per plans de pensions",

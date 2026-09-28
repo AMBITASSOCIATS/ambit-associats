@@ -14,6 +14,8 @@ export const IRPF = {
   COEF_DISCAPACITAT: 1.5,        // Art. 35.2
   RED_HABITATGE_PCT: 0.50,       // Art. 38
   RED_HABITATGE_MAX: 5000,       // Art. 38
+  RED_LLOGUER_ASSEQUIBLE_PCT: 0.50,  // Art. 38 bis (afegit per la Llei 5/2025)
+  RED_LLOGUER_ASSEQUIBLE_MAX: 5000,  // Art. 38 bis (afegit per la Llei 5/2025)
   RED_PLA_PENSIONS_PCT: 0.30,    // Art. 39
   RED_PLA_PENSIONS_MAX: 5000,    // Art. 39
   ALTRES_DESPESES_PCT: 0.03,     // Guia 2025 §6.2 — 3% rendiments íntegres treball

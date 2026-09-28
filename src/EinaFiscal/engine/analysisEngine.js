@@ -227,6 +227,7 @@ export function calcularIRPFDetallat(dades) {
     rendesExterior = [],
     // Reduccions (ara al pas 1)
     quotesHabitatge = 0,
+    quotesLloguerAssequible = 0,
     aportacioPensions = 0,
     contribucioPensions = 0,
     pensionsCompensatories = 0,
@@ -318,6 +319,13 @@ export function calcularIRPFDetallat(dades) {
     IRPF.RED_HABITATGE_MAX
   );
 
+  // Art. 38 bis (Llei 5/2025): reducció independent i acumulable amb la d'habitatge
+  // habitual, amb el seu propi límit de 5.000 € (no comparteixen topall).
+  const redLloguerAssequible = Math.min(
+    quotesLloguerAssequible * IRPF.RED_LLOGUER_ASSEQUIBLE_PCT,
+    IRPF.RED_LLOGUER_ASSEQUIBLE_MAX
+  );
+
   // Art. 39.1 Llei 5/2014: la reducció és l'import aportat (aportació pròpia +
   // contribució de l'empresa imputada fiscalment), limitat pel MENOR de:
   //   a) 30% de la suma dels rendiments nets del treball i d'activitats econòmiques,
@@ -330,7 +338,7 @@ export function calcularIRPFDetallat(dades) {
     IRPF.RED_PLA_PENSIONS_MAX
   ));
 
-  const totalReduccions = minimPersonal + redFamiliar + redHabitatge + redPensions +
+  const totalReduccions = minimPersonal + redFamiliar + redHabitatge + redLloguerAssequible + redPensions +
                           pensionsCompensatories + anualitatAliments;
 
   // BLG i BLE (incloent compensacions 300-F)
@@ -428,6 +436,7 @@ export function calcularIRPFDetallat(dades) {
     minimPersonal,
     redFamiliar,
     redHabitatge,
+    redLloguerAssequible,
     redPensions,
     totalReduccions,
     // Bases liquidació

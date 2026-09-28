@@ -71,6 +71,11 @@ const Step1SituacioPersonal = ({ dades, update }) => {
     IRPF.RED_HABITATGE_MAX
   );
 
+  const redLloguerAssequible = Math.min(
+    (dades.quotesLloguerAssequible || 0) * IRPF.RED_LLOGUER_ASSEQUIBLE_PCT,
+    IRPF.RED_LLOGUER_ASSEQUIBLE_MAX
+  );
+
   const redPensions = Math.min(
     ((dades.aportacioPensions || 0) + (dades.contribucioPensions || 0)) * IRPF.RED_PLA_PENSIONS_PCT,
     IRPF.RED_PLA_PENSIONS_MAX
@@ -417,36 +422,51 @@ const Step1SituacioPersonal = ({ dades, update }) => {
 
         {showEconomiques && (
           <div className="p-6 space-y-6">
-            {/* Habitatge habitual */}
+            {/* 2.1 Inversió en habitatge habitual (Art. 38) */}
             <div>
               <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs font-bold flex items-center justify-center">A</span>
-                2.1 Inversio en habitatge habitual (Art. 38) — casella 6
+                2.1 Inversió en habitatge habitual (Art. 38) — casella 6
               </h3>
-              <div className="grid grid-cols-2 gap-4">
-                <InputNum
-                  label="Quotes hipoteca / lloguer assequible (euros)"
-                  value={dades.quotesHabitatge}
-                  onChange={v => update('quotesHabitatge', v)}
-                  hint={`Reduccio: 50% de les quotes (max. ${IRPF.RED_HABITATGE_MAX ? IRPF.RED_HABITATGE_MAX.toLocaleString('ca-AD') : '3.000'} euros/any) — Art. 38 Llei 5/2014`}
-                />
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Tipus d'habitatge</label>
-                  <select
-                    value={dades.esHabitatgeCompra ? 'compra' : 'lloguer'}
-                    onChange={e => update('esHabitatgeCompra', e.target.value === 'compra')}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
-                  >
-                    <option value="compra">Compra (hipoteca)</option>
-                    <option value="lloguer">Lloguer assequible</option>
-                  </select>
-                </div>
-              </div>
+              <InputNum
+                label="Quantitats satisfetes per a l'adquisició de l'habitatge habitual (euros)"
+                value={dades.quotesHabitatge}
+                onChange={v => update('quotesHabitatge', v)}
+                hint={`Reducció: 50% de les quantitats satisfetes (màx. ${IRPF.RED_HABITATGE_MAX ? IRPF.RED_HABITATGE_MAX.toLocaleString('ca-AD') : '5.000'} euros/any) — Art. 38 Llei 5/2014`}
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                Inclou les despeses originades per l'adquisició a càrrec de l'adquirent i, en cas de finançament per tercers, l'amortització, els interessos i les restants despeses associades al préstec (art. 38.1).
+              </p>
               {(dades.quotesHabitatge || 0) > 0 && (
                 <div className="mt-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-xs text-green-700">
-                  Reduccio aplicada: <strong>{redHabitatge.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong>
+                  Reducció aplicada: <strong>{redHabitatge.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong>
                   {(dades.quotesHabitatge || 0) * IRPF.RED_HABITATGE_PCT > IRPF.RED_HABITATGE_MAX && (
-                    <span className="ml-2">(limitada al maxim de {IRPF.RED_HABITATGE_MAX ? IRPF.RED_HABITATGE_MAX.toLocaleString('ca-AD') : '3.000'} euros)</span>
+                    <span className="ml-2">(limitada al màxim de {IRPF.RED_HABITATGE_MAX ? IRPF.RED_HABITATGE_MAX.toLocaleString('ca-AD') : '5.000'} euros)</span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* 2.2 Inversió en habitatge de lloguer a preu assequible (Art. 38 bis) */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs font-bold flex items-center justify-center">B</span>
+                2.2 Inversió en habitatge de lloguer a preu assequible (Art. 38 bis) — casella 7
+              </h3>
+              <InputNum
+                label="Quantitats satisfetes per a l'adquisició de l'immoble destinat a lloguer assequible (euros)"
+                value={dades.quotesLloguerAssequible}
+                onChange={v => update('quotesLloguerAssequible', v)}
+                hint={`Reducció: 50% de les quantitats satisfetes (màx. ${IRPF.RED_LLOGUER_ASSEQUIBLE_MAX ? IRPF.RED_LLOGUER_ASSEQUIBLE_MAX.toLocaleString('ca-AD') : '5.000'} euros/any) — Art. 38 bis Llei 5/2014`}
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                Per a l'adquisició d'un immoble destinat al mercat de lloguer per a residència habitual i permanent a preu assequible. Inclou les despeses originades per l'adquisició a càrrec de l'adquirent i, en cas de finançament per tercers, l'amortització, els interessos i les restants despeses associades al préstec (art. 38 bis).
+              </p>
+              {(dades.quotesLloguerAssequible || 0) > 0 && (
+                <div className="mt-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-xs text-green-700">
+                  Reducció aplicada: <strong>{redLloguerAssequible.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong>
+                  {(dades.quotesLloguerAssequible || 0) * IRPF.RED_LLOGUER_ASSEQUIBLE_PCT > IRPF.RED_LLOGUER_ASSEQUIBLE_MAX && (
+                    <span className="ml-2">(limitada al màxim de {IRPF.RED_LLOGUER_ASSEQUIBLE_MAX ? IRPF.RED_LLOGUER_ASSEQUIBLE_MAX.toLocaleString('ca-AD') : '5.000'} euros)</span>
                   )}
                 </div>
               )}
@@ -455,8 +475,8 @@ const Step1SituacioPersonal = ({ dades, update }) => {
             {/* Plans de pensions */}
             <div>
               <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs font-bold flex items-center justify-center">B</span>
-                2.2 Reduccio per plans de pensions (Art. 39) — casella 7
+                <span className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs font-bold flex items-center justify-center">C</span>
+                2.3 Reducció per plans de pensions (Art. 39) — casella 8
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <InputNum
@@ -487,8 +507,8 @@ const Step1SituacioPersonal = ({ dades, update }) => {
             {/* Pensions compensatories */}
             <div>
               <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs font-bold flex items-center justify-center">C</span>
-                2.3 Pensions compensatories i anualitats per aliments — casella 8
+                <span className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs font-bold flex items-center justify-center">D</span>
+                2.4 Pensions compensatòries i anualitats per aliments — casella 9
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <InputNum
