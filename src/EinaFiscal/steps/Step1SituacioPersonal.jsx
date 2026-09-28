@@ -78,8 +78,8 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
         <div className="flex items-center gap-2 mb-5">
           <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">1</span>
           <div>
-            <h2 className="font-bold text-gray-800">Situacio personal i familiar</h2>
-            <p className="text-xs text-gray-500">Formulari 300-A · Minim personal i reduccions familiars</p>
+            <h2 className="font-bold text-gray-800">Situació personal i familiar</h2>
+            <p className="text-xs text-gray-500">Formulari 300-A · Mínim personal i reduccions familiars</p>
           </div>
         </div>
 
@@ -266,7 +266,7 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
               className="w-4 h-4 rounded accent-[#009B9C]"
             />
             <span className="text-sm text-gray-700">
-              Discapacitat reconeguda per CONAVA (minim personal 30.000 euros) — Art. 35.1 Llei 5/2014
+              Discapacitat reconeguda per CONAVA (mínim personal 30.000 euros) — Art. 35.1 Llei 5/2014
             </span>
           </label>
         </div>
@@ -284,7 +284,7 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
           </button>
         </div>
         <p className="text-xs text-gray-500 mb-4">
-          Fills menors de 25 anys que conviuen amb l'obligat tributari. Reduccio: 1.000 euros per descendent. Font: Art. 35.2.a Llei 5/2014.
+          Fills menors de 25 anys que conviuen amb l'obligat tributari. Reducció: 1.000 euros per descendent. Font: Art. 35.2.a Llei 5/2014.
         </p>
         {dades.descendents.length === 0 && (
           <p className="text-sm text-gray-400 text-center py-3">Cap descendent afegit</p>
@@ -300,7 +300,7 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
               <InputText label="NRT" value={d.nrt || ''} onChange={v => updateDescendent(d.id, 'nrt', v)} placeholder="F-XXXXXX-X" />
               <InputNum label="Any de naixement" value={d.anyNaixement} onChange={v => updateDescendent(d.id, 'anyNaixement', v)} min={1900} />
               <InputNum label={`Rendes anuals del descendent (€) — límit SMI ${SMI_ANUAL.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €`} value={d.rendesAnuals || 0} onChange={v => updateDescendent(d.id, 'rendesAnuals', v)} />
-              <InputNum label="Matricules ensenyament superior (euros, max. 300 euros)" value={d.matricules} onChange={v => updateDescendent(d.id, 'matricules', v)} />
+              <InputNum label="Matrícules ensenyament superior (euros, màx. 300 euros)" value={d.matricules} onChange={v => updateDescendent(d.id, 'matricules', v)} />
               <div className="flex items-center gap-2 pt-5">
                 <input type="checkbox" checked={d.discapacitat} onChange={e => updateDescendent(d.id, 'discapacitat', e.target.checked)} className="w-4 h-4 accent-[#009B9C]" />
                 <span className="text-xs text-gray-600">Discapacitat reconeguda</span>
@@ -343,7 +343,7 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
           </button>
         </div>
         <p className="text-xs text-gray-500 mb-4">
-          Ascendents majors de 65 anys que conviuen amb l'obligat tributari. Reduccio: 1.000 euros per ascendent. Font: Art. 35.2.b Llei 5/2014.
+          Ascendents majors de 65 anys que conviuen amb l'obligat tributari. Reducció: 1.000 euros per ascendent. Font: Art. 35.2.b Llei 5/2014.
         </p>
         {dades.ascendents.length === 0 && (
           <p className="text-sm text-gray-400 text-center py-3">Cap ascendent afegit</p>
@@ -404,9 +404,9 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
         >
           <div>
             <span className="font-semibold text-sm text-gray-800">
-              Dades economiques (300-A sec.2) — Reduccions
+              Dades econòmiques (300-A sec.2) — Reduccions
             </span>
-            <p className="text-xs text-gray-500 mt-0.5">Habitatge habitual, plans de pensions, pensions compensatories</p>
+            <p className="text-xs text-gray-500 mt-0.5">Habitatge habitual, plans de pensions, pensions compensatòries</p>
           </div>
           <span className="text-gray-400 font-bold text-lg">{showEconomiques ? '-' : '+'}</span>
         </button>
@@ -471,16 +471,16 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <InputNum
-                  label="Aportacio propia a pla de pensions (euros)"
+                  label="Aportació pròpia a pla de pensions (euros)"
                   value={dades.aportacioPensions}
                   onChange={v => update('aportacioPensions', v)}
-                  hint="Aportacio de l'obligat tributari"
+                  hint="Aportació de l'obligat tributari"
                 />
                 <InputNum
-                  label="Contribucio de l'empresa (euros)"
+                  label="Contribució de l'empresa (euros)"
                   value={dades.contribucioPensions}
                   onChange={v => update('contribucioPensions', v)}
-                  hint="Contribucio imputada a l'obligat tributari"
+                  hint="Contribució imputada a l'obligat tributari"
                 />
               </div>
               <p className="text-xs text-gray-500 mt-2">
@@ -501,16 +501,16 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <InputNum
-                  label="Pensions compensatories al conjuge (euros)"
+                  label="Pensions compensatòries al cònjuge (euros)"
                   value={dades.pensionsCompensatories}
                   onChange={v => update('pensionsCompensatories', v)}
-                  hint="Import satisfet per resolucio judicial — Art. 35.3 Llei 5/2014"
+                  hint="Import satisfet per resolució judicial — Art. 39.2 Llei 5/2014"
                 />
                 <InputNum
                   label="Anualitats per aliments (excepte les satisfetes als fills) (euros)"
                   value={dades.anualitatAliments}
                   onChange={v => update('anualitatAliments', v)}
-                  hint="Import satisfet per resolucio judicial — Art. 35.3 Llei 5/2014"
+                  hint="Import satisfet per resolució judicial — Art. 39.2 Llei 5/2014"
                 />
               </div>
               <p className="text-xs text-gray-500 mt-2">
@@ -525,19 +525,19 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
                 <div className="space-y-1 text-gray-700">
                   {redHabitatge > 0 && (
                     <div className="flex justify-between">
-                      <span>Reduccio habitatge (Art. 38):</span>
+                      <span>Reducció habitatge (Art. 38):</span>
                       <span className="font-bold">{redHabitatge.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</span>
                     </div>
                   )}
                   {redPensions > 0 && (
                     <div className="flex justify-between">
-                      <span>Reduccio pensions (Art. 39):</span>
+                      <span>Reducció pensions (Art. 39):</span>
                       <span className="font-bold">{redPensions.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</span>
                     </div>
                   )}
                   {(dades.pensionsCompensatories || 0) > 0 && (
                     <div className="flex justify-between">
-                      <span>Pensions compensatories:</span>
+                      <span>Pensions compensatòries:</span>
                       <span className="font-bold">{(dades.pensionsCompensatories || 0).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</span>
                     </div>
                   )}
@@ -560,7 +560,7 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
 
       {/* Resum situacio personal */}
       <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-4 text-sm">
-        <h4 className="font-semibold text-[#009B9C] mb-2">Resum — Minim personal aplicable</h4>
+        <h4 className="font-semibold text-[#009B9C] mb-2">Resum — Mínim personal aplicable</h4>
         <div className="space-y-1 text-xs text-gray-700">
           {dades.obligatDiscapacitat ? (
             <p>Mínim personal: <strong>30.000 €</strong> (discapacitat — Art. 35.1)</p>
