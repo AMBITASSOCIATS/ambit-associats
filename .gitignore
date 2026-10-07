@@ -24,3 +24,6 @@ yarn-error.log*
 
 # Claude Code (configuració local i worktrees)
 /.claude/
+
+# Variables locals de les Edge Functions
+supabase/functions/.env
