@@ -4,7 +4,8 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from './AuthContext';
 import emailjs from '@emailjs/browser';
 
-const ROLS = ['individual', 'empleat', 'empresa', 'maestro'];
+// El rol maestro només s'assigna a mà a Supabase, mai des del panell.
+const ROLS = ['individual', 'empleat', 'empresa'];
 
 const ESTAT_COLORS = {
   pendent:   'bg-amber-100 text-amber-700 border-amber-200',
@@ -57,25 +58,16 @@ const PanellMaestro = ({ onTancar }) => {
     setErrorCrear('');
     setCarregantCrear(true);
     try {
-      // Crear compte auth
-      const { data: authData, error } = await supabase.auth.signUp({
-        email: sol.email,
-        password: contrasenyaCrear,
-        options: { data: { nom: sol.nom } },
+      // Crear compte, perfil actiu i esborrar la sol·licitud al servidor
+      // (Edge Function). La sessió del maestro no canvia.
+      const { data, error } = await supabase.functions.invoke('aprovar-solicitud', {
+        body: { solicitud_id: sol.id, contrasenya: contrasenyaCrear, eines: einesAprovades },
       });
-      if (error) throw error;
-
-      // Crear perfil ja actiu amb eines aprovades
-      if (authData.user) {
-        await supabase.from('profiles').insert({
-          id: authData.user.id,
-          email: sol.email,
-          nom: sol.nom,
-          rol: 'individual',
-          estat: 'actiu',
-          eines: einesAprovades,
-        });
+      if (error) {
+        const detall = await error.context?.json?.().catch(() => null);
+        throw new Error(detall?.error || error.message);
       }
+      if (!data?.ok) throw new Error(data?.error || 'Error creant el compte.');
 
       // Enviar email amb credencials a l'usuari via EmailJS
       await emailjs.send('service_2jvc0w9', 'template_5ro2sjh', {
@@ -86,9 +78,6 @@ const PanellMaestro = ({ onTancar }) => {
           ? 'Eina Fiscal IRPF + Bretxa de Gènere'
           : einesAprovades.includes('irpf') ? 'Eina Fiscal IRPF' : 'Bretxa de Gènere',
       }, 'KzIVD4mtDxpovIs4G').catch(() => {});
-
-      // Eliminar de solicituds
-      await supabase.from('solicituds').delete().eq('id', sol.id);
 
       setModalCrear(null);
       setContrasenyaCrear('');
@@ -102,7 +91,17 @@ const PanellMaestro = ({ onTancar }) => {
   };
 
 const actualitzar = async (id, canvis) => {
-    await supabase.from('profiles').update(canvis).eq('id', id);
+    const { error } = await supabase.rpc('maestro_actualitza_perfil', {
+      p_id: id,
+      p_estat: canvis.estat ?? null,
+      p_eines: canvis.eines ?? null,
+      p_rol: canvis.rol ?? null,
+    });
+    if (error) {
+      alert('Error desant el canvi: ' + error.message);
+      carregarUsuaris();
+      return;
+    }
 
     // Si s'aprova l'usuari, enviar email de notificació
     if (canvis.estat === 'actiu') {
@@ -374,8 +373,8 @@ const actualitzar = async (id, canvis) => {
                   </p>
                 </div>
 
-                {/* Accions — no mostrar si és el propi usuari Maestro */}
-                {u.id !== user?.id && (
+                {/* Accions — no mostrar per al propi usuari ni per a cap maestro (només a mà) */}
+                {u.id !== user?.id && u.rol !== 'maestro' && (
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {/* Canvi de rol */}
                     <select
