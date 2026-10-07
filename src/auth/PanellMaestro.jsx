@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from './AuthContext';
-import emailjs from '@emailjs/browser';
 
 // El rol maestro només s'assigna a mà a Supabase, mai des del panell.
 const ROLS = ['individual', 'empleat', 'empresa'];
@@ -20,6 +19,168 @@ const ROL_COLORS = {
   individual: 'bg-gray-100 text-gray-600',
 };
 
+// ─── Missatges per a l'usuari ────────────────────────────────────────────────
+// El panell no envia correus: prepara el text perquè el maestro el copiï o
+// l'obri al seu programa de correu.
+
+const ZONA = "la Zona Professionals d'ÀMBIT Associats";
+const ASSUMPTE = "Zona Professionals d'ÀMBIT Associats";
+const SIGNATURA = 'ÀMBIT Associats\ninfo@ambit.ad · +376 655 382';
+
+const nomEines = (eines = []) =>
+  eines.includes('irpf') && eines.includes('bretxa')
+    ? 'Eina Fiscal IRPF + Bretxa de Gènere'
+    : eines.includes('irpf') ? 'Eina Fiscal IRPF' : 'Bretxa de Gènere';
+
+// 1. Aprovat amb contrasenya (aprovar una sol·licitud)
+const missatgeAprovacio = ({ nom, email, contrasenya, eines }) => ({
+  titol: 'Compte creat',
+  email,
+  assumpte: `Accés aprovat: ${ASSUMPTE}`,
+  cos: `Hola ${nom || ''},\n\n` +
+    `El teu accés a ${ZONA} ha estat aprovat.\n\n` +
+    `Eines autoritzades: ${nomEines(eines)}\n` +
+    `Correu electrònic: ${email}\n` +
+    `Contrasenya temporal: ${contrasenya}\n\n` +
+    `Accedeix ara: https://www.ambit.ad\n\n` +
+    `Per seguretat, canvia la contrasenya quan iniciïs sessió.\n\n` +
+    SIGNATURA,
+});
+
+// 2-5. Canvis d'estat d'un usuari existent
+const missatgeEstat = (usuari, estatAnterior, estatNou) => {
+  const hola = `Hola ${usuari.nom || ''},\n\n`;
+
+  if (estatNou === 'actiu' && estatAnterior === 'bloquejat') {
+    // 4. Reactivat
+    return {
+      titol: 'Accés reactivat',
+      email: usuari.email,
+      assumpte: `Accés reactivat: ${ASSUMPTE}`,
+      cos: hola +
+        `El teu accés a ${ZONA} ha estat reactivat.\n\n` +
+        `Pots accedir-hi a https://www.ambit.ad\n\n` +
+        `Per a qualsevol consulta, contacta'ns a info@ambit.ad o al +376 655 382.\n\n` +
+        'ÀMBIT Associats',
+    };
+  }
+  if (estatNou === 'actiu') {
+    // 2. Aprovat sense contrasenya (usuari pendent)
+    return {
+      titol: 'Accés aprovat',
+      email: usuari.email,
+      assumpte: `Accés aprovat: ${ASSUMPTE}`,
+      cos: hola +
+        `El teu accés a ${ZONA} ha estat aprovat.\n\n` +
+        `Eines autoritzades: ${nomEines(usuari.eines)}\n\n` +
+        `Accedeix ara: https://www.ambit.ad\n\n` +
+        SIGNATURA,
+    };
+  }
+  if (estatNou === 'bloquejat' && estatAnterior === 'pendent') {
+    // 5. Sol·licitud no aprovada
+    return {
+      titol: 'Sol·licitud no aprovada',
+      email: usuari.email,
+      assumpte: `Sol·licitud d'accés: ${ASSUMPTE}`,
+      cos: hola +
+        `La teva sol·licitud d'accés a ${ZONA} no ha estat aprovada.\n\n` +
+        `Per a més informació, contacta'ns a info@ambit.ad o al +376 655 382.\n\n` +
+        'ÀMBIT Associats',
+    };
+  }
+  if (estatNou === 'bloquejat') {
+    // 3. Suspès
+    return {
+      titol: 'Accés suspès',
+      email: usuari.email,
+      assumpte: `Accés suspès: ${ASSUMPTE}`,
+      cos: hola +
+        `El teu accés a ${ZONA} ha estat suspès.\n\n` +
+        `Per a més informació, contacta'ns a info@ambit.ad o al +376 655 382.\n\n` +
+        'ÀMBIT Associats',
+    };
+  }
+  return null;
+};
+
+const ModalMissatge = ({ missatge, onTancar }) => {
+  const [copiat, setCopiat] = useState(false);
+  const mailto = `mailto:${encodeURIComponent(missatge.email)}` +
+    `?subject=${encodeURIComponent(missatge.assumpte)}` +
+    `&body=${encodeURIComponent(missatge.cos)}`;
+
+  const copiar = async () => {
+    try {
+      await navigator.clipboard.writeText(missatge.cos);
+      setCopiat(true);
+      setTimeout(() => setCopiat(false), 2000);
+    } catch (e) {
+      console.warn('No s\'ha pogut copiar el text:', e);
+      alert('No s\'ha pogut copiar. Selecciona el text i copia\'l manualment.');
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
+        <h3 className="text-lg font-bold text-gray-800 mb-1">{missatge.titol}</h3>
+        <p className="text-xs text-gray-500 mb-4">
+          Envia aquest missatge a l'usuari des del teu correu.
+        </p>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">Per a</label>
+            <p className="text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+              {missatge.email}
+            </p>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">Assumpte</label>
+            <p className="text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+              {missatge.assumpte}
+            </p>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">Missatge</label>
+            <textarea
+              readOnly
+              value={missatge.cos}
+              rows={10}
+              className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 font-mono"
+            />
+          </div>
+        </div>
+        <div className="flex gap-3 pt-4">
+          <button
+            type="button"
+            onClick={copiar}
+            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold
+                       py-2.5 rounded-xl transition text-sm"
+          >
+            {copiat ? 'Copiat ✓' : 'Copiar'}
+          </button>
+          <a
+            href={mailto}
+            className="flex-1 text-center bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold
+                       py-2.5 rounded-xl transition text-sm"
+          >
+            Obrir correu
+          </a>
+          <button
+            type="button"
+            onClick={onTancar}
+            className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700
+                       font-semibold rounded-xl transition text-sm"
+          >
+            Tancar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const PanellMaestro = ({ onTancar }) => {
   const { user } = useAuth();
   const [usuaris, setUsuaris] = useState([]);
@@ -32,6 +193,7 @@ const PanellMaestro = ({ onTancar }) => {
   const [errorCrear, setErrorCrear] = useState('');
   const [carregantCrear, setCarregantCrear] = useState(false);
   const [einesAprovant, setEinesAprovant] = useState([]);
+  const [missatge, setMissatge] = useState(null); // missatge per enviar a l'usuari
 
   const carregarUsuaris = async () => {
     setCarregant(true);
@@ -69,15 +231,13 @@ const PanellMaestro = ({ onTancar }) => {
       }
       if (!data?.ok) throw new Error(data?.error || 'Error creant el compte.');
 
-      // Enviar email amb credencials a l'usuari via EmailJS
-      await emailjs.send('service_2jvc0w9', 'template_5ro2sjh', {
-        nom: sol.nom || '',
-        email_usuari: sol.email,
+      // Missatge d'accés aprovat perquè el maestro l'enviï des del seu correu
+      setMissatge(missatgeAprovacio({
+        nom: sol.nom,
+        email: sol.email,
         contrasenya: contrasenyaCrear,
-        eines: einesAprovades.includes('irpf') && einesAprovades.includes('bretxa')
-          ? 'Eina Fiscal IRPF + Bretxa de Gènere'
-          : einesAprovades.includes('irpf') ? 'Eina Fiscal IRPF' : 'Bretxa de Gènere',
-      }, 'KzIVD4mtDxpovIs4G').catch(() => {});
+        eines: einesAprovades,
+      }));
 
       setModalCrear(null);
       setContrasenyaCrear('');
@@ -103,44 +263,11 @@ const actualitzar = async (id, canvis) => {
       return;
     }
 
-    // Si s'aprova l'usuari, enviar email de notificació
-    if (canvis.estat === 'actiu') {
+    // Missatge d'accés aprovat, reactivat o suspès per enviar a l'usuari
+    if (canvis.estat) {
       const usuari = usuaris.find(u => u.id === id);
-      if (usuari?.email) {
-        try {
-          await fetch('https://formspree.io/f/mdkdrkze', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: 'ÀMBIT Associats - Sistema',
-              email: usuari.email,
-              message: `Hola ${usuari.nom || ''},\n\nEl teu accés a l'Eina Fiscal IRPF d'ÀMBIT Associats ha estat aprovat.\n\nJa pots iniciar sessió a:\nhttps://www.ambit.ad\n\nSi tens qualsevol dubte, contacta'ns a info@ambit.ad o al +376 655 382.\n\nÀMBIT Associats`,
-            }),
-          });
-        } catch(e) {
-          console.warn('No s\'ha pogut enviar email de confirmació:', e);
-        }
-      }
-    }
-
-    // Si es bloqueja, enviar email avisant
-    if (canvis.estat === 'bloquejat') {
-      const usuari = usuaris.find(u => u.id === id);
-      if (usuari?.email) {
-        try {
-          await fetch('https://formspree.io/f/mdkdrkze', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: 'ÀMBIT Associats - Sistema',
-              email: usuari.email,
-              message: `Hola ${usuari.nom || ''},\n\nEl teu accés a l'Eina Fiscal IRPF d'ÀMBIT Associats ha estat suspès.\n\nPer a més informació, contacta'ns a info@ambit.ad o al +376 655 382.\n\nÀMBIT Associats`,
-            }),
-          });
-        } catch(e) {
-          console.warn('No s\'ha pogut enviar email de bloqueig:', e);
-        }
-      }
+      const m = usuari?.email && missatgeEstat(usuari, usuari.estat, canvis.estat);
+      if (m) setMissatge(m);
     }
 
     carregarUsuaris();
@@ -302,7 +429,7 @@ const actualitzar = async (id, canvis) => {
                     className="flex-1 bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold
                                py-2.5 rounded-xl transition disabled:opacity-50 text-sm"
                   >
-                    {carregantCrear ? 'Creant...' : '✓ Crear compte i enviar email'}
+                    {carregantCrear ? 'Creant...' : '✓ Crear compte'}
                   </button>
                   <button
                     type="button"
@@ -317,6 +444,9 @@ const actualitzar = async (id, canvis) => {
             </div>
           </div>
         )}
+
+        {/* Missatge per a l'usuari (copiar o obrir al correu) */}
+        {missatge && <ModalMissatge missatge={missatge} onTancar={() => setMissatge(null)} />}
 
         {/* Filtres */}
         <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex gap-3">
