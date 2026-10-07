@@ -3,7 +3,9 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { supabase } from '../supabaseClient';
-import emailjs from '@emailjs/browser';
+
+// Mateix formulari de Formspree que el de contacte de la web (App.js)
+const FORMSPREE_URL = 'https://formspree.io/f/mdkdrkze';
 
 const PaginaLogin = ({ onLoginOk }) => {
   const { login } = useAuth();
@@ -55,14 +57,27 @@ const PaginaLogin = ({ onLoginOk }) => {
 
       if (error) throw error;
 
-      // Notificar al Maestro
-      await emailjs.send('service_2jvc0w9', 'template_r8irlfj', {
-        nom_usuari: nom,
-        email_usuari: email,
-        eines: eines.includes('irpf') && eines.includes('bretxa')
-          ? 'Eina Fiscal IRPF + Bretxa de Gènere'
-          : eines.includes('irpf') ? 'Eina Fiscal IRPF' : 'Bretxa de Gènere',
-      }, 'KzIVD4mtDxpovIs4G').catch(() => {});
+      // Avisar ÀMBIT per Formspree. Si falla, la sol·licitud ja està desada:
+      // al sol·licitant no se li mostra cap error, només queda a la consola.
+      const nomEines = eines.includes('irpf') && eines.includes('bretxa')
+        ? 'Eina Fiscal IRPF + Bretxa de Gènere'
+        : eines.includes('irpf') ? 'Eina Fiscal IRPF' : 'Bretxa de Gènere';
+      try {
+        const resp = await fetch(FORMSPREE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            _subject: "Nova sol·licitud d'accés",
+            name: nom,
+            email,
+            eines: nomEines,
+            message: `Nova sol·licitud d'accés a la Zona Professionals.\n\nNom: ${nom}\nEmail: ${email}\nEines: ${nomEines}\n\nRevisa-la al Panell Maestro.`,
+          }),
+        });
+        if (!resp.ok) console.warn('Formspree: no s\'ha pogut enviar l\'avís de nova sol·licitud', resp.status);
+      } catch (e) {
+        console.warn('Formspree: no s\'ha pogut enviar l\'avís de nova sol·licitud', e);
+      }
 
       setMissatge('Sol·licitud enviada correctament. ÀMBIT Associats revisarà el teu accés i et contactarà per email amb les teves credencials (revisa Spam).');
       setMode('login');
