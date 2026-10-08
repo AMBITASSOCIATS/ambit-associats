@@ -55,18 +55,19 @@ const Preomplir = ({ requestId, aut, onDesat }) => {
 };
 
 // ─── Detall ─────────────────────────────────────────────────────────────────
-const Detall = ({ id, onTorna }) => {
+const Detall = ({ id, onTorna, rol }) => {
   const [s, setS] = useState(null);
   const [error, setError] = useState('');
   const [missatge, setMissatge] = useState(null);
   const [ocupat, setOcupat] = useState(false);
   const [dataAlta, setDataAlta] = useState(avui());
   const [retirada, setRetirada] = useState({ data: avui(), motiu: '' });
+  const [motiuAnullacio, setMotiuAnullacio] = useState('');
 
   const carrega = useCallback(async () => {
     const [req, aut, sig, docs, enllac] = await Promise.all([
       portal.from('requests')
-        .select('id, status, template_version, created_at, enviat_at, signat_at, activat_at, clients(id, nom_mostrat, party_type, referencia_client)')
+        .select('id, status, template_version, created_at, enviat_at, signat_at, activat_at, anullat_at, motiu_anullacio, clients(id, nom_mostrat, party_type, referencia_client)')
         .eq('id', id).single(),
       portal.from('autoritzacions_carrec')
         .select('id, titular_nom, titular_adreca, titular_cp_poblacio, entitat, iban_ultims4, client_facturat_nom, signant_es_administrador, data_alta, data_retirada, motiu_retirada, darrer_carrec, conservar_fins')
@@ -104,6 +105,16 @@ const Detall = ({ id, onTorna }) => {
     if (!window.confirm('Segur que vols anul·lar aquesta sol·licitud? No es pot desfer.')) return;
     accio(async () => {
       const { error } = await portal.from('requests').update({ status: 'anullat' }).eq('id', id);
+      if (error) throw error;
+    });
+  };
+
+  // Autorització signada que no s'activarà: només l'OCIC, amb motiu (queda a l'auditoria)
+  const anullaSignada = () => {
+    if (!window.confirm('Segur que vols anul·lar aquesta autorització signada? No es pot desfer.')) return;
+    accio(async () => {
+      const { error } = await portal.from('requests')
+        .update({ status: 'anullat', motiu_anullacio: motiuAnullacio.trim() }).eq('id', id);
       if (error) throw error;
     });
   };
@@ -154,6 +165,8 @@ const Detall = ({ id, onTorna }) => {
           <Dada etiqueta="Enviada">{dataHora(s.enviat_at)}</Dada>
           <Dada etiqueta="Signada">{dataHora(s.signat_at)}</Dada>
           <Dada etiqueta="Activada">{dataHora(s.activat_at)}</Dada>
+          {s.anullat_at && <Dada etiqueta="Anul·lada">{dataHora(s.anullat_at)}</Dada>}
+          {s.motiu_anullacio && <Dada etiqueta="Motiu de l'anul·lació">{s.motiu_anullacio}</Dada>}
         </dl>
       </Targeta>
 
@@ -182,6 +195,20 @@ const Detall = ({ id, onTorna }) => {
           <div className="flex flex-wrap items-end gap-3">
             <Entrada etiqueta="Data d'alta" type="date" value={dataAlta} onChange={(e) => setDataAlta(e.target.value)} />
             <Boto variant="exit" onClick={activa} disabled={ocupat || !dataAlta || !client.referencia_client}>Activar</Boto>
+          </div>
+        </Targeta>
+      )}
+
+      {s.status === 'signat' && rol === 'ocic' && (
+        <Targeta titol="Anul·lar l'autorització signada (només OCIC)">
+          <p className="text-xs text-gray-500 mb-3">
+            Per a autoritzacions signades que no s'activaran (el client se n'ha fet enrere, dades de prova...). El document
+            signat no es modifica; l'expedient seguirà els terminis de conservació de les anul·lades.
+          </p>
+          <div className="flex flex-wrap items-end gap-3">
+            <Entrada etiqueta="Motiu (obligatori)" value={motiuAnullacio} className="flex-1 min-w-[240px]" maxLength={500}
+              onChange={(e) => setMotiuAnullacio(e.target.value)} />
+            <Boto variant="perill" onClick={anullaSignada} disabled={ocupat || !motiuAnullacio.trim()}>Anul·lar</Boto>
           </div>
         </Targeta>
       )}
@@ -259,7 +286,7 @@ const Detall = ({ id, onTorna }) => {
 };
 
 // ─── Llista ─────────────────────────────────────────────────────────────────
-const Solicituds = ({ oberta, onObre }) => {
+const Solicituds = ({ oberta, onObre, rol }) => {
   const [llista, setLlista] = useState([]);
   const [carregant, setCarregant] = useState(true);
   const [filtre, setFiltre] = useState('totes');
@@ -274,7 +301,7 @@ const Solicituds = ({ oberta, onObre }) => {
       .then(({ data }) => { setLlista(data || []); setCarregant(false); });
   }, [oberta]);
 
-  if (oberta) return <Detall id={oberta} onTorna={() => onObre(null)} />;
+  if (oberta) return <Detall id={oberta} onTorna={() => onObre(null)} rol={rol} />;
 
   const filtrades = llista.filter((s) => {
     if (filtre !== 'totes' && s.status !== filtre) return false;

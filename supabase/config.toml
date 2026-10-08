@@ -401,6 +401,13 @@ verify_jwt = true
 [functions.portal-personal]
 verify_jwt = true
 
+# Conservació: la crida pg_cron amb un secret propi (sense sessió).
+[functions.portal-purga]
+verify_jwt = false
+
+[functions.portal-requeriment]
+verify_jwt = true
+
 [analytics]
 enabled = true
 port = 54327

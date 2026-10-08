@@ -4,8 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { dataHora, invoca, portal } from './portalApi';
 import { Boto, Entrada, Selector, Targeta } from './ui';
 
-const ENTITATS = ['clients', 'requests', 'autoritzacions_carrec', 'access_tokens', 'signatures', 'documents', 'staff_profiles', 'remesa'];
-const ACCIONS = ['INSERT', 'UPDATE', 'DELETE', 'EXPORT'];
+const ENTITATS = ['clients', 'requests', 'autoritzacions_carrec', 'access_tokens', 'signatures', 'documents', 'staff_profiles', 'remesa', 'retencions', 'config_conservacio'];
+const ACCIONS = ['INSERT', 'UPDATE', 'DELETE', 'EXPORT', 'ACCES_REQUERIMENT', 'DESTRUCCIO'];
 const PAGINA = 100;
 
 const Registre = () => {
