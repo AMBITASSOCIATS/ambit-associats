@@ -1034,7 +1034,17 @@ const App = () => {
       {/* Header */}
       <header className="bg-[#009B9C] text-white py-6">
         <div className="container mx-auto px-4">
-          <div className="flex justify-end items-center mb-4">
+          {/* Si no hi cap tot (mòbil), l'enllaç passa a una línia a sobre dels idiomes */}
+          <div className="flex flex-wrap justify-end items-center gap-x-4 gap-y-2 mb-4">
+            <a
+              href="/portal"
+              className="px-3 py-1 rounded-md text-sm bg-opacity-20 hover:bg-white hover:text-[#009B9C] inline-flex items-center gap-1.5"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+              Accés del personal
+            </a>
             <div className="flex space-x-4">
               {languages.map((lang) => (
                 <button
