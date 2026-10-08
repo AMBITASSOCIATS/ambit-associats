@@ -11,6 +11,7 @@ import Clients from './Clients';
 import Remesa from './Remesa';
 import Personal from './Personal';
 import Registre from './Registre';
+import Conservacio from './Conservacio';
 
 const PESTANYES = [
   { id: 'solicituds', nom: 'Sol·licituds' },
@@ -18,6 +19,7 @@ const PESTANYES = [
   { id: 'remesa', nom: 'Remesa' },
   { id: 'personal', nom: 'Personal', ocic: true },
   { id: 'registre', nom: 'Registre', ocic: true },
+  { id: 'conservacio', nom: 'Conservació', ocic: true },
 ];
 
 const Pantalla = ({ children }) => (
@@ -139,12 +141,13 @@ const PortalApp = () => {
 
       <main className="max-w-6xl mx-auto px-6 py-8">
         {pestanya === 'solicituds' && (
-          <Solicituds oberta={solicitudOberta} onObre={setSolicitudOberta} />
+          <Solicituds oberta={solicitudOberta} onObre={setSolicitudOberta} rol={rol} />
         )}
         {pestanya === 'clients' && <Clients onObreSolicitud={obreSolicitud} />}
         {pestanya === 'remesa' && <Remesa onObreSolicitud={obreSolicitud} />}
         {pestanya === 'personal' && rol === 'ocic' && <Personal usuariActual={user.id} />}
         {pestanya === 'registre' && rol === 'ocic' && <Registre />}
+        {pestanya === 'conservacio' && rol === 'ocic' && <Conservacio />}
       </main>
     </div>
   );
