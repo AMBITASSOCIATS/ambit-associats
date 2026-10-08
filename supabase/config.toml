@@ -10,7 +10,7 @@ enabled = true
 port = 54321
 # Schemas to expose in your API. Tables, views and stored procedures in this schema will get API
 # endpoints. `public` and `graphql_public` schemas are included by default.
-schemas = ["public", "graphql_public"]
+schemas = ["public", "graphql_public", "portal"]
 # Extra schemas to add to the search_path of every request.
 extra_search_path = ["public", "extensions"]
 # The maximum number of rows returns from a view, table, or stored procedure. Limits payload size
@@ -385,6 +385,21 @@ deno_version = 2
 
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
+
+# Portal de signatura. La funció del client és pública (sense sessió): la
+# validació la fa el token. Les del personal comproven la sessió elles mateixes.
+[functions.portal-signar]
+verify_jwt = false
+static_files = ["./functions/_shared/assets/*"]
+
+[functions.portal-enllac]
+verify_jwt = true
+
+[functions.portal-remesa]
+verify_jwt = true
+
+[functions.portal-personal]
+verify_jwt = true
 
 [analytics]
 enabled = true

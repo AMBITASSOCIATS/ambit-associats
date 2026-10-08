@@ -1,0 +1,79 @@
+{
+  "versio": "ABA-01 v1",
+  "titol": { "ca": "AUTORITZACIÓ DE CÀRREC EN COMPTE", "en": "Authorisation to debit a bank account" },
+  "creditor": {
+    "seccio": { "ca": "Dades del creditor", "en": "Creditor details" },
+    "files": [
+      { "ca": "Nom", "en": "Name", "valor": "DEL SOTO – PALEARI & ASSOCIATS, SL" },
+      { "ca": "NRT", "en": "Tax ID", "valor": "L-720543-P" },
+      { "ca": "Adreça", "en": "Address", "valor": "Av. Fiter i Rossell, 78, 2n B" },
+      { "ca": "Codi postal i població", "en": "Postal code and town", "valor": "AD700 Escaldes-Engordany, Andorra" }
+    ]
+  },
+  "titular": {
+    "seccio": { "ca": "Dades del titular del compte", "en": "Account holder details" },
+    "avis": { "ca": "Si us plau, completeu tots els camps marcats amb *", "en": "Please complete all the fields marked *" },
+    "nom": { "ca": "Nom o raó social", "en": "Name or company name" },
+    "adreca": { "ca": "Adreça", "en": "Address" },
+    "cp_poblacio": { "ca": "Codi postal i població", "en": "Postal code and town" },
+    "entitat": { "ca": "Entitat financera", "en": "Bank" },
+    "iban": { "ca": "Número de compte (IBAN)", "en": "Account number (IBAN)" }
+  },
+  "facturat": {
+    "seccio": { "ca": "Client al qual es facturen els serveis", "en": "Client invoiced for the services" },
+    "avis": { "ca": "Només si és diferent del titular del compte", "en": "Only if different from the account holder" },
+    "nom": { "ca": "Nom o raó social", "en": "Name or company name" }
+  },
+  "autoritzacio": {
+    "seccio": { "ca": "Autorització", "en": "Authorisation" },
+    "ca": "El titular del compte sotasignat autoritza DEL SOTO – PALEARI & ASSOCIATS, SL a presentar al cobrament, amb càrrec al compte indicat, les factures que emeti per la prestació dels seus serveis professionals, i autoritza la seva entitat financera a atendre’n el càrrec.",
+    "en": "The undersigned account holder authorises DEL SOTO – PALEARI & ASSOCIATS, SL to present for collection, by debit to the account indicated above, the invoices it issues for its professional services, and authorises the account holder’s bank to pay such debits."
+  },
+  "condicions": {
+    "seccio": { "ca": "Condicions", "en": "Terms" },
+    "continuacio": { "ca": "Condicions (continuació)", "en": "Terms (continued)" },
+    "punts": [
+      {
+        "ca": "Aquesta autorització s’aplica al pagament de les factures emeses pel creditor per la prestació dels serveis professionals contractats.",
+        "en": "This authorisation applies to the payment of the invoices issued by the creditor for the professional services contracted."
+      },
+      {
+        "ca": "El titular del compte pot retirar aquesta autorització en qualsevol moment, mitjançant una comunicació adreçada al creditor o a la seva entitat financera. La retirada té efectes per als càrrecs posteriors.",
+        "en": "The account holder may withdraw this authorisation at any time by notifying the creditor or its bank. The withdrawal applies to subsequent debits."
+      },
+      {
+        "ca": "El titular del compte té els drets de revocació i de reemborsament que estableix la normativa de serveis de pagament, en els termes del contracte subscrit amb la seva entitat financera.",
+        "en": "The account holder has the revocation and refund rights provided by payment services legislation, under the terms of its agreement with its bank."
+      },
+      {
+        "ca": "El creditor trametrà la factura amb una antelació mínima d’un dia natural respecte de la data del càrrec.",
+        "en": "The creditor will send the invoice at least one calendar day before the debit date."
+      },
+      {
+        "ca": "Qualsevol discrepància sobre un càrrec es pot comunicar al creditor a info@ambit.ad. El creditor l’examinarà i, si escau, retornarà l’import corresponent.",
+        "en": "Any disagreement regarding a debit may be notified to the creditor at info@ambit.ad. The creditor will review it and, where appropriate, refund the corresponding amount."
+      },
+      {
+        "ca": "DEL SOTO – PALEARI & ASSOCIATS, SL tracta les dades personals d’aquesta autorització amb la finalitat exclusiva de gestionar el cobrament dels seus honoraris, d’acord amb la Llei 29/2021, del 28 d’octubre, qualificada de protecció de dades personals. Podeu exercir els vostres drets adreçant-vos a info@ambit.ad.",
+        "en": "DEL SOTO – PALEARI & ASSOCIATS, SL processes the personal data in this authorisation for the sole purpose of collecting its fees, in accordance with Andorran Qualified Law 29/2021, of 28 October, on the protection of personal data. You may exercise your rights by writing to info@ambit.ad."
+      }
+    ]
+  },
+  "signatura": {
+    "seccio": { "ca": "Signatura", "en": "Signature" },
+    "localitat": { "ca": "Localitat", "en": "Place" },
+    "data": { "ca": "Data", "en": "Date" },
+    "signant": { "ca": "Nom i càrrec del signant", "en": "Name and position of the signatory" },
+    "firma": { "ca": "Signatura del titular", "en": "Account holder’s signature" },
+    "signeu": { "ca": "Si us plau, signeu aquí", "en": "Please sign here" }
+  },
+  "us_creditor": {
+    "titol": { "ca": "Ús exclusiu del creditor", "en": "Creditor’s use only" },
+    "referencia": { "ca": "Referència del client (màx. 14 caràcters)" },
+    "data_alta": { "ca": "Data d’alta" }
+  },
+  "peu": [
+    "DEL SOTO – PALEARI & ASSOCIATS, SL · NRT L-720543-P · Av. Fiter i Rossell, 78, 2n B · AD700 Escaldes-Engordany · Andorra",
+    "info@ambit.ad · +376 655 382 · +376 632 306"
+  ]
+}
