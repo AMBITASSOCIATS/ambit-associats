@@ -52,7 +52,7 @@ const Formulari = ({ titol, explicacio, ambAutoritat, boto, onEnvia, onTanca }) 
 
 // ─── Dades lliurades per requeriment ────────────────────────────────────────
 const DadesRequeriment = ({ dades, onTanca }) => {
-  const { request: r, client: c, autoritzacio: a, signatura: s, documents } = dades;
+  const { request: r, client: c, autoritzacio: a, signatura: s, documents, kyc, kyc_validacio: v, pdp_consentiment: pc } = dades;
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto space-y-4">
@@ -72,6 +72,9 @@ const DadesRequeriment = ({ dades, onTanca }) => {
           <Dada etiqueta="Signant">{s ? `${s.signatari_nom} · ${s.lloc} · ${dataHora(s.signat_at)}` : '—'}</Dada>
           <Dada etiqueta="IP i navegador"><span className="text-xs">{s ? `${s.ip || '—'} · ${s.user_agent || '—'}` : '—'}</span></Dada>
           <Dada etiqueta="Empremta de les dades"><span className="font-mono text-xs">{s?.empremta_dades}</span></Dada>
+          {kyc && <Dada etiqueta="KYC">{`${r?.document_type === 'kyc_pj' ? 'Persona jurídica' : 'Persona física'} · respostes desades (vegeu el PDF signat)`}</Dada>}
+          {v && <Dada etiqueta="Validació de l'OCIC">{`${v.nivell} · ${dataHora(v.validat_at)} · propera revisió ${dataCurta(v.propera_revisio)}`}</Dada>}
+          {pc && <Dada etiqueta="Comunicacions comercials">{pc.consentiment_comercial ? 'Autoritzades' : 'No autoritzades'}</Dada>}
         </dl>
         {documents?.length > 0 && (
           <div className="divide-y divide-gray-100 border-t border-gray-100">

@@ -1,12 +1,14 @@
 // src/portal/Solicituds.jsx
-// Sol·licituds d'autorització de càrrec: llista amb filtre per estat i detall
-// amb les dades, l'IBAN emmascarat, la firma, les evidències, els documents i
-// les accions que permet cada estat. Les regles reals les aplica la base.
+// Sol·licituds: llista amb filtre per tipus i estat. Detall de l'autorització
+// de càrrec (dades, IBAN emmascarat, firma, evidències, documents i accions de
+// cada estat) i, per als KYC, el detall de DetallKyc. La protecció de dades
+// es veu dins del seu KYC. Les regles reals les aplica la base.
 import React, { useCallback, useEffect, useState } from 'react';
 import ModalMissatge from '../auth/ModalMissatge';
 import {
-  ENTITATS, ESTATS, dataCurta, dataHora, ibanEmmascarat, invoca, missatgeEnllac, portal, urlDocument,
+  ENTITATS, ESTATS, TIPUS_DOCUMENT, dataCurta, dataHora, esKyc, ibanEmmascarat, invoca, missatgeEnllac, portal, urlDocument,
 } from './portalApi';
+import DetallKyc from './DetallKyc';
 import { Avis, Boto, Dada, Entrada, EtiquetaEstat, Selector, Targeta } from './ui';
 
 const avui = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' }); // AAAA-MM-DD
@@ -285,6 +287,25 @@ const Detall = ({ id, onTorna, rol }) => {
   );
 };
 
+// Obre el detall que correspon al tipus de document
+const ObreSolicitud = ({ id, tipus, onObre, rol }) => {
+  const [t, setT] = useState(tipus || null);
+  useEffect(() => {
+    if (tipus) { setT(tipus); return; }
+    portal.from('requests').select('document_type').eq('id', id).single().then(async ({ data }) => {
+      if (data?.document_type === 'pdp') {
+        // La protecció de dades es mostra dins del seu KYC
+        const { data: k } = await portal.from('kyc_formularis').select('request_id').eq('pdp_request_id', id).maybeSingle();
+        if (k) { onObre(k.request_id); return; }
+      }
+      setT(data?.document_type || 'autoritzacio_carrec');
+    });
+  }, [id, tipus, onObre]);
+  if (!t) return <p className="text-sm text-gray-400">Carregant...</p>;
+  if (esKyc(t)) return <DetallKyc key={id} id={id} onTorna={(nou) => onObre(nou || null)} rol={rol} />;
+  return <Detall id={id} onTorna={() => onObre(null)} rol={rol} />;
+};
+
 // ─── Llista ─────────────────────────────────────────────────────────────────
 const Solicituds = ({ oberta, onObre, rol }) => {
   const [llista, setLlista] = useState([]);
@@ -292,18 +313,26 @@ const Solicituds = ({ oberta, onObre, rol }) => {
   const [filtre, setFiltre] = useState('totes');
   const [cerca, setCerca] = useState('');
 
+  const [filtreTipus, setFiltreTipus] = useState('tots');
+
   useEffect(() => {
     if (oberta) return;
     setCarregant(true);
     portal.from('requests')
-      .select('id, status, created_at, enviat_at, signat_at, clients(nom_mostrat, referencia_client, party_type)')
+      .select('id, status, document_type, created_at, enviat_at, signat_at, clients(nom_mostrat, referencia_client, party_type)')
+      .neq('document_type', 'pdp')
       .order('created_at', { ascending: false })
       .then(({ data }) => { setLlista(data || []); setCarregant(false); });
   }, [oberta]);
 
-  if (oberta) return <Detall id={oberta} onTorna={() => onObre(null)} rol={rol} />;
+  if (oberta) {
+    const fila = llista.find((x) => x.id === oberta);
+    return <ObreSolicitud id={oberta} tipus={fila?.document_type} onObre={onObre} rol={rol} />;
+  }
 
   const filtrades = llista.filter((s) => {
+    if (filtreTipus === 'kyc' && !esKyc(s.document_type)) return false;
+    if (filtreTipus === 'autoritzacio_carrec' && s.document_type !== 'autoritzacio_carrec') return false;
     if (filtre !== 'totes' && s.status !== filtre) return false;
     if (!cerca) return true;
     const q = cerca.toLowerCase();
@@ -317,9 +346,14 @@ const Solicituds = ({ oberta, onObre, rol }) => {
         <div className="flex gap-2">
           <input value={cerca} onChange={(e) => setCerca(e.target.value)} placeholder="Cercar client..."
             className="w-48 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40" />
+          <Selector value={filtreTipus} onChange={(e) => setFiltreTipus(e.target.value)}>
+            <option value="tots">Tots els documents</option>
+            <option value="autoritzacio_carrec">Autoritzacions de càrrec</option>
+            <option value="kyc">KYC i protecció de dades</option>
+          </Selector>
           <Selector value={filtre} onChange={(e) => setFiltre(e.target.value)}>
             <option value="totes">Tots els estats ({llista.length})</option>
-            {Object.entries(ESTATS).map(([k, v]) => <option key={k} value={k}>{v.nom} ({recompte(k)})</option>)}
+            {Object.entries(ESTATS).map(([k, v]) => <option key={k} value={k}>{v.nom}{k === 'signat' ? ' / pendent OCIC' : k === 'actiu' ? ' / validat' : ''} ({recompte(k)})</option>)}
           </Selector>
         </div>
       }>
@@ -337,11 +371,11 @@ const Solicituds = ({ oberta, onObre, rol }) => {
               <div className="flex-1 min-w-[200px]">
                 <p className="text-sm font-semibold text-gray-800">{s.clients.nom_mostrat}</p>
                 <p className="text-xs text-gray-400">
-                  <span className="font-mono">{s.clients.referencia_client || 'sense referència'}</span> · creada {dataCurta(s.created_at)}
+                  {TIPUS_DOCUMENT[s.document_type]} · <span className="font-mono">{s.clients.referencia_client || 'sense referència'}</span> · creada {dataCurta(s.created_at)}
                   {s.signat_at && ` · signada ${dataCurta(s.signat_at)}`}
                 </p>
               </div>
-              <EtiquetaEstat estat={s.status} />
+              <EtiquetaEstat estat={s.status} tipus={s.document_type} />
             </button>
           ))}
         </div>

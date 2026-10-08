@@ -408,6 +408,15 @@ verify_jwt = false
 [functions.portal-requeriment]
 verify_jwt = true
 
+# KYC i protecció de dades: el client no té sessió (només el token de l'enllaç)
+[functions.portal-kyc]
+verify_jwt = false
+static_files = ["./functions/_shared/assets/*"]
+
+[functions.portal-kyc-personal]
+verify_jwt = true
+static_files = ["./functions/_shared/assets/*"]
+
 [analytics]
 enabled = true
 port = 54327

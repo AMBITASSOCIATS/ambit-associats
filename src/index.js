@@ -6,17 +6,21 @@ import App from './App';
 import { AuthProvider } from './auth/AuthContext';
 import reportWebVitals from './reportWebVitals';
 
-// Portal de signatura: /portal (personal d'ÀMBIT) i /signar/<token> (client).
+// Portal de signatura: /portal (personal d'ÀMBIT), /signar/<token> (autorització
+// de càrrec) i /kyc/<token> (KYC i protecció de dades), per al client.
 // Es carreguen a part perquè no pesin a la web.
 const PortalApp = lazy(() => import('./portal/PortalApp'));
 const PaginaSignar = lazy(() => import('./portal/signar/PaginaSignar'));
+const PaginaKyc = lazy(() => import('./portal/kyc/PaginaKyc'));
 
 const ruta = window.location.pathname;
 const contingut = ruta === '/portal' || ruta.startsWith('/portal/')
   ? <AuthProvider><PortalApp /></AuthProvider>
   : ruta.startsWith('/signar/')
     ? <PaginaSignar />
-    : <AuthProvider><App /></AuthProvider>;
+    : ruta.startsWith('/kyc/')
+      ? <PaginaKyc />
+      : <AuthProvider><App /></AuthProvider>;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

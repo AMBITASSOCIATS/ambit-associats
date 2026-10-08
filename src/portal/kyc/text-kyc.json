@@ -1,0 +1,534 @@
+{
+  "versions": { "kyc_pf": "KYC-PF v1", "kyc_pj": "KYC-PJ v1", "pdp": "PDP v1" },
+  "si_no": { "si": { "ca": "sí", "en": "yes" }, "no": { "ca": "no", "en": "no" } },
+  "altres": { "ca": "altres (especifiqueu-ho)", "en": "other (please specify)" },
+  "avis_legal": {
+    "titol": { "ca": "Avís legal" },
+    "ca": [
+      "En compliment de la Llei 14/2017, del 22 de juny, de prevenció i lluita contra el blanqueig de diners o valors i el finançament del terrorisme, DEL SOTO – PALEARI & ASSOCIATS, SL està obligada a identificar els seus clients i a verificar-ne la identitat abans d'establir una relació de negocis. Si no es poden completar aquestes mesures, la relació de negocis no es pot establir (article 10.4).",
+      "D'acord amb l'article 38.3 de la mateixa Llei, el tractament de les dades d'aquest formulari no està subjecte a la normativa de protecció de dades personals. Aquestes dades només es poden fer servir per a la prevenció del blanqueig de capitals i del finançament del terrorisme (article 38.1) i es conserven durant cinc anys des de la finalització de la relació de negocis (article 37).",
+      "És obligació del client mantenir aquesta informació actualitzada. Qualsevol fet que faci sospitar d'una activitat il·lícita pot ser causa de resolució del contracte."
+    ],
+    "en": [
+      "In compliance with Andorran Law 14/2017, of 22 June, on the prevention of and fight against money laundering and terrorist financing, DEL SOTO – PALEARI & ASSOCIATS, SL is required to identify its clients and verify their identity before establishing a business relationship. If these measures cannot be completed, the business relationship cannot be established (Article 10.4).",
+      "Pursuant to Article 38.3 of that Law, the processing of the data in this form is not subject to personal data protection legislation. These data may only be used for the prevention of money laundering and terrorist financing (Article 38.1) and are kept for five years from the end of the business relationship (Article 37).",
+      "The client must keep this information up to date. Any fact giving rise to a suspicion of unlawful activity may be grounds for termination of the agreement."
+    ]
+  },
+
+  "ppe": {
+    "titol": { "ca": "Persona políticament exposada (PPE)", "en": "Politically exposed person (PEP)" },
+    "explicacio": {
+      "ca": [
+        "Es considera persona políticament exposada qualsevol persona física que exerceix o ha exercit funcions públiques importants, com ara: caps d'Estat o de Govern, ministres, secretaris d'Estat; parlamentaris o membres d'assemblees legislatives; cònsols majors i menors i consellers de finances i urbanisme o càrrecs equivalents; membres d'òrgans directius de partits polítics; magistrats d'alts tribunals les decisions dels quals no admeten normalment recurs; membres de tribunals de comptes o de consells de bancs centrals; ambaixadors, encarregats de negocis i alts càrrecs militars; membres d'òrgans de direcció d'entitats parapúbliques, organismes autònoms i empreses públiques; i directius d'organitzacions internacionals. No inclou els funcionaris de nivell intermedi o inferior (article 3.6 de la Llei 14/2017).",
+        "Són familiars d'una PPE el cònjuge o persona assimilable, els fills i els seus cònjuges o persones assimilables, i els pares (article 3.7). Són persones afins les que notòriament comparteixen amb una PPE la titularitat real d'una entitat o estructura jurídica, o hi mantenen una relació empresarial estreta, i les que són titulars reals únics d'una entitat constituïda de fet en benefici d'una PPE (article 3.8)."
+      ],
+      "en": [
+        "A politically exposed person is any individual who holds or has held prominent public functions, such as: heads of State or Government, ministers, secretaries of State; members of parliament or of legislative assemblies; mayors and deputy mayors and municipal councillors for finance and town planning, or equivalent positions; members of the governing bodies of political parties; judges of high courts whose decisions are not normally subject to appeal; members of courts of auditors or of the boards of central banks; ambassadors, chargés d'affaires and high-ranking military officers; members of the management bodies of public-sector entities, autonomous bodies and State-owned enterprises; and senior officers of international organisations. It does not include middle-ranking or junior officials (Article 3.6 of Law 14/2017).",
+        "Family members of a PEP are the spouse or equivalent partner, the children and their spouses or equivalent partners, and the parents (Article 3.7). Close associates are persons known to share with a PEP the beneficial ownership of a legal entity or arrangement or to have any other close business relationship with a PEP, and persons who are the sole beneficial owners of an entity known to have been set up de facto for the benefit of a PEP (Article 3.8)."
+      ]
+    },
+    "preguntes": { "ca": "Preguntes", "en": "Questions" },
+    "exerceix": { "ca": "Exerceix o ha exercit funcions públiques importants?", "en": "Do you hold or have you held prominent public functions?" },
+    "si_si": { "ca": "Si sí", "en": "If yes" },
+    "carrec": { "ca": "càrrec", "en": "position" },
+    "pais_institucio": { "ca": "país o institució", "en": "country or institution" },
+    "data_inici": { "ca": "data d'inici", "en": "start date" },
+    "data_fi": { "ca": "data de finalització, si escau", "en": "end date, if applicable" },
+    "familiar": { "ca": "És familiar o persona afí d'una PPE?", "en": "Are you a family member or close associate of a PEP?" },
+    "relacio": { "ca": "tipus de relació", "en": "type of relationship" },
+    "nom_ppe": { "ca": "nom de la PPE", "en": "name of the PEP" },
+    "carrec_ppe": { "ca": "càrrec", "en": "position" },
+    "alguna_si": { "ca": "Si alguna resposta és afirmativa", "en": "If any answer is yes" },
+    "origen_patrimoni": { "ca": "origen del patrimoni", "en": "source of wealth" },
+    "origen_patrimoni_desc": { "ca": "descripció de com s'ha generat el patrimoni total", "en": "description of how your total wealth was generated" }
+  },
+
+  "proposit": {
+    "titol": { "ca": "Propòsit i naturalesa de la relació", "en": "Purpose and nature of the relationship" },
+    "serveis": { "ca": "Serveis que contracta (en podeu marcar diversos)", "en": "Services engaged (you may select more than one)" },
+    "opcions": {
+      "comptabilitat": { "ca": "comptabilitat", "en": "accounting" },
+      "fiscal": { "ca": "assessorament fiscal", "en": "tax advice" },
+      "laboral": { "ca": "assessorament laboral (nòmines i CASS)", "en": "employment advice (payroll and social security)" },
+      "mercantil": { "ca": "assessorament mercantil i societari", "en": "commercial and corporate advice" },
+      "constitucio": { "ca": "constitució de societats", "en": "company incorporation" },
+      "residencia": { "ca": "tràmits de residència", "en": "residence procedures" },
+      "altres": { "ca": "altres (especifiqueu-ho)", "en": "other (please specify)" }
+    },
+    "descripcio": { "ca": "Descripció breu de l'encàrrec", "en": "Brief description of the engagement" }
+  },
+
+  "signatura": {
+    "lloc": { "ca": "Lloc", "en": "Place" },
+    "data": { "ca": "Data", "en": "Date" },
+    "signatura": { "ca": "Signatura", "en": "Signature" }
+  },
+
+  "ambit": {
+    "titol": { "ca": "Espai reservat a DEL SOTO – PALEARI & ASSOCIATS, SL", "en": "Reserved for DEL SOTO – PALEARI & ASSOCIATS, SL" },
+    "risc": { "ca": "Nivell de risc i mesures de diligència deguda", "en": "Risk level and due diligence measures" },
+    "nivells": {
+      "simplificada": { "ca": "simplificades", "en": "simplified" },
+      "normal": { "ca": "normals", "en": "standard" },
+      "reforcada": { "ca": "reforçades", "en": "enhanced" }
+    },
+    "justificacio": { "ca": "amb la justificació", "en": "with justification" },
+    "verificacio": { "ca": "Verificació de la identitat", "en": "Identity verification" },
+    "vies": {
+      "presencial": { "ca": "exhibició presencial de l'original", "en": "in-person inspection of the original" },
+      "copia_notarial": { "ca": "còpia notarial apostillada", "en": "apostilled notarised copy" },
+      "certificat_qualificat": { "ca": "certificat qualificat", "en": "qualified certificate" }
+    },
+    "verificacio_qui": { "ca": "data i persona que la comprova", "en": "date and person verifying" },
+    "sancions": { "ca": "Comprovació a les llistes de sancions", "en": "Sanctions screening" },
+    "sancions_det": { "ca": "data i resultat", "en": "date and result" },
+    "alta_direccio": { "ca": "Autorització de l'alta direcció", "en": "Senior management approval" },
+    "ocic": { "ca": "Signatura de l'òrgan de control intern i comunicació (OCIC), amb nom i data", "en": "Signature of the internal control and reporting body (OCIC), with name and date" },
+    "rbe": { "ca": "Verificació al Registre de beneficiaris efectius: data i resultat", "en": "Verification against the Register of Beneficial Owners: date and result" }
+  },
+
+  "pf": {
+    "titol": { "ca": "FORMULARI D'IDENTIFICACIÓ DEL CLIENT (KYC) · PERSONA FÍSICA", "en": "CLIENT IDENTIFICATION FORM (KYC) · INDIVIDUAL" },
+    "s1": {
+      "titol": { "ca": "Dades d'identificació", "en": "Identification details" },
+      "nom": { "ca": "Nom i cognoms", "en": "Full name" },
+      "data_naixement": { "ca": "Data de naixement", "en": "Date of birth" },
+      "lloc_naixement": { "ca": "Lloc de naixement", "en": "Place of birth" },
+      "nacionalitats": { "ca": "Nacionalitat o nacionalitats", "en": "Nationality or nationalities" },
+      "document": { "ca": "Document d'identitat", "en": "Identity document" },
+      "doc_tipus": { "ca": "tipus (passaport o DNI)", "en": "type (passport or national ID card)" },
+      "doc_tipus_opcions": {
+        "passaport": { "ca": "passaport", "en": "passport" },
+        "dni": { "ca": "DNI", "en": "national ID card" }
+      },
+      "doc_numero": { "ca": "número", "en": "number" },
+      "doc_autoritat": { "ca": "autoritat d'expedició", "en": "issuing authority" },
+      "doc_caducitat": { "ca": "data de caducitat", "en": "expiry date" },
+      "nrt": { "ca": "Número de Registre Tributari (NRT)", "en": "Andorran Tax Registration Number (NRT)" },
+      "nia": { "ca": "Número d'Identificació Administrativa (NIA)", "en": "Administrative Identification Number (NIA)" },
+      "domicili": { "ca": "Domicili complet", "en": "Full address" },
+      "pais_residencia": { "ca": "País de residència fiscal actual", "en": "Current country of tax residence" },
+      "pais_anterior": { "ca": "Darrer país de residència fiscal anterior", "en": "Previous country of tax residence" },
+      "nif_estranger": { "ca": "Número d'identificació fiscal estranger", "en": "Foreign tax identification number" },
+      "estat_civil": { "ca": "Estat civil", "en": "Marital status" },
+      "estat_civil_opcions": {
+        "solter": { "ca": "solter/a", "en": "single" },
+        "casat": { "ca": "casat/ada", "en": "married" },
+        "separat": { "ca": "separat/ada", "en": "separated" },
+        "divorciat": { "ca": "divorciat/ada", "en": "divorced" },
+        "vidu": { "ca": "vidu/vídua", "en": "widowed" }
+      },
+      "fills": { "ca": "Fills", "en": "Children" },
+      "fills_si": { "ca": "sí (nombre)", "en": "yes (number)" },
+      "telefon": { "ca": "Telèfon", "en": "Telephone" },
+      "email": { "ca": "Correu electrònic", "en": "Email" },
+      "idioma": { "ca": "Idioma de comunicació preferit", "en": "Preferred language of communication" }
+    },
+    "s2": {
+      "titol": { "ca": "Representació", "en": "Representation" },
+      "avis": { "ca": "Ompliu aquest apartat només si qui signa actua en nom del client.", "en": "Complete this section only if the signatory acts on behalf of the client." },
+      "nom": { "ca": "Nom i cognoms del representant", "en": "Representative's full name" },
+      "document": { "ca": "Document d'identitat del representant", "en": "Representative's identity document" },
+      "tipus": { "ca": "Tipus de representació", "en": "Type of representation" },
+      "tipus_opcions": {
+        "poder_notarial": { "ca": "poder notarial", "en": "notarial power of attorney" },
+        "autoritzacio": { "ca": "autorització signada", "en": "signed authorisation" },
+        "tutela": { "ca": "tutela legal", "en": "legal guardianship" },
+        "altres": { "ca": "altres (especifiqueu-ho)", "en": "other (please specify)" }
+      },
+      "acreditacio": { "ca": "Document que acredita la representació", "en": "Document evidencing the representation" }
+    },
+    "s3": {
+      "titol": { "ca": "Activitat professional", "en": "Professional activity" },
+      "avis": { "ca": "Marqueu l'opció que correspongui i ompliu-ne el detall.", "en": "Select the applicable option and complete the details." },
+      "tipus": {
+        "compte_altri": {
+          "ca": "Per compte d'altri", "en": "Employed",
+          "camps": {
+            "empresa": { "ca": "nom de l'empresa", "en": "employer's name" },
+            "adreca": { "ca": "adreça", "en": "address" },
+            "nrt": { "ca": "NRT", "en": "tax number" },
+            "sector": { "ca": "sector", "en": "sector" },
+            "paisos": { "ca": "països on opera", "en": "countries of operation" },
+            "carrec": { "ca": "càrrec", "en": "position" },
+            "contracte": { "ca": "tipus de contracte (indefinit o temporal)", "en": "type of contract (permanent or fixed-term)" },
+            "jornada": { "ca": "jornada (completa o reduïda, amb hores setmanals)", "en": "working hours (full-time or part-time, with weekly hours)" },
+            "data_inici": { "ca": "data d'inici", "en": "start date" }
+          }
+        },
+        "comerc": {
+          "ca": "Per compte propi, amb un comerç", "en": "Self-employed, through a business",
+          "camps": {
+            "nom": { "ca": "nom del comerç", "en": "business name" },
+            "titular": { "ca": "titular", "en": "owner" },
+            "domicili": { "ca": "domicili comercial", "en": "business address" },
+            "nrt": { "ca": "NRT", "en": "tax number" },
+            "data_inici": { "ca": "data d'inici", "en": "start date" },
+            "sector": { "ca": "sector", "en": "sector" },
+            "detall": { "ca": "detall de l'activitat", "en": "description of activity" },
+            "paisos": { "ca": "països on opera", "en": "countries of operation" },
+            "web": { "ca": "web", "en": "website" }
+          }
+        },
+        "professional": {
+          "ca": "Per compte propi, com a professional liberal", "en": "Self-employed professional",
+          "camps": {
+            "sector": { "ca": "sector", "en": "sector" },
+            "titol": { "ca": "títol", "en": "qualification" },
+            "oficina": { "ca": "adreça de l'oficina", "en": "office address" },
+            "data_inici": { "ca": "data d'inici", "en": "start date" },
+            "detall": { "ca": "detall de l'activitat", "en": "description of activity" },
+            "paisos": { "ca": "països on opera", "en": "countries of operation" },
+            "web": { "ca": "web", "en": "website" }
+          }
+        },
+        "societat": {
+          "ca": "Per compte propi, mitjançant una societat", "en": "Self-employed, through a company",
+          "camps": {
+            "denominacio": { "ca": "denominació social", "en": "company name" },
+            "forma": { "ca": "forma jurídica", "en": "legal form" },
+            "pais_domicili": { "ca": "país i domicili", "en": "country and registered address" },
+            "nrt": { "ca": "NRT", "en": "tax number" },
+            "carrec": { "ca": "càrrec", "en": "position" },
+            "sector": { "ca": "sector", "en": "sector" },
+            "detall": { "ca": "detall de l'activitat", "en": "description of activity" },
+            "paisos": { "ca": "països on opera", "en": "countries of operation" },
+            "web": { "ca": "web", "en": "website" }
+          }
+        },
+        "sense": {
+          "ca": "Sense activitat professional", "en": "No professional activity",
+          "opcions": {
+            "jubilat": { "ca": "jubilat/ada", "en": "retired" },
+            "pensionista": { "ca": "pensionista", "en": "pensioner" },
+            "rendista": { "ca": "rendista", "en": "living on income from assets" },
+            "llar": { "ca": "feines de la llar", "en": "homemaker" },
+            "estudiant": { "ca": "estudiant", "en": "student" },
+            "altres": { "ca": "altres (especifiqueu-ho)", "en": "other (please specify)" }
+          }
+        }
+      },
+      "contracte_opcions": {
+        "indefinit": { "ca": "indefinit", "en": "permanent" },
+        "temporal": { "ca": "temporal", "en": "fixed-term" }
+      },
+      "jornada_opcions": {
+        "completa": { "ca": "completa", "en": "full-time" },
+        "reduida": { "ca": "reduïda", "en": "part-time" }
+      },
+      "hores": { "ca": "hores setmanals", "en": "weekly hours" }
+    },
+    "s5": {
+      "titol": { "ca": "Origen dels fons", "en": "Source of funds" },
+      "origen": { "ca": "Procedència dels fons (en podeu marcar diverses)", "en": "Source of funds (you may select more than one)" },
+      "opcions": {
+        "salaris": { "ca": "salaris", "en": "salary" },
+        "pensions": { "ca": "pensions", "en": "pensions" },
+        "dividends": { "ca": "dividends", "en": "dividends" },
+        "activitat": { "ca": "rendiments d'activitat econòmica", "en": "business income" },
+        "immobles": { "ca": "rendes d'immobles", "en": "rental income" },
+        "venda": { "ca": "venda de béns, negocis o empreses", "en": "sale of assets, businesses or companies" },
+        "herencia": { "ca": "herències o donacions", "en": "inheritance or gifts" },
+        "inversions": { "ca": "inversions", "en": "investments" },
+        "altres": { "ca": "altres (especifiqueu-ho)", "en": "other (please specify)" },
+        "no_escau": { "ca": "no s'escau, la relació no implica cap moviment de fons", "en": "not applicable, the relationship involves no movement of funds" }
+      },
+      "andorra": { "ca": "Els fons provenen d'Andorra?", "en": "Do the funds originate in Andorra?" },
+      "paisos": { "ca": "Si no, indiqueu-ne el país o els països", "en": "If not, please state the country or countries." },
+      "descripcio": { "ca": "Descripció breu de l'origen dels fons", "en": "Brief description of the source of funds" }
+    },
+    "s7": {
+      "titol": { "ca": "Sancions internacionals", "en": "International sanctions" },
+      "residencia_ru_by": { "ca": "Té la residència a la Federació Russa o a la República de Belarús?", "en": "Are you resident in the Russian Federation or the Republic of Belarus?" },
+      "actua_ru_by": { "ca": "Actua en nom o per compte d'alguna persona o entitat establerta en aquests països?", "en": "Are you acting on behalf of any person or entity established in those countries?" }
+    },
+    "s8": {
+      "titol": { "ca": "Declaracions", "en": "Declarations" },
+      "punts": [
+        { "ca": "Declaro que les dades d'aquest formulari són veraces, completes i actuals.", "en": "I declare that the information in this form is true, complete and up to date." },
+        { "ca": "Declaro que els fons no provenen d'activitats relacionades amb el blanqueig de capitals ni amb el finançament del terrorisme.", "en": "I declare that the funds do not derive from activities related to money laundering or terrorist financing." },
+        { "ca": "Declaro que els fons s'han declarat degudament al meu país de residència fiscal i que s'hi han pagat els impostos corresponents.", "en": "I declare that the funds have been duly declared in my country of tax residence and that the corresponding taxes have been paid." },
+        { "ca": "Em comprometo a comunicar a DEL SOTO – PALEARI & ASSOCIATS, SL qualsevol canvi en aquestes dades i a aportar-ne la documentació addicional que se'm requereixi.", "en": "I undertake to notify DEL SOTO – PALEARI & ASSOCIATS, SL of any change to this information and to provide any additional documentation requested." }
+      ]
+    },
+    "s9": {
+      "titol": { "ca": "Documentació", "en": "Documents" },
+      "documents": {
+        "identitat": { "ca": "Document d'identitat vigent, per les dues cares", "en": "Valid identity document, both sides" },
+        "domicili": { "ca": "Justificant de domicili de menys de tres mesos (factura de subministrament, extracte bancari o certificat d'empadronament)", "en": "Proof of address less than three months old (utility bill, bank statement or certificate of registered residence)" },
+        "residencia": { "ca": "Targeta o permís de residència", "en": "Residence card or permit" },
+        "activitat": { "ca": "Justificant de l'activitat professional (contracte o fulls de salari, alta al Registre de Comerç, títol professional o escriptures, segons el cas)", "en": "Evidence of professional activity (employment contract or payslips, Trade Register entry, professional qualification or deeds, as applicable)" },
+        "fons": { "ca": "Justificant de l'origen dels fons (darrera declaració d'IRPF, extracte de la CASS o document equivalent)", "en": "Evidence of the source of funds (latest personal income tax return, social security statement or equivalent document)" },
+        "representacio": { "ca": "Document de representació", "en": "Document evidencing representation" },
+        "patrimoni": { "ca": "Justificant de l'origen del patrimoni", "en": "Evidence of the source of wealth" }
+      }
+    },
+    "s10": { "titol": { "ca": "Signatura del client", "en": "Client's signature" } }
+  },
+
+  "pj": {
+    "titol": { "ca": "FORMULARI D'IDENTIFICACIÓ DEL CLIENT (KYC) · PERSONA JURÍDICA", "en": "CLIENT IDENTIFICATION FORM (KYC) · LEGAL ENTITY" },
+    "s1": {
+      "titol": { "ca": "Dades de la societat", "en": "Company details" },
+      "denominacio": { "ca": "Denominació social", "en": "Company name" },
+      "nom_comercial": { "ca": "Nom comercial", "en": "Trade name" },
+      "forma": { "ca": "Forma jurídica", "en": "Legal form" },
+      "pais_constitucio": { "ca": "País de constitució", "en": "Country of incorporation" },
+      "data_constitucio": { "ca": "Data de constitució", "en": "Date of incorporation" },
+      "pais_activitat": { "ca": "País on té establerta l'activitat efectiva", "en": "Country where the business is effectively carried on" },
+      "domicili_social": { "ca": "Domicili social", "en": "Registered address" },
+      "adreca_activitat": { "ca": "Adreça on es desenvolupa l'activitat, si és diferent", "en": "Business address, if different" },
+      "nrt": { "ca": "NRT o número d'identificació fiscal estranger", "en": "NRT or foreign tax identification number" },
+      "registrals": { "ca": "Dades registrals", "en": "Registration details" },
+      "capital": { "ca": "Capital social", "en": "Share capital" },
+      "objecte": { "ca": "Objecte social i descripció de l'activitat real", "en": "Corporate purpose and description of actual activity" },
+      "paisos": { "ca": "Països on opera", "en": "Countries of operation" },
+      "telefon": { "ca": "Telèfon", "en": "Telephone" },
+      "email": { "ca": "Correu electrònic", "en": "Email" },
+      "web": { "ca": "Web", "en": "Website" },
+      "cotitza": { "ca": "Cotitza en un mercat regulat?", "en": "Is the company listed on a regulated market?" }
+    },
+    "s2": {
+      "titol": { "ca": "Signant i representants", "en": "Signatory and representatives" },
+      "avis": { "ca": "Per a la persona que signa i, si n'hi ha, per a la resta de representants legals.", "en": "For the signatory and, where applicable, for any other legal representatives." },
+      "signant": { "ca": "signant", "en": "signatory" },
+      "nom": { "ca": "Nom i cognoms", "en": "Full name" },
+      "nacionalitat": { "ca": "nacionalitat", "en": "nationality" },
+      "data_naixement": { "ca": "data de naixement", "en": "date of birth" },
+      "domicili": { "ca": "domicili", "en": "address" },
+      "document": { "ca": "document d'identitat", "en": "identity document" },
+      "nrt": { "ca": "NRT, si escau", "en": "NRT, if applicable" },
+      "carrec": { "ca": "Càrrec a la societat", "en": "Position in the company" },
+      "actua": { "ca": "Actua com a", "en": "Acts as" },
+      "actua_opcions": {
+        "administrador": { "ca": "administrador", "en": "director" },
+        "apoderat": { "ca": "apoderat (cal adjuntar el poder)", "en": "attorney-in-fact (power of attorney must be attached)" }
+      },
+      "telefon": { "ca": "Telèfon", "en": "Telephone" },
+      "email": { "ca": "correu electrònic", "en": "email" },
+      "idioma": { "ca": "idioma", "en": "language" }
+    },
+    "s3": {
+      "titol": { "ca": "Òrgan d'administració", "en": "Management body" },
+      "avis": { "ca": "Relació de tots els administradors o membres del consell, amb nom, càrrec i nacionalitat.", "en": "List of all directors or board members, with name, position and nationality." },
+      "nom": { "ca": "nom", "en": "name" },
+      "carrec": { "ca": "càrrec", "en": "position" },
+      "nacionalitat": { "ca": "nacionalitat", "en": "nationality" }
+    },
+    "s4": {
+      "titol": { "ca": "Estructura de propietat", "en": "Ownership structure" },
+      "avis": { "ca": "Socis directes, amb el percentatge de cadascun. Si algun soci és una altra societat, cal indicar-ne els socis fins arribar a les persones físiques. Es pot adjuntar un organigrama.", "en": "Direct shareholders, with the percentage held by each. If any shareholder is another company, its shareholders must be stated until the individuals are reached. An organisation chart may be attached." },
+      "socis": { "ca": "Socis directes", "en": "Direct shareholders" },
+      "percentatge": { "ca": "percentatge", "en": "percentage" }
+    },
+    "s5": {
+      "titol": { "ca": "Beneficiaris efectius", "en": "Beneficial owners" },
+      "explicacio": {
+        "ca": [
+          "Es considera beneficiari efectiu (article 3.3.a de la Llei 14/2017), en aquest ordre:",
+          "a) la persona física que, directament o indirectament, té la propietat o el control de la societat; té la consideració d'indici tenir més del 25 % del capital o dels drets de vot;",
+          "b) si no n'hi ha cap, la persona física que exerceix el control per altres mitjans;",
+          "c) si tampoc no n'hi ha cap, la persona física que ocupa un càrrec d'alta direcció."
+        ],
+        "en": [
+          "A beneficial owner is (Article 3.3.a of Law 14/2017), in this order:",
+          "a) the individual who directly or indirectly owns or controls the company; holding more than 25% of the share capital or voting rights is an indication of ownership;",
+          "b) if there is none, the individual who exercises control by other means;",
+          "c) if there is none either, the individual who holds a senior management position."
+        ]
+      },
+      "per_cada": { "ca": "Per a cada beneficiari efectiu", "en": "For each beneficial owner" },
+      "nom": { "ca": "Nom i cognoms", "en": "Full name" },
+      "nacionalitats": { "ca": "nacionalitat o nacionalitats", "en": "nationality or nationalities" },
+      "data_naixement": { "ca": "data de naixement", "en": "date of birth" },
+      "domicili": { "ca": "domicili", "en": "address" },
+      "pais_residencia": { "ca": "país de residència", "en": "country of residence" },
+      "document": { "ca": "document d'identitat", "en": "identity document" },
+      "nrt": { "ca": "NRT, si escau", "en": "NRT, if applicable" },
+      "participacio": { "ca": "Percentatge de participació o forma de control", "en": "Percentage held or form of control" },
+      "criteri": { "ca": "Criteri aplicat", "en": "Criterion applied" },
+      "ppe": { "ca": "PPE, familiar o persona afí", "en": "PEP, family member or close associate" },
+      "declaracio_titol": { "ca": "Declaració", "en": "Declaration" },
+      "declaracio": { "ca": "Declaro que les persones indicades són tots els beneficiaris efectius de la societat i que les dades són veraces i completes.", "en": "I declare that the persons listed are all the beneficial owners of the company and that the information is true and complete." }
+    },
+    "s6": {
+      "titol": { "ca": "Estructures fiduciàries", "en": "Trusts and similar arrangements" },
+      "pregunta": { "ca": "La societat forma part d'un fideïcomís (trust) o instrument jurídic anàleg, o en té algun en la cadena de propietat?", "en": "Is the company part of a trust or similar legal arrangement, or is there one in its ownership chain?" },
+      "si_si": { "ca": "Si sí", "en": "If yes" },
+      "rols": {
+        "fideicomitent": { "ca": "fideïcomitents", "en": "settlors" },
+        "fiduciari": { "ca": "fiduciaris", "en": "trustees" },
+        "protector": { "ca": "protectors", "en": "protectors" },
+        "beneficiari": { "ca": "beneficiaris", "en": "beneficiaries" }
+      },
+      "amb": { "ca": "amb nom, nacionalitat i residència", "en": "with name, nationality and residence" },
+      "nom": { "ca": "nom", "en": "name" },
+      "nacionalitat": { "ca": "nacionalitat", "en": "nationality" },
+      "residencia": { "ca": "residència", "en": "residence" }
+    },
+    "s7": {
+      "titol": { "ca": "Sancions internacionals", "en": "International sanctions" },
+      "establert_ru_by": { "ca": "La societat, algun soci o algun beneficiari efectiu està establert o té la residència a la Federació Russa o a la República de Belarús?", "en": "Is the company, any shareholder or any beneficial owner established or resident in the Russian Federation or the Republic of Belarus?" },
+      "actua_ru_by": { "ca": "La societat actua en nom o per compte d'alguna persona o entitat establerta en aquests països?", "en": "Does the company act on behalf of any person or entity established in those countries?" }
+    },
+    "s9": {
+      "titol": { "ca": "Origen dels fons", "en": "Source of funds" },
+      "origen": { "ca": "Procedència dels fons (en podeu marcar diverses)", "en": "Source of funds (you may select more than one)" },
+      "opcions": {
+        "activitat_societat": { "ca": "activitat de la societat", "en": "company's business activity" },
+        "aportacions": { "ca": "aportacions dels socis", "en": "shareholder contributions" },
+        "dividends": { "ca": "dividends", "en": "dividends" },
+        "venda": { "ca": "venda de béns, negocis o empreses", "en": "sale of assets, businesses or companies" },
+        "immobles": { "ca": "rendes d'immobles", "en": "rental income" },
+        "inversions": { "ca": "inversions", "en": "investments" },
+        "financament": { "ca": "finançament bancari", "en": "bank financing" },
+        "altres": { "ca": "altres (especifiqueu-ho)", "en": "other (please specify)" },
+        "no_escau": { "ca": "no s'escau, la relació no implica cap moviment de fons", "en": "not applicable, the relationship involves no movement of funds" }
+      },
+      "andorra": { "ca": "Els fons provenen d'Andorra?", "en": "Do the funds originate in Andorra?" },
+      "paisos": { "ca": "Si no, país o països", "en": "If not, country or countries." },
+      "descripcio": { "ca": "Descripció breu", "en": "Brief description" }
+    },
+    "s10": {
+      "titol": { "ca": "Declaracions", "en": "Declarations" },
+      "punts": [
+        { "ca": "Declaro, en nom de la societat, que les dades d'aquest formulari són veraces, completes i actuals.", "en": "I declare, on behalf of the company, that the information in this form is true, complete and up to date." },
+        { "ca": "Declaro, en nom de la societat, que els fons no provenen d'activitats relacionades amb el blanqueig de capitals ni amb el finançament del terrorisme.", "en": "I declare, on behalf of the company, that the funds do not derive from activities related to money laundering or terrorist financing." },
+        { "ca": "Declaro, en nom de la societat, que els fons s'han declarat degudament al país de residència fiscal de la societat i que s'hi han pagat els impostos corresponents.", "en": "I declare, on behalf of the company, that the funds have been duly declared in the company's country of tax residence and that the corresponding taxes have been paid." },
+        { "ca": "Em comprometo, en nom de la societat, a comunicar a DEL SOTO – PALEARI & ASSOCIATS, SL qualsevol canvi en aquestes dades i a aportar-ne la documentació addicional que se'ns requereixi.", "en": "I undertake, on behalf of the company, to notify DEL SOTO – PALEARI & ASSOCIATS, SL of any change to this information and to provide any additional documentation requested." }
+      ]
+    },
+    "s11": {
+      "titol": { "ca": "Documentació", "en": "Documents" },
+      "documents": {
+        "escriptura": { "ca": "Escriptura de constitució i estatuts vigents", "en": "Deed of incorporation and current articles of association" },
+        "vigencia": { "ca": "Certificat de vigència del Registre de Societats o equivalent estranger, de menys de tres mesos", "en": "Certificate of good standing from the Companies Register or foreign equivalent, less than three months old" },
+        "registre_be": { "ca": "Extracte del Registre de beneficiaris efectius o equivalent", "en": "Extract from the Register of Beneficial Owners or equivalent" },
+        "nrt": { "ca": "Targeta del NRT o document fiscal equivalent", "en": "NRT card or equivalent tax document" },
+        "poder": { "ca": "Poder del signant", "en": "Signatory's power of attorney" },
+        "identitat": { "ca": "Document d'identitat de cada representant i de cada beneficiari efectiu", "en": "Identity document of each representative and each beneficial owner" },
+        "comerc": { "ca": "Alta al Registre de Comerç o llicència d'activitat", "en": "Trade Register entry or business licence" },
+        "fons": { "ca": "Justificant de l'origen dels fons (darrers comptes anuals o declaració de l'impost de societats)", "en": "Evidence of the source of funds (latest annual accounts or corporate income tax return)" },
+        "organigrama": { "ca": "Organigrama de la propietat", "en": "Ownership chart" },
+        "trust": { "ca": "Documentació del fideïcomís", "en": "Trust documentation" },
+        "patrimoni": { "ca": "Justificant de l'origen del patrimoni de cada beneficiari efectiu que sigui PPE", "en": "Evidence of the source of wealth of any beneficial owner who is a PEP" }
+      }
+    },
+    "s12": {
+      "titol": { "ca": "Signatura", "en": "Signature" },
+      "avis": { "ca": "El signant, en representació de la societat.", "en": "The signatory, on behalf of the company." }
+    }
+  },
+
+  "pdp": {
+    "titol": { "ca": "INFORMACIÓ SOBRE PROTECCIÓ DE DADES PERSONALS", "en": "PERSONAL DATA PROTECTION INFORMATION" },
+    "seccions": [
+      {
+        "titol": { "ca": "Responsable del tractament", "en": "Data controller" },
+        "paragrafs": [
+          { "ca": "DEL SOTO – PALEARI & ASSOCIATS, SL (ÀMBIT Associats), NRT L-720543-P, Av. Fiter i Rossell, 78, 2n B, AD700 Escaldes-Engordany. Contacte: info@ambit.ad · +376 655 382. No ha designat delegat de protecció de dades, perquè no hi està obligada.",
+            "en": "DEL SOTO – PALEARI & ASSOCIATS, SL (ÀMBIT Associats), Tax ID L-720543-P, Av. Fiter i Rossell, 78, 2n B, AD700 Escaldes-Engordany, Andorra. Contact: info@ambit.ad · +376 655 382. It has not appointed a data protection officer, as it is not required to do so." }
+        ]
+      },
+      {
+        "titol": { "ca": "Normativa aplicable", "en": "Applicable legislation" },
+        "paragrafs": [
+          { "ca": "Llei 29/2021, del 28 d'octubre, qualificada de protecció de dades personals, i el seu Reglament. Les dades del formulari d'identificació del client (KYC) es regeixen per la Llei 14/2017 i no per aquesta informació (article 38.3 de la Llei 14/2017).",
+            "en": "Andorran Qualified Law 29/2021, of 28 October, on the protection of personal data, and its implementing Regulation. The data in the client identification form (KYC) are governed by Law 14/2017 and not by this information notice (Article 38.3 of Law 14/2017)." }
+        ]
+      },
+      {
+        "titol": { "ca": "Finalitats i base jurídica", "en": "Purposes and legal basis" },
+        "nota": { "ca": "article 6.1 de la Llei 29/2021", "en": "Article 6.1 of Law 29/2021" },
+        "numerats": [
+          { "ca_negreta": "Prestar els serveis contractats", "ca": " (comptables, fiscals, laborals, mercantils i societaris, constitució de societats i tràmits de residència), inclosa la presentació de declaracions i tràmits davant de les administracions. Base: execució del contracte (lletra b).",
+            "en_negreta": "To provide the services engaged", "en": " (accounting, tax, employment, commercial and corporate services, company incorporation and residence procedures), including filing returns and carrying out procedures before public authorities. Basis: performance of the contract (letter b)." },
+          { "ca_negreta": "Facturar els serveis i gestionar-ne el cobrament", "ca": ", inclosos els càrrecs en compte autoritzats. Base: execució del contracte (lletra b).",
+            "en_negreta": "To invoice the services and collect payment", "en": ", including authorised direct debits. Basis: performance of the contract (letter b)." },
+          { "ca_negreta": "Complir les obligacions legals del despatx", "ca": ": comptables, fiscals i de prevenció del blanqueig de capitals. Base: obligació legal (lletra c).",
+            "en_negreta": "To comply with the firm's legal obligations", "en": ": accounting, tax and anti-money laundering. Basis: legal obligation (letter c)." },
+          { "ca_negreta": "Defensar-nos davant de reclamacions i garantir la seguretat dels nostres sistemes.", "ca": " Base: interès legítim (lletra f).",
+            "en_negreta": "To defend ourselves against claims and to ensure the security of our systems.", "en": " Basis: legitimate interest (letter f)." },
+          { "ca_negreta": "Enviar-vos informació sobre novetats normatives i serveis del despatx", "ca": ", només si ho autoritzeu. Base: consentiment (lletra a), que podeu retirar en qualsevol moment.",
+            "en_negreta": "To send you information on legislative developments and the firm's services", "en": ", only if you authorise it. Basis: consent (letter a), which you may withdraw at any time." }
+        ]
+      },
+      {
+        "titol": { "ca": "Obligatorietat de les dades", "en": "Mandatory data" },
+        "paragrafs": [
+          { "ca": "Les dades necessàries per a les finalitats 1 a 3 són obligatòries: sense aquestes dades no podem prestar els serveis. El consentiment per a la finalitat 5 és voluntari i no condiciona la prestació dels serveis.",
+            "en": "The data required for purposes 1 to 3 are mandatory: without them we cannot provide the services. Consent for purpose 5 is voluntary and does not affect the provision of the services." }
+        ]
+      },
+      {
+        "titol": { "ca": "Destinataris", "en": "Recipients" },
+        "punts": [
+          { "ca_negreta": "Administracions públiques", "ca": ", quan ho exigeixi la llei o ho requereixi el servei: Departament de Tributs i de Fronteres, Caixa Andorrana de Seguretat Social, Registre de Societats Mercantils, Registre de Comerç, Departament d'Immigració, Unitat d'Intel·ligència Financera d'Andorra (UIFAND) i òrgans jurisdiccionals.",
+            "en_negreta": "Public authorities", "en": ", where required by law or by the service: Department of Taxation and Borders, Andorran Social Security Fund (CASS), Companies Register, Trade Register, Immigration Department, Financial Intelligence Unit of Andorra (UIFAND) and the courts." },
+          { "ca_negreta": "Entitats financeres", "ca": ", per al cobrament de les factures.",
+            "en_negreta": "Banks", "en": ", for the collection of invoices." },
+          { "ca_negreta": "Professionals col·laboradors", "ca": " (notaris, advocats i altres assessors), quan sigui necessari per prestar el servei, sotmesos a deure de confidencialitat.",
+            "en_negreta": "Partner professionals", "en": " (notaries, lawyers and other advisers), where necessary to provide the service, bound by a duty of confidentiality." },
+          { "ca_negreta": "Proveïdors tecnològics", "ca": " que tracten dades per compte nostre (encarregats del tractament): programari de comptabilitat i nòmines (ContaSOL, Key & Cloud i Xero), emmagatzematge de documents (Google Drive), correu electrònic (Andornet), plataforma del portal de clients (Supabase, a la Unió Europea), allotjament de la web (Vercel) i formularis de la web (Formspree).",
+            "en_negreta": "Technology providers", "en": " processing data on our behalf (data processors): accounting and payroll software (ContaSOL, Key & Cloud and Xero), document storage (Google Drive), email (Andornet), client portal platform (Supabase, in the European Union), website hosting (Vercel) and website forms (Formspree)." }
+        ]
+      },
+      {
+        "titol": { "ca": "Transferències internacionals", "en": "International transfers" },
+        "paragrafs": [
+          { "ca": "Alguns proveïdors tecnològics tenen la seu o subencarregats fora de l'Espai Econòmic Europeu, en particular als Estats Units. En aquests casos, les transferències es fan amb les garanties previstes als articles 43 i 44 de la Llei 29/2021, com ara les clàusules contractuals tipus de la Comissió Europea.",
+            "en": "Some technology providers are based, or have sub-processors, outside the European Economic Area, in particular in the United States. In such cases, transfers take place with the safeguards provided for in Articles 43 and 44 of Law 29/2021, such as the European Commission's standard contractual clauses." }
+        ]
+      },
+      {
+        "titol": { "ca": "Terminis de conservació", "en": "Retention periods" },
+        "punts": [
+          { "ca": "Dades de la relació de serveis: mentre duri la relació i, després, durant els terminis de prescripció de les responsabilitats que se'n puguin derivar. La documentació tributària es conserva com a mínim tres anys, o sis quan afecti bases o deduccions pendents de compensar (article 54 de la Llei 21/2014, del 16 d'octubre, de bases de l'ordenament tributari).",
+            "en": "Data relating to the services: for the duration of the relationship and thereafter for the limitation periods of any resulting liabilities. Tax documentation is kept for at least three years, or six years where it concerns tax bases or deductions pending offset (Article 54 of Law 21/2014, of 16 October, on the basis of the tax system)." },
+          { "ca": "Factures i justificants comptables del despatx: sis anys des de l'aprovació dels comptes de l'exercici (article 70.2 de la Llei 20/2007, del 18 d'octubre, de societats anònimes i de responsabilitat limitada) i, en tot cas, durant el termini de prescripció de l'impost general indirecte (article 77.1 de la Llei 11/2012).",
+            "en": "The firm's invoices and accounting records: six years from the approval of the accounts for the financial year (Article 70.2 of Law 20/2007, of 18 October, on public and private limited companies) and, in any event, for the limitation period of the general indirect tax (Article 77.1 of Law 11/2012)." },
+          { "ca": "Autoritzacions de càrrec en compte: mentre siguin vigents i, un cop retirades, tretze mesos des de la data més tardana entre la retirada i l'últim càrrec.",
+            "en": "Direct debit authorisations: while in force and, once withdrawn, thirteen months from the later of the withdrawal date and the last debit." },
+          { "ca": "Comunicacions comercials: fins que retireu el consentiment.",
+            "en": "Marketing communications: until you withdraw your consent." },
+          { "ca": "Un cop vençuts aquests terminis, les dades es bloquegen durant tres anys i només es poden posar a disposició dels òrgans jurisdiccionals i de les autoritats competents. Després es destrueixen (articles 30 i 70.1 de la Llei 29/2021).",
+            "en": "Once these periods have expired, the data are blocked for three years and may only be made available to the courts and the competent authorities. They are then destroyed (Articles 30 and 70.1 of Law 29/2021)." }
+        ]
+      },
+      {
+        "titol": { "ca": "Drets", "en": "Rights" },
+        "paragrafs": [
+          { "ca": "Podeu exercir els drets d'accés, rectificació, supressió, limitació del tractament, portabilitat i oposició (articles 18 a 24 de la Llei 29/2021) i retirar el consentiment en qualsevol moment, sense que això afecti la licitud del tractament anterior. Per fer-ho, adreceu-vos a info@ambit.ad, amb una còpia del vostre document d'identitat. Responem en el termini d'un mes. Podeu presentar una reclamació davant l'Agència Andorrana de Protecció de Dades (www.apda.ad).",
+            "en": "You may exercise your rights of access, rectification, erasure, restriction of processing, portability and objection (Articles 18 to 24 of Law 29/2021) and withdraw your consent at any time, without affecting the lawfulness of prior processing. To do so, write to info@ambit.ad, enclosing a copy of your identity document. We reply within one month. You may lodge a complaint with the Andorran Data Protection Agency (www.apda.ad)." }
+        ]
+      },
+      {
+        "titol": { "ca": "Decisions automatitzades", "en": "Automated decisions" },
+        "paragrafs": [
+          { "ca": "No prenem decisions basades únicament en el tractament automatitzat de les vostres dades ni elaborem perfils.",
+            "en": "We do not take decisions based solely on automated processing of your data, nor do we carry out profiling." }
+        ]
+      }
+    ],
+    "consentiment": {
+      "titol": { "ca": "Consentiment per a comunicacions comercials", "en": "Consent to marketing communications" },
+      "ca": "Autoritzo DEL SOTO – PALEARI & ASSOCIATS, SL a enviar-me informació sobre novetats normatives i sobre els serveis del despatx per correu electrònic.",
+      "en": "I authorise DEL SOTO – PALEARI & ASSOCIATS, SL to send me information on legislative developments and on the firm's services by email."
+    },
+    "signatura": {
+      "titol": { "ca": "Signatura", "en": "Signature" },
+      "declaracio": { "ca": "Declaro que he rebut i llegit aquesta informació.", "en": "I confirm that I have received and read this information." }
+    }
+  },
+
+  "correu": {
+    "assumpte": "Identificació del client i protecció de dades · ÀMBIT Associats",
+    "cos": "Benvolgut/da {nom},\n\nPer complir la normativa de prevenció del blanqueig de capitals, us demanem que empleneu el formulari d'identificació del client i que signeu la informació sobre protecció de dades a través de l'enllaç següent:\n\n{enllaç}\n\nDurant el procés se us demanarà que adjunteu la documentació necessària. L'enllaç és personal i d'un sol ús, i caduca el {data}.\n\nPer a qualsevol dubte, podeu contactar amb nosaltres a info@ambit.ad o al +376 655 382.\n\nAtentament,\n\nÀMBIT Associats\n\nDear {nom},\n\nIn order to comply with anti-money laundering legislation, please complete the client identification form and sign the data protection information using the following link:\n\n{enllaç}\n\nYou will be asked to upload the required documents during the process. This link is personal, can only be used once and expires on {data}.\n\nIf you have any questions, please contact us at info@ambit.ad or on +376 655 382.\n\nKind regards,\n\nÀMBIT Associats"
+  },
+
+  "peu": [
+    "DEL SOTO – PALEARI & ASSOCIATS, SL · NRT L-720543-P · Av. Fiter i Rossell, 78, 2n B · AD700 Escaldes-Engordany · Andorra",
+    "info@ambit.ad · +376 655 382 · +376 632 306"
+  ]
+}
