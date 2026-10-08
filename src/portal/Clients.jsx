@@ -1,8 +1,9 @@
 // src/portal/Clients.jsx
-// Clients del portal: llista, cerca, alta, referència (ABA-01, màx. 14 caràcters)
-// i creació de sol·licituds d'autorització de càrrec.
+// Clients del portal: llista, cerca, alta, referència (ABA-01, màx. 14 caràcters),
+// creació de sol·licituds (autorització de càrrec, KYC i protecció de dades),
+// fi de la relació (només OCIC) i consentiment de comunicacions comercials.
 import React, { useEffect, useState } from 'react';
-import { portal, VERSIO_PLANTILLA, dataCurta } from './portalApi';
+import { portal, VERSIO_PLANTILLA, dataCurta, invoca } from './portalApi';
 import { Avis, Boto, Entrada, Selector, Targeta } from './ui';
 
 const Referencia = ({ client, onDesat }) => {
@@ -31,7 +32,56 @@ const Referencia = ({ client, onDesat }) => {
   );
 };
 
-const Clients = ({ onObreSolicitud }) => {
+const avui = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' });
+
+// Fi de la relació (només OCIC; fixa els terminis de conservació del KYC i de la
+// protecció de dades) i consentiment comercial (el personal en pot anotar la retirada)
+const RelacioIConsentiment = ({ client, rol, onDesat }) => {
+  const [fi, setFi] = useState(client.data_fi_relacio || '');
+  const [retirada, setRetirada] = useState(null);
+  const [error, setError] = useState('');
+  const desaFi = async () => {
+    setError('');
+    if (!window.confirm(fi ? `Fixar la fi de la relació el ${fi}? A partir d'aquesta data compten els terminis de conservació.` : 'Treure la data de fi de la relació?')) return;
+    const { error: e } = await portal.rpc('fixa_fi_relacio', { p_client_id: client.id, p_data: fi || null });
+    if (e) setError(e.message); else onDesat();
+  };
+  const desaRetirada = async () => {
+    setError('');
+    const { error: e } = await portal.rpc('anota_retirada_consentiment', { p_client_id: client.id, p_data: retirada.data, p_nota: retirada.nota });
+    if (e) setError(e.message); else { setRetirada(null); onDesat(); }
+  };
+  const vigent = client.consentiment_comercial === true && !client.consentiment_retirat_el;
+  return (
+    <div className="w-full flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500 pl-1">
+      <span>
+        Comunicacions comercials:{' '}
+        {client.consentiment_comercial == null ? '—'
+          : client.consentiment_retirat_el ? `retirat el ${dataCurta(client.consentiment_retirat_el)}`
+            : client.consentiment_comercial ? `sí (des del ${dataCurta(client.consentiment_comercial_at)})` : 'no'}
+      </span>
+      {vigent && !retirada && <button type="button" className="text-[#009B9C] hover:underline" onClick={() => setRetirada({ data: avui(), nota: '' })}>Anotar retirada</button>}
+      {retirada && (
+        <span className="flex flex-wrap items-center gap-2">
+          <input type="date" value={retirada.data} max={avui()} onChange={(e) => setRetirada({ ...retirada, data: e.target.value })} className="border border-gray-300 rounded px-2 py-1" />
+          <input value={retirada.nota} placeholder="Com ho ha comunicat (opcional)" maxLength={300} onChange={(e) => setRetirada({ ...retirada, nota: e.target.value })} className="border border-gray-300 rounded px-2 py-1 w-56" />
+          <Boto onClick={desaRetirada}>Desar</Boto>
+          <Boto variant="secundari" onClick={() => setRetirada(null)}>Cancel·lar</Boto>
+        </span>
+      )}
+      {rol === 'ocic' ? (
+        <span className="flex items-center gap-2">
+          Fi de la relació:
+          <input type="date" value={fi} max={avui()} onChange={(e) => setFi(e.target.value)} className="border border-gray-300 rounded px-2 py-1" />
+          {fi !== (client.data_fi_relacio || '') && <Boto onClick={desaFi}>Desar</Boto>}
+        </span>
+      ) : client.data_fi_relacio && <span>Fi de la relació: {dataCurta(client.data_fi_relacio)}</span>}
+      {error && <span className="text-red-600">{error}</span>}
+    </div>
+  );
+};
+
+const Clients = ({ onObreSolicitud, rol }) => {
   const [clients, setClients] = useState([]);
   const [carregant, setCarregant] = useState(true);
   const [cerca, setCerca] = useState('');
@@ -41,7 +91,7 @@ const Clients = ({ onObreSolicitud }) => {
 
   const carrega = async () => {
     const { data, error } = await portal.from('clients')
-      .select('id, party_type, nom_mostrat, referencia_client, created_at, requests(id, status)')
+      .select('id, party_type, nom_mostrat, referencia_client, created_at, data_fi_relacio, consentiment_comercial, consentiment_comercial_at, consentiment_retirat_el, requests(id, status, document_type)')
       .order('created_at', { ascending: false });
     if (!error) setClients(data || []);
     setCarregant(false);
@@ -75,6 +125,16 @@ const Clients = ({ onObreSolicitud }) => {
     }).select('id').single();
     if (error) { alert('No s\'ha pogut crear la sol·licitud: ' + error.message); return; }
     onObreSolicitud(data.id);
+  };
+
+  // KYC i protecció de dades: dues sol·licituds enllaçades i un sol enllaç
+  const nouKyc = async (client) => {
+    try {
+      const r = await invoca('portal-kyc-personal', { accio: 'crea', client_id: client.id });
+      onObreSolicitud(r.request_id);
+    } catch (e) {
+      alert('No s\'ha pogut crear el KYC: ' + e.message);
+    }
   };
 
   const filtrats = clients.filter((c) => {
@@ -117,11 +177,13 @@ const Clients = ({ onObreSolicitud }) => {
                   <p className="text-sm font-semibold text-gray-800">{c.nom_mostrat}</p>
                   <p className="text-xs text-gray-400">
                     {c.party_type === 'pj' ? 'Persona jurídica' : 'Persona física'} · alta {dataCurta(c.created_at)}
-                    {c.requests?.length > 0 && ` · ${c.requests.length} sol·licitud${c.requests.length > 1 ? 's' : ''}`}
+                    {c.requests?.length > 0 && ` · ${c.requests.filter((r) => r.document_type !== 'pdp').length} sol·licitud${c.requests.filter((r) => r.document_type !== 'pdp').length > 1 ? 's' : ''}`}
                   </p>
                 </div>
                 <Referencia client={c} onDesat={carrega} />
                 <Boto variant="secundari" onClick={() => novaSolicitud(c)}>+ Nova autorització</Boto>
+                <Boto variant="secundari" onClick={() => nouKyc(c)}>+ KYC i protecció de dades</Boto>
+                <RelacioIConsentiment client={c} rol={rol} onDesat={carrega} />
               </div>
             ))}
           </div>

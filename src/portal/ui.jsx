@@ -1,7 +1,7 @@
 // src/portal/ui.jsx
 // Peces visuals comunes del panell del portal (mateix estil que el panell del maestro).
 import React from 'react';
-import { ESTATS } from './portalApi';
+import { ESTATS, nomEstat } from './portalApi';
 
 export const Boto = ({ variant = 'primari', className = '', ...props }) => {
   const estils = {
@@ -47,9 +47,9 @@ export const Selector = ({ etiqueta, children, className = '', ...props }) => (
   </label>
 );
 
-export const EtiquetaEstat = ({ estat }) => (
+export const EtiquetaEstat = ({ estat, tipus }) => (
   <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${ESTATS[estat]?.color || ''}`}>
-    {ESTATS[estat]?.nom || estat}
+    {nomEstat(estat, tipus)}
   </span>
 );
 

@@ -1,6 +1,7 @@
 // src/portal/portalApi.js
 // Accés a l'esquema portal i a les Edge Functions del portal de signatura.
 import { supabase } from '../supabaseClient';
+import TK from './kyc/text-kyc.json';
 
 export const portal = supabase.schema('portal');
 
@@ -34,6 +35,24 @@ export const ESTATS = {
   retirat:   { nom: 'Retirat',   color: 'bg-purple-100 text-purple-700 border-purple-200' },
   anullat:   { nom: 'Anul·lat',  color: 'bg-red-100 text-red-700 border-red-200' },
 };
+
+// Tipus de document
+export const TIPUS_DOCUMENT = {
+  autoritzacio_carrec: 'Autorització de càrrec en compte',
+  kyc_pf: 'KYC i protecció de dades · persona física',
+  kyc_pj: 'KYC i protecció de dades · persona jurídica',
+  pdp: 'Protecció de dades',
+};
+export const esKyc = (t) => t === 'kyc_pf' || t === 'kyc_pj';
+
+// Noms d'estat propis del KYC: signat = pendent de validació de l'OCIC; actiu = validat
+export const nomEstat = (estat, tipus) => {
+  if (esKyc(tipus) && estat === 'signat') return 'Pendent de validació de l\'OCIC';
+  if (esKyc(tipus) && estat === 'actiu') return 'Validat';
+  return ESTATS[estat]?.nom || estat;
+};
+
+export const NIVELLS = { simplificada: 'Simplificada', normal: 'Normal', reforcada: 'Reforçada' };
 
 export const ENTITATS = { andbank: 'Andbank', creand: 'Creand', morabanc: 'MoraBanc' };
 
@@ -75,5 +94,19 @@ export const missatgeEnllac = ({ nom, enllac, expira }) => {
       '+376 655 382.\n\n' +
       'Kind regards,\n\n' +
       'ÀMBIT Associats',
+  };
+};
+
+// ─── Correu amb l'enllaç del KYC (text literal de la plantilla) ─────────────
+export const missatgeEnllacKyc = ({ nom, enllac, expira }) => {
+  const data = new Date(expira).toLocaleDateString('ca-AD', {
+    timeZone: 'Europe/Andorra', day: '2-digit', month: '2-digit', year: 'numeric',
+  });
+  return {
+    titol: 'Enllaç del KYC i la protecció de dades',
+    ajuda: 'Envia aquest missatge al client des del teu correu. L\'enllaç és personal: no el comparteixis amb ningú més.',
+    email: '',
+    assumpte: TK.correu.assumpte,
+    cos: TK.correu.cos.split('{nom}').join(nom).split('{enllaç}').join(enllac).split('{data}').join(data),
   };
 };

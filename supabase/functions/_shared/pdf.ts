@@ -5,6 +5,10 @@
 // verd #009B9C, logotip) i un full final d'evidències.
 // Els textos surten de text-autoritzacio.json, el mateix fitxer que el
 // formulari del client.
+//
+// Les peces de dibuix (capçalera, peu, barres de secció, camps, caselles i
+// full d'evidències) s'exporten: el KYC i la protecció de dades (pdf-kyc.ts)
+// fan servir exactament les mateixes.
 
 import { PDFDocument, PDFFont, PDFPage, PDFImage, rgb, RGB } from 'npm:pdf-lib@1.17.1';
 import fontkit from 'npm:@pdf-lib/fontkit@1.1.1';
@@ -38,33 +42,33 @@ export type DadesPdf = {
 };
 
 // ─── Colors i mides (A4, punts) ─────────────────────────────────────────────
-const VERD = rgb(0, 0x9b / 255, 0x9c / 255);
-const VERD_FOSC = rgb(0, 0x7a / 255, 0x7b / 255);
-const NEGRE = rgb(0.1, 0.1, 0.1);
-const GRIS = rgb(0.42, 0.42, 0.42);
-const GRIS_CLAR = rgb(0.85, 0.88, 0.88);
-const BLANC = rgb(1, 1, 1);
-const CAMP_FONS = rgb(0.984, 0.98, 0.945);
-const CAMP_VORA = rgb(0.76, 0.74, 0.42);
+export const VERD = rgb(0, 0x9b / 255, 0x9c / 255);
+export const VERD_FOSC = rgb(0, 0x7a / 255, 0x7b / 255);
+export const NEGRE = rgb(0.1, 0.1, 0.1);
+export const GRIS = rgb(0.42, 0.42, 0.42);
+export const GRIS_CLAR = rgb(0.85, 0.88, 0.88);
+export const BLANC = rgb(1, 1, 1);
+export const CAMP_FONS = rgb(0.984, 0.98, 0.945);
+export const CAMP_VORA = rgb(0.76, 0.74, 0.42);
 
-const AMPLE = 595.28;
-const ALT = 841.89;
-const ESQ = 57;
-const DRE = AMPLE - 53;
-const AMPLE_UTIL = DRE - ESQ;
-const X_CAMP = 214;
+export const AMPLE = 595.28;
+export const ALT = 841.89;
+export const ESQ = 57;
+export const DRE = AMPLE - 53;
+export const AMPLE_UTIL = DRE - ESQ;
+export const X_CAMP = 214;
 // Mida del text de l'autorització i les condicions (com l'original)
 const MIDA_CA = 11.6;
 const MIDA_EN = 8.7;
 
-type Fonts = { r: PDFFont; b: PDFFont; i: PDFFont };
+export type Fonts = { r: PDFFont; b: PDFFont; i: PDFFont };
 
-const llegeixActiu = (nom: string) => Deno.readFile(new URL(`./assets/${nom}`, import.meta.url));
+export const llegeixActiu = (nom: string) => Deno.readFile(new URL(`./assets/${nom}`, import.meta.url));
 
 // ─── Ajudes de dibuix ───────────────────────────────────────────────────────
 
 // Parteix un text en línies que caben a l'amplada donada.
-const linies = (text: string, font: PDFFont, mida: number, ample: number): string[] => {
+export const linies = (text: string, font: PDFFont, mida: number, ample: number): string[] => {
   const paraules = text.split(/\s+/).filter(Boolean);
   const out: string[] = [];
   let actual = '';
@@ -92,7 +96,7 @@ const linies = (text: string, font: PDFFont, mida: number, ample: number): strin
 };
 
 // Paràgraf justificat (com l'original). Retorna la y final.
-const paragraf = (
+export const paragraf = (
   page: PDFPage, text: string, x: number, y: number, ample: number,
   font: PDFFont, mida: number, color: RGB, interlinia: number, justificat = true,
 ): number => {
@@ -117,7 +121,7 @@ const paragraf = (
 };
 
 // Text que cap en una amplada: redueix la mida si cal.
-const textAjustat = (
+export const textAjustat = (
   page: PDFPage, text: string, x: number, y: number, ample: number,
   font: PDFFont, mida: number, color: RGB,
 ) => {
@@ -126,7 +130,7 @@ const textAjustat = (
   page.drawText(text, { x, y, size: m, font, color });
 };
 
-const rectArrodonit = (page: PDFPage, x: number, y: number, w: number, h: number, r: number, vora: RGB, gruix: number) => {
+export const rectArrodonit = (page: PDFPage, x: number, y: number, w: number, h: number, r: number, vora: RGB, gruix: number) => {
   // y és la vora inferior; drawSvgPath fa servir coordenades amb l'eix Y cap avall
   const path = `M ${r} 0 H ${w - r} A ${r} ${r} 0 0 1 ${w} ${r} V ${h - r} A ${r} ${r} 0 0 1 ${w - r} ${h} ` +
     `H ${r} A ${r} ${r} 0 0 1 0 ${h - r} V ${r} A ${r} ${r} 0 0 1 ${r} 0 Z`;
@@ -135,17 +139,24 @@ const rectArrodonit = (page: PDFPage, x: number, y: number, w: number, h: number
 
 // ─── Peces de la plantilla ──────────────────────────────────────────────────
 
-const capcalera = (page: PDFPage, f: Fonts, logo: PDFImage) => {
+// Títol en verd a la dreta i subtítol en anglès a sota, en cursiva grisa. Si
+// el títol no hi cap al costat del logotip, es redueix la mida.
+export const capcalera = (page: PDFPage, f: Fonts, logo: PDFImage, t: { ca: string; en: string } = T.titol) => {
   const h = 42;
   page.drawImage(logo, { x: ESQ + 2, y: ALT - 37 - h, width: h * 2, height: h });
-  const titol = T.titol.ca;
-  page.drawText(titol, { x: DRE - f.b.widthOfTextAtSize(titol, 14), y: ALT - 57, size: 14, font: f.b, color: VERD });
-  const sub = T.titol.en;
-  page.drawText(sub, { x: DRE - f.i.widthOfTextAtSize(sub, 10), y: ALT - 73, size: 10, font: f.i, color: GRIS });
+  const titol = t.ca;
+  const espai = DRE - (ESQ + 2 + h * 2 + 14);
+  let mida = 14;
+  while (mida > 9 && f.b.widthOfTextAtSize(titol, mida) > espai) mida -= 0.25;
+  page.drawText(titol, { x: DRE - f.b.widthOfTextAtSize(titol, mida), y: ALT - 57, size: mida, font: f.b, color: VERD });
+  const sub = t.en;
+  let midaSub = 10;
+  while (midaSub > 7 && f.i.widthOfTextAtSize(sub, midaSub) > espai) midaSub -= 0.25;
+  page.drawText(sub, { x: DRE - f.i.widthOfTextAtSize(sub, midaSub), y: ALT - 73, size: midaSub, font: f.i, color: GRIS });
   page.drawLine({ start: { x: ESQ, y: ALT - 89 }, end: { x: DRE, y: ALT - 89 }, thickness: 1.2, color: VERD });
 };
 
-const peu = (page: PDFPage, f: Fonts, num: number, total: number) => {
+export const peu = (page: PDFPage, f: Fonts, num: number, total: number) => {
   page.drawLine({ start: { x: ESQ, y: 42 }, end: { x: DRE, y: 42 }, thickness: 0.6, color: VERD });
   page.drawText(T.peu[0], { x: ESQ, y: 31, size: 7.2, font: f.r, color: GRIS });
   page.drawText(T.peu[1], { x: ESQ, y: 20, size: 7.2, font: f.r, color: GRIS });
@@ -154,14 +165,14 @@ const peu = (page: PDFPage, f: Fonts, num: number, total: number) => {
 };
 
 // Barra verda de secció. Retorna la y per sota.
-const seccio = (page: PDFPage, f: Fonts, y: number, ca: string, en: string): number => {
+export const seccio = (page: PDFPage, f: Fonts, y: number, ca: string, en: string): number => {
   page.drawRectangle({ x: ESQ, y: y - 20, width: AMPLE_UTIL, height: 20, color: VERD });
   page.drawText(ca, { x: ESQ + 8, y: y - 14, size: 11, font: f.b, color: BLANC });
   page.drawText(en, { x: DRE - 8 - f.i.widthOfTextAtSize(en, 9), y: y - 13.5, size: 9, font: f.i, color: BLANC });
   return y - 20;
 };
 
-const avis = (page: PDFPage, f: Fonts, y: number, ca: string, en: string): number => {
+export const avis = (page: PDFPage, f: Fonts, y: number, ca: string, en: string): number => {
   page.drawText(`${ca}  /  ${en}`, { x: ESQ, y: y - 11, size: 7.5, font: f.i, color: GRIS });
   return y - 16;
 };
@@ -175,7 +186,7 @@ const filaCreditor = (page: PDFPage, f: Fonts, y: number, ca: string, en: string
 };
 
 // Etiqueta en dues línies (català en negreta, anglès en cursiva) i camp ple.
-const camp = (
+export const camp = (
   page: PDFPage, f: Fonts, y: number, ca: string, en: string, valor: string | null,
   opts: { obligatori?: boolean; x?: number; ample?: number; negreta?: boolean } = {},
 ): number => {
@@ -189,7 +200,7 @@ const camp = (
   return y - 31.5;
 };
 
-const casella = (page: PDFPage, f: Fonts, x: number, y: number, etiqueta: string, marcada: boolean) => {
+export const casella = (page: PDFPage, f: Fonts, x: number, y: number, etiqueta: string, marcada: boolean) => {
   page.drawRectangle({ x, y: y - 14, width: 14, height: 14, color: BLANC, borderColor: CAMP_VORA, borderWidth: 0.8 });
   if (marcada) {
     page.drawLine({ start: { x: x + 3, y: y - 11 }, end: { x: x + 11, y: y - 3 }, thickness: 1.4, color: VERD_FOSC });
@@ -206,9 +217,42 @@ const condicio = (page: PDFPage, f: Fonts, y: number, num: number, ca: string, e
 };
 
 // Data i hora en format del país (Andorra) i en UTC
-const dataLocal = (d: Date) =>
+export const dataLocal = (d: Date) =>
   new Intl.DateTimeFormat('ca-AD', { timeZone: 'Europe/Andorra', day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
-const dataUtc = (d: Date) => d.toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC');
+export const dataUtc = (d: Date) => d.toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC');
+
+// Fila del full d'evidències: etiqueta (català en negreta, anglès en cursiva)
+// i valor a la dreta, amb línia de separació. Retorna la y per sota.
+export const alcadaEvidencia = (f: Fonts, valor: string): number =>
+  Math.max(30, 12 + linies(valor, f.r, 9.5, DRE - 230 - 6).length * 12);
+
+export const filaEvidencia = (page: PDFPage, f: Fonts, y: number, [ca, en, valor]: [string, string, string]): number => {
+  const ls = linies(valor, f.r, 9.5, DRE - 230 - 6);
+  const h = Math.max(30, 12 + ls.length * 12);
+  page.drawText(ca, { x: ESQ + 6, y: y - 13, size: 10, font: f.b, color: NEGRE });
+  page.drawText(en, { x: ESQ + 6, y: y - 23, size: 7.5, font: f.i, color: GRIS });
+  ls.forEach((l, i) => page.drawText(l, { x: 230, y: y - 13 - i * 12, size: 9.5, font: f.r, color: NEGRE }));
+  y -= h;
+  page.drawLine({ start: { x: ESQ, y: y + 3 }, end: { x: DRE, y: y + 3 }, thickness: 0.5, color: GRIS_CLAR });
+  return y;
+};
+
+// Tipus de lletra Carlito incrustats (subconjunt) i logotip
+export const carregaRecursos = async (pdf: PDFDocument): Promise<{ f: Fonts; logo: PDFImage }> => {
+  pdf.registerFontkit(fontkit);
+  const [reg, neg, cur, logoBytes] = await Promise.all([
+    llegeixActiu('Carlito-Regular.ttf'), llegeixActiu('Carlito-Bold.ttf'),
+    llegeixActiu('Carlito-Italic.ttf'), llegeixActiu('logo-ambit.jpg'),
+  ]);
+  return {
+    f: {
+      r: await pdf.embedFont(reg, { subset: true }),
+      b: await pdf.embedFont(neg, { subset: true }),
+      i: await pdf.embedFont(cur, { subset: true }),
+    },
+    logo: await pdf.embedJpg(logoBytes),
+  };
+};
 
 // ─── Document ───────────────────────────────────────────────────────────────
 
@@ -359,15 +403,7 @@ export const generaPdf = async (d: DadesPdf): Promise<Uint8Array> => {
     ...(d.poderSha256 ? [['Empremta del poder (SHA-256)', 'Power of attorney fingerprint (SHA-256)', d.poderSha256] as [string, string, string]] : []),
   ];
 
-  for (const [ca, en, valor] of files) {
-    const ls = linies(valor, f.r, 9.5, DRE - 230 - 6);
-    const h = Math.max(30, 12 + ls.length * 12);
-    p3.drawText(ca, { x: ESQ + 6, y: y - 13, size: 10, font: f.b, color: NEGRE });
-    p3.drawText(en, { x: ESQ + 6, y: y - 23, size: 7.5, font: f.i, color: GRIS });
-    ls.forEach((l, i) => p3.drawText(l, { x: 230, y: y - 13 - i * 12, size: 9.5, font: f.r, color: NEGRE }));
-    y -= h;
-    p3.drawLine({ start: { x: ESQ, y: y + 3 }, end: { x: DRE, y: y + 3 }, thickness: 0.5, color: GRIS_CLAR });
-  }
+  for (const fila of files) y = filaEvidencia(p3, f, y, fila);
 
   y -= 14;
   y = paragraf(p3,
