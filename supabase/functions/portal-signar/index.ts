@@ -10,7 +10,8 @@
 //   url_pujada  URL signada per pujar el poder (persona jurídica).
 //   signar      desa les dades (IBAN xifrat), calcula l'empremta, genera el
 //               PDF, el puja, registra la signatura en una sola transacció,
-//               avisa ÀMBIT per Formspree i retorna una URL de descàrrega.
+//               avisa ÀMBIT per Formspree (sense dades del client) i retorna
+//               una URL de descàrrega.
 
 import {
   aBytea, clientAdmin, deBase64, entrada, formatToken, ipClient, llegeixCos,
@@ -23,6 +24,19 @@ const MAX_ADJUNT = 20 * 1024 * 1024;
 const MAX_FIRMA = 1024 * 1024;
 const SEGONS_DESCARREGA = 300;
 const NEUTRE = 'Enllaç no vàlid o caducat';
+
+// Avís a ÀMBIT per Formspree: contingut fix, sense cap dada del client ni cap
+// identificador (ni nom, ni referència, ni id de la sol·licitud, ni IBAN).
+// Els detalls es consulten al portal.
+const AVIS_SIGNATURA = {
+  _subject: 'Nova autorització signada al portal',
+  name: 'Portal de signatura',
+  email: 'info@ambit.ad',
+  message: 'S\'ha signat una nova autorització de càrrec en compte al portal de signatura d\'ÀMBIT Associats.\n\n' +
+    'Podeu consultar-la a https://www.ambit.ad/portal',
+};
+// Només per a les proves locals (per defecte, Formspree)
+const FORMSPREE_BASE = Deno.env.get('FORMSPREE_BASE_URL') || 'https://formspree.io/f/';
 
 // Límits per IP (finestres de 10 minuts)
 const MAX_PETICIONS = 60;
@@ -287,22 +301,14 @@ Deno.serve(async (req) => {
     return resposta(500, { error: 'No s\'ha pogut registrar la signatura' });
   }
 
-  // f) Avís a ÀMBIT per Formspree (mai l'IBAN). Si falla, la signatura ja és vàlida.
+  // f) Avís a ÀMBIT per Formspree (sense cap dada del client). Si falla, la signatura ja és vàlida.
   const formspree = Deno.env.get('FORMSPREE_FORM_ID');
   if (formspree) {
     try {
-      const r = await fetch(`https://formspree.io/f/${formspree}`, {
+      const r = await fetch(`${FORMSPREE_BASE}${formspree}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          _subject: 'Autorització signada',
-          missatge: 'Autorització signada',
-          client: sol.client_nom,
-          referencia: client?.referencia_client || 'Pendent d\'assignar',
-          data: new Intl.DateTimeFormat('ca-AD', {
-            timeZone: 'Europe/Andorra', dateStyle: 'short', timeStyle: 'short',
-          }).format(signatAt),
-        }),
+        body: JSON.stringify(AVIS_SIGNATURA),
         signal: AbortSignal.timeout(8000),
       });
       if (!r.ok) console.warn('Formspree ha respost', r.status);
