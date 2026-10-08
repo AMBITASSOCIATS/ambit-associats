@@ -1,0 +1,24 @@
+{
+  "ca": {
+    "titol": "Informació sobre protecció de dades",
+    "punts": [
+      "Responsable: DEL SOTO – PALEARI & ASSOCIATS, SL (ÀMBIT Associats), NRT L-720543-P, Av. Fiter i Rossell, 78, 2n B, AD700 Escaldes-Engordany. Contacte: info@ambit.ad.",
+      "Finalitat: gestionar el cobrament de les factures dels nostres serveis professionals mitjançant càrrec en compte i conservar l'evidència d'aquesta autorització.",
+      "Base jurídica: l'execució del contracte de prestació de serveis (article 6.1.b de la Llei 29/2021, del 28 d'octubre, qualificada de protecció de dades personals).",
+      "Destinataris: les entitats financeres que intervenen en el cobrament i els proveïdors tecnològics que actuen com a encarregats del tractament. Les dades s'allotgen a la Unió Europea; si algun proveïdor hi accedeix des de fora, ho fa amb les clàusules contractuals tipus de la Comissió Europea (article 44.3.c de la Llei 29/2021).",
+      "Conservació: mentre l'autorització sigui vigent i, un cop retirada, com a mínim tretze mesos des de l'últim càrrec, sens perjudici dels terminis de conservació que imposi la normativa aplicable.",
+      "Drets: podeu exercir els drets d'accés, rectificació, supressió, limitació del tractament, portabilitat i oposició adreçant-vos a info@ambit.ad, i presentar una reclamació davant l'Agència Andorrana de Protecció de Dades."
+    ]
+  },
+  "en": {
+    "titol": "Data protection information",
+    "punts": [
+      "Controller: DEL SOTO – PALEARI & ASSOCIATS, SL (ÀMBIT Associats), Tax ID L-720543-P, Av. Fiter i Rossell, 78, 2n B, AD700 Escaldes-Engordany, Andorra. Contact: info@ambit.ad.",
+      "Purpose: to collect payment of the invoices for our professional services by direct debit and to keep evidence of this authorisation.",
+      "Legal basis: performance of the service agreement (Article 6.1.b of Andorran Qualified Law 29/2021, of 28 October, on the protection of personal data).",
+      "Recipients: the banks involved in the collection and the technology providers acting as data processors. Data are hosted in the European Union; any access by a provider from outside the EU takes place under the European Commission's standard contractual clauses (Article 44.3.c of Law 29/2021).",
+      "Retention: while the authorisation remains in force and, once withdrawn, for at least thirteen months from the last debit, without prejudice to any retention periods required by applicable law.",
+      "Rights: you may exercise your rights of access, rectification, erasure, restriction of processing, portability and objection by writing to info@ambit.ad, and you may lodge a complaint with the Andorran Data Protection Agency."
+    ]
+  }
+}

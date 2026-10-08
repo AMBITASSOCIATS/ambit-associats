@@ -1,17 +1,29 @@
 // build: 2026-05-08
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { AuthProvider } from './auth/AuthContext';
 import reportWebVitals from './reportWebVitals';
 
+// Portal de signatura: /portal (personal d'ÀMBIT) i /signar/<token> (client).
+// Es carreguen a part perquè no pesin a la web.
+const PortalApp = lazy(() => import('./portal/PortalApp'));
+const PaginaSignar = lazy(() => import('./portal/signar/PaginaSignar'));
+
+const ruta = window.location.pathname;
+const contingut = ruta === '/portal' || ruta.startsWith('/portal/')
+  ? <AuthProvider><PortalApp /></AuthProvider>
+  : ruta.startsWith('/signar/')
+    ? <PaginaSignar />
+    : <AuthProvider><App /></AuthProvider>;
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <Suspense fallback={<div className="min-h-screen" />}>
+      {contingut}
+    </Suspense>
   </React.StrictMode>
 );
 

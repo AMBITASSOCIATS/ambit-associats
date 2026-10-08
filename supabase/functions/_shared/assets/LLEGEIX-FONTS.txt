@@ -1,0 +1,11 @@
+Tipus de lletra Carlito (Regular, Bold, Italic)
+
+Són els mateixos que fa servir el PDF original "AMBIT-Autoritzacio carrec en
+compte" (Carlito és mètricament idèntic a Calibri). S'han extret de la còpia
+que porta macOS (Carlito.ttc).
+
+Copyright (c) 2010-2013 by tyPoland Lukasz Dziedzic (http://www.typoland.com/)
+with Reserved Font Name "Carlito". Licensed under the SIL Open Font License,
+Version 1.1 (http://scripts.sil.org/OFL).
+
+logo-ambit.jpg: logotip extret del mateix PDF original.
