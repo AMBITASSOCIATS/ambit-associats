@@ -1045,7 +1045,7 @@ const App = () => {
               </svg>
               Accés del personal
             </a>
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap justify-end gap-x-4 gap-y-2">
               {languages.map((lang) => (
                 <button
                   key={lang.code}
@@ -1053,7 +1053,7 @@ const App = () => {
                   className={`px-3 py-1 rounded-md text-sm ${
                     lang.code === language
                       ? "bg-white text-[#009B9C] font-semibold"
-                      : "bg-opacity-20 hover:bg-white"
+                      : "bg-opacity-20 hover:bg-white hover:text-[#009B9C]"
                   }`}
                 >
                   {lang.name}
