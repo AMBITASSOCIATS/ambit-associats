@@ -1,7 +1,7 @@
 // Proves locals de conservació: Edge Functions portal-purga i portal-requeriment.
 // Requisits: `supabase start` i `supabase functions serve --env-file supabase/functions/.env`.
 // Execució: node supabase/tests/edge/conservacio.test.mjs
-// Les claus i el secret de purga es llegeixen sense imprimir-los.
+// Les claus i el secret de purga (Vault local) es llegeixen sense imprimir-los.
 // Per provar la destrucció avui, el termini de bloqueig es posa a 0 durant
 // la prova (només a la base local) i es restaura en acabar.
 
@@ -21,8 +21,6 @@ const env = Object.fromEntries(
 const URL = env.API_URL;
 const ANON = env.ANON_KEY;
 const SERVICE = env.SERVICE_ROLE_KEY;
-const SECRET_PURGA = fs.readFileSync(new globalThis.URL('../../functions/.env', import.meta.url), 'utf8')
-  .split('\n').find((l) => l.startsWith('PORTAL_PURGA_SECRET='))?.split('=')[1]?.trim();
 
 const admin = createClient(URL, SERVICE, { auth: { persistSession: false } });
 const adminPortal = admin.schema('portal');
@@ -31,6 +29,8 @@ const nouClient = () => createClient(URL, ANON, { auth: { persistSession: false 
 // SQL directe a la base local (com a postgres)
 const sql = (q) => execSync('docker exec -i supabase_db_ambit-associats psql -U postgres -d postgres -X -A -t -q -v ON_ERROR_STOP=1',
   { input: q, encoding: 'utf8' }).trim();
+// El secret el genera la migració dins del Vault local; aquí només es llegeix per fer les crides
+const SECRET_PURGA = sql(`select decrypted_secret from vault.decrypted_secrets where name = 'portal_purga_secret';`);
 
 let fallades = 0;
 let total = 0;
@@ -162,11 +162,13 @@ try {
 
   // ═════════════════════════════════════════════════════════════════════════
   seccio('portal-purga: accés');
-  comprova(!!SECRET_PURGA && SECRET_PURGA.length >= 32, 'Hi ha secret de purga local (no es mostra)');
+  comprova(/^[0-9a-f]{64}$/.test(SECRET_PURGA || ''), 'La migració ha generat el secret a Vault (no es mostra)');
   comprova((await purga({ simulacio: true }, null)).status === 401, 'Sense secret → 401');
   comprova((await purga({ simulacio: true }, 'x'.repeat(64))).status === 401, 'Secret incorrecte → 401');
   comprova((await purga({ simulacio: true }, SECRET_PURGA, 'https://malicios.example')).status === 403, 'Origen no permès → 403');
   comprova((await crida('portal-purga', { simulacio: false }, { jwt: JWT_OCIC })).status === 401, 'La sessió d\'un OCIC no serveix: cal el secret');
+  const { error: errVault } = await admin.schema('vault').from('decrypted_secrets').select('name').limit(1);
+  comprova(!!errVault, 'Ni amb la clau de servei es pot llegir Vault per l\'API (esquema no exposat)');
 
   // ═════════════════════════════════════════════════════════════════════════
   seccio('Simulació');
@@ -286,10 +288,8 @@ try {
   // ═════════════════════════════════════════════════════════════════════════
   seccio('Execució diària (pg_cron → pg_net → portal-purga)');
   comprova(sql(`select count(*) from cron.job where jobname = 'portal-purga-diaria'`) === '1', 'Tasca programada cada dia a les 03:30 UTC');
-  // Secrets a Vault només en local, per provar el camí complet; s'esborren en acabar
-  sql(`select vault.create_secret('http://kong:8000/functions/v1/portal-purga', 'portal_purga_url');`);
-  execSync('docker exec -i supabase_db_ambit-associats psql -U postgres -d postgres -X -A -t -q -v ON_ERROR_STOP=1 -v s="$S"',
-    { env: { ...process.env, S: SECRET_PURGA }, input: "select vault.create_secret(:'s', 'portal_purga_secret');", encoding: 'utf8', stdio: ['pipe', 'ignore', 'inherit'] });
+  // URL local de portal-purga a Vault (el secret ja hi és, generat per la migració)
+  sql(`select portal.desa_url_purga('http://kong:8000/functions/v1/portal-purga');`);
   const idPeticio = sql(`select portal.llanca_purga();`);
   comprova(/^\d+$/.test(idPeticio), 'portal.llanca_purga() envia la petició (pg_net)');
   let estat = '';
@@ -301,7 +301,7 @@ try {
 } finally {
   termini('3 years');
   terminiNoSignades('12 months');
-  sql(`delete from vault.secrets where name in ('portal_purga_url', 'portal_purga_secret');`);
+  sql(`delete from vault.secrets where name = 'portal_purga_url';`);
   await adminPortal.from('limit_intents').delete().neq('clau', '');
 }
 

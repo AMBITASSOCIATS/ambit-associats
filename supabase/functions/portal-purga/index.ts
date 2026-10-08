@@ -1,8 +1,10 @@
 // supabase/functions/portal-purga/index.ts
 //
 // Conservació del portal (art. 30 i 70.1 Llei 29/2021). La crida cada dia
-// pg_cron (portal.llanca_purga) amb el secret PORTAL_PURGA_SECRET a la
-// capçalera x-portal-purga. No és per al navegador.
+// pg_cron (portal.llanca_purga) amb el secret de Vault portal_purga_secret a
+// la capçalera x-portal-purga. No és per al navegador.
+// El secret el genera i el guarda la base; aquí no se'l coneix: es comprova
+// amb portal.secret_purga_correcte(), que només respon cert o fals.
 //
 //   { "simulacio": true }   (per defecte) només llista què es bloquejaria i
 //                           què es destruiria, sense canviar res.
@@ -20,33 +22,25 @@
 // un fitxer que ja no hi és no falla, i la funció SQL no esborra cap fila
 // mentre quedi algun fitxer de la sol·licitud.
 
-import { clientAdmin, entrada, llegeixCos, sha256Hex } from '../_shared/portal.ts';
+import { clientAdmin, entrada, llegeixCos } from '../_shared/portal.ts';
 
 const BUCKET = 'portal-docs';
 const LOT = 100;
-
-// Comparació del secret sense filtrar-ne la longitud ni el contingut pel temps de resposta
-const secretCorrecte = async (rebut: string, esperat: string) => {
-  const [a, b] = await Promise.all([sha256Hex(rebut), sha256Hex(esperat)]);
-  let dif = 0;
-  for (let i = 0; i < a.length; i++) dif |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return dif === 0;
-};
 
 Deno.serve(async (req) => {
   const { atura, resposta } = entrada(req);
   if (atura) return atura;
 
-  const esperat = Deno.env.get('PORTAL_PURGA_SECRET') || '';
+  const admin = clientAdmin();
+  const portal = admin.schema('portal');
+
   const rebut = req.headers.get('x-portal-purga') || '';
-  if (esperat.length < 32 || !(await secretCorrecte(rebut, esperat))) {
-    return resposta(401, { error: 'No autoritzat' });
-  }
+  if (rebut.length < 32 || rebut.length > 256) return resposta(401, { error: 'No autoritzat' });
+  const { data: correcte, error: errSecret } = await portal.rpc('secret_purga_correcte', { p_rebut: rebut });
+  if (errSecret || correcte !== true) return resposta(401, { error: 'No autoritzat' });
 
   const cos = (await llegeixCos<{ simulacio?: boolean }>(req)) || {};
   const simulacio = cos.simulacio !== false;
-  const admin = clientAdmin();
-  const portal = admin.schema('portal');
 
   if (simulacio) {
     const { data, error } = await portal.rpc('simula_conservacio');
