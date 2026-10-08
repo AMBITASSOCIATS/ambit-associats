@@ -1778,6 +1778,9 @@ const App = () => {
       <footer className="bg-gray-800 text-white py-6 text-center text-sm">
         <div className="container mx-auto px-4">
           <p>{t.footer}</p>
+          <a href="/portal" className="inline-block mt-2 text-xs text-gray-400 hover:text-gray-200 hover:underline">
+            Accés del personal
+          </a>
         </div>
       </footer>
     </div>
