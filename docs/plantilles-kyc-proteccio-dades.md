@@ -2,7 +2,7 @@
 
 Font única dels textos per al portal. Cada bloc té el català (text principal) i, a sota, l'anglès (text secundari, en cursiva al document). Les marques [obligatori], [si escau] i [ÀMBIT] són instruccions per a la implementació i no s'han de mostrar al client.
 
-Versió de plantilla: KYC-PF v1 · KYC-PJ v1 · PDP v1 · Data: 08/10/2026
+Versió de plantilla: KYC-PF v2 · KYC-PJ v2 · PDP v1 · Data: 09/10/2026 (v1: 08/10/2026)
 
 ---
 
@@ -316,6 +316,31 @@ EN: We do not take decisions based solely on automated processing of your data, 
 CA: Declaro que he rebut i llegit aquesta informació.
 EN: I confirm that I have received and read this information.
 - Lloc · Place [obligatori]; Data · Date [la posa el sistema]; Signatura · Signature [obligatori]
+
+---
+
+## CÒPIA PER AL CLIENT · RECEPCIÓ (KYC PF i KYC PJ, v2)
+
+[La còpia per al client és el KYC signat pel client, sense l'apartat reservat a DEL SOTO – PALEARI & ASSOCIATS, SL, amb aquest bloc final. No inclou cap informació de l'apartat reservat (article 26 de la Llei 14/2017).]
+
+Títol CA: Recepció per DEL SOTO – PALEARI & ASSOCIATS, SL
+Títol EN: Received by DEL SOTO – PALEARI & ASSOCIATS, SL
+
+**CA**
+DEL SOTO – PALEARI & ASSOCIATS, SL declara haver rebut aquest formulari i la documentació adjunta.
+
+**EN**
+DEL SOTO – PALEARI & ASSOCIATS, SL acknowledges receipt of this form and the attached documents.
+
+- Data · Date [la data de validació]
+- Signatura · Signature [la firma registrada de l'OCIC, amb el nom]
+
+---
+
+## TEXTOS DEL PDF (KYC PF i KYC PJ, v2)
+
+- Apartat 2 de la persona física sense representant · Section 2 of the individual form without a representative: No s'escau · Not applicable
+- Document aportat per DEL SOTO – PALEARI & ASSOCIATS, SL · Document provided by DEL SOTO – PALEARI & ASSOCIATS, SL: Aportat per ÀMBIT · Provided by ÀMBIT
 
 ---
 

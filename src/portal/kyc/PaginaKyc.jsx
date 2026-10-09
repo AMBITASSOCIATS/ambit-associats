@@ -83,22 +83,42 @@ const AvisError = ({ children }) => (children ? <div className="mt-4 bg-red-50 b
 const nomPersona = (dades, id) =>
   [...(dades.representants || []), ...(dades.beneficiaris || [])].find((p) => p.id === id)?.nom || '—';
 
-const FilaDocument = ({ tipus, persona, nom, obligatori, adjunts, onPuja, onTreu, ocupat, pendent }) => {
+// Dates que es demanen en adjuntar: caducitat del document d'identitat i data
+// del certificat de vigència i de l'extracte del Registre de beneficiaris efectius
+const DATA_DOC = {
+  identitat: { camp: 'data_caducitat', ca: 'Data de caducitat del document', en: 'Document expiry date' },
+  vigencia: { camp: 'data_document', ca: 'Data del document (menys de 3 mesos)', en: 'Document date (less than three months old)' },
+  registre_be: { camp: 'data_document', ca: 'Data del document (menys de 3 mesos)', en: 'Document date (less than three months old)' },
+};
+
+const FilaDocument = ({ tipus, persona, nom, obligatori, opcionalAmbit, adjunts, onPuja, onTreu, ocupat, pendent }) => {
   const meus = adjunts.filter((a) => a.tipus === tipus && (a.persona || null) === (persona || null));
   const entrada = useRef(null);
+  const dataDoc = DATA_DOC[tipus];
+  const [dataValor, setDataValor] = useState('');
+  const valids = meus.filter((a) => a.valid !== false);
   return (
     <div className={`py-3 border-b border-gray-100 ${pendent ? 'bg-red-50/60 -mx-2 px-2 rounded' : ''}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex-1 min-w-[14rem]">
           <Bilingue ca={nom.ca} en={nom.en} />
-          <p className={`text-[11px] mt-1 font-semibold ${obligatori ? (meus.length ? 'text-green-700' : 'text-red-600') : 'text-gray-400'}`}>
-            {obligatori ? (meus.length ? 'Adjuntat ✓ / Attached ✓' : 'Obligatori / Required') : 'Si escau / If applicable'}
+          <p className={`text-[11px] mt-1 font-semibold ${obligatori && !opcionalAmbit ? (valids.length ? 'text-green-700' : 'text-red-600') : 'text-gray-400'}`}>
+            {obligatori && opcionalAmbit
+              ? (valids.length ? 'Adjuntat ✓ / Attached ✓' : 'Opcional: ÀMBIT ja disposa d\'aquesta documentació / Optional: ÀMBIT already holds this document')
+              : obligatori ? (valids.length ? 'Adjuntat ✓ / Attached ✓' : 'Obligatori / Required') : 'Si escau / If applicable'}
           </p>
         </div>
-        <div>
+        <div className="text-right">
+          {dataDoc && (
+            <label className="block text-[11px] text-gray-600 mb-1">
+              {dataDoc.ca} <span className="italic text-gray-400">/ {dataDoc.en}</span>
+              <input type="date" value={dataValor} onChange={(e) => setDataValor(e.target.value)}
+                className="block ml-auto mt-0.5 bg-[#FBFAF1] border border-[#C2BD6B] rounded-sm px-2 py-1 text-sm" />
+            </label>
+          )}
           <input ref={entrada} type="file" accept="application/pdf,image/jpeg,image/png" className="hidden"
-            onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) onPuja(tipus, persona, f); }} />
-          <button type="button" disabled={ocupat} onClick={() => entrada.current?.click()}
+            onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) onPuja(tipus, persona, f, dataDoc ? { [dataDoc.camp]: dataValor } : {}); }} />
+          <button type="button" disabled={ocupat || (dataDoc && !dataValor)} onClick={() => entrada.current?.click()}
             className="text-sm font-semibold text-[#007A7B] border border-[#009B9C]/50 rounded-lg px-3 py-1.5 hover:bg-[#009B9C]/5 disabled:opacity-50">
             + Adjuntar / Attach
           </button>
@@ -106,7 +126,11 @@ const FilaDocument = ({ tipus, persona, nom, obligatori, adjunts, onPuja, onTreu
       </div>
       {meus.map((a) => (
         <div key={a.id} className="flex items-center gap-2 text-xs text-gray-600 mt-1.5 pl-1">
-          <span>📎 {a.nom_fitxer || 'document'} · {(a.mida / 1024).toFixed(0)} KB</span>
+          <span>📎 {a.nom_fitxer || 'document'} · {(a.mida / 1024).toFixed(0)} KB
+            {a.data_caducitat && ` · caduca el / expires on ${dataCurta(a.data_caducitat)}`}
+            {a.data_document && ` · data / date ${dataCurta(a.data_document)}`}
+            {a.valid === false && <strong className="text-red-600"> · No vigent: adjunteu-ne un de vigent / Not valid: please attach a valid one</strong>}
+          </span>
           <button type="button" onClick={() => onTreu(a.id)} disabled={ocupat} className="text-red-600 hover:underline">Treure / Remove</button>
         </div>
       ))}
@@ -121,7 +145,7 @@ const PasDocuments = ({ tipus, dades, docs, setDocs }) => {
   const requerit = (t, p) => docs.requerits.some((r) => r.tipus === t && (r.persona || null) === (p || null));
   const pendent = (t, p) => docs.pendents.some((r) => r.tipus === t && (r.persona || null) === (p || null));
 
-  const puja = async (t, persona, fitxer) => {
+  const puja = async (t, persona, fitxer, dates = {}) => {
     setError('');
     if (!TIPUS_ADJUNT.includes(fitxer.type)) { setError('Format no admès: PDF, JPG o PNG. / Format not accepted: PDF, JPG or PNG.'); return; }
     if (fitxer.size > MAX_ADJUNT) { setError('El fitxer supera els 20 MB. / The file exceeds 20 MB.'); return; }
@@ -130,7 +154,7 @@ const PasDocuments = ({ tipus, dades, docs, setDocs }) => {
       const u = await crida({ accio: 'url_pujada', tipus: t, persona, mime: fitxer.type, mida: fitxer.size });
       const { error: e } = await supabase.storage.from('portal-docs').uploadToSignedUrl(u.path, u.upload_token, fitxer, { contentType: fitxer.type });
       if (e) throw new Error('No s\'ha pogut pujar el fitxer. / The file could not be uploaded.');
-      const r = await crida({ accio: 'registra_adjunt', path: u.path, tipus: t, persona, nom_fitxer: fitxer.name });
+      const r = await crida({ accio: 'registra_adjunt', path: u.path, tipus: t, persona, nom_fitxer: fitxer.name, ...dates });
       setDocs(r.documents);
     } catch (e) {
       setError(e.message);
@@ -173,7 +197,7 @@ const PasDocuments = ({ tipus, dades, docs, setDocs }) => {
         <span className="italic"> PDF, JPG or PNG, up to 20 MB per file. You may attach more than one file per document (e.g. both sides).</span></p>
       {files.map((f) => (
         <FilaDocument key={`${f.t}-${f.p || ''}`} tipus={f.t} persona={f.p} nom={f.nom} obligatori={requerit(f.t, f.p)}
-          pendent={pendent(f.t, f.p)} adjunts={docs.adjunts} onPuja={puja} onTreu={treu} ocupat={ocupat} />
+          opcionalAmbit={docs.documentacio_ambit} pendent={pendent(f.t, f.p) && !docs.documentacio_ambit} adjunts={docs.adjunts} onPuja={puja} onTreu={treu} ocupat={ocupat} />
       ))}
       {ocupat && <p className="text-xs text-gray-500 mt-2">Un moment… / One moment…</p>}
       <AvisError>{error}</AvisError>
@@ -347,7 +371,8 @@ const PaginaKyc = () => {
   const seccioActual = seccions[pas];
   const expira = dataCurta(info.expira_at);
   const formulariComplet = pendents.length === 0;
-  const documentsComplets = docs.pendents.length === 0;
+  // Amb "documentació: ja la té ÀMBIT", els documents no són obligatoris per al client
+  const documentsComplets = docs.pendents.length === 0 || docs.documentacio_ambit === true;
 
   const continuarAPdp = () => {
     setError('');
@@ -384,7 +409,7 @@ const PaginaKyc = () => {
   // Passos: apartats, documents, revisió i signatura, protecció de dades
   const passos = [
     ...seccions.map((s, i) => ({ n: i, nom: `${s.num}. ${s.t.ca}`, falten: pendentsPerSeccio.get(s.num) || 0 })),
-    { n: PAS_DOCS, nom: 'Documents', falten: docs.pendents.length },
+    { n: PAS_DOCS, nom: 'Documents', falten: docs.documentacio_ambit ? 0 : docs.pendents.length },
     { n: PAS_REVISIO, nom: 'Revisió i signatura', falten: 0 },
     { n: PAS_PDP, nom: 'Protecció de dades', falten: 0 },
   ];
@@ -454,6 +479,7 @@ const PaginaKyc = () => {
           <div className="sm:flex sm:items-start gap-4 py-1.5">
             <label htmlFor="llocKyc" className="block sm:w-56 font-bold text-[15px]">* {T.signatura.lloc.ca} <span className="block italic font-normal text-[11px] text-gray-500 pl-3">{T.signatura.lloc.en}</span></label>
             <input id="llocKyc" value={lloc.kyc} maxLength={100} onChange={(e) => setLloc({ ...lloc, kyc: e.target.value })}
+              placeholder="p. ex. Andorra la Vella / e.g. Andorra la Vella"
               className="flex-1 w-full bg-[#FBFAF1] border border-[#C2BD6B] rounded-sm px-3 py-2 text-[15px]" />
           </div>
           <div className="sm:flex sm:items-start gap-4 py-1.5">
@@ -484,6 +510,7 @@ const PaginaKyc = () => {
           <div className="sm:flex sm:items-start gap-4 py-1.5">
             <label htmlFor="llocPdp" className="block sm:w-56 font-bold text-[15px]">* {T.signatura.lloc.ca} <span className="block italic font-normal text-[11px] text-gray-500 pl-3">{T.signatura.lloc.en}</span></label>
             <input id="llocPdp" value={lloc.pdp} maxLength={100} onChange={(e) => setLloc({ ...lloc, pdp: e.target.value })}
+              placeholder="p. ex. Andorra la Vella / e.g. Andorra la Vella"
               className="flex-1 w-full bg-[#FBFAF1] border border-[#C2BD6B] rounded-sm px-3 py-2 text-[15px]" />
           </div>
           <div className="sm:flex sm:items-start gap-4 py-1.5">

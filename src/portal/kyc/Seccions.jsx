@@ -47,12 +47,14 @@ const Ppe = ({ cami }) => {
 };
 
 const Proposit = ({ num }) => {
+  const { dades } = useForm();
   const P = T.proposit;
+  const altres = (dades.proposit?.serveis || []).includes('altres');
   return (
     <>
       <SeccioTitol num={num} t={P.titol} />
       <Opcions cami="proposit.serveis" t={P.serveis} opcions={P.opcions} camiAltres="proposit.serveis_altres" />
-      <Text cami="proposit.descripcio" t={P.descripcio} llarg max={2000} />
+      <Text cami="proposit.descripcio" t={P.descripcio} llarg max={2000} obligatori={altres} />
     </>
   );
 };
@@ -69,7 +71,7 @@ const Fons = ({ num, S }) => {
         <>
           <SiNo cami="fons.andorra" t={S.andorra} si={SI} no={NO} />
           {f.andorra === false && <Paisos cami="fons.paisos" t={S.paisos} />}
-          <Text cami="fons.descripcio" t={S.descripcio} llarg max={2000} />
+          <Text cami="fons.descripcio" t={S.descripcio} llarg max={2000} obligatori={(f.origen || []).includes('altres')} />
         </>
       )}
     </>

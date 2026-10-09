@@ -3,17 +3,29 @@
 // KYC i protecció de dades · accions del personal que necessiten el servidor.
 //
 //   crea               (personal) crea la sol·licitud "KYC i protecció de dades"
-//                      d'un client. Amb revisio_de, la preomple amb el darrer
-//                      KYC validat i hi copia els documents que no caduquen.
+//                      d'un client, amb documentacio 'client' (l'aporta el
+//                      client) o 'ambit' (ja la té ÀMBIT). Amb revisio_de, la
+//                      preomple amb el darrer KYC validat i hi copia els
+//                      documents que no caduquen.
+//   url_document_ambit (personal) URL signada per pujar un document que aporta
+//                      ÀMBIT (abans de validar).
+//   registra_document_ambit (personal) el comprova i el registra amb la data
+//                      del document, la data de recepció i, si és un document
+//                      d'identitat, la de caducitat. L'auditoria en registra
+//                      qui l'adjunta.
+//   retira_document_ambit (personal) el treu abans de validar (no s'esborra).
 //   url_evidencia      (OCIC) URL signada per pujar l'evidència de la
 //                      comprovació a les llistes de sancions.
 //   registra_evidencia (OCIC) comprova el fitxer i el registra.
 //   valida             (OCIC) valida el KYC amb la sessió de l'OCIC (la base
-//                      aplica totes les regles) i, només llavors, genera el PDF
-//                      final amb l'apartat d'ÀMBIT i la firma manuscrita de
-//                      l'OCIC, que és al bucket privat portal-firmes.
-//   pdf_final          (OCIC) torna a generar el PDF final si no s'havia pogut
-//                      generar en validar.
+//                      aplica totes les regles) i, només llavors, genera:
+//                      · el PDF intern validat (apartat d'ÀMBIT i validació);
+//                      · la còpia per al client (sense l'apartat reservat, amb
+//                        la recepció signada per l'OCIC).
+//                      La firma manuscrita de l'OCIC és al bucket privat
+//                      portal-firmes. Cap dels dos es lliura mai pel portal del
+//                      client: es descarreguen des del panell.
+//   pdf_final          (OCIC) genera els PDF finals que faltin.
 //
 // La validació la fa sempre la sessió de l'OCIC (clientUsuari): ni el
 // servei ni un gestor no poden validar (ho impedeix la base).
@@ -41,7 +53,7 @@ Deno.serve(async (req) => {
   const portal = admin.schema('portal');
   const cos = (await llegeixCos<Record<string, unknown>>(req)) || {};
   const accio = String(cos.accio || '');
-  const nivell = accio === 'crea' ? 'personal' : 'ocic';
+  const nivell = ['crea', 'url_document_ambit', 'registra_document_ambit', 'retira_document_ambit'].includes(accio) ? 'personal' : 'ocic';
 
   const personal = await verificaPersonal(req, admin, resposta, nivell);
   if (personal instanceof Response) return personal;
@@ -64,6 +76,7 @@ Deno.serve(async (req) => {
 
     const { data: id, error } = await usuari.rpc('crea_kyc', {
       p_client_id: clientId, p_revisio_de: revisioDe, p_motiu: text(cos.motiu, 500),
+      p_documentacio_ambit: cos.documentacio === 'ambit',
     });
     if (error) return errorSql(error, 'crea_kyc');
 
@@ -127,7 +140,59 @@ Deno.serve(async (req) => {
     return resposta(200, { ok: true, document_id: id });
   }
 
-  // Genera el PDF final amb la firma de l'OCIC (només després de validar)
+  // ─── Documents aportats per ÀMBIT ───
+  const dataValida = (v: unknown): string | null => {
+    const t = String(v || '');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) return null;
+    const d = new Date(`${t}T12:00:00Z`);
+    return Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== t ? null : t;
+  };
+  if (accio === 'url_document_ambit') {
+    const t = TIPUS_ADJUNT[String(cos.mime || '')];
+    if (!t) return resposta(400, { error: 'Format no admès: PDF, JPG o PNG' });
+    const mida = Number(cos.mida);
+    if (!Number.isFinite(mida) || mida <= 0 || mida > MAX_ADJUNT) return resposta(400, { error: 'El fitxer no pot superar els 20 MB' });
+    const path = `requests/${requestId}/ambit/${crypto.randomUUID()}.${t.ext}`;
+    const { data: pujada, error } = await admin.storage.from(BUCKET).createSignedUploadUrl(path);
+    if (error || !pujada) return resposta(500, { error: 'No s\'ha pogut preparar la pujada' });
+    return resposta(200, { ok: true, path, upload_token: pujada.token });
+  }
+  if (accio === 'registra_document_ambit') {
+    const path = String(cos.path || '');
+    if (!new RegExp(`^requests/${requestId}/ambit/[0-9a-f-]{36}\\.(pdf|jpg|png)$`).test(path)) {
+      return resposta(400, { error: 'Fitxer no vàlid' });
+    }
+    const dataDocument = dataValida(cos.data_document);
+    const rebutEl = dataValida(cos.rebut_el);
+    if (!dataDocument || !rebutEl) return resposta(400, { error: 'Cal indicar la data del document i la data de recepció' });
+    const { data: fitxer, error: errBaixa } = await admin.storage.from(BUCKET).download(path);
+    if (errBaixa || !fitxer) return resposta(400, { error: 'No s\'ha trobat el fitxer; torneu-lo a pujar' });
+    const bytes = new Uint8Array(await fitxer.arrayBuffer());
+    const ext = path.split('.').pop();
+    const [mime, t] = Object.entries(TIPUS_ADJUNT).find(([, x]) => x.ext === ext)!;
+    if (bytes.length === 0 || bytes.length > MAX_ADJUNT || !comencaAmb(bytes, t.magic)) {
+      return resposta(400, { error: 'El fitxer no és un PDF, JPG o PNG vàlid' });
+    }
+    const persona = cos.persona ? String(cos.persona) : null;
+    if (persona && !UUID.test(persona)) return resposta(400, { error: 'Persona no vàlida' });
+    const { data: docs, error } = await portal.rpc('kyc_registra_adjunt_ambit', {
+      p_actor: personal.userId, p_request_id: requestId, p_path: path, p_sha256: await sha256Hex(bytes),
+      p_mida: bytes.length, p_mime: mime, p_tipus: String(cos.tipus || ''), p_persona: persona,
+      p_nom_fitxer: text(cos.nom_fitxer, 200), p_data_document: dataDocument, p_rebut_el: rebutEl,
+      p_data_caducitat: dataValida(cos.data_caducitat),
+    });
+    if (error) return errorSql(error, 'kyc_registra_adjunt_ambit');
+    return resposta(200, { ok: true, documents: docs });
+  }
+  if (accio === 'retira_document_ambit') {
+    const id = String(cos.adjunt_id || '');
+    if (!UUID.test(id)) return resposta(400, { error: 'Document no vàlid' });
+    const { data: docs, error } = await portal.rpc('kyc_retira_adjunt_ambit', { p_actor: personal.userId, p_request_id: requestId, p_adjunt_id: id });
+    if (error) return errorSql(error, 'kyc_retira_adjunt_ambit');
+    return resposta(200, { ok: true, documents: docs });
+  }
+
+  // Genera els PDF finals amb la firma de l'OCIC (només després de validar)
   const generaFinal = async (): Promise<Response> => {
     const { data: x, error } = await portal.rpc('kyc_dades_pdf_validat', { p_actor: personal.userId, p_request_id: requestId });
     if (error) return errorSql(error, 'kyc_dades_pdf_validat');
@@ -146,7 +211,7 @@ Deno.serve(async (req) => {
 
     const v = x.validacio;
     const signat = (x.documents as { kind: string; sha256: string }[]).find((d) => d.kind === 'signat');
-    const pdf = await generaPdfKyc({
+    const comuns = {
       tipus: x.request.document_type,
       requestId,
       pdpRequestId: x.formulari.pdp_request_id,
@@ -154,7 +219,11 @@ Deno.serve(async (req) => {
       clientNom: x.client.nom_mostrat,
       templateVersion: x.request.template_version,
       dades: x.formulari.dades,
-      adjunts: (x.adjunts || []).map((a: Record<string, string>) => ({ tipus: a.tipus, persona: a.persona, nom_fitxer: a.nom_fitxer, sha256: a.sha256 })),
+      // Al PDF validat i a la còpia només hi consten els documents vigents
+      adjunts: (x.adjunts || []).filter((a: Record<string, unknown>) => a.valid !== false).map((a: Record<string, unknown>) => ({
+        tipus: a.tipus as string, persona: a.persona as string | null, nom_fitxer: a.nom_fitxer as string | null, sha256: a.sha256 as string,
+        aportat_per_ambit: a.aportat_per_ambit === true, rebut_el: a.rebut_el as string | null, data_document: a.data_document as string | null,
+      })),
       signatura: {
         signatariNom: x.signatura.signatari_nom,
         signatariCarrec: x.signatura.signatari_carrec,
@@ -166,27 +235,55 @@ Deno.serve(async (req) => {
         png: pngClient,
         sha256: await sha256Hex(pngClient),
       },
-      validacio: {
-        ...v,
-        validat_at: new Date(v.validat_at),
-        sancions_evidencia_sha256: x.evidencia.sha256,
-        ocicNom: x.firma.nom,
-        firmaOcic: imgOcic,
-        firmaOcicSha256: x.firma.sha256,
-        pdfSignatSha256: signat?.sha256 || '—',
-      },
-    });
-    const sha = await sha256Hex(pdf);
-    const path = `requests/${requestId}/validat/${crypto.randomUUID()}.pdf`;
-    const { error: errPuja } = await admin.storage.from(BUCKET).upload(path, pdf, { contentType: 'application/pdf', upsert: false });
-    if (errPuja) return resposta(500, { error: 'No s\'ha pogut desar el PDF final' });
-    const { error: errReg } = await portal.rpc('registra_pdf_validat', {
-      p_actor: personal.userId, p_request_id: requestId, p_path: path, p_sha256: sha, p_mida: pdf.length,
-    });
-    if (errReg) return errorSql(errReg, 'registra_pdf_validat');
-    const { data: url } = await admin.storage.from(BUCKET)
-      .createSignedUrl(path, 60, { download: `KYC-validat-${(x.client.referencia_client || requestId.slice(0, 8))}.pdf` });
-    return resposta(200, { ok: true, pdf_final: { sha256: sha, url: url?.signedUrl ?? null } });
+    };
+    const ref = x.client.referencia_client || requestId.slice(0, 8);
+    const desa = async (pdf: Uint8Array, kind: 'validat' | 'copia_client') => {
+      const sha = await sha256Hex(pdf);
+      const path = `requests/${requestId}/${kind === 'validat' ? 'validat' : 'copia-client'}/${crypto.randomUUID()}.pdf`;
+      const { error: errPuja } = await admin.storage.from(BUCKET).upload(path, pdf, { contentType: 'application/pdf', upsert: false });
+      if (errPuja) return { error: 'No s\'ha pogut desar el PDF final' };
+      const { error: errReg } = await portal.rpc('registra_pdf_validat', {
+        p_actor: personal.userId, p_request_id: requestId, p_path: path, p_sha256: sha, p_mida: pdf.length, p_kind: kind,
+      });
+      if (errReg) return { errReg };
+      const nom = kind === 'validat' ? `KYC-validat-intern-${ref}.pdf` : `KYC-copia-client-${ref}.pdf`;
+      const { data: url } = await admin.storage.from(BUCKET).createSignedUrl(path, 60, { download: nom });
+      return { sha256: sha, url: url?.signedUrl ?? null };
+    };
+
+    const resultat: Record<string, unknown> = { ok: true };
+    // 1. Versió interna validada: apartat reservat i full de validació
+    if (!x.te_validat) {
+      const r = await desa(await generaPdfKyc({
+        ...comuns,
+        mode: 'intern',
+        validacio: {
+          ...v,
+          validat_at: new Date(v.validat_at),
+          sancions_evidencia_sha256: x.evidencia.sha256,
+          ocicNom: x.firma.nom,
+          firmaOcic: imgOcic,
+          firmaOcicSha256: x.firma.sha256,
+          pdfSignatSha256: signat?.sha256 || '—',
+        },
+      }), 'validat');
+      if ('errReg' in r) return errorSql(r.errReg!, 'registra_pdf_validat');
+      if ('error' in r) return resposta(500, { error: r.error });
+      resultat.pdf_final = r;
+    }
+    // 2. Còpia per al client: sense l'apartat reservat; només la recepció
+    //    (data de validació i firma de l'OCIC), cap dada de la validació
+    if (!x.te_copia) {
+      const r = await desa(await generaPdfKyc({
+        ...comuns,
+        mode: 'copia',
+        recepcio: { data: new Date(v.validat_at), nom: x.firma.nom, firma: imgOcic },
+      }), 'copia_client');
+      if ('errReg' in r) return errorSql(r.errReg!, 'registra_pdf_validat');
+      if ('error' in r) return resposta(500, { error: r.error });
+      resultat.copia_client = r;
+    }
+    return resposta(200, resultat);
   };
 
   // ─── valida ───

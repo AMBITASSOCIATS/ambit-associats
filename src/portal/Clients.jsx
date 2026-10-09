@@ -128,9 +128,11 @@ const Clients = ({ onObreSolicitud, rol }) => {
   };
 
   // KYC i protecció de dades: dues sol·licituds enllaçades i un sol enllaç
-  const nouKyc = async (client) => {
+  const [triaKyc, setTriaKyc] = useState(null);  // client per al qual es tria la documentació
+  const nouKyc = async (client, documentacio) => {
+    setTriaKyc(null);
     try {
-      const r = await invoca('portal-kyc-personal', { accio: 'crea', client_id: client.id });
+      const r = await invoca('portal-kyc-personal', { accio: 'crea', client_id: client.id, documentacio });
       onObreSolicitud(r.request_id);
     } catch (e) {
       alert('No s\'ha pogut crear el KYC: ' + e.message);
@@ -182,7 +184,15 @@ const Clients = ({ onObreSolicitud, rol }) => {
                 </div>
                 <Referencia client={c} onDesat={carrega} />
                 <Boto variant="secundari" onClick={() => novaSolicitud(c)}>+ Nova autorització</Boto>
-                <Boto variant="secundari" onClick={() => nouKyc(c)}>+ KYC i protecció de dades</Boto>
+                {triaKyc === c.id ? (
+                  <span className="flex flex-wrap items-center gap-2">
+                    <Boto onClick={() => nouKyc(c, 'client')}>Documentació: l'aporta el client</Boto>
+                    <Boto onClick={() => nouKyc(c, 'ambit')}>Documentació: ja la té ÀMBIT</Boto>
+                    <Boto variant="secundari" onClick={() => setTriaKyc(null)}>Cancel·lar</Boto>
+                  </span>
+                ) : (
+                  <Boto variant="secundari" onClick={() => setTriaKyc(c.id)}>+ KYC i protecció de dades</Boto>
+                )}
                 <RelacioIConsentiment client={c} rol={rol} onDesat={carrega} />
               </div>
             ))}

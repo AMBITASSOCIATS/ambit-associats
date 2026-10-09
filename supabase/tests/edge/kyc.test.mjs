@@ -174,7 +174,26 @@ const pujaDoc = async (token, tipus, persona = null, nom = `${tipus}.pdf`, conti
   if (u.status !== 200) return u;
   const { error } = await nouClient().storage.from('portal-docs').uploadToSignedUrl(u.cos.path, u.cos.upload_token, contingut, { contentType: mime });
   if (error) return { status: 500, cos: { error: error.message } };
-  return kyc(token, { accio: 'registra_adjunt', path: u.cos.path, tipus, persona, nom_fitxer: nom });
+  return kyc(token, { accio: 'registra_adjunt', path: u.cos.path, tipus, persona, nom_fitxer: nom, ...datesDoc(tipus) });
+};
+// Dates que cal indicar en adjuntar (plantilles v2): caducitat del document d'identitat
+// i data del certificat de vigència i de l'extracte del Registre de beneficiaris efectius
+const datesDoc = (tipus, { caducitat = mesAnys(2), antiguitat = 20 } = {}) => {
+  if (tipus === 'identitat') return { data_caducitat: caducitat };
+  if (tipus === 'vigencia' || tipus === 'registre_be') {
+    const d = new Date(`${avui}T12:00:00Z`); d.setUTCDate(d.getUTCDate() - antiguitat);
+    return { data_document: d.toISOString().slice(0, 10) };
+  }
+  return {};
+};
+// Paraula clau del PDF (indica quina versió és: kyc-client, kyc-intern o kyc-copia)
+const clauPdf = (b) => {
+  const m = b.toString('latin1').match(/\/Keywords\s*<([0-9A-Fa-f]+)>/);
+  if (!m) return null;
+  const buf = Buffer.from(m[1], 'hex');
+  let t = '';
+  for (let i = 2; i + 1 < buf.length; i += 2) t += String.fromCharCode(buf.readUInt16BE(i));
+  return t;
 };
 const nouClientPortal = async (tipus, nom, referencia) => {
   const { data, error } = await gestor.schema('portal').from('clients')
@@ -282,8 +301,8 @@ try {
   {
     const { data } = await adminPortal.from('requests').select('id, document_type, template_version').in('id', [pf.kycId, pdpPf]);
     const k = data.find((x) => x.id === pf.kycId); const p = data.find((x) => x.id === pdpPf);
-    comprova(k?.document_type === 'kyc_pf' && k?.template_version === 'KYC-PF v1' && p?.document_type === 'pdp' && p?.template_version === 'PDP v1',
-      'Es creen dues sol·licituds enllaçades: kyc_pf (KYC-PF v1) i pdp (PDP v1)');
+    comprova(k?.document_type === 'kyc_pf' && k?.template_version === 'KYC-PF v2' && p?.document_type === 'pdp' && p?.template_version === 'PDP v1',
+      'Es creen dues sol·licituds enllaçades: kyc_pf (KYC-PF v2) i pdp (PDP v1)');
   }
   const dup = await personal({ accio: 'crea', client_id: cliPf });
   comprova(dup.status === 409, 'No es pot crear un segon KYC mentre n\'hi ha un de pendent');
@@ -375,6 +394,14 @@ try {
   comprova(senseDecl.status === 400 && senseDecl.cos.pendents?.some((p) => p.camp === 'declaracions.d3'), 'Una declaració sense marcar → no es pot signar');
   const repSenseTipus = await signa(pf.token, { ...dadesPf, representacio: { actua: true, nom: 'Rep', document: 'X' } });
   comprova(repSenseTipus.status === 400 && repSenseTipus.cos.pendents?.some((p) => p.camp === 'representacio.tipus'), 'Representació sense tipus → no es pot signar');
+  const descOpcional = await signa(pf.token, { ...dadesPf, identificacio: { ...dadesPf.identificacio, nom: '' },
+    proposit: { serveis: ['fiscal'], serveis_altres: '', descripcio: '' }, fons: { ...dadesPf.fons, descripcio: '' } });
+  comprova(descOpcional.status === 400 && !descOpcional.cos.pendents?.some((p) => /descripcio/.test(p.camp)),
+    'Les descripcions breus (apartats 4 i 5) són opcionals si no es marca "altres"');
+  const descAltres = await signa(pf.token, { ...dadesPf, proposit: { serveis: ['altres'], serveis_altres: 'Tràmits notarials', descripcio: '' },
+    fons: { ...dadesPf.fons, origen: ['altres'], origen_altres: 'Premi', descripcio: '' } });
+  comprova(descAltres.status === 400 && descAltres.cos.pendents?.some((p) => p.camp === 'proposit.descripcio') &&
+    descAltres.cos.pendents?.some((p) => p.camp === 'fons.descripcio'), 'Amb "altres", les descripcions breus són obligatòries');
   const actSenseCamps = await signa(pf.token, { ...dadesPf, activitat: { tipus: 'professional', sector: 'Advocacia' } });
   comprova(actSenseCamps.status === 400 && actSenseCamps.cos.pendents?.some((p) => p.camp === 'activitat.titol'), 'Activitat professional sense títol → no es pot signar');
 
@@ -394,6 +421,7 @@ try {
   comprova(sPf.status === 200 && !!sPf.cos.kyc?.url && !!sPf.cos.pdp?.url, 'Signatura acceptada: dues URL de descàrrega (KYC i protecció de dades)');
   comprova(/\/object\/sign\/portal-docs\//.test(sPf.cos.kyc?.url || '') && /token=/.test(sPf.cos.pdp?.url || ''), 'Les descàrregues són URL signades del bucket privat');
   const pdfKycPf = await desaPdf(sPf.cos.kyc.url, 'kyc-pf-signat-client.pdf');
+  comprova(clauPdf(pdfKycPf) === 'kyc-client', 'El PDF que descarrega el client és la versió sense l\'apartat reservat a ÀMBIT');
   const pdfPdpPf = await desaPdf(sPf.cos.pdp.url, 'proteccio-dades-pf-signat.pdf');
   comprova(pdfKycPf.subarray(0, 5).toString() === '%PDF-' && pdfPdpPf.subarray(0, 5).toString() === '%PDF-', 'Els dos fitxers són PDF');
   const { data: docsK } = await adminPortal.from('documents').select('kind, sha256, mida_bytes').eq('request_id', pf.kycId);
@@ -491,6 +519,16 @@ try {
   comprova((pjTrust.cos.documents?.requerits || []).some((x) => x.tipus === 'trust'), 'Amb trust, cal la documentació del fideïcomís');
   await kyc(pj.token, { accio: 'desa', dades: dadesPj });
 
+  {
+    // Certificat de vigència de més de 3 mesos: no compta
+    const contingut = pdfProva(`vigencia antiga ${sufix}`);
+    const u = await kyc(pj.token, { accio: 'url_pujada', tipus: 'vigencia', mime: 'application/pdf', mida: contingut.length });
+    await nouClient().storage.from('portal-docs').uploadToSignedUrl(u.cos.path, u.cos.upload_token, contingut, { contentType: 'application/pdf' });
+    const r = await kyc(pj.token, { accio: 'registra_adjunt', path: u.cos.path, tipus: 'vigencia', nom_fitxer: 'vigencia-antiga.pdf', ...datesDoc('vigencia', { antiguitat: 100 }) });
+    comprova(r.status === 200 && r.cos.documents.pendents.some((x) => x.tipus === 'vigencia') &&
+      r.cos.documents.adjunts.some((a) => a.nom_fitxer === 'vigencia-antiga.pdf' && a.valid === false),
+    'Excepció: un certificat de vigència de més de 3 mesos no compta');
+  }
   for (const t of ['escriptura', 'vigencia', 'registre_be', 'nrt', 'fons']) await pujaDoc(pj.token, t, null, `${t}-prova-holding.pdf`);
   await pujaDoc(pj.token, 'identitat', R1, 'passaport-joan.pdf');
   await pujaDoc(pj.token, 'identitat', R2, 'dni-anna.pdf');
@@ -575,9 +613,20 @@ try {
   comprova((await estat(pj.kycId)) === 'signat', 'Després dels intents rebutjats, el KYC continua pendent de validació');
 
   const vPj = await personal({ ...validacioPj, sancions_evidencia_id: ev.cos.document_id }, JWT_OCIC);
-  comprova(vPj.status === 200 && !!vPj.cos.pdf_final?.url, 'L\'OCIC valida amb la seva sessió i es genera el PDF final');
+  comprova(vPj.status === 200 && !!vPj.cos.pdf_final?.url && !!vPj.cos.copia_client?.url,
+    'L\'OCIC valida amb la seva sessió i es generen el PDF intern validat i la còpia per al client');
   comprova((await estat(pj.kycId)) === 'actiu', 'El KYC queda validat (actiu)');
-  const pdfFinalPj = await desaPdf(vPj.cos.pdf_final.url, 'kyc-pj-validat-ocic.pdf');
+  const pdfFinalPj = await desaPdf(vPj.cos.pdf_final.url, 'kyc-pj-validat-intern.pdf');
+  const copiaPj = await desaPdf(vPj.cos.copia_client.url, 'kyc-pj-copia-client.pdf');
+  comprova(clauPdf(pdfFinalPj) === 'kyc-intern' && clauPdf(copiaPj) === 'kyc-copia' && clauPdf(pdfKycPj) === 'kyc-client',
+    'Tres versions: signada pel client (sense apartat reservat), interna validada i còpia per al client');
+  {
+    const { data: dc } = await adminPortal.from('documents').select('kind, sha256, storage_path').eq('request_id', pj.kycId).eq('kind', 'copia_client');
+    comprova(dc.length === 1 && dc[0].sha256 === sha256(copiaPj) && dc[0].storage_path.includes('/copia-client/'),
+      'La còpia per al client queda registrada (sha256) i es descarrega des del portal');
+    comprova(sha256(copiaPj) !== sha256(pdfKycPj) && copiaPj.length > pdfKycPj.length,
+      'La còpia per al client és el KYC signat més el bloc de recepció amb la firma de l\'OCIC');
+  }
   {
     const { data: docs } = await adminPortal.from('documents').select('kind, sha256, storage_path').eq('request_id', pj.kycId);
     const fin = docs.find((d) => d.kind === 'validat');
@@ -614,7 +663,76 @@ try {
     sancions_data: avui, sancions_llistes_marcades: CODIS_LLISTES, sancions_resultat: 'Sense coincidències', sancions_evidencia_id: evPf.cos.document_id,
   }, JWT_OCIC);
   comprova(vPf.status === 200, 'Persona física validada (diligència normal, sense alta direcció perquè no hi ha marques)');
-  await desaPdf(vPf.cos.pdf_final.url, 'kyc-pf-validat-ocic.pdf');
+  await desaPdf(vPf.cos.pdf_final.url, 'kyc-pf-validat-intern.pdf');
+  await desaPdf(vPf.cos.copia_client.url, 'kyc-pf-copia-client.pdf');
+  {
+    const rClient = await kyc(pf.token, { accio: 'pdf_final' });
+    comprova(rClient.status === 404, 'Des de l\'enllaç del client no es pot obtenir cap PDF validat (enllaç consumit, resposta neutra)');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  seccio('Documentació: ja la té ÀMBIT');
+
+  const cliAm = await nouClientPortal('pf', 'Jordi Prova Documentació', `KAM${String(sufix).slice(-8)}`);
+  const rAm = await personal({ accio: 'crea', client_id: cliAm, documentacio: 'ambit' });
+  const eAm = await crida('portal-enllac', { request_id: rAm.cos.request_id }, { jwt: JWT_GESTOR });
+  const am = { kycId: rAm.cos.request_id, token: eAm.cos.enllac?.split('/kyc/')[1] };
+  {
+    const { data: f } = await adminPortal.from('kyc_formularis').select('documentacio_ambit').eq('request_id', am.kycId).single();
+    comprova(rAm.status === 200 && f.documentacio_ambit === true, 'El gestor crea el KYC amb "Documentació: ja la té ÀMBIT"');
+    const { data: r } = await adminPortal.from('requests').select('template_version').eq('id', am.kycId).single();
+    comprova(r.template_version === 'KYC-PF v2', 'Plantilla KYC-PF v2');
+  }
+  const oAm = await kyc(am.token, { accio: 'obrir' });
+  comprova(oAm.cos.documentacio_ambit === true, 'El client veu que la documentació no és obligatòria');
+  const dadesAm = { ...dadesPf, identificacio: { ...dadesPf.identificacio, nom: 'Jordi Prova Documentació', email: 'jordi.prova@example.com' },
+    proposit: { serveis: ['comptabilitat'], serveis_altres: '', descripcio: '' }, fons: { origen: ['salaris'], andorra: true, paisos: [], descripcio: '' } };
+  const sAm = await kyc(am.token, { accio: 'signar', dades: dadesAm, lloc_kyc: 'Sant Julià de Lòria', lloc_pdp: 'Sant Julià de Lòria',
+    signatura_kyc: FIRMA_KYC, signatura_pdp: FIRMA_PDP, consentiment_comercial: false });
+  comprova(sAm.status === 200, 'El client signa sense adjuntar cap document (i sense les descripcions breus, que ara són opcionals)');
+  await desaPdf(sAm.cos.kyc.url, 'kyc-pf-ambit-signat-client.pdf');
+  const evAm = await pujaEvidencia(am.kycId);
+  const validacioAm = {
+    accio: 'valida', request_id: am.kycId, nivell: 'normal', justificacio: 'Client conegut; documentació aportada per ÀMBIT.',
+    verificacio_via: 'presencial', verificacio_data: avui, verificacio_persona: 'OCIC (prova)', sancions_data: avui,
+    sancions_llistes_marcades: CODIS_LLISTES, sancions_resultat: 'Sense coincidències', sancions_evidencia_id: evAm.cos.document_id,
+  };
+  const vAm0 = await personal(validacioAm, JWT_OCIC);
+  comprova(vAm0.status === 400 && /falten documents obligatoris/.test(vAm0.cos.error || ''), 'L\'OCIC no pot validar mentre falti cap document obligatori');
+  const pujaAmbit = async (tipus, extra = {}) => {
+    const contingut = pdfProva(`${tipus} aportat per ÀMBIT ${sufix} ${extra.data_caducitat || ''}`);
+    const u = await personal({ accio: 'url_document_ambit', request_id: am.kycId, mime: 'application/pdf', mida: contingut.length });
+    if (u.status !== 200) return u;
+    await nouClient().storage.from('portal-docs').uploadToSignedUrl(u.cos.path, u.cos.upload_token, contingut, { contentType: 'application/pdf' });
+    return personal({ accio: 'registra_document_ambit', request_id: am.kycId, path: u.cos.path, tipus, nom_fitxer: `${tipus}-ambit.pdf`,
+      data_document: '2026-09-01', rebut_el: '2026-09-15', ...extra });
+  };
+  const webAm = await personal({ accio: 'url_document_ambit', request_id: am.kycId, mime: 'application/pdf', mida: 100 }, JWT_WEB);
+  comprova(webAm.status === 403, 'Un usuari de la web no pot aportar documents');
+  const senseData = await personal({ accio: 'registra_document_ambit', request_id: am.kycId, path: `requests/${am.kycId}/ambit/${id()}.pdf`, tipus: 'domicili' });
+  comprova(senseData.status === 400, 'Cal la data del document i "rebut el"');
+  const idCad = await pujaAmbit('identitat', { data_caducitat: '2026-01-31' });
+  comprova(idCad.status === 200 && idCad.cos.documents.pendents.some((p) => p.tipus === 'identitat'),
+    'Excepció: un document d\'identitat caducat no serveix, encara que l\'aporti ÀMBIT');
+  await pujaAmbit('identitat', { data_caducitat: mesAnys(3) });
+  await pujaAmbit('domicili');
+  await pujaAmbit('residencia');
+  await pujaAmbit('activitat');
+  const ultAm = await pujaAmbit('fons');
+  comprova(ultAm.status === 200 && ultAm.cos.documents.pendents.length === 0, 'El gestor aporta els documents obligatoris que faltaven');
+  {
+    const { data: adj } = await adminPortal.from('kyc_adjunts').select('id, aportat_per_ambit, aportat_per, rebut_el, data_document').eq('request_id', am.kycId);
+    comprova(adj.length === 6 && adj.every((a) => a.aportat_per_ambit && a.aportat_per === idGestor && a.rebut_el === '2026-09-15' && a.data_document === '2026-09-01'),
+      'Cada document consta com a "Aportat per ÀMBIT", amb la data del document i "rebut el"');
+    const { data: aud } = await adminPortal.from('audit_log').select('actor').eq('entitat', 'kyc_adjunts').eq('accio', 'INSERT').in('entitat_id', adj.map((a) => a.id));
+    comprova(aud.length === 6 && aud.every((a) => a.actor === idGestor), 'audit_log registra qui adjunta cada document');
+  }
+  const vAm = await personal(validacioAm, JWT_OCIC);
+  comprova(vAm.status === 200 && !!vAm.cos.copia_client?.url, 'Amb tots els documents vigents, l\'OCIC valida');
+  await desaPdf(vAm.cos.pdf_final.url, 'kyc-pf-ambit-validat-intern.pdf');
+  await desaPdf(vAm.cos.copia_client.url, 'kyc-pf-ambit-copia-client.pdf');
+  const tardà = await pujaAmbit('domicili');
+  comprova(tardà.status === 403, 'Un cop validat, ja no s\'hi poden afegir documents');
   {
     const { data: v } = await adminPortal.from('kyc_validacions').select('propera_revisio').eq('request_id', pf.kycId).single();
     comprova(v.propera_revisio === mesAnys(3), `Propera revisió a 3 anys (risc normal): ${v.propera_revisio}`);

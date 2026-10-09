@@ -8,7 +8,9 @@
 // Els documents obligatoris no són aquí: els decideix la base de dades
 // (portal.kyc_documents_requerits), que és la que impedeix signar.
 
-export const VERSIONS = { kyc_pf: 'KYC-PF v1', kyc_pj: 'KYC-PJ v1', pdp: 'PDP v1' };
+export const VERSIONS = { kyc_pf: 'KYC-PF v2', kyc_pj: 'KYC-PJ v2', pdp: 'PDP v1' };
+// Versions que el formulari del client encara accepta (les v1 enviades abans del canvi)
+export const VERSIONS_ACCEPTADES = { kyc_pf: ['KYC-PF v1', 'KYC-PF v2'], kyc_pj: ['KYC-PJ v1', 'KYC-PJ v2'], pdp: ['PDP v1'] };
 
 // Idiomes de comunicació (valors, no textos de la plantilla)
 export const IDIOMES = {
@@ -327,7 +329,8 @@ const pendentsPpe = (p, seccio, prefix, avui, out) => {
 const pendentsProposit = (p, seccio, out) => {
   if (buit(p.serveis)) out.push({ seccio, camp: 'proposit.serveis' });
   if (p.serveis.includes('altres') && buit(p.serveis_altres)) out.push({ seccio, camp: 'proposit.serveis_altres' });
-  if (buit(p.descripcio)) out.push({ seccio, camp: 'proposit.descripcio' });
+  // La descripció breu només és obligatòria si es marca "altres"
+  if (p.serveis.includes('altres') && buit(p.descripcio)) out.push({ seccio, camp: 'proposit.descripcio' });
 };
 
 const pendentsFons = (f, seccio, out) => {
@@ -338,7 +341,8 @@ const pendentsFons = (f, seccio, out) => {
   if (!senseFons) {
     if (f.andorra === null) out.push({ seccio, camp: 'fons.andorra' });
     if (f.andorra === false && buit(f.paisos)) out.push({ seccio, camp: 'fons.paisos' });
-    if (buit(f.descripcio)) out.push({ seccio, camp: 'fons.descripcio' });
+    // La descripció breu només és obligatòria si es marca "altres"
+    if (f.origen.includes('altres') && buit(f.descripcio)) out.push({ seccio, camp: 'fons.descripcio' });
   }
 };
 

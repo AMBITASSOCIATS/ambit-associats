@@ -1,5 +1,5 @@
 {
-  "versions": { "kyc_pf": "KYC-PF v1", "kyc_pj": "KYC-PJ v1", "pdp": "PDP v1" },
+  "versions": { "kyc_pf": "KYC-PF v2", "kyc_pj": "KYC-PJ v2", "pdp": "PDP v1" },
   "si_no": { "si": { "ca": "sí", "en": "yes" }, "no": { "ca": "no", "en": "no" } },
   "altres": { "ca": "altres (especifiqueu-ho)", "en": "other (please specify)" },
   "avis_legal": {
@@ -521,6 +521,13 @@
       "declaracio": { "ca": "Declaro que he rebut i llegit aquesta informació.", "en": "I confirm that I have received and read this information." }
     }
   },
+
+  "recepcio": {
+    "titol": { "ca": "Recepció per DEL SOTO – PALEARI & ASSOCIATS, SL", "en": "Received by DEL SOTO – PALEARI & ASSOCIATS, SL" },
+    "text": { "ca": "DEL SOTO – PALEARI & ASSOCIATS, SL declara haver rebut aquest formulari i la documentació adjunta.", "en": "DEL SOTO – PALEARI & ASSOCIATS, SL acknowledges receipt of this form and the attached documents." }
+  },
+  "no_escau": { "ca": "No s'escau", "en": "Not applicable" },
+  "aportat_ambit": { "ca": "Aportat per ÀMBIT", "en": "Provided by ÀMBIT" },
 
   "correu": {
     "assumpte": "Identificació del client i protecció de dades · ÀMBIT Associats",

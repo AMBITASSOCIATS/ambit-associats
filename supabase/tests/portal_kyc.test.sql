@@ -1,7 +1,7 @@
 -- Proves del KYC i la protecció de dades (base de dades)
 -- Execució local: supabase test db
 begin;
-select plan(120);
+select plan(150);
 
 -- ─── Dades de prova (com a postgres) ────────────────────────────────────────
 insert into auth.users (id, email) values
@@ -14,7 +14,8 @@ insert into portal.staff_profiles (user_id, role) values
 insert into portal.clients (id, party_type, nom_mostrat, referencia_client) values
   ('00000000-0000-0000-0000-0000000000c1', 'pf', 'Client KYC PF', 'KPF-1'),
   ('00000000-0000-0000-0000-0000000000c2', 'pj', 'Client KYC PJ, SL', 'KPJ-1'),
-  ('00000000-0000-0000-0000-0000000000c3', 'pf', 'Client Prohibit', 'KIR-1');
+  ('00000000-0000-0000-0000-0000000000c3', 'pf', 'Client Prohibit', 'KIR-1'),
+  ('00000000-0000-0000-0000-0000000000c4', 'pf', 'Client Documentació ÀMBIT', 'KAM-1');
 
 create temp table t (k text primary key, v text);
 grant select, insert, update on t to public;
@@ -72,8 +73,8 @@ reset role;
 insert into t select 'pdp', pdp_request_id from portal.kyc_formularis where request_id = pg_temp.v('kyc');
 insert into t select 'pdppj', pdp_request_id from portal.kyc_formularis where request_id = pg_temp.v('kycpj');
 insert into t select 'pdpir', pdp_request_id from portal.kyc_formularis where request_id = pg_temp.v('kycir');
-select is((select document_type::text || ' ' || template_version from portal.requests where id = pg_temp.v('kyc')), 'kyc_pf KYC-PF v1', 'Persona física → kyc_pf, KYC-PF v1');
-select is((select document_type::text || ' ' || template_version from portal.requests where id = pg_temp.v('kycpj')), 'kyc_pj KYC-PJ v1', 'Persona jurídica → kyc_pj, KYC-PJ v1');
+select is((select document_type::text || ' ' || template_version from portal.requests where id = pg_temp.v('kyc')), 'kyc_pf KYC-PF v2', 'Persona física → kyc_pf, KYC-PF v2');
+select is((select document_type::text || ' ' || template_version from portal.requests where id = pg_temp.v('kycpj')), 'kyc_pj KYC-PJ v2', 'Persona jurídica → kyc_pj, KYC-PJ v2');
 select is((select document_type::text || ' ' || template_version from portal.requests where id = pg_temp.v('pdp')), 'pdp PDP v1', 'La PDP enllaçada → pdp, PDP v1');
 
 select pg_temp.com('00000000-0000-0000-0000-0000000000e3');
@@ -111,9 +112,14 @@ select throws_ok($$ select portal.kyc_registra_adjunt(pg_temp.v('tok'), 'request
   '22023', null, 'Un tipus de document de PJ no s''admet en un KYC de PF');
 select throws_ok($$ select portal.kyc_registra_adjunt(pg_temp.v('tok'), 'requests/' || pg_temp.v('kycpj') || '/adjunts/00000000-0000-0000-0000-000000000001.pdf', repeat('1', 64), 10, 'application/pdf', 'identitat', null, 'x.pdf') $$,
   '22023', null, 'No es pot registrar un fitxer d''una altra sol·licitud');
+select lives_ok($$ select portal.kyc_registra_adjunt(pg_temp.v('tok'), 'requests/' || pg_temp.v('kyc') || '/adjunts/00000000-0000-0000-0000-000000000009.pdf',
+  repeat('9', 64), 100, 'application/pdf', 'identitat', null, 'caducat.pdf', null, current_date - 1) $$, 'Registra un document d''identitat caducat');
+select ok((select bool_or(tipus = 'identitat') from portal.kyc_documents_pendents(pg_temp.v('kyc'))),
+  'Un document d''identitat caducat no compta (plantilla v2): cal aportar-ne un de vigent');
 select lives_ok($$
   select portal.kyc_registra_adjunt(pg_temp.v('tok'), 'requests/' || pg_temp.v('kyc') || '/adjunts/00000000-0000-0000-0000-00000000000' || n || '.pdf',
-                                   repeat(n::text, 64), 100, 'application/pdf', t, null, t || '.pdf')
+                                   repeat(n::text, 64), 100, 'application/pdf', t, null, t || '.pdf',
+                                   null, case when t = 'identitat' then current_date + 365 end)
   from (values (1, 'identitat'), (2, 'domicili'), (3, 'residencia')) x(n, t) $$, 'Registra 3 dels 4 documents obligatoris');
 select is((select string_agg(tipus, ',') from portal.kyc_documents_pendents(pg_temp.v('kyc'))), 'fons', 'Pendent: el justificant de l''origen dels fons');
 
@@ -277,7 +283,7 @@ select throws_ok($$ delete from portal.kyc_validacions $$, '42501', null, 'La va
 -- Prohibició total: no es pot validar i queda registrat
 select pg_temp.servei();
 select lives_ok($$ select portal.kyc_registra_adjunt(pg_temp.v('tokir'), 'requests/' || pg_temp.v('kycir') || '/adjunts/00000000-0000-0000-0000-0000000000' || n || '.pdf',
-  repeat(to_hex(n % 16), 64), 100, 'application/pdf', t, null, t || '.pdf')
+  repeat(to_hex(n % 16), 64), 100, 'application/pdf', t, null, t || '.pdf', null, case when t = 'identitat' then current_date + 365 end)
   from (values (11, 'identitat'), (12, 'domicili'), (13, 'residencia'), (14, 'fons')) x(n, t) $$, 'Documents del KYC prohibit');
 select lives_ok($$ select pg_temp.signa('tokir', 'kycir', 'pdpir') $$, 'El client prohibit signa (no se li comunica res)');
 insert into t select 'evir', portal.kyc_registra_evidencia('00000000-0000-0000-0000-0000000000e1', pg_temp.v('kycir'),
@@ -386,6 +392,95 @@ select ok((select bool_and(detalls #>> '{canvis,dades,despres}' like 'sha256:%')
   'A l''auditoria, les respostes queden com a empremta (sha256), no senceres');
 select ok((select count(*) > 0 from portal.audit_log where entitat = 'paisos_risc' and accio = 'UPDATE'
            and actor = '00000000-0000-0000-0000-0000000000e1'), 'Els canvis a les llistes queden a l''auditoria amb l''OCIC com a actor');
+
+
+-- ═══ 10. Correccions: documentació aportada per ÀMBIT, vigència i còpia per al client ═══
+select is(portal.kyc_adjunt_valid('vigencia', current_date - 30, null, 'KYC-PJ v2'), true, 'Certificat de vigència d''1 mes: vàlid');
+select is(portal.kyc_adjunt_valid('vigencia', current_date - 100, null, 'KYC-PJ v2'), false, 'Certificat de vigència de més de 3 mesos: no vàlid');
+select is(portal.kyc_adjunt_valid('registre_be', null, null, 'KYC-PJ v2'), false, 'Extracte del Registre de beneficiaris efectius sense data: no vàlid');
+select is(portal.kyc_adjunt_valid('identitat', null, current_date - 1, 'KYC-PF v2'), false, 'Document d''identitat caducat: no vàlid');
+select is(portal.kyc_adjunt_valid('vigencia', current_date - 400, null, 'KYC-PJ v1'), true, 'Les plantilles v1 conserven les seves regles');
+
+select pg_temp.com('00000000-0000-0000-0000-0000000000e3');
+insert into t select 'kycam', portal.crea_kyc('00000000-0000-0000-0000-0000000000c4', null, null, true);
+reset role;
+insert into t select 'pdpam', pdp_request_id from portal.kyc_formularis where request_id = pg_temp.v('kycam');
+select is((select documentacio_ambit from portal.kyc_formularis where request_id = pg_temp.v('kycam')), true, 'El personal tria "Documentació: ja la té ÀMBIT"');
+select pg_temp.com('00000000-0000-0000-0000-0000000000e3');
+update portal.requests set status = 'enviat' where id in (pg_temp.v('kycam'), pg_temp.v('pdpam'));
+reset role;
+insert into portal.access_tokens (request_id, token_hash, expira_at) values (pg_temp.v('kycam'), repeat('d', 64), now() + interval '7 days');
+insert into t select 'tokam', id from portal.access_tokens where token_hash = repeat('d', 64);
+select pg_temp.servei();
+select is(portal.obre_kyc_per_token(repeat('d', 64)) ->> 'documentacio_ambit', 'true', 'El client sap que la documentació no és obligatòria');
+select throws_ok($$ update portal.kyc_formularis set documentacio_ambit = false where request_id = pg_temp.v('kycam') $$, '42501', null,
+  'La tria de la documentació no es pot canviar un cop creada');
+select lives_ok($$ select portal.kyc_desa(pg_temp.v('tokam'), pg_temp.dades_pf()) $$, 'El client desa les respostes');
+select lives_ok($$ select pg_temp.signa('tokam', 'kycam', 'pdpam') $$, 'Amb "ja la té ÀMBIT", el client signa sense adjuntar documents');
+insert into t select 'evam', portal.kyc_registra_evidencia('00000000-0000-0000-0000-0000000000e1', pg_temp.v('kycam'),
+  'requests/' || pg_temp.v('kycam') || '/ocic/00000000-0000-0000-0000-0000000000cc.pdf', repeat('c', 64), 10, 'application/pdf');
+reset role;
+
+select pg_temp.com('00000000-0000-0000-0000-0000000000e1');
+select throws_like($$ select portal.valida_kyc(pg_temp.v('kycam'), pg_temp.val('normal', 'evam')) $$, '%falten documents obligatoris%',
+  'L''OCIC no pot validar mentre falti cap document obligatori');
+select throws_ok($$ select portal.kyc_registra_adjunt_ambit('00000000-0000-0000-0000-0000000000e3', pg_temp.v('kycam'),
+  'requests/' || pg_temp.v('kycam') || '/ambit/00000000-0000-0000-0000-000000000001.pdf', repeat('1', 64), 10, 'application/pdf',
+  'identitat', null, 'x.pdf', current_date, current_date, current_date + 1) $$, '42501', null, 'El personal no pot adjuntar directament des del navegador');
+reset role;
+
+select pg_temp.servei();
+select throws_ok($$ select portal.kyc_registra_adjunt_ambit('00000000-0000-0000-0000-0000000000e5', pg_temp.v('kycam'),
+  'requests/' || pg_temp.v('kycam') || '/ambit/00000000-0000-0000-0000-000000000001.pdf', repeat('1', 64), 10, 'application/pdf',
+  'domicili', null, 'x.pdf', current_date, current_date, null) $$, '42501', null, 'Un usuari que no és personal no pot aportar documents');
+select throws_ok($$ select portal.kyc_registra_adjunt_ambit('00000000-0000-0000-0000-0000000000e3', pg_temp.v('kycam'),
+  'requests/' || pg_temp.v('kycam') || '/ambit/00000000-0000-0000-0000-000000000001.pdf', repeat('1', 64), 10, 'application/pdf',
+  'identitat', null, 'x.pdf', current_date, current_date, null) $$, '23514', null, 'Document d''identitat aportat per ÀMBIT sense data de caducitat: rebutjat');
+select throws_ok($$ select portal.kyc_registra_adjunt_ambit('00000000-0000-0000-0000-0000000000e3', pg_temp.v('kycam'),
+  'requests/' || pg_temp.v('kycam') || '/ambit/00000000-0000-0000-0000-000000000001.pdf', repeat('1', 64), 10, 'application/pdf',
+  'domicili', null, 'x.pdf', current_date + 1, current_date, null) $$, '23514', null, 'La data del document no pot ser futura');
+select lives_ok($$ select portal.kyc_registra_adjunt_ambit('00000000-0000-0000-0000-0000000000e3', pg_temp.v('kycam'),
+  'requests/' || pg_temp.v('kycam') || '/ambit/00000000-0000-0000-0000-000000000010.pdf', repeat('a', 64), 10, 'application/pdf',
+  'identitat', null, 'dni-caducat.pdf', current_date - 900, current_date, current_date - 5) $$, 'ÀMBIT aporta un document d''identitat caducat');
+select ok((select bool_or(tipus = 'identitat') from portal.kyc_documents_pendents(pg_temp.v('kycam'))),
+  'Excepció: un document d''identitat caducat no serveix, encara que l''aporti ÀMBIT');
+select lives_ok($$ select portal.kyc_registra_adjunt_ambit('00000000-0000-0000-0000-0000000000e3', pg_temp.v('kycam'),
+  'requests/' || pg_temp.v('kycam') || '/ambit/00000000-0000-0000-0000-0000000000' || n || '.pdf', repeat(to_hex(n % 16), 64), 10, 'application/pdf',
+  t, null, t || '.pdf', current_date - 20, current_date - 2, case when t = 'identitat' then current_date + 700 end)
+  from (values (11, 'identitat'), (12, 'domicili'), (13, 'residencia'), (14, 'fons')) x(n, t) $$, 'ÀMBIT aporta els documents obligatoris (data del document i "rebut el")');
+select is((select count(*)::int from portal.kyc_documents_pendents(pg_temp.v('kycam'))), 0, 'Ja no falta cap document obligatori');
+select ok((select bool_and(a.actor = '00000000-0000-0000-0000-0000000000e3') from portal.audit_log a
+           join portal.kyc_adjunts k on k.id = a.entitat_id
+           where a.entitat = 'kyc_adjunts' and a.accio = 'INSERT' and k.request_id = pg_temp.v('kycam')),
+  'audit_log registra el gestor que adjunta cada document');
+select is((select count(*)::int from portal.kyc_adjunts where request_id = pg_temp.v('kycam') and aportat_per_ambit
+           and aportat_per = '00000000-0000-0000-0000-0000000000e3' and rebut_el is not null and data_document is not null), 5,
+  'Cada document aportat per ÀMBIT desa qui l''aporta, la data del document i "rebut el"');
+select throws_ok($$ update portal.kyc_adjunts set rebut_el = current_date - 10 where request_id = pg_temp.v('kycam') $$, '42501', null,
+  'Les dades d''un document aportat no es poden modificar (només es pot treure)');
+reset role;
+
+select pg_temp.com('00000000-0000-0000-0000-0000000000e1');
+select lives_ok($$ select portal.valida_kyc(pg_temp.v('kycam'), pg_temp.val('normal', 'evam')) $$, 'Amb tots els documents vigents, l''OCIC valida');
+reset role;
+
+select pg_temp.servei();
+select throws_ok($$ select portal.kyc_registra_adjunt_ambit('00000000-0000-0000-0000-0000000000e3', pg_temp.v('kycam'),
+  'requests/' || pg_temp.v('kycam') || '/ambit/00000000-0000-0000-0000-000000000020.pdf', repeat('2', 64), 10, 'application/pdf',
+  'domicili', null, 'x.pdf', current_date, current_date, null) $$, '42501', null, 'Un cop validat, ja no s''hi poden afegir documents');
+select throws_ok($$ select portal.registra_pdf_validat('00000000-0000-0000-0000-0000000000e3', pg_temp.v('kycam'),
+  'requests/' || pg_temp.v('kycam') || '/copia-client/00000000-0000-0000-0000-000000000030.pdf', repeat('3', 64), 10, 'copia_client') $$,
+  '42501', null, 'Un gestor no pot registrar la còpia per al client (només l''OCIC que ha validat)');
+select throws_ok($$ select portal.registra_pdf_validat('00000000-0000-0000-0000-0000000000e1', pg_temp.v('kycam'),
+  'requests/' || pg_temp.v('kycam') || '/validat/00000000-0000-0000-0000-000000000030.pdf', repeat('3', 64), 10, 'copia_client') $$,
+  '23514', null, 'La còpia per al client va a la seva carpeta');
+select lives_ok($$ select portal.registra_pdf_validat('00000000-0000-0000-0000-0000000000e1', pg_temp.v('kycam'),
+  'requests/' || pg_temp.v('kycam') || '/copia-client/00000000-0000-0000-0000-000000000030.pdf', repeat('3', 64), 10, 'copia_client') $$,
+  'Es registra la còpia per al client del KYC validat');
+select throws_ok($$ select portal.registra_pdf_validat('00000000-0000-0000-0000-0000000000e1', pg_temp.v('kycam'),
+  'requests/' || pg_temp.v('kycam') || '/copia-client/00000000-0000-0000-0000-000000000031.pdf', repeat('3', 64), 10, 'copia_client') $$,
+  '23505', null, 'Només hi ha una còpia per al client per KYC');
+reset role;
 
 select * from finish();
 rollback;
