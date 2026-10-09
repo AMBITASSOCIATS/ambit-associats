@@ -30,7 +30,11 @@ const BAIX = 58;        // per sota d'aquí hi va el peu
 type Bi = { ca: string; en: string };
 type Json = Record<string, any>;
 
-export type Adjunt = { tipus: string; persona: string | null; nom_fitxer: string | null; sha256: string };
+export type Adjunt = {
+  tipus: string; persona: string | null; nom_fitxer: string | null; sha256: string;
+  aportat_per_ambit?: boolean; rebut_el?: string | null; data_document?: string | null;
+  valid?: boolean;  // false: caducat o massa antic (plantilles v2)
+};
 
 export type Signatura = {
   signatariNom: string;
@@ -80,7 +84,12 @@ export type DadesKycPdf = {
   dades: Json;
   adjunts: Adjunt[];
   signatura: Signatura;
+  // client: el que signa i descarrega el client (sense l'apartat reservat)
+  // intern: versió validada per al portal (amb l'apartat reservat i la validació)
+  // copia:  còpia per al client (sense l'apartat reservat, amb la recepció)
+  mode: 'client' | 'intern' | 'copia';
   validacio?: Validacio;
+  recepcio?: { data: Date; nom: string; firma: Uint8Array };
 };
 
 export type DadesPdpPdf = {
@@ -458,11 +467,12 @@ class Maqueta {
   }
 }
 
-const nouDocument = async (titol: Bi, subjecte: string, clientNom: string, versio: string, data: Date) => {
+const nouDocument = async (titol: Bi, subjecte: string, clientNom: string, versio: string, data: Date, clau?: string) => {
   const pdf = await PDFDocument.create();
   pdf.setTitle(`${titol.ca} · ${clientNom}`);
   pdf.setAuthor('DEL SOTO – PALEARI & ASSOCIATS, SL');
   pdf.setSubject(subjecte);
+  if (clau) pdf.setKeywords([clau]);
   pdf.setCreator(`Portal de signatura ÀMBIT · ${versio}`);
   pdf.setProducer('Portal de signatura ÀMBIT');
   pdf.setCreationDate(data);
@@ -509,7 +519,8 @@ const proposit = (m: Maqueta, num: number, p: Json) => {
   m.opcions(P.serveis.ca, P.serveis.en, Object.entries(P.opcions).map(([k, o]) => ({
     ...(o as Bi), marcada: (p.serveis || []).includes(k), detall: k === 'altres' && (p.serveis || []).includes(k) ? p.serveis_altres : undefined,
   })));
-  m.camp(P.descripcio.ca, P.descripcio.en, p.descripcio);
+  // Només obligatòria si es marca "altres"
+  m.camp(P.descripcio.ca, P.descripcio.en, p.descripcio, { obligatori: (p.serveis || []).includes('altres') });
 };
 
 const fons = (m: Maqueta, num: number, S: Json, f: Json) => {
@@ -519,7 +530,7 @@ const fons = (m: Maqueta, num: number, S: Json, f: Json) => {
   })));
   m.siNo(S.andorra.ca, S.andorra.en, f.andorra);
   if (f.andorra === false) m.camp(S.paisos.ca, S.paisos.en, paisos(f.paisos));
-  m.camp(S.descripcio.ca, S.descripcio.en, f.descripcio);
+  m.camp(S.descripcio.ca, S.descripcio.en, f.descripcio, { obligatori: (f.origen || []).includes('altres') });
 };
 
 const declaracions = (m: Maqueta, num: number, S: Json, d: Json) => {
@@ -535,8 +546,14 @@ const documentacio = (m: Maqueta, num: number, S: Json, adjunts: Adjunt[], perso
     m.declaracio(nom.ca, nom.en, meus.length > 0);
     for (const a of meus) {
       const qui = a.persona ? `${persones.get(a.persona) || '—'}: ` : '';
-      m.cal(13);
-      m.text(`${qui}${a.nom_fitxer || 'document'} · SHA-256 ${curt(a.sha256)}`, { x: ESQ + 24, ample: AMPLE_UTIL - 24, font: m.f.i, mida: 8.5, color: GRIS, interlinia: 11, justifica: false });
+      m.cal(a.aportat_per_ambit ? 24 : 13);
+      m.text(`${qui}${a.nom_fitxer || 'document'} · SHA-256 ${curt(a.sha256)}${a.valid === false ? ' · No vigent / Not valid' : ''}`, { x: ESQ + 24, ample: AMPLE_UTIL - 24, font: m.f.i, mida: 8.5, color: GRIS, interlinia: 11, justifica: false });
+      if (a.aportat_per_ambit) {
+        m.text(`${T.aportat_ambit.ca} / ${T.aportat_ambit.en}` +
+          (a.rebut_el ? ` · rebut el / received on ${data(a.rebut_el)}` : '') +
+          (a.data_document ? ` · data del document / document date ${data(a.data_document)}` : ''),
+        { x: ESQ + 24, ample: AMPLE_UTIL - 24, font: m.f.i, mida: 8.5, color: VERD_FOSC, interlinia: 11, justifica: false });
+      }
     }
     if (meus.length) m.espai(4);
   }
@@ -575,6 +592,16 @@ const apartatAmbit = async (m: Maqueta, num: number, tipus: 'kyc_pf' | 'kyc_pj',
     v ? (v.alta_direccio_nom ? `${v.alta_direccio_nom} · ${data(v.alta_direccio_data)}` : '—') : null, { obligatori: false });
   await m.firma(A.ocic.ca, A.ocic.en, v ? v.firmaOcic : null,
     v ? `${v.ocicNom} · ${dataLocal(v.validat_at)}` : undefined);
+};
+
+// Còpia per al client: recepció per DEL SOTO – PALEARI & ASSOCIATS, SL, amb la
+// data de validació i la firma de l'OCIC. Cap dada de l'apartat reservat.
+const recepcio = async (m: Maqueta, r: { data: Date; nom: string; firma: Uint8Array }) => {
+  m.cal(240);
+  m.barra(T.recepcio.titol.ca, T.recepcio.titol.en);
+  m.bilingue(T.recepcio.text.ca, T.recepcio.text.en);
+  m.camp(T.signatura.data.ca, T.signatura.data.en, dataLocal(r.data));
+  await m.firma(T.signatura.signatura.ca, T.signatura.signatura.en, r.firma, r.nom);
 };
 
 const filesSignatura = (s: Signatura, requestId: string, referencia: string | null, clientNom: string, partyType: 'pf' | 'pj', versio: string): [string, string, string][] => [
@@ -632,11 +659,16 @@ const kycPf = (m: Maqueta, d: Json) => {
   const S2 = P.s2;
   m.barra(`2. ${S2.titol.ca}`, S2.titol.en);
   m.avis(S2.avis);
-  m.camp(S2.nom.ca, S2.nom.en, r.actua ? r.nom : null, { obligatori: false });
-  m.camp(S2.document.ca, S2.document.en, r.actua ? r.document : null, { obligatori: false });
-  m.opcions(S2.tipus.ca, S2.tipus.en, Object.entries(S2.tipus_opcions).map(([k, o]) => ({
-    ...(o as Bi), marcada: !!r.actua && r.tipus === k, detall: r.actua && k === 'altres' && r.tipus === k ? r.tipus_altres : undefined,
-  })), { obligatori: false });
+  if (r.actua === true) {
+    m.camp(S2.nom.ca, S2.nom.en, r.nom, { obligatori: false });
+    m.camp(S2.document.ca, S2.document.en, r.document, { obligatori: false });
+    m.opcions(S2.tipus.ca, S2.tipus.en, Object.entries(S2.tipus_opcions).map(([k, o]) => ({
+      ...(o as Bi), marcada: r.tipus === k, detall: k === 'altres' && r.tipus === k ? r.tipus_altres : undefined,
+    })), { obligatori: false });
+  } else {
+    // Sense representant: "No s'escau" en lloc dels camps buits
+    m.bilingue(T.no_escau.ca, T.no_escau.en);
+  }
 
   const a = d.activitat || {};
   const S3 = P.s3;
@@ -787,8 +819,9 @@ const kycPj = (m: Maqueta, d: Json) => {
 export const generaPdfKyc = async (k: DadesKycPdf): Promise<Uint8Array> => {
   const pj = k.tipus === 'kyc_pj';
   const titol = pj ? T.pj.titol : T.pf.titol;
-  const quan = k.validacio ? k.validacio.validat_at : k.signatura.signatAt;
-  const { pdf, m } = await nouDocument(titol, titol.en, k.clientNom, k.templateVersion, quan);
+  const quan = k.mode === 'intern' && k.validacio ? k.validacio.validat_at
+    : k.mode === 'copia' && k.recepcio ? k.recepcio.data : k.signatura.signatAt;
+  const { pdf, m } = await nouDocument(titol, titol.en, k.clientNom, k.templateVersion, quan, `kyc-${k.mode}`);
   const d = k.dades || {};
 
   avisLegal(m);
@@ -801,7 +834,10 @@ export const generaPdfKyc = async (k: DadesKycPdf): Promise<Uint8Array> => {
   documentacio(m, pj ? 11 : 9, pj ? T.pj.s11 : T.pf.s9, k.adjunts, persones);
 
   await signaturaClient(m, pj ? 12 : 10, pj ? T.pj.s12.titol : T.pf.s10.titol, k.signatura, pj ? T.pj.s12.avis : undefined);
-  await apartatAmbit(m, pj ? 13 : 11, k.tipus, k.validacio);
+  // L'apartat reservat a ÀMBIT només surt a la versió interna validada; mai a
+  // la que signa el client ni a la seva còpia (art. 26 Llei 14/2017)
+  if (k.mode === 'intern') await apartatAmbit(m, pj ? 13 : 11, k.tipus, k.validacio);
+  if (k.mode === 'copia' && k.recepcio) await recepcio(m, k.recepcio);
 
   // Full d'evidències (pàgina nova)
   m.nova();
@@ -810,7 +846,8 @@ export const generaPdfKyc = async (k: DadesKycPdf): Promise<Uint8Array> => {
   files.splice(4, 0, ['Protecció de dades enllaçada', 'Linked data protection request', k.pdpRequestId]);
   for (const a of k.adjunts) {
     const qui = a.persona ? ` · ${persones.get(a.persona) || a.persona}` : '';
-    files.push(['Document adjunt', 'Attached document (SHA-256)', `${a.tipus}${qui} · ${a.nom_fitxer || 'document'} · ${a.sha256}`]);
+    files.push(['Document adjunt', 'Attached document (SHA-256)',
+      `${a.tipus}${qui} · ${a.nom_fitxer || 'document'}${a.aportat_per_ambit ? ` · ${T.aportat_ambit.ca} / ${T.aportat_ambit.en}` : ''} · ${a.sha256}`]);
   }
   m.evidencies({ ca: 'Full d’evidències de la signatura', en: 'Signature evidence sheet' }, files);
   notaEmpremta(m,
@@ -819,7 +856,7 @@ export const generaPdfKyc = async (k: DadesKycPdf): Promise<Uint8Array> => {
     'The data fingerprint is the SHA-256 digest of the form answers and of the fingerprints of the attached documents, stored at the time of signing. ' +
     'Any later change would produce a different fingerprint. The fingerprint of this PDF is recorded by ÀMBIT Associats at the time of signing.');
 
-  if (k.validacio) {
+  if (k.mode === 'intern' && k.validacio) {
     const v = k.validacio;
     m.espai(6);
     m.evidencies({ ca: 'Validació de l’OCIC', en: 'OCIC validation' }, [

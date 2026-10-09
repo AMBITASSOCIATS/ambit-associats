@@ -25,7 +25,7 @@
 
 import { clientAdmin, deBase64, entrada, formatToken, ipClient, llegeixCos, sha256Hex, text } from '../_shared/portal.ts';
 import { generaPdfKyc, generaPdfPdp } from '../_shared/pdf-kyc.ts';
-import { VERSIONS, campsPendents, netejaDades, signant } from '../_shared/kyc-regles.js';
+import { VERSIONS_ACCEPTADES, campsPendents, netejaDades, signant } from '../_shared/kyc-regles.js';
 import PAISOS from '../_shared/paisos.json' with { type: 'json' };
 
 const BUCKET = 'portal-docs';
@@ -72,12 +72,16 @@ type Info = {
   token_id: string; request_id: string; pdp_request_id: string; document_type: 'kyc_pf' | 'kyc_pj';
   template_version: string; pdp_template_version: string; idioma: string; expira_at: string;
   client_id: string; client_nom: string; referencia_client: string | null; party_type: 'pf' | 'pj';
-  dades: Record<string, unknown>; desat_at: string | null; documents: EstatDocuments;
+  dades: Record<string, unknown>; desat_at: string | null; documents: EstatDocuments; documentacio_ambit: boolean;
 };
 type EstatDocuments = {
   requerits: { tipus: string; persona: string | null }[];
   pendents: { tipus: string; persona: string | null }[];
-  adjunts: { id: string; tipus: string; persona: string | null; nom_fitxer: string | null; mime: string; mida: number; sha256: string }[];
+  adjunts: {
+    id: string; tipus: string; persona: string | null; nom_fitxer: string | null; mime: string; mida: number; sha256: string;
+    aportat_per_ambit: boolean; rebut_el: string | null; data_document: string | null; data_caducitat: string | null; valid: boolean;
+  }[];
+  documentacio_ambit: boolean;
 };
 
 const avuiAndorra = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' });
@@ -86,8 +90,18 @@ const avuiAndorra = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Eu
 const perClient = (e: EstatDocuments) => ({
   requerits: e.requerits,
   pendents: e.pendents,
-  adjunts: e.adjunts.map(({ id, tipus, persona, nom_fitxer, mime, mida }) => ({ id, tipus, persona, nom_fitxer, mime, mida })),
+  documentacio_ambit: e.documentacio_ambit,
+  adjunts: e.adjunts.map(({ id, tipus, persona, nom_fitxer, mime, mida, aportat_per_ambit, data_document, data_caducitat, valid }) =>
+    ({ id, tipus, persona, nom_fitxer, mime, mida, aportat_per_ambit, data_document, data_caducitat, valid })),
 });
+
+// Data AAAA-MM-DD vàlida o null
+const dataValida = (v: unknown): string | null => {
+  const t = String(v || '');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) return null;
+  const d = new Date(`${t}T12:00:00Z`);
+  return Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== t ? null : t;
+};
 
 Deno.serve(async (req) => {
   const { atura, resposta } = entrada(req);
@@ -134,7 +148,7 @@ Deno.serve(async (req) => {
   const sol = info as Info;
   const tipus = sol.document_type;
 
-  if (sol.template_version !== VERSIONS[tipus] || sol.pdp_template_version !== VERSIONS.pdp) {
+  if (!VERSIONS_ACCEPTADES[tipus].includes(sol.template_version) || !VERSIONS_ACCEPTADES.pdp.includes(sol.pdp_template_version)) {
     return resposta(409, { error: 'Aquest document no està disponible. Contacteu amb ÀMBIT Associats.' });
   }
 
@@ -158,6 +172,7 @@ Deno.serve(async (req) => {
       expira_at: sol.expira_at,
       dades: sol.dades,
       desat_at: sol.desat_at,
+      documentacio_ambit: sol.documentacio_ambit === true,
       documents: perClient(sol.documents),
     });
   }
@@ -204,6 +219,10 @@ Deno.serve(async (req) => {
       p_token_id: sol.token_id, p_path: path, p_sha256: await sha256Hex(bytes), p_mida: bytes.length, p_mime: mime,
       p_tipus: String(cos.tipus || ''), p_persona: cos.persona ? String(cos.persona) : null,
       p_nom_fitxer: text(cos.nom_fitxer, 200),
+      // Data de caducitat (document d'identitat) i data del document (certificat
+      // de vigència i extracte del Registre de beneficiaris efectius)
+      p_data_document: dataValida(cos.data_document),
+      p_data_caducitat: dataValida(cos.data_caducitat),
     });
     if (error) return errorRpc(error, 'kyc_registra_adjunt');
     return resposta(200, { ok: true, documents: perClient(docs as EstatDocuments) });
@@ -261,7 +280,8 @@ Deno.serve(async (req) => {
   const { data: docsEstat, error: errDesa } = await portal.rpc('kyc_desa', { p_token_id: sol.token_id, p_dades: dades });
   if (errDesa) return errorRpc(errDesa, 'kyc_desa');
   const docs = docsEstat as EstatDocuments;
-  if (docs.pendents.length > 0) {
+  // Amb "documentació: ja la té ÀMBIT", el client no està obligat a adjuntar-los
+  if (docs.pendents.length > 0 && !docs.documentacio_ambit) {
     return resposta(400, {
       error: 'Falten documents obligatoris. / Some required documents are missing.',
       documents: perClient(docs),
@@ -293,6 +313,7 @@ Deno.serve(async (req) => {
 
   const comuns = { signatariNom: qui.nom, signatariCarrec: qui.carrec, signatAt, ip, userAgent };
   const pdfKyc = await generaPdfKyc({
+    mode: 'client',
     tipus,
     requestId: sol.request_id,
     pdpRequestId: sol.pdp_request_id,
@@ -300,7 +321,7 @@ Deno.serve(async (req) => {
     clientNom: sol.client_nom,
     templateVersion: sol.template_version,
     dades,
-    adjunts: docs.adjunts.map((a) => ({ tipus: a.tipus, persona: a.persona, nom_fitxer: a.nom_fitxer, sha256: a.sha256 })),
+    adjunts: docs.adjunts.map((a) => ({ tipus: a.tipus, persona: a.persona, nom_fitxer: a.nom_fitxer, sha256: a.sha256, aportat_per_ambit: a.aportat_per_ambit, valid: a.valid })),
     signatura: { ...comuns, lloc: llocKyc, empremtaDades: empKyc as string, png: firmaKyc, sha256: shaKyc },
   });
   const pdfPdp = await generaPdfPdp({
