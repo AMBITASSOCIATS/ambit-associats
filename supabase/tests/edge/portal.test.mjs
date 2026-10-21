@@ -1,5 +1,6 @@
 // Proves locals de les Edge Functions del portal de signatura.
-// Requisits: `supabase start` i `supabase functions serve --env-file supabase/functions/.env`.
+// Requisits: `supabase start` i `supabase functions serve --env-file supabase/functions/.env`,
+// amb PORTAL_PROVES_FALLADA=1 per provocar una fallada en generar el PDF.
 // Execució: node supabase/tests/edge/portal.test.mjs [carpeta-per-als-pdf]
 // Les claus locals es llegeixen de `supabase status -o env` i no s'imprimeixen.
 // Els tokens i IBAN que surten aquí són de prova.
@@ -111,11 +112,12 @@ const pngFirma = () => {
 const FIRMA = `data:image/png;base64,${pngFirma().toString('base64')}`;
 
 // Crida a una funció amb fetch (per controlar Origin i llegir l'estat)
-const crida = async (funcio, cos, { jwt = ANON, origen = 'https://www.ambit.ad' } = {}) => {
+const crida = async (funcio, cos, { jwt = ANON, origen = 'https://www.ambit.ad', falla = null } = {}) => {
   const r = await fetch(`${URL}/functions/v1/${funcio}`, {
     method: 'POST',
     headers: {
       ...(origen ? { Origin: origen } : {}),
+      ...(falla ? { 'x-portal-prova-falla': falla } : {}),
       Authorization: `Bearer ${jwt}`,
       apikey: ANON,
       'Content-Type': 'application/json',
@@ -123,7 +125,7 @@ const crida = async (funcio, cos, { jwt = ANON, origen = 'https://www.ambit.ad' 
     },
     body: JSON.stringify(cos),
   });
-  return { status: r.status, cos: await r.json().catch(() => ({})) };
+  return { status: r.status, cos: await r.json().catch(() => ({})), cors: r.headers.get('access-control-allow-origin'), metodes: r.headers.get('access-control-allow-methods') };
 };
 const jwtDe = async (c) => (await c.auth.getSession()).data.session.access_token;
 const JWT_OCIC = await jwtDe(ocic);
@@ -295,6 +297,21 @@ const desaPdf = async (url, nom) => {
   return b;
 };
 
+{
+  // Error en generar el PDF: cap fitxer pujat (tampoc la firma) i res registrat
+  const ERROR_DOCUMENT = 'No s\'ha pogut generar el document. Torneu-ho a provar més tard. / The document could not be generated. Please try again later.';
+  const f = await crida('portal-signar', { accio: 'signar', token: e2.token, ...dadesPf, iban: IBAN.andbank }, { falla: 'pdf' });
+  comprova(f.status === 500 && f.cos.error === ERROR_DOCUMENT && Object.keys(f.cos).length === 1 && f.cors !== null && f.metodes === 'POST, OPTIONS',
+    `Error en generar el PDF: 500, JSON, CORS i el missatge únic (${f.status}, ${f.cors})`);
+  comprova(!/provocada|stack/.test(JSON.stringify(f.cos)), 'L\'error real no arriba al client');
+  let n = 0;
+  for (const c of ['evidencies', 'signat']) {
+    const { data } = await admin.storage.from('portal-docs').list(`requests/${solA.requestId}/${c}`);
+    n += (data || []).filter((x) => x.id).length;
+  }
+  const { count: nSig } = await adminPortal.from('signatures').select('id', { count: 'exact', head: true }).eq('request_id', solA.requestId);
+  comprova(n === 0 && nSig === 0, 'Cap firma ni PDF pujats i cap signatura registrada; el mateix enllaç serveix per reintentar');
+}
 const sA = await crida('portal-signar', { accio: 'signar', token: e2.token, ...dadesPf, iban: IBAN.andbank });
 comprova(sA.status === 200 && sA.cos.ok && !!sA.cos.url, 'Signatura acceptada i URL de descàrrega retornada');
 comprova(/token=/.test(sA.cos.url || '') && /\/object\/sign\/portal-docs\//.test(sA.cos.url || ''), 'La descàrrega és una URL signada del bucket privat');

@@ -23,7 +23,7 @@
 // Cap missatge al client no revela marques de risc ni motius de revisió
 // (art. 26 Llei 14/2017).
 
-import { clientAdmin, deBase64, entrada, formatToken, ipClient, llegeixCos, sha256Hex, text } from '../_shared/portal.ts';
+import { clientAdmin, deBase64, entrada, formatToken, ipClient, llegeixCos, provaFalla, serveix, sha256Hex, text } from '../_shared/portal.ts';
 import { generaPdfKyc, generaPdfPdp } from '../_shared/pdf-kyc.ts';
 import { VERSIONS_ACCEPTADES, campsPendents, netejaDades, signant } from '../_shared/kyc-regles.js';
 import PAISOS from '../_shared/paisos.json' with { type: 'json' };
@@ -103,7 +103,7 @@ const dataValida = (v: unknown): string | null => {
   return Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== t ? null : t;
 };
 
-Deno.serve(async (req) => {
+serveix('portal-kyc', async (req) => {
   const { atura, resposta } = entrada(req);
   if (atura) return atura;
 
@@ -299,7 +299,8 @@ Deno.serve(async (req) => {
   });
   if (e1 || e2 || !empKyc || !empPdp) return resposta(500, { error: 'Error intern' });
 
-  // e) Pujar les firmes i generar i pujar els dos PDF (sempre camins nous)
+  // e) Generar els dos PDF i, només si s'han generat, pujar les firmes i els
+  //    PDF (sempre camins nous). Un error en generar-los no deixa cap fitxer.
   const signatAt = new Date();
   const puja = async (path: string, bytes: Uint8Array, contentType: string) => {
     const { error } = await admin.storage.from(BUCKET).upload(path, bytes, { contentType, upsert: false });
@@ -307,11 +308,9 @@ Deno.serve(async (req) => {
   };
   const firmaKycPath = `requests/${sol.request_id}/evidencies/${crypto.randomUUID()}-signatura.png`;
   const firmaPdpPath = `requests/${sol.pdp_request_id}/evidencies/${crypto.randomUUID()}-signatura.png`;
-  if (!(await puja(firmaKycPath, firmaKyc, 'image/png')) || !(await puja(firmaPdpPath, firmaPdp, 'image/png'))) {
-    return resposta(500, { error: 'No s\'ha pogut desar la signatura' });
-  }
 
   const comuns = { signatariNom: qui.nom, signatariCarrec: qui.carrec, signatAt, ip, userAgent };
+  provaFalla(req, 'pdf');
   const pdfKyc = await generaPdfKyc({
     mode: 'client',
     tipus,
@@ -337,6 +336,9 @@ Deno.serve(async (req) => {
   const shaPdfPdp = await sha256Hex(pdfPdp);
   const pdfKycPath = `requests/${sol.request_id}/signat/${crypto.randomUUID()}.pdf`;
   const pdfPdpPath = `requests/${sol.pdp_request_id}/signat/${crypto.randomUUID()}.pdf`;
+  if (!(await puja(firmaKycPath, firmaKyc, 'image/png')) || !(await puja(firmaPdpPath, firmaPdp, 'image/png'))) {
+    return resposta(500, { error: 'No s\'ha pogut desar la signatura' });
+  }
   if (!(await puja(pdfKycPath, pdfKyc, 'application/pdf')) || !(await puja(pdfPdpPath, pdfPdp, 'application/pdf'))) {
     return resposta(500, { error: 'No s\'ha pogut desar el document' });
   }

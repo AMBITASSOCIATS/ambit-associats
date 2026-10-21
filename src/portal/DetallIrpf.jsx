@@ -10,7 +10,7 @@ import { dataCurta, dataHora, invoca, missatgeEnllacIrpf, nomEstat, portal, urlD
 import { Avis, Boto, Dada, Entrada, EtiquetaEstat, Selector, Targeta } from './ui';
 import { FormCtx } from './kyc/camps';
 import { Tota } from './irpf/Seccions';
-import { euros, percent } from './irpf/irpf-calcul';
+import { coneixementPerDefecte, euros, percent } from './irpf/irpf-calcul';
 
 const avui = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' });
 const pc = (v) => (v === null || v === undefined ? '—' : percent(Math.round(Number(v) * 100)));
@@ -21,6 +21,8 @@ const NOM_DOC = {
   evidencies: 'Imatge de la firma',
 };
 const TIPUS = { inicial: 'Inicial', modificacio: 'Modificació' };
+const NOM_MODE = { comunicacio: 'Comunicació rebuda pel pagador', sense_comunicacio: 'Sense comunicació (art. 24.4)' };
+const dataAndorra = (d) => new Date(d).toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' });
 
 // Avís del 15 de desembre: sempre visible; destacat a partir del 15 d'octubre
 const AvisRevisio = () => {
@@ -40,12 +42,23 @@ const Calcul = ({ id, s, calculs, onFet }) => {
     // Per defecte, la data d'efectes de la comunicació
     data_efectes: s.com.data_efectes || `${avui().slice(0, 4)}-01-01`,
     mode: s.status === 'actiu' ? 'comunicacio' : 'sense_comunicacio',
-    retribucions: '', cotitzacions: '0', retribucions_satisfetes: '', retencions_practicades: '', data_coneixement: '',
+    retribucions: '', cotitzacions: '0', retribucions_satisfetes: '', retencions_practicades: '', data_coneixement: null,
   });
   const [res, setRes] = useState(null);
   const [error, setError] = useState('');
   const [ocupat, setOcupat] = useState(false);
   const [exercicis, setExercicis] = useState(null);  // exercicis amb paràmetres creats
+  // Quan canvia l'estat (p. ex. la comunicació passa a rebuda mentre la fitxa és
+  // oberta), el mode i la data d'efectes tornen als que corresponen: amb la
+  // comunicació rebuda, la comunicació i la seva data d'efectes
+  const efectesComunicacio = s.com.data_efectes;
+  useEffect(() => {
+    setF((x) => ({
+      ...x,
+      mode: s.status === 'actiu' ? 'comunicacio' : 'sense_comunicacio',
+      data_efectes: efectesComunicacio || x.data_efectes,
+    }));
+  }, [s.status, efectesComunicacio]);
   useEffect(() => {
     portal.from('irpf_parametres').select('exercici').then(({ data }) => setExercicis((data || []).map((x) => x.exercici)));
   }, []);
@@ -55,12 +68,19 @@ const Calcul = ({ id, s, calculs, onFet }) => {
   const anterior = calculs
     .filter((c) => c.exercici === exercici && c.data_efectes <= f.data_efectes)
     .sort((a, b) => (a.data_efectes === b.data_efectes ? b.created_at.localeCompare(a.created_at) : b.data_efectes.localeCompare(a.data_efectes)))[0];
+  // Data de coneixement: la indicada o, si no se n'ha indicat cap, la de recepció
+  // de la comunicació quan el càlcul anterior no la va fer servir (com al servidor)
+  const coneixementDefecte = coneixementPerDefecte({
+    mode: f.mode, requestId: id, anterior, rebudaEl: s.rec?.signat_at ? dataAndorra(s.rec.signat_at) : null,
+  });
+  const coneixement = f.data_coneixement ?? coneixementDefecte ?? '';
+  const senseLaComunicacio = s.status === 'actiu' && f.mode === 'sense_comunicacio';
 
   const crida = async (previsualitza) => {
     setError('');
     setOcupat(true);
     try {
-      const r = await invoca('portal-irpf-personal', { accio: 'calcula', request_id: id, previsualitza, ...f });
+      const r = await invoca('portal-irpf-personal', { accio: 'calcula', request_id: id, previsualitza, ...f, data_coneixement: anterior ? coneixement : '' });
       setRes(r);
       if (!previsualitza) {
         if (r.pdf_intern?.url) window.open(r.pdf_intern.url, '_blank', 'noopener');
@@ -91,6 +111,9 @@ const Calcul = ({ id, s, calculs, onFet }) => {
         <Entrada etiqueta="Cotitzacions a càrrec del perceptor (€)" inputMode="decimal" value={f.cotitzacions}
           onChange={(e) => setF({ ...f, cotitzacions: e.target.value })} ajuda="A un sistema públic de seguretat social, si n'hi ha" />
       </div>
+      {senseLaComunicacio && (
+        <div className="mt-3"><Avis tipus="info">Hi ha una comunicació rebuda pel pagador i aquest càlcul no la farà servir (sense comunicació, art. 24.4).</Avis></div>
+      )}
       {anterior && (
         <div className="mt-3 border border-gray-200 rounded-lg p-3">
           <p className="text-xs text-gray-600 mb-2">
@@ -101,9 +124,9 @@ const Calcul = ({ id, s, calculs, onFet }) => {
             Una variació s'aplica des del mes següent a aquell en què el pagador la coneix (art. 27.1.b): la data d'efectes ha de ser posterior.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <Entrada etiqueta="Data en què el pagador coneix la variació" type="date" value={f.data_coneixement} max={avui()}
+            <Entrada etiqueta="Data en què el pagador coneix la variació" type="date" value={coneixement} max={avui()}
               onChange={(e) => setF({ ...f, data_coneixement: e.target.value })}
-              ajuda="Si es deixa buida i és una comunicació nova, la de recepció pel pagador" />
+              ajuda={coneixementDefecte ? 'Per defecte, la de recepció de la comunicació pel pagador' : 'No pot ser futura'} />
             <Entrada etiqueta="Retribucions ja satisfetes de l'exercici (€)" inputMode="decimal" value={f.retribucions_satisfetes}
               onChange={(e) => setF({ ...f, retribucions_satisfetes: e.target.value })} />
             <Entrada etiqueta="Retencions ja practicades de l'exercici (€)" inputMode="decimal" value={f.retencions_practicades}
@@ -131,6 +154,10 @@ const Calcul = ({ id, s, calculs, onFet }) => {
             )}
             {res.calcul_id && <span className="text-xs text-green-700">Desat ✓</span>}
           </div>
+          <p className="text-xs text-gray-600 mt-2">
+            Dades: <strong>{NOM_MODE[res.mode]}</strong>
+            {res.detall?.mode && res.detall.mode !== res.mode && <> · aplicades: <strong>{NOM_MODE[res.detall.mode]}</strong></>}
+          </p>
           {(res.detall?.avisos || []).map((a, i) => <div key={i} className="mt-2"><Avis tipus="info">{a.ca}</Avis></div>)}
           <table className="w-full text-xs mt-3">
             <thead><tr className="text-left text-gray-500 border-b"><th className="py-1 pr-2">Pas</th><th className="pr-2">Concepte</th><th className="pr-2">Fórmula</th><th className="text-right">Import</th></tr></thead>
@@ -191,7 +218,7 @@ const Versions = ({ s, comunicacions, calculs, onObre, onRevisio, ocupat }) => {
             {calculs.map((c) => (
               <tr key={c.id} className="border-b border-gray-100">
                 <td className="py-1">{c.exercici}</td><td>{dataCurta(c.data_efectes)}</td>
-                <td>{c.mode === 'comunicacio' ? 'Comunicació' : 'Sense comunicació (art. 24.4)'}</td>
+                <td>{c.mode === 'comunicacio' ? 'Comunicació' : 'Sense comunicació (art. 24.4)'}{c.mode_aplicat && c.mode_aplicat !== c.mode ? ' (encara no aplicada)' : ''}</td>
                 <td>{pc(c.percentatge)}</td><td className="font-semibold">{pc(c.percentatge_aplicat)}{c.regularitzat ? ' (regularitzat)' : ''}</td>
                 <td>{dataHora(c.created_at)}</td>
               </tr>
@@ -277,7 +304,7 @@ const DetallIrpf = ({ id, onTorna, rol }) => {
     const [coms, calcs] = await Promise.all([
       portal.from('irpf_comunicacions').select('request_id, data_efectes, comunicacio:dades->comunicacio, requests(status, signat_at, created_at)')
         .eq('perceptor_id', pid),
-      portal.from('irpf_calculs').select('id, request_id, exercici, data_efectes, mode, percentatge, percentatge_aplicat, regularitzat, created_at')
+      portal.from('irpf_calculs').select('id, request_id, exercici, data_efectes, mode, mode_aplicat:detall->>mode, percentatge, percentatge_aplicat, regularitzat, created_at')
         .eq('perceptor_id', pid).order('data_efectes', { ascending: false }).order('created_at', { ascending: false }),
     ]);
     const comunicacions = (coms.data || []).sort((a, b) => (b.data_efectes || '9999').localeCompare(a.data_efectes || '9999')

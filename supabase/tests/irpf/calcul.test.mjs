@@ -2,7 +2,7 @@
 // l'exemple de la plantilla i els casos de l'apartat "CÀLCUL DEL PERCENTATGE"
 // de docs/plantilla-comunicacio-dades-irpf.md.
 // Execució: node supabase/tests/irpf/calcul.test.mjs
-import { calcula, aCentims } from '../../functions/_shared/irpf-calcul.js';
+import { calcula, aCentims, coneixementPerDefecte, AVIS_SENSE_COMUNICACIO } from '../../functions/_shared/irpf-calcul.js';
 
 let fallades = 0;
 let total = 0;
@@ -280,6 +280,48 @@ comprova(aCentims('1234,5') === 123450 && aCentims('0.05') === 5 && aCentims(173
 comprova(/Paràmetres incomplets/.test(llança(() => calcula({ parametres: { ...P, tipus: undefined }, exercici: EX, retribucions: '1', dades: null })) || ''),
   'Sense algun paràmetre de l\'exercici no es calcula (cap valor fix al codi)');
 comprova(/retribucions/.test(llança(() => calc(base(), '0')) || ''), 'Sense retribucions no es calcula');
+
+// ─── 11. Cas de producció: inicial no laboral fora de termini ───────────────
+seccio('Inicial no laboral fora de termini: inici 01/10, rebuda 21/10 (cas de la sol·licitud 138d9033)');
+{
+  const COM = { tipus: 'inicial', data_efectes: `${EX}-10-01`, rebuda_el: `${EX}-10-21`, inici_relacio: `${EX}-10-01`, relacio_laboral: false };
+  const dades = base({ comunicacio: { tipus: 'inicial' }, estat_civil: { estat: 'casat' }, conjuge: { situacio: 'a' } });
+  const r1 = calcula({ parametres: P, exercici: EX, retribucions: '60000', cotitzacions: '0', dades, comunicacio: COM, data_efectes: `${EX}-10-01` });
+  comprova(r1.mode === 'sense_comunicacio' && r1.percentatge === '4.37' && /fora del termini/.test(r1.avisos[0]?.ca || ''),
+    `01/10: encara sense comunicació (art. 24.4), 4,37 % (${r1.percentatge}), amb avís`);
+  // El càlcul anterior (de la mateixa sol·licitud) no la va fer servir: per defecte, la data de recepció
+  const coneixement = coneixementPerDefecte({ mode: 'comunicacio', requestId: 'R', anterior: { request_id: 'R', mode_aplicat: r1.mode }, rebudaEl: COM.rebuda_el });
+  comprova(coneixement === `${EX}-10-21`, `Data de coneixement per defecte: la de recepció (${coneixement})`);
+  const r2 = calcula({
+    parametres: P, exercici: EX, retribucions: '60000', cotitzacions: '0', dades, comunicacio: COM, data_efectes: `${EX}-11-01`,
+    anterior: { percentatge: r1.percentatge, percentatge_aplicat: r1.percentatge_aplicat }, coneixement,
+    regularitzacio: { retribucions_satisfetes: '5000', retencions_practicades: '218.50' },
+  });
+  comprova(r2.mode === 'comunicacio' && c(r2).minimTotal === eur(40000) && c(r2).QL === eur(1020) && r2.percentatge === '1.70',
+    `01/11: amb la comunicació i el cònjuge (mínim 40.000 €), quota anual 1.020 €, 1,70 % (${r2.percentatge})`);
+  comprova(r2.regularitzat && r2.percentatge_aplicat === '1.46',
+    `Regularització (art. 25): (1.020 − 218,50) ÷ (60.000 − 5.000) = 1,457… → ${r2.percentatge_aplicat} % (arrodonit)`);
+}
+
+seccio('Data de coneixement per defecte i avís de comunicació no utilitzada');
+{
+  const def = (mode, anterior) => coneixementPerDefecte({ mode, requestId: 'R', anterior, rebudaEl: `${EX}-10-21` });
+  comprova(def('comunicacio', null) === null, 'Sense càlcul anterior: cap data (no és una variació)');
+  comprova(def('comunicacio', { request_id: 'ALTRA', mode_aplicat: 'comunicacio' }) === `${EX}-10-21`, 'Comunicació nova (una altra sol·licitud): la de recepció');
+  comprova(def('comunicacio', { request_id: 'R', mode_aplicat: 'sense_comunicacio' }) === `${EX}-10-21`,
+    'Mateixa comunicació, encara no aplicada (sense comunicació o inicial fora de termini): la de recepció');
+  comprova(def('comunicacio', { request_id: 'R', mode_aplicat: 'comunicacio' }) === null,
+    'Mateixa comunicació ja aplicada: cap data per defecte (la variació és d\'una altra dada)');
+  comprova(def('sense_comunicacio', { request_id: 'ALTRA', mode_aplicat: 'comunicacio' }) === null, 'Calculant sense comunicació: cap data per defecte');
+  comprova(coneixementPerDefecte({ mode: 'comunicacio', requestId: 'R', anterior: { request_id: 'ALTRA' }, rebudaEl: null }) === null, 'Sense recepció: cap data');
+  const amb = calcula({ parametres: P, exercici: EX, retribucions: '60000', cotitzacions: '0', dades: null, comunicacio_rebuda: true });
+  comprova(amb.avisos[0] === AVIS_SENSE_COMUNICACIO && /no la fa servir/.test(amb.avisos[0].ca) && amb.avisos[0].en,
+    'Comunicació rebuda però càlcul sense comunicació: avís (català i anglès)');
+  const senseRebuda = calcula({ parametres: P, exercici: EX, retribucions: '60000', cotitzacions: '0', dades: null });
+  comprova(senseRebuda.avisos.length === 0, 'Sense cap comunicació rebuda: cap avís');
+  const ambDades = calc(base(), '60000', { comunicacio_rebuda: true });
+  comprova(!ambDades.avisos.includes(AVIS_SENSE_COMUNICACIO), 'Calculant amb la comunicació: cap avís');
+}
 
 console.log(`\n${total - fallades}/${total} correctes`);
 process.exit(fallades ? 1 : 0);

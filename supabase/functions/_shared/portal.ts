@@ -44,6 +44,32 @@ export const entrada = (req: Request): { atura: Response | null; resposta: Respo
   return { atura: null, resposta, cors };
 };
 
+// Missatge únic per a qualsevol error no previst (sobretot en generar un PDF).
+// L'error real només va al registre de la funció, mai a qui crida.
+export const ERROR_DOCUMENT = 'No s\'ha pogut generar el document. Torneu-ho a provar més tard. / The document could not be generated. Please try again later.';
+
+// Deno.serve amb captura global: un error no previst respon igualment JSON amb
+// les capçaleres CORS (si no, el navegador només veu un error de connexió).
+export const serveix = (nom: string, gestor: (req: Request) => Promise<Response>) =>
+  Deno.serve(async (req) => {
+    try {
+      return await gestor(req);
+    } catch (e) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      console.error(nom, 'error no previst', `${err.name}: ${err.message}`, err.stack || '');
+      return entrada(req).resposta(500, { error: ERROR_DOCUMENT });
+    }
+  });
+
+// Només per a les proves locals: amb PORTAL_PROVES_FALLADA=1 a l'entorn (mai a
+// producció), la capçalera x-portal-prova-falla: pdf fa fallar la generació
+// del PDF, per comprovar que no es puja cap fitxer i que la resposta és neta.
+export const provaFalla = (req: Request, punt: 'pdf'): void => {
+  if (Deno.env.get('PORTAL_PROVES_FALLADA') === '1' && req.headers.get('x-portal-prova-falla') === punt) {
+    throw new Error(`Fallada provocada per a les proves (${punt})`);
+  }
+};
+
 export const clientAdmin = (): SupabaseClient =>
   createClient(
     Deno.env.get('SUPABASE_URL')!,

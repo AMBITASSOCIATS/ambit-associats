@@ -140,20 +140,34 @@ const firmaOcicPath = `ocic/${idOcic}/${crypto.randomUUID()}.png`;
 }
 
 // ─── Crides ─────────────────────────────────────────────────────────────────
-const crida = async (funcio, cos, { jwt = ANON, origen = 'https://www.ambit.ad' } = {}) => {
+const crida = async (funcio, cos, { jwt = ANON, origen = 'https://www.ambit.ad', falla = null } = {}) => {
   const r = await fetch(`${URL}/functions/v1/${funcio}`, {
     method: 'POST',
     headers: {
       ...(origen ? { Origin: origen } : {}),
+      ...(falla ? { 'x-portal-prova-falla': falla } : {}),
       Authorization: `Bearer ${jwt}`, apikey: ANON, 'Content-Type': 'application/json',
       'User-Agent': 'Prova-local/1.0 (kyc.test.mjs)',
     },
     body: JSON.stringify(cos),
   });
-  return { status: r.status, cos: await r.json().catch(() => ({})) };
+  return { status: r.status, cos: await r.json().catch(() => ({})), cors: r.headers.get('access-control-allow-origin'), metodes: r.headers.get('access-control-allow-methods') };
 };
-const kyc = (token, cos) => crida('portal-kyc', { token, ...cos });
-const personal = (cos, jwt = JWT_GESTOR) => crida('portal-kyc-personal', cos, { jwt });
+const kyc = (token, cos, opts = {}) => crida('portal-kyc', { token, ...cos }, opts);
+const personal = (cos, jwt = JWT_GESTOR, opts = {}) => crida('portal-kyc-personal', cos, { jwt, ...opts });
+// Error no previst (p. ex. en generar el PDF): JSON amb CORS i el missatge únic, mai l'error real
+const ERROR_DOCUMENT = 'No s\'ha pogut generar el document. Torneu-ho a provar més tard. / The document could not be generated. Please try again later.';
+// En local el gateway (Kong) posa sempre Access-Control-Allow-Origin: *; es comprova que hi són
+// les capçaleres CORS de la mateixa funció (a producció, l'origen permès)
+const errorNet = (r) => r.status === 500 && r.cos.error === ERROR_DOCUMENT && Object.keys(r.cos).length === 1 && r.cors !== null && r.metodes === 'POST, OPTIONS';
+const fitxers = async (requestId, carpetes) => {
+  let n = 0;
+  for (const c of carpetes) {
+    const { data } = await admin.storage.from('portal-docs').list(`requests/${requestId}/${c}`, { limit: 1000 });
+    n += (data || []).filter((f) => f.id).length;
+  }
+  return n;
+};
 const estat = async (id) => (await adminPortal.from('requests').select('status').eq('id', id).single()).data?.status;
 const desaPdf = async (url, nom) => {
   const b = Buffer.from(await (await fetch(publica(url))).arrayBuffer());
@@ -283,10 +297,10 @@ const creaKyc = async (clientId) => {
   const e = await crida('portal-enllac', { request_id: r.cos.request_id }, { jwt: JWT_GESTOR });
   return { r, e, kycId: r.cos.request_id, token: e.cos.enllac?.split('/kyc/')[1] };
 };
-const signa = (token, dades, extra = {}) => kyc(token, {
+const signa = (token, dades, extra = {}, opts = {}) => kyc(token, {
   accio: 'signar', dades, lloc_kyc: 'Andorra la Vella', lloc_pdp: 'Andorra la Vella',
   signatura_kyc: FIRMA_KYC, signatura_pdp: FIRMA_PDP, consentiment_comercial: false, ...extra,
-});
+}, opts);
 
 try {
   // ═══════════════════════════════════════════════════════════════════════════
@@ -417,6 +431,15 @@ try {
   seccio('Signatura completa · persona física');
 
   const avisosAbans = avisos.length;
+  {
+    // Error en generar els PDF: cap fitxer pujat (ni les firmes) i res registrat
+    const f = await signa(pf.token, dadesPf, {}, { falla: 'pdf' });
+    comprova(errorNet(f), `Error en generar els PDF: 500, JSON, CORS i el missatge únic (${f.status}, ${f.cors})`);
+    comprova(!/provocada|stack/.test(JSON.stringify(f.cos)), 'L\'error real no arriba al client');
+    const { count: nSig } = await adminPortal.from('signatures').select('id', { count: 'exact', head: true }).in('request_id', [pf.kycId, pdpPf]);
+    comprova(await fitxers(pf.kycId, ['evidencies', 'signat']) === 0 && await fitxers(pdpPf, ['evidencies', 'signat']) === 0 && nSig === 0,
+      'Cap firma ni PDF pujats i cap signatura registrada (KYC i protecció de dades)');
+  }
   const sPf = await signa(pf.token, dadesPf);
   comprova(sPf.status === 200 && !!sPf.cos.kyc?.url && !!sPf.cos.pdp?.url, 'Signatura acceptada: dues URL de descàrrega (KYC i protecció de dades)');
   comprova(/\/object\/sign\/portal-docs\//.test(sPf.cos.kyc?.url || '') && /token=/.test(sPf.cos.pdp?.url || ''), 'Les descàrregues són URL signades del bucket privat');
@@ -727,8 +750,17 @@ try {
     const { data: aud } = await adminPortal.from('audit_log').select('actor').eq('entitat', 'kyc_adjunts').eq('accio', 'INSERT').in('entitat_id', adj.map((a) => a.id));
     comprova(aud.length === 6 && aud.every((a) => a.actor === idGestor), 'audit_log registra qui adjunta cada document');
   }
-  const vAm = await personal(validacioAm, JWT_OCIC);
-  comprova(vAm.status === 200 && !!vAm.cos.copia_client?.url, 'Amb tots els documents vigents, l\'OCIC valida');
+  // Error en generar els PDF finals: la validació queda feta, però cap PDF pujat
+  const vAmF = await personal(validacioAm, JWT_OCIC, { falla: 'pdf' });
+  comprova(errorNet(vAmF), 'Error en generar els PDF finals: 500, JSON, CORS i el missatge únic');
+  {
+    const { count: nFinals } = await adminPortal.from('documents').select('id', { count: 'exact', head: true }).eq('request_id', am.kycId).in('kind', ['validat', 'copia_client']);
+    comprova(await fitxers(am.kycId, ['validat', 'copia-client']) === 0 && nFinals === 0, 'Cap PDF final pujat ni registrat (ni el validat ni la còpia)');
+  }
+  const vAm = await personal({ accio: 'pdf_final', request_id: am.kycId }, JWT_OCIC);
+  comprova(vAm.status === 200 && !!vAm.cos.pdf_final?.url && !!vAm.cos.copia_client?.url,
+    'Amb tots els documents vigents, l\'OCIC valida; el reintent (pdf_final) genera el PDF validat i la còpia');
+  comprova(await fitxers(am.kycId, ['validat', 'copia-client']) === 2, 'Un sol PDF validat i una sola còpia');
   await desaPdf(vAm.cos.pdf_final.url, 'kyc-pf-ambit-validat-intern.pdf');
   await desaPdf(vAm.cos.copia_client.url, 'kyc-pf-ambit-copia-client.pdf');
   const tardà = await pujaAmbit('domicili');

@@ -21,9 +21,9 @@
 //
 // El càlcul és el d'irpf-calcul.js (la mateixa còpia que el panell).
 
-import { clientAdmin, entrada, llegeixCos, sha256Hex, verificaPersonal } from '../_shared/portal.ts';
+import { ERROR_DOCUMENT, clientAdmin, entrada, llegeixCos, provaFalla, serveix, sha256Hex, verificaPersonal } from '../_shared/portal.ts';
 import { generaPdfIrpf } from '../_shared/pdf-irpf.ts';
-import { calcula } from '../_shared/irpf-calcul.js';
+import { calcula, coneixementPerDefecte } from '../_shared/irpf-calcul.js';
 import { netejaImport } from '../_shared/irpf-regles.js';
 
 const BUCKET = 'portal-docs';
@@ -37,8 +37,9 @@ const dataValida = (v: unknown): string | null => {
   return Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== t ? null : t;
 };
 const dataAndorra = (d: string) => new Date(d).toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' });
+const avuiAndorra = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' });
 
-Deno.serve(async (req) => {
+serveix('portal-irpf-personal', async (req) => {
   const { atura, resposta } = entrada(req);
   if (atura) return atura;
 
@@ -87,10 +88,21 @@ Deno.serve(async (req) => {
   // 2. Càlcul. Data en què el pagador va rebre la comunicació (apartat 12)
   const dades = mode === 'comunicacio' ? x.comunicacio.dades : null;
   const rebudaEl = x.recepcio ? dataAndorra(x.recepcio.signat_at) : null;
-  // Variació: per defecte, el pagador la coneix quan rep la comunicació nova
-  const coneixement = x.anterior
-    ? coneixementIndicat || (mode === 'comunicacio' && x.anterior.request_id !== requestId ? rebudaEl : null)
+  // Variació: per defecte, el pagador la coneix quan rep la comunicació que el
+  // càlcul anterior no va fer servir (una de nova, o la mateixa encara no aplicada)
+  let anterior = null;
+  if (x.anterior) {
+    const { data: a, error: errAnt } = await portal.from('irpf_calculs').select('mode_aplicat:detall->>mode').eq('id', x.anterior.id).single();
+    if (errAnt) return errorSql(errAnt, 'irpf_calculs anterior');
+    anterior = { request_id: x.anterior.request_id, mode_aplicat: a.mode_aplicat };
+  }
+  const coneixement = anterior
+    ? coneixementIndicat || coneixementPerDefecte({ mode, requestId, anterior, rebudaEl })
     : null;
+  // Mateix criteri que la base en desar (irpf_calcul_regles), també en previsualitzar
+  if (coneixement && coneixement > avuiAndorra()) {
+    return resposta(400, { error: 'Cal la data (no futura) en què el pagador coneix la variació' });
+  }
   let r;
   try {
     r = calcula({
@@ -101,6 +113,7 @@ Deno.serve(async (req) => {
       } : null,
       anterior: x.anterior ? { percentatge: String(x.anterior.percentatge), percentatge_aplicat: String(x.anterior.percentatge_aplicat) } : null,
       coneixement,
+      comunicacio_rebuda: x.request.status === 'actiu',
       regularitzacio: satisfetes !== null || practicades !== null ? { retribucions_satisfetes: satisfetes, retencions_practicades: practicades } : null,
     });
   } catch (e) {
@@ -130,6 +143,7 @@ Deno.serve(async (req) => {
     const signat = (x.documents as { kind: string; sha256: string }[]).find((d) => d.kind === 'signat');
     const { data: u } = await admin.auth.admin.getUserById(personal.userId);
     const ambComunicacio = mode === 'comunicacio' && s;
+    provaFalla(req, 'pdf');
     pdf = await generaPdfIrpf({
       mode: 'intern',
       requestId,
@@ -155,7 +169,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error('pdf intern', (e as Error).message);
-    return resposta(500, { error: 'No s\'ha pogut generar el PDF intern' });
+    return resposta(500, { error: ERROR_DOCUMENT });
   }
   const sha = await sha256Hex(pdf);
   const path = `requests/${requestId}/intern/${crypto.randomUUID()}.pdf`;
