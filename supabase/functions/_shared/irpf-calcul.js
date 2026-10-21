@@ -121,6 +121,36 @@ export const coneixementPerDefecte = ({ mode, requestId, anterior, rebudaEl }) =
   return anterior.request_id === requestId && anterior.mode_aplicat === 'comunicacio' ? null : rebudaEl;
 };
 
+// Proposta del panell per a un càlcul nou: data d'efectes, càlcul anterior i
+// data de coneixement. La data d'efectes per defecte és la primera admissible:
+// la més tardana entre la d'efectes de la comunicació i el dia 1 del mes següent
+// a la data de coneixement (art. 27.1.b), i canvia sola amb la data de coneixement.
+// Mentre no s'indica la data d'efectes, el càlcul anterior de referència és el
+// darrer de l'exercici (així la proposta no depèn d'ella mateixa). Si aquest ja
+// va fer servir la comunicació, un càlcul nou és una variació nova, que
+// normalment es coneix el mateix dia: coneixement, avui (sempre editable).
+//   calculs: [{ request_id, exercici, data_efectes, mode_aplicat, created_at }]
+//   efectesIndicats, coneixementIndicat: null si el personal no n'ha indicat cap
+export const propostaCalcul = ({ calculs, mode, requestId, rebudaEl, efectesComunicacio, efectesIndicats, coneixementIndicat, avui }) => {
+  const base = efectesComunicacio || `${String(avui).slice(0, 4)}-01-01`;
+  const darrerFins = (data) => calculs
+    .filter((c) => c.exercici === Number(String(data).slice(0, 4)) && c.data_efectes <= data)
+    .sort((a, b) => (a.data_efectes === b.data_efectes ? b.created_at.localeCompare(a.created_at) : b.data_efectes.localeCompare(a.data_efectes)))[0] || null;
+  const coneixementAmb = (anterior) => {
+    const recepcio = coneixementPerDefecte({ mode, requestId, anterior, rebudaEl });
+    const variacioNova = !recepcio && mode === 'comunicacio' && anterior?.request_id === requestId && anterior.mode_aplicat === 'comunicacio';
+    const defecte = recepcio || (variacioNova ? avui : null);
+    return { defecte, motiu: recepcio ? 'recepcio' : variacioNova ? 'avui' : null, valor: coneixementIndicat ?? defecte ?? '' };
+  };
+  const darrer = darrerFins(`${base.slice(0, 4)}-12-31`);
+  const k = coneixementAmb(darrer);
+  const efectesDefecte = darrer && DATA.test(k.valor) ? [base, mesSeguent(k.valor)].sort()[1] : base;
+  const dataEfectes = efectesIndicats ?? efectesDefecte;
+  const anterior = darrerFins(dataEfectes);
+  const kAnterior = efectesIndicats === null || efectesIndicats === undefined ? k : coneixementAmb(anterior);
+  return { dataEfectes, efectesDefecte, anterior, coneixement: kAnterior.valor, coneixementDefecte: kAnterior.defecte, motiuConeixement: kAnterior.motiu };
+};
+
 // Avís al personal: hi ha una comunicació rebuda pel pagador i el càlcul no la fa servir
 export const AVIS_SENSE_COMUNICACIO = {
   ca: 'Hi ha una comunicació rebuda pel pagador i aquest càlcul no la fa servir: s\'ha calculat sense comunicació (art. 24.4 del Reglament).',
