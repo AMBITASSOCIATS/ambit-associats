@@ -2,7 +2,7 @@
 // l'exemple de la plantilla i els casos de l'apartat "CÀLCUL DEL PERCENTATGE"
 // de docs/plantilla-comunicacio-dades-irpf.md.
 // Execució: node supabase/tests/irpf/calcul.test.mjs
-import { calcula, aCentims, coneixementPerDefecte, AVIS_SENSE_COMUNICACIO } from '../../functions/_shared/irpf-calcul.js';
+import { calcula, aCentims, coneixementPerDefecte, propostaCalcul, AVIS_SENSE_COMUNICACIO } from '../../functions/_shared/irpf-calcul.js';
 
 let fallades = 0;
 let total = 0;
@@ -321,6 +321,52 @@ seccio('Data de coneixement per defecte i avís de comunicació no utilitzada');
   comprova(senseRebuda.avisos.length === 0, 'Sense cap comunicació rebuda: cap avís');
   const ambDades = calc(base(), '60000', { comunicacio_rebuda: true });
   comprova(!ambDades.avisos.includes(AVIS_SENSE_COMUNICACIO), 'Calculant amb la comunicació: cap avís');
+}
+
+seccio('Proposta del panell: data d\'efectes per defecte, la primera admissible (art. 27.1.b)');
+{
+  // Cas de la prova a producció: comunicació amb efectes 01/10, rebuda (i coneguda) el 21/10
+  const C1 = { id: 'c1', request_id: 'R', exercici: EX, data_efectes: `${EX}-10-01`, mode_aplicat: 'sense_comunicacio', created_at: `${EX}-10-21T08:08:21Z` };
+  const C2 = { id: 'c2', request_id: 'R', exercici: EX, data_efectes: `${EX}-11-01`, mode_aplicat: 'comunicacio', created_at: `${EX}-10-21T08:19:38Z` };
+  const prop = (calculs, extra = {}) => propostaCalcul({
+    calculs, mode: 'comunicacio', requestId: 'R', rebudaEl: `${EX}-10-21`, efectesComunicacio: `${EX}-10-01`,
+    efectesIndicats: null, coneixementIndicat: null, avui: `${EX}-10-21`, ...extra,
+  });
+  const p0 = prop([]);
+  comprova(p0.dataEfectes === `${EX}-10-01` && p0.anterior === null && p0.coneixement === '',
+    `Primer càlcul: la data d'efectes de la comunicació (${p0.dataEfectes}), sense càlcul anterior ni data de coneixement`);
+  const p1 = prop([C1]);
+  comprova(p1.coneixement === `${EX}-10-21` && p1.dataEfectes === `${EX}-11-01` && p1.anterior?.id === 'c1',
+    `Després del càlcul de l'01/10: coneixement ${p1.coneixement} (la recepció) i efectes ${p1.dataEfectes} = màxim(01/10, 01/11)`);
+  const p2 = prop([C1], { coneixementIndicat: `${EX}-11-05` });
+  comprova(p2.dataEfectes === `${EX}-12-01` && p2.anterior?.id === 'c1', `Canvia sola amb la data de coneixement: 05/11 → efectes ${p2.dataEfectes}`);
+  const p3 = prop([C1], { coneixementIndicat: `${EX}-09-10` });
+  comprova(p3.dataEfectes === `${EX}-10-01`, `Coneixement anterior als efectes de la comunicació: es manté l'01/10 (${p3.dataEfectes})`);
+  const p4 = prop([C1], { efectesIndicats: `${EX}-12-01` });
+  comprova(p4.dataEfectes === `${EX}-12-01` && p4.coneixement === `${EX}-10-21` && p4.anterior?.id === 'c1',
+    'Si el personal indica la data d\'efectes, es respecta (i el coneixement per defecte segueix el càlcul anterior a aquesta data)');
+  const p5 = prop([C1, C2], { avui: `${EX}-11-18` });
+  comprova(p5.coneixement === `${EX}-11-18` && p5.motiuConeixement === 'avui' && p5.dataEfectes === `${EX}-12-01` && p5.anterior?.id === 'c2',
+    `Amb la comunicació ja aplicada (darrer càlcul, 01/11): variació nova, coneixement avui (${p5.coneixement}) i efectes l'1 del mes següent (${p5.dataEfectes})`);
+  const p5b = prop([C1, C2], { avui: `${EX}-11-18`, coneixementIndicat: `${EX}-11-03`, efectesIndicats: null });
+  comprova(p5b.coneixement === `${EX}-11-03` && p5b.dataEfectes === `${EX}-12-01`, 'Editable: amb coneixement 03/11, efectes 01/12');
+  const p5c = prop([C1, C2], { avui: `${EX}-11-18`, efectesIndicats: `${EX}-12-01` });
+  comprova(p5c.dataEfectes === `${EX}-12-01` && p5c.coneixement === `${EX}-11-18`, 'Editable: data d\'efectes indicada, coneixement avui');
+  const p5d = prop([C1, C2], { avui: `${EX}-11-18`, mode: 'sense_comunicacio' });
+  comprova(p5d.coneixement === '' && p5d.motiuConeixement === null, 'Calculant sense comunicació: cap coneixement per defecte');
+  comprova(prop([C1]).motiuConeixement === 'recepcio', 'Si el darrer càlcul no la va fer servir, el motiu és la recepció');
+  const p6 = prop([C1, C2], { coneixementIndicat: `${EX}-10-21` });
+  comprova(p6.dataEfectes === `${EX}-11-01` && p6.anterior?.id === 'c2',
+    `Tercer càlcul (com a producció): amb coneixement 21/10, efectes ${p6.dataEfectes} i anterior el de l'01/11`);
+  const p7 = prop([{ ...C1, exercici: EX - 1, data_efectes: `${EX - 1}-10-01` }]);
+  comprova(p7.anterior === null && p7.dataEfectes === `${EX}-10-01`, 'Els càlculs d\'un altre exercici no compten');
+  // La proposta és admissible per al càlcul: no llança l'error de l'art. 27.1.b
+  const dades = base({ comunicacio: { tipus: 'inicial' }, estat_civil: { estat: 'casat' }, conjuge: { situacio: 'a' } });
+  const COM = { tipus: 'inicial', data_efectes: `${EX}-10-01`, rebuda_el: `${EX}-10-21`, inici_relacio: `${EX}-10-01`, relacio_laboral: false };
+  const r = calcula({ parametres: P, exercici: EX, retribucions: '60000', cotitzacions: '0', dades, comunicacio: COM, data_efectes: p1.dataEfectes,
+    anterior: { percentatge: '4.37', percentatge_aplicat: '4.37' }, coneixement: p1.coneixement,
+    regularitzacio: { retribucions_satisfetes: '5000', retencions_practicades: '218.50' } });
+  comprova(r.percentatge === '1.70' && r.percentatge_aplicat === '1.46', `Amb la proposta (efectes ${p1.dataEfectes}): 1,70 %, aplicat 1,46 %`);
 }
 
 console.log(`\n${total - fallades}/${total} correctes`);

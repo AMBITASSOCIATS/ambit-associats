@@ -10,7 +10,7 @@ import { dataCurta, dataHora, invoca, missatgeEnllacIrpf, nomEstat, portal, urlD
 import { Avis, Boto, Dada, Entrada, EtiquetaEstat, Selector, Targeta } from './ui';
 import { FormCtx } from './kyc/camps';
 import { Tota } from './irpf/Seccions';
-import { coneixementPerDefecte, euros, percent } from './irpf/irpf-calcul';
+import { euros, percent, propostaCalcul } from './irpf/irpf-calcul';
 
 const avui = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' });
 const pc = (v) => (v === null || v === undefined ? '—' : percent(Math.round(Number(v) * 100)));
@@ -39,8 +39,8 @@ const AvisRevisio = () => {
 // ─── Càlcul del percentatge ─────────────────────────────────────────────────
 const Calcul = ({ id, s, calculs, onFet }) => {
   const [f, setF] = useState({
-    // Per defecte, la data d'efectes de la comunicació
-    data_efectes: s.com.data_efectes || `${avui().slice(0, 4)}-01-01`,
+    // null: la proposta (propostaCalcul); un valor: l'ha indicat el personal
+    data_efectes: null,
     mode: s.status === 'actiu' ? 'comunicacio' : 'sense_comunicacio',
     retribucions: '', cotitzacions: '0', retribucions_satisfetes: '', retencions_practicades: '', data_coneixement: null,
   });
@@ -50,37 +50,32 @@ const Calcul = ({ id, s, calculs, onFet }) => {
   const [exercicis, setExercicis] = useState(null);  // exercicis amb paràmetres creats
   // Quan canvia l'estat (p. ex. la comunicació passa a rebuda mentre la fitxa és
   // oberta), el mode i la data d'efectes tornen als que corresponen: amb la
-  // comunicació rebuda, la comunicació i la seva data d'efectes
+  // comunicació rebuda, la comunicació i la data d'efectes proposada
   const efectesComunicacio = s.com.data_efectes;
   useEffect(() => {
-    setF((x) => ({
-      ...x,
-      mode: s.status === 'actiu' ? 'comunicacio' : 'sense_comunicacio',
-      data_efectes: efectesComunicacio || x.data_efectes,
-    }));
+    setF((x) => ({ ...x, mode: s.status === 'actiu' ? 'comunicacio' : 'sense_comunicacio', data_efectes: null }));
   }, [s.status, efectesComunicacio]);
   useEffect(() => {
     portal.from('irpf_parametres').select('exercici').then(({ data }) => setExercicis((data || []).map((x) => x.exercici)));
   }, []);
-  const exercici = Number((f.data_efectes || '').slice(0, 4));
+  // Data d'efectes, càlcul anterior i data de coneixement: els indicats o, si no,
+  // la proposta (la data d'efectes, la primera admissible segons l'art. 27.1.b; la
+  // de coneixement, la de recepció si el càlcul anterior no va fer servir la
+  // comunicació, o avui si ja la va fer servir: una variació nova)
+  const { dataEfectes, anterior, coneixement, motiuConeixement } = propostaCalcul({
+    calculs, mode: f.mode, requestId: id, rebudaEl: s.rec?.signat_at ? dataAndorra(s.rec.signat_at) : null,
+    efectesComunicacio, efectesIndicats: f.data_efectes, coneixementIndicat: f.data_coneixement, avui: avui(),
+  });
+  const exercici = Number((dataEfectes || '').slice(0, 4));
   // Sense els paràmetres de l'exercici no es pot calcular cap retenció
   const senseParametres = exercicis !== null && exercici > 0 && !exercicis.includes(exercici);
-  const anterior = calculs
-    .filter((c) => c.exercici === exercici && c.data_efectes <= f.data_efectes)
-    .sort((a, b) => (a.data_efectes === b.data_efectes ? b.created_at.localeCompare(a.created_at) : b.data_efectes.localeCompare(a.data_efectes)))[0];
-  // Data de coneixement: la indicada o, si no se n'ha indicat cap, la de recepció
-  // de la comunicació quan el càlcul anterior no la va fer servir (com al servidor)
-  const coneixementDefecte = coneixementPerDefecte({
-    mode: f.mode, requestId: id, anterior, rebudaEl: s.rec?.signat_at ? dataAndorra(s.rec.signat_at) : null,
-  });
-  const coneixement = f.data_coneixement ?? coneixementDefecte ?? '';
   const senseLaComunicacio = s.status === 'actiu' && f.mode === 'sense_comunicacio';
 
   const crida = async (previsualitza) => {
     setError('');
     setOcupat(true);
     try {
-      const r = await invoca('portal-irpf-personal', { accio: 'calcula', request_id: id, previsualitza, ...f, data_coneixement: anterior ? coneixement : '' });
+      const r = await invoca('portal-irpf-personal', { accio: 'calcula', request_id: id, previsualitza, ...f, data_efectes: dataEfectes, data_coneixement: anterior ? coneixement : '' });
       setRes(r);
       if (!previsualitza) {
         if (r.pdf_intern?.url) window.open(r.pdf_intern.url, '_blank', 'noopener');
@@ -100,8 +95,8 @@ const Calcul = ({ id, s, calculs, onFet }) => {
         es desa amb la comunicació i va a un full intern del PDF d'ÀMBIT; mai a la còpia del perceptor.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-        <Entrada etiqueta="Data d'efectes del percentatge" type="date" value={f.data_efectes} onChange={(e) => setF({ ...f, data_efectes: e.target.value })}
-          ajuda={exercici ? `Exercici ${exercici}` : ''} />
+        <Entrada etiqueta="Data d'efectes del percentatge" type="date" value={dataEfectes} onChange={(e) => setF({ ...f, data_efectes: e.target.value })}
+          ajuda={exercici ? `Exercici ${exercici}${f.data_efectes === null && anterior ? ' · la primera admissible (art. 27.1.b)' : ''}` : ''} />
         <Selector etiqueta="Dades" value={f.mode} onChange={(e) => setF({ ...f, mode: e.target.value })}>
           <option value="comunicacio" disabled={s.status !== 'actiu'}>Comunicació rebuda pel pagador</option>
           <option value="sense_comunicacio">Sense comunicació (art. 24.4)</option>
@@ -125,8 +120,8 @@ const Calcul = ({ id, s, calculs, onFet }) => {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Entrada etiqueta="Data en què el pagador coneix la variació" type="date" value={coneixement} max={avui()}
-              onChange={(e) => setF({ ...f, data_coneixement: e.target.value })}
-              ajuda={coneixementDefecte ? 'Per defecte, la de recepció de la comunicació pel pagador' : 'No pot ser futura'} />
+              onChange={(e) => setF({ ...f, data_coneixement: e.target.value, data_efectes: null })}
+              ajuda={{ recepcio: 'Per defecte, la de recepció de la comunicació pel pagador', avui: 'Per defecte, avui (variació nova); no pot ser futura' }[motiuConeixement] || 'No pot ser futura'} />
             <Entrada etiqueta="Retribucions ja satisfetes de l'exercici (€)" inputMode="decimal" value={f.retribucions_satisfetes}
               onChange={(e) => setF({ ...f, retribucions_satisfetes: e.target.value })} />
             <Entrada etiqueta="Retencions ja practicades de l'exercici (€)" inputMode="decimal" value={f.retencions_practicades}
