@@ -42,13 +42,17 @@ export const TIPUS_DOCUMENT = {
   kyc_pf: 'KYC i protecció de dades · persona física',
   kyc_pj: 'KYC i protecció de dades · persona jurídica',
   pdp: 'Protecció de dades',
+  irpf_comunicacio: 'Comunicació de dades al pagador (IRPF)',
 };
 export const esKyc = (t) => t === 'kyc_pf' || t === 'kyc_pj';
+export const esIrpf = (t) => t === 'irpf_comunicacio';
 
 // Noms d'estat propis del KYC: signat = pendent de validació de l'OCIC; actiu = validat
 export const nomEstat = (estat, tipus) => {
   if (esKyc(tipus) && estat === 'signat') return 'Pendent de validació de l\'OCIC';
   if (esKyc(tipus) && estat === 'actiu') return 'Validat';
+  if (esIrpf(tipus) && estat === 'signat') return 'Pendent de recepció pel pagador';
+  if (esIrpf(tipus) && estat === 'actiu') return 'Rebuda pel pagador';
   return ESTATS[estat]?.nom || estat;
 };
 
@@ -108,5 +112,50 @@ export const missatgeEnllacKyc = ({ nom, enllac, expira }) => {
     email: '',
     assumpte: TK.correu.assumpte,
     cos: TK.correu.cos.split('{nom}').join(nom).split('{enllaç}').join(enllac).split('{data}').join(data),
+  };
+};
+
+// ─── Correu amb l'enllaç de la comunicació IRPF (català + anglès) ───────────
+// destinatari: 'perceptor' (omplir i signar) o 'recepcio' (representant del
+// pagador, per signar-ne la recepció)
+export const missatgeEnllacIrpf = ({ nom, perceptor, pagador, enllac, expira, destinatari, email }) => {
+  const data = new Date(expira).toLocaleDateString('ca-AD', {
+    timeZone: 'Europe/Andorra', day: '2-digit', month: '2-digit', year: 'numeric',
+  });
+  const contacte = 'Per a qualsevol dubte, podeu contactar amb nosaltres a info@ambit.ad o al +376 655 382.';
+  const contacteEn = 'If you have any questions, please contact us at info@ambit.ad or on +376 655 382.';
+  const recepcio = destinatari === 'recepcio';
+  return {
+    titol: recepcio ? 'Enllaç de recepció pel pagador' : 'Enllaç de la comunicació de dades (IRPF)',
+    ajuda: recepcio
+      ? 'Envia aquest missatge al representant del pagador des del teu correu. L\'enllaç és personal: no el comparteixis amb ningú més.'
+      : 'Envia aquest missatge al perceptor des del teu correu. L\'enllaç és personal: no el comparteixis amb ningú més.',
+    email: email || '',
+    assumpte: recepcio
+      ? `Recepció de la comunicació de dades IRPF · ${pagador} · ÀMBIT Associats`
+      : `Comunicació de dades personals i familiars · ${pagador} · ÀMBIT Associats`,
+    cos: recepcio
+      ? 'Benvolgut/da,\n\n' +
+        `${perceptor} ha signat la comunicació de dades personals i familiars per a la retenció de l'IRPF. ` +
+        `Com a representant de ${pagador}, us demanem que en signeu la recepció a través de l'enllaç següent:\n\n` +
+        `${enllac}\n\n` +
+        `L'enllaç és personal i d'un sol ús, i caduca el ${data}.\n\n${contacte}\n\nAtentament,\n\nÀMBIT Associats\n\n` +
+        'Dear Sir or Madam,\n\n' +
+        `${perceptor} has signed the communication of personal and family data for income tax withholding. ` +
+        `As the representative of ${pagador}, please sign the receipt using the following link:\n\n` +
+        `${enllac}\n\n` +
+        `This link is personal, can only be used once and expires on ${data}.\n\n${contacteEn}\n\nKind regards,\n\nÀMBIT Associats`
+      : `Benvolgut/da ${nom},\n\n` +
+        `Perquè ${pagador} pugui calcular correctament la retenció de l'IRPF sobre les vostres rendes del treball, ` +
+        'us demanem que empleneu i signeu la comunicació de dades personals i familiars a través de l\'enllaç següent:\n\n' +
+        `${enllac}\n\n` +
+        `L'enllaç és personal i d'un sol ús, i caduca el ${data}. Les respostes es desen soles: podeu continuar més tard amb el mateix enllaç.\n\n` +
+        `${contacte}\n\nAtentament,\n\nÀMBIT Associats\n\n` +
+        `Dear ${nom},\n\n` +
+        `So that ${pagador} can correctly calculate the income tax withholding on your employment income, ` +
+        'please complete and sign the communication of personal and family data using the following link:\n\n' +
+        `${enllac}\n\n` +
+        `This link is personal, can only be used once and expires on ${data}. Your answers are saved automatically: you can continue later with the same link.\n\n` +
+        `${contacteEn}\n\nKind regards,\n\nÀMBIT Associats`,
   };
 };

@@ -1,7 +1,8 @@
 // src/portal/Clients.jsx
 // Clients del portal: llista, cerca, alta, referència (ABA-01, màx. 14 caràcters),
-// creació de sol·licituds (autorització de càrrec, KYC i protecció de dades),
-// fi de la relació (només OCIC) i consentiment de comunicacions comercials.
+// creació de sol·licituds (autorització de càrrec, KYC i protecció de dades,
+// comunicació de dades al pagador IRPF), fi de la relació (només OCIC) i
+// consentiment de comunicacions comercials.
 import React, { useEffect, useState } from 'react';
 import { portal, VERSIO_PLANTILLA, dataCurta, invoca } from './portalApi';
 import { Avis, Boto, Entrada, Selector, Targeta } from './ui';
@@ -33,6 +34,82 @@ const Referencia = ({ client, onDesat }) => {
 };
 
 const avui = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' });
+
+// Comunicació de dades al pagador (IRPF): el client és el PAGADOR. Dades del
+// pagador (apartat 2 i capçalera del PDF) i perceptor: un d'existent o un de nou.
+const NovaIrpf = ({ client, onCreada, onCancel }) => {
+  const [pagador, setPagador] = useState({ denominacio: client.nom_mostrat, nrt: '', domicili: '' });
+  const [perceptors, setPerceptors] = useState([]);
+  const [triat, setTriat] = useState('nou');
+  const [nou, setNou] = useState({ nom: '', nrt: '', email: '', es_representant: false, inici_relacio: '', relacio_laboral: true });
+  const [error, setError] = useState('');
+  const [creant, setCreant] = useState(false);
+
+  useEffect(() => {
+    portal.from('irpf_pagadors').select('denominacio, nrt, domicili').eq('client_id', client.id).maybeSingle()
+      .then(({ data }) => { if (data) setPagador(data); });
+    portal.from('irpf_perceptors').select('id, nom, nrt, es_representant, data_fi_rendes').eq('client_id', client.id).order('nom')
+      .then(({ data }) => setPerceptors(data || []));
+  }, [client.id]);
+
+  const crea = async (e) => {
+    e.preventDefault();
+    setError('');
+    setCreant(true);
+    const { data, error: err } = await portal.rpc('irpf_crea', {
+      p_client_id: client.id,
+      p_perceptor: triat === 'nou' ? { ...nou, nom: nou.nom.trim(), nrt: nou.nrt.trim(), email: nou.email.trim() } : { id: triat },
+      p_pagador: { denominacio: pagador.denominacio.trim(), nrt: pagador.nrt.trim(), domicili: pagador.domicili.trim() },
+    });
+    setCreant(false);
+    if (err) {
+      setError(err.code === '23505' && /NRT|unique|duplicate/i.test(err.message) ? 'Aquest perceptor ja existeix per a aquest pagador' : err.message);
+      return;
+    }
+    onCreada(data);
+  };
+
+  const pagadorComplet = pagador.denominacio.trim() && pagador.nrt.trim() && pagador.domicili.trim();
+  const perceptorComplet = triat !== 'nou' || (nou.nom.trim() && nou.nrt.trim() && nou.inici_relacio && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(nou.email.trim()));
+  return (
+    <form onSubmit={crea} className="w-full border border-[#009B9C]/30 bg-[#009B9C]/5 rounded-lg p-4 space-y-3">
+      <p className="text-xs font-bold text-[#007A7B]">Comunicació de dades al pagador (IRPF) · el client és el pagador</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <Entrada etiqueta="Pagador: denominació social" required value={pagador.denominacio} onChange={(e) => setPagador({ ...pagador, denominacio: e.target.value })} />
+        <Entrada etiqueta="NRT del pagador" required value={pagador.nrt} onChange={(e) => setPagador({ ...pagador, nrt: e.target.value })} />
+        <Entrada etiqueta="Domicili del pagador" required value={pagador.domicili} onChange={(e) => setPagador({ ...pagador, domicili: e.target.value })} />
+      </div>
+      <Selector etiqueta="Perceptor" value={triat} onChange={(e) => setTriat(e.target.value)}>
+        <option value="nou">+ Perceptor nou</option>
+        {perceptors.map((x) => (
+          <option key={x.id} value={x.id}>{x.nom} · {x.nrt}{x.data_fi_rendes ? ` · fi de les rendes ${dataCurta(x.data_fi_rendes)}` : ''}</option>
+        ))}
+      </Selector>
+      {triat === 'nou' && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Entrada etiqueta="Nom i cognoms del perceptor" required value={nou.nom} onChange={(e) => setNou({ ...nou, nom: e.target.value })} />
+          <Entrada etiqueta="NRT del perceptor" required value={nou.nrt} onChange={(e) => setNou({ ...nou, nrt: e.target.value })} />
+          <Entrada etiqueta="Correu del perceptor" type="email" required value={nou.email} onChange={(e) => setNou({ ...nou, email: e.target.value })} />
+          <Entrada etiqueta={nou.relacio_laboral ? 'Inici de la relació laboral' : 'Data del primer pagament'} type="date" required value={nou.inici_relacio}
+            onChange={(e) => setNou({ ...nou, inici_relacio: e.target.value })} ajuda="Termini de la comunicació inicial (arts. 31.a i 31.b)" />
+          <label className="md:col-span-2 flex items-center gap-2 text-xs text-gray-700">
+            <input type="checkbox" checked={!nou.relacio_laboral} onChange={(e) => setNou({ ...nou, relacio_laboral: !e.target.checked })} className="accent-[#009B9C]" />
+            Rendes que no són d'una relació laboral (s'indica la data del primer pagament)
+          </label>
+          <label className="md:col-span-3 flex items-start gap-2 text-xs text-gray-700">
+            <input type="checkbox" checked={nou.es_representant} onChange={(e) => setNou({ ...nou, es_representant: e.target.checked })} className="accent-[#009B9C] mt-0.5" />
+            És el representant del pagador (p. ex. l'administrador únic): signarà també la recepció pel pagador, en la mateixa sessió.
+          </label>
+        </div>
+      )}
+      <div className="flex flex-wrap items-center gap-3">
+        <Boto type="submit" disabled={creant || !pagadorComplet || !perceptorComplet}>{creant ? 'Creant...' : 'Crear la comunicació'}</Boto>
+        <Boto variant="secundari" onClick={onCancel}>Cancel·lar</Boto>
+        <Avis>{error}</Avis>
+      </div>
+    </form>
+  );
+};
 
 // Fi de la relació (només OCIC; fixa els terminis de conservació del KYC i de la
 // protecció de dades) i consentiment comercial (el personal en pot anotar la retirada)
@@ -139,6 +216,8 @@ const Clients = ({ onObreSolicitud, rol }) => {
     }
   };
 
+  const [triaIrpf, setTriaIrpf] = useState(null);  // client per al qual es crea una comunicació IRPF
+
   const filtrats = clients.filter((c) => {
     if (!cerca) return true;
     const q = cerca.toLowerCase();
@@ -193,6 +272,8 @@ const Clients = ({ onObreSolicitud, rol }) => {
                 ) : (
                   <Boto variant="secundari" onClick={() => setTriaKyc(c.id)}>+ KYC i protecció de dades</Boto>
                 )}
+                {triaIrpf !== c.id && <Boto variant="secundari" onClick={() => setTriaIrpf(c.id)}>+ Comunicació IRPF</Boto>}
+                {triaIrpf === c.id && <NovaIrpf client={c} onCancel={() => setTriaIrpf(null)} onCreada={(id) => { setTriaIrpf(null); onObreSolicitud(id); }} />}
                 <RelacioIConsentiment client={c} rol={rol} onDesat={carrega} />
               </div>
             ))}

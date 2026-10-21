@@ -14,11 +14,13 @@ import Registre from './Registre';
 import Conservacio from './Conservacio';
 import RevisionsKyc from './RevisionsKyc';
 import LlistesPaisos from './LlistesPaisos';
+import ParametresIrpf from './ParametresIrpf';
 
 const PESTANYES = [
   { id: 'solicituds', nom: 'Sol·licituds' },
   { id: 'clients', nom: 'Clients' },
   { id: 'remesa', nom: 'Remesa' },
+  { id: 'parametres_irpf', nom: 'Paràmetres IRPF' },
   { id: 'personal', nom: 'Personal', ocic: true },
   { id: 'registre', nom: 'Registre', ocic: true },
   { id: 'revisions', nom: 'Revisions KYC', ocic: true },
@@ -120,7 +122,7 @@ const PortalApp = () => {
           <div>
             <h1 className="text-xl font-bold">Portal de signatura</h1>
             <p className="text-white/70 text-xs mt-0.5">
-              Autoritzacions de càrrec · KYC i protecció de dades · {user.email} · {rol === 'ocic' ? 'OCIC' : 'Gestor'}
+              Autoritzacions de càrrec · KYC i protecció de dades · Comunicacions IRPF · {user.email} · {rol === 'ocic' ? 'OCIC' : 'Gestor'}
             </p>
           </div>
           <button onClick={logout}
@@ -149,6 +151,7 @@ const PortalApp = () => {
         )}
         {pestanya === 'clients' && <Clients onObreSolicitud={obreSolicitud} rol={rol} />}
         {pestanya === 'remesa' && <Remesa onObreSolicitud={obreSolicitud} />}
+        {pestanya === 'parametres_irpf' && <ParametresIrpf />}
         {pestanya === 'personal' && rol === 'ocic' && <Personal usuariActual={user.id} />}
         {pestanya === 'registre' && rol === 'ocic' && <Registre />}
         {pestanya === 'revisions' && rol === 'ocic' && <RevisionsKyc onObreSolicitud={obreSolicitud} />}

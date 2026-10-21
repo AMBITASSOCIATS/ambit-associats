@@ -417,6 +417,16 @@ static_files = ["./functions/_shared/assets/*"]
 verify_jwt = true
 static_files = ["./functions/_shared/assets/*"]
 
+# Comunicació de dades al pagador (IRPF): el perceptor i el representant del
+# pagador no tenen sessió (només el token de l'enllaç)
+[functions.portal-irpf]
+verify_jwt = false
+static_files = ["./functions/_shared/assets/*"]
+
+[functions.portal-irpf-personal]
+verify_jwt = true
+static_files = ["./functions/_shared/assets/*"]
+
 [analytics]
 enabled = true
 port = 54327

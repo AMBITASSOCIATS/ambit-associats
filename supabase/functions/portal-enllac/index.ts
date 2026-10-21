@@ -10,6 +10,9 @@
 // - Regenerar revoca l'enllaç anterior. No es pot fer un cop signada.
 // - KYC i protecció de dades: el token va a la sol·licitud KYC i l'enllaç és
 //   /kyc/<token>; la PDP enllaçada també passa a 'enviat' (sessió del personal).
+// - Comunicació de dades al pagador (IRPF): l'enllaç és /irpf/<token>. Abans de
+//   signar, és el del perceptor; un cop signada pel perceptor, el del
+//   representant del pagador per a la recepció (apartat 12).
 
 import { clientAdmin, clientUsuari, entrada, llegeixCos, nouToken, sha256Hex, verificaPersonal } from '../_shared/portal.ts';
 
@@ -31,6 +34,25 @@ Deno.serve(async (req) => {
   const { data: sol } = await admin.schema('portal')
     .from('requests').select('id, status, document_type').eq('id', requestId).maybeSingle();
   if (!sol) return resposta(404, { error: 'Sol·licitud inexistent' });
+  const irpf = sol.document_type === 'irpf_comunicacio';
+
+  // IRPF signat pel perceptor: enllaç del representant del pagador per a la recepció
+  if (irpf && sol.status === 'signat') {
+    const token = nouToken();
+    const expira = new Date(Date.now() + DIES_CADUCITAT * 24 * 3600 * 1000);
+    const { error: errTok } = await admin.schema('portal').rpc('irpf_crea_token_recepcio', {
+      p_actor: personal.userId,
+      p_request_id: requestId,
+      p_token_hash: await sha256Hex(token),
+      p_expira_at: expira.toISOString(),
+    });
+    if (errTok) {
+      console.error('irpf_crea_token_recepcio', errTok.code);
+      return resposta(errTok.code === '42501' ? 403 : 409, { error: 'No s\'ha pogut generar l\'enllaç' });
+    }
+    return resposta(200, { ok: true, enllac: `${BASE}/irpf/${token}`, expira_at: expira.toISOString(), destinatari: 'recepcio' });
+  }
+
   if (!['esborrany', 'enviat', 'en_curs'].includes(sol.status) || sol.document_type === 'pdp') {
     return resposta(409, { error: 'Aquesta sol·licitud ja no admet cap enllaç nou' });
   }
@@ -77,5 +99,10 @@ Deno.serve(async (req) => {
     return resposta(errTok.code === '42501' ? 403 : 409, { error: 'No s\'ha pogut generar l\'enllaç' });
   }
 
-  return resposta(200, { ok: true, enllac: `${BASE}/${kyc ? 'kyc' : 'signar'}/${token}`, expira_at: expira.toISOString() });
+  return resposta(200, {
+    ok: true,
+    enllac: `${BASE}/${kyc ? 'kyc' : irpf ? 'irpf' : 'signar'}/${token}`,
+    expira_at: expira.toISOString(),
+    ...(irpf ? { destinatari: 'perceptor' } : {}),
+  });
 });

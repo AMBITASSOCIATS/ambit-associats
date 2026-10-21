@@ -1,0 +1,240 @@
+{
+  "versio": "IRPF-COM v1",
+  "titol": {
+    "ca": "COMUNICACIÓ DE DADES PERSONALS I FAMILIARS AL PAGADOR DE RENDES DEL TREBALL",
+    "en": "COMMUNICATION OF PERSONAL AND FAMILY DATA TO THE PAYER OF EMPLOYMENT INCOME"
+  },
+  "subtitol": {
+    "ca": "Impost sobre la renda de les persones físiques · Rendes del treball no sotmeses a cotització a la Caixa Andorrana de Seguretat Social",
+    "en": "Personal income tax · Employment income not subject to contributions to the Andorran Social Security Fund"
+  },
+  "introduccio": {
+    "ca": [
+      "D'acord amb l'article 28 del Reglament de l'impost sobre la renda de les persones físiques, la persona que percep rendes del treball no sotmeses a l'obligació de cotització a la Caixa Andorrana de Seguretat Social pot comunicar al pagador d'aquestes rendes les dades personals i familiars rellevants per determinar el percentatge de retenció (article 28.5). El pagador calcula el percentatge d'acord amb els articles 24, 25 i 27 del mateix Reglament.",
+      "Si no es comuniquen aquestes dades, el percentatge es determina tenint en compte únicament les retribucions i, si escau, les despeses deduïbles (article 24.4 del Reglament)."
+    ],
+    "en": [
+      "Under Article 28 of the Personal Income Tax Regulation, a person receiving employment income not subject to contributions to the Andorran Social Security Fund may notify the payer of that income of the personal and family data relevant to determine the withholding rate (Article 28.5). The payer calculates the rate in accordance with Articles 24, 25 and 27 of that Regulation.",
+      "If these data are not provided, the rate is determined taking into account only the remuneration and, where applicable, the deductible expenses (Article 24.4 of the Regulation)."
+    ]
+  },
+  "si_no": {
+    "si": { "ca": "sí", "en": "yes" },
+    "no": { "ca": "no", "en": "no" }
+  },
+  "s0": {
+    "titol": { "ca": "Tipus de comunicació", "en": "Type of communication" },
+    "inicial": { "ca": "Comunicació inicial", "en": "Initial communication" },
+    "modificacio": { "ca": "Modificació", "en": "Change" },
+    "modifica": { "ca": "indicant què es modifica (se'n poden marcar diversos)", "en": "stating what is changed (more than one may be selected)" },
+    "opcions": {
+      "perceptor": { "ca": "dades del perceptor", "en": "recipient's details" },
+      "familiars": { "ca": "dades personals i familiars", "en": "personal and family data" },
+      "economiques": { "ca": "dades econòmiques", "en": "financial data" }
+    }
+  },
+  "s1": {
+    "titol": { "ca": "Dades del perceptor", "en": "Recipient's details" },
+    "nom": { "ca": "Nom i cognoms", "en": "Full name" },
+    "nrt": { "ca": "Número de Registre Tributari (NRT)", "en": "Tax Registration Number (NRT)" },
+    "document": { "ca": "Document d'identitat", "en": "Identity document" },
+    "domicili": { "ca": "Domicili", "en": "Address" },
+    "contacte": { "ca": "Correu electrònic i telèfon", "en": "Email and telephone" },
+    "representant": {
+      "ca": "Representant legal (només per a persones amb poders especials o sense capacitat d'obrar), amb nom i NRT",
+      "en": "Legal representative (only for persons with special powers or without legal capacity), with name and NRT"
+    },
+    "incapacitat": { "ca": "Es troba en situació d'incapacitat?", "en": "Are you in a situation of incapacity?" }
+  },
+  "s2": {
+    "titol": { "ca": "Dades del pagador", "en": "Payer's details" },
+    "denominacio": { "ca": "Denominació social", "en": "Company name" },
+    "nrt": { "ca": "NRT", "en": "Tax number" },
+    "domicili": { "ca": "Domicili", "en": "Address" }
+  },
+  "s3": {
+    "titol": { "ca": "Estat civil", "en": "Marital status" },
+    "opcions": {
+      "solter": { "ca": "solter/a", "en": "single" },
+      "casat": { "ca": "casat/ada o parella estable", "en": "married or registered partner" },
+      "separat": { "ca": "separat/ada", "en": "separated" },
+      "divorciat": { "ca": "divorciat/ada", "en": "divorced" },
+      "vidu": { "ca": "vidu/vídua", "en": "widowed" }
+    },
+    "des_de": { "ca": "Des del", "en": "Since" }
+  },
+  "s4": {
+    "titol": { "ca": "Cònjuge o parella estable", "en": "Spouse or registered partner" },
+    "nom": { "ca": "Nom i cognoms", "en": "Full name" },
+    "nrt": { "ca": "NRT, si escau", "en": "NRT, if applicable" },
+    "document": { "ca": "passaport o document d'identitat", "en": "passport or identity document" },
+    "situacio": { "ca": "Situació de les rendes del cònjuge o la parella", "en": "Income situation of the spouse or partner" },
+    "opcions": {
+      "a": {
+        "ca": "No obté rendes que s'hagin d'integrar en la base de tributació general (rendes del treball, d'activitats econòmiques o del capital immobiliari).",
+        "en": "Does not obtain income to be included in the general tax base (employment income, business income or income from real estate)."
+      },
+      "b": {
+        "ca": "Obté rendes que li permeten aplicar íntegrament la seva pròpia reducció per mínim personal.",
+        "en": "Obtains income that allows them to apply their own personal allowance in full."
+      },
+      "c": {
+        "ca": "Obté rendes que no li permeten aplicar íntegrament la seva reducció i opto per aplicar-ne la part restant.",
+        "en": "Obtains income that does not allow them to apply their allowance in full, and I opt to apply the remaining part."
+      }
+    },
+    "import": {
+      "ca": "Import estimat de les seves rendes netes de la base general:",
+      "en": "Estimated amount of their net income in the general tax base:"
+    },
+    "ajuda": {
+      "ca": "Aquesta dada s'ha de comunicar cada any, abans del 15 de desembre de l'any anterior (articles 28.3 i 31.d del Reglament). Si no es comunica, no es té en compte.",
+      "en": "This information must be provided every year, before 15 December of the previous year (Articles 28.3 and 31.d of the Regulation). If it is not provided, it is not taken into account."
+    }
+  },
+  "s5": {
+    "titol": { "ca": "Descendents", "en": "Descendants" },
+    "ajuda": {
+      "ca": "Descendents per consanguinitat o adopció menors de 25 anys a 31 de desembre, que convisquin amb vós o en depenguin i no percebin rendes anuals superiors al salari mínim interprofessional. El límit d'edat no s'aplica si tenen una discapacitat reconeguda per la CONAVA.",
+      "en": "Descendants by blood or adoption under 25 on 31 December who live with you or depend on you and do not receive annual income above the minimum wage. The age limit does not apply if they have a disability recognised by CONAVA."
+    },
+    "per_cada": { "ca": "Per a cada descendent", "en": "For each descendant" },
+    "nom": { "ca": "Nom i cognoms", "en": "Full name" },
+    "nrt": { "ca": "NRT, si escau", "en": "NRT, if applicable" },
+    "document": { "ca": "passaport o document d'identitat", "en": "passport or identity document" },
+    "any_naixement": { "ca": "any de naixement", "en": "year of birth" },
+    "conviu": { "ca": "Conviu amb vós o en depèn?", "en": "Lives with you or depends on you?" },
+    "rendes": { "ca": "Percep rendes anuals superiors al salari mínim?", "en": "Receives annual income above the minimum wage?" },
+    "discapacitat": { "ca": "Discapacitat reconeguda per la CONAVA", "en": "Disability recognised by CONAVA" },
+    "persones": {
+      "ca": "Nombre de persones que tenen dret a la reducció per aquest descendent (vós inclòs)",
+      "en": "Number of persons entitled to the allowance for this descendant (including you)"
+    },
+    "persones_ajuda": {
+      "ca": "Normalment 2 si l'altre progenitor també és resident fiscal a Andorra, i 1 si sou l'únic progenitor o l'altre no és resident fiscal a Andorra. Si hi ha persones amb diferent grau de parentiu, només hi té dret la de grau més proper (art. 35.3 Llei).",
+      "en": "Usually 2 if the other parent is also tax resident in Andorra, and 1 if you are the sole parent or the other parent is not tax resident in Andorra. If persons with different degrees of kinship are entitled, only the closest relative may apply it (Article 35.3 of the Law)."
+    },
+    "matricules": {
+      "ca": "Import de matrícules d'ensenyament superior pagades per vós (màxim 300 € per descendent menor de 25 anys)",
+      "en": "Higher education tuition fees paid by you (maximum €300 per descendant under 25)"
+    }
+  },
+  "s6": {
+    "titol": { "ca": "Ascendents", "en": "Ascendants" },
+    "ajuda": {
+      "ca": "Ascendents majors de 65 anys a 31 de desembre que convisquin amb vós o en depenguin i no percebin rendes anuals superiors al salari mínim interprofessional. El límit d'edat no s'aplica si tenen una discapacitat reconeguda per la CONAVA o una situació de dependència reconeguda per la COVASS.",
+      "en": "Ascendants over 65 on 31 December who live with you or depend on you and do not receive annual income above the minimum wage. The age limit does not apply if they have a disability recognised by CONAVA or a dependency recognised by COVASS."
+    },
+    "dependencia": { "ca": "Dependència reconeguda per la COVASS", "en": "Dependency recognised by COVASS" }
+  },
+  "s7": {
+    "titol": { "ca": "Persones en tutela o acolliment", "en": "Persons under guardianship or foster care" }
+  },
+  "persones_dret": { "ca": "nombre de persones amb dret a la reducció", "en": "Number of persons entitled to the allowance" },
+  "s8": {
+    "titol": { "ca": "Altres reduccions", "en": "Other allowances" },
+    "ajuda": {
+      "ca": "Si no coneixeu l'import exacte, indiqueu-ne una estimació anual.",
+      "en": "If you do not know the exact amount, give an annual estimate."
+    },
+    "habitatge": {
+      "ca": "Quantitats anuals destinades a l'adquisició de l'habitatge habitual",
+      "en": "Annual amounts paid for the purchase of your main residence"
+    },
+    "pensions": {
+      "ca": "Pensions compensatòries al cònjuge i anualitats per aliments, excepte les satisfetes als fills propis",
+      "en": "Maintenance payments to a spouse and annuities for maintenance, except those paid to your own children"
+    },
+    "origen": { "ca": "Origen", "en": "Basis" },
+    "origens": {
+      "judicial": { "ca": "resolució judicial", "en": "court decision" },
+      "conveni": { "ca": "conveni homologat judicialment", "en": "court-approved agreement" },
+      "notarial": { "ca": "protocol·litzat notarialment", "en": "notarised" },
+      "civil": { "ca": "legislació civil", "en": "civil law" }
+    },
+    "plans": {
+      "ca": "Aportacions a plans de pensions i altres instruments de previsió social, incloses les de l'empresa imputades al perceptor",
+      "en": "Contributions to pension plans and other social welfare instruments, including employer contributions attributed to the recipient"
+    },
+    "any": { "ca": "any d'aplicació", "en": "year of application" }
+  },
+  "s9": {
+    "titol": { "ca": "Data d'efectes", "en": "Effective date" },
+    "text": {
+      "ca": "Data a partir de la qual s'han d'aplicar aquestes dades (per defecte, el primer pagament de rendes).",
+      "en": "Date from which these data are to be applied (by default, the first payment of income)."
+    }
+  },
+  "s10": {
+    "titol": { "ca": "Declaracions", "en": "Declarations" },
+    "punts": [
+      {
+        "ca": "Declaro que les dades d'aquesta comunicació són certes.",
+        "en": "I declare that the information in this communication is true."
+      },
+      {
+        "ca": "Em comprometo a comunicar al pagador qualsevol variació d'aquestes dades en el termini de deu dies des que es produeixi o en tingui coneixement (article 31.c del Reglament).",
+        "en": "I undertake to notify the payer of any change in this information within ten days of its occurrence or of my becoming aware of it (Article 31.c of the Regulation)."
+      },
+      {
+        "ca": "He estat informat que, si no faig aquesta comunicació, el percentatge de retenció es determina tenint en compte únicament les retribucions i, si escau, les despeses deduïbles (article 24.4 del Reglament).",
+        "en": "I have been informed that, if I do not make this communication, the withholding rate is determined taking into account only the remuneration and, where applicable, the deductible expenses (Article 24.4 of the Regulation)."
+      },
+      {
+        "ca": "He informat les persones de qui faig constar dades en aquesta comunicació que les comunico al pagador per a aquesta finalitat.",
+        "en": "I have informed the persons whose data I include in this communication that I am providing them to the payer for this purpose."
+      }
+    ],
+    "consentiment": {
+      "ca": "Consenteixo expressament que el pagador tracti les dades relatives a discapacitat o dependència que hi faig constar, amb l'única finalitat de calcular la retenció (article 9.2.a de la Llei 29/2021).",
+      "en": "I expressly consent to the payer processing the data on disability or dependency included herein, for the sole purpose of calculating the withholding (Article 9.2.a of Law 29/2021)."
+    }
+  },
+  "s11": {
+    "titol": { "ca": "Signatura del perceptor", "en": "Recipient's signature" },
+    "lloc": { "ca": "Lloc", "en": "Place" },
+    "data": { "ca": "Data", "en": "Date" },
+    "signatura": { "ca": "Signatura", "en": "Signature" },
+    "exemple_lloc": "p. ex. Andorra la Vella"
+  },
+  "s12": {
+    "titol": { "ca": "Recepció pel pagador", "en": "Receipt by the payer" },
+    "text": {
+      "ca": "El pagador declara haver rebut aquesta comunicació.",
+      "en": "The payer acknowledges receipt of this communication."
+    },
+    "representant": { "ca": "Nom del representant i càrrec", "en": "Representative's name and position" }
+  },
+  "s13": {
+    "titol": { "ca": "Informació sobre protecció de dades", "en": "Data protection information" },
+    "paragrafs": {
+      "ca": [
+        "Responsable del tractament: el pagador indicat a l'apartat 2.",
+        "Finalitat: calcular i practicar la retenció de l'IRPF sobre les rendes del treball.",
+        "Base jurídica: compliment d'una obligació legal del pagador (article 6.1.c de la Llei 29/2021, en relació amb l'article 27 del Reglament de l'IRPF) i, per a les dades de discapacitat o dependència, el consentiment explícit de la persona que les comunica (article 9.2.a).",
+        "Destinataris: el Departament de Tributs i de Fronteres, quan ho exigeixi la normativa tributària, i DEL SOTO – PALEARI & ASSOCIATS, SL (ÀMBIT Associats), que gestiona el càlcul per compte del pagador com a encarregat del tractament.",
+        "Conservació: durant el termini de prescripció de les obligacions tributàries.",
+        "Podeu exercir els drets d'accés, rectificació, supressió, limitació i oposició davant del pagador i retirar en qualsevol moment el consentiment sobre les dades de discapacitat o dependència, i presentar una reclamació davant l'Agència Andorrana de Protecció de Dades (www.apda.ad)."
+      ],
+      "en": [
+        "Data controller: the payer stated in section 2.",
+        "Purpose: to calculate and apply personal income tax withholding on employment income.",
+        "Legal basis: compliance with a legal obligation of the payer (Article 6.1.c of Law 29/2021, in relation to Article 27 of the Personal Income Tax Regulation) and, for data on disability or dependency, the explicit consent of the person providing them (Article 9.2.a).",
+        "Recipients: the Department of Taxation and Borders, where required by tax legislation, and DEL SOTO – PALEARI & ASSOCIATS, SL (ÀMBIT Associats), which manages the calculation on behalf of the payer as data processor.",
+        "Retention: for the limitation period of the tax obligations.",
+        "You may exercise your rights of access, rectification, erasure, restriction and objection before the payer, withdraw at any time your consent regarding disability or dependency data, and lodge a complaint with the Andorran Data Protection Agency (www.apda.ad)."
+      ]
+    }
+  },
+  "pdf": {
+    "gestionat": {
+      "ca": "Document gestionat per DEL SOTO – PALEARI & ASSOCIATS, SL per compte de {pagador}",
+      "en": "Document managed by DEL SOTO – PALEARI & ASSOCIATS, SL on behalf of {pagador}"
+    },
+    "no_escau": { "ca": "No s'escau", "en": "Not applicable" }
+  },
+  "peu": [
+    "DEL SOTO – PALEARI & ASSOCIATS, SL · NRT L-720543-P · Av. Fiter i Rossell, 78, 2n B · AD700 Escaldes-Engordany · Andorra",
+    "info@ambit.ad · +376 655 382 · +376 632 306"
+  ]
+}
