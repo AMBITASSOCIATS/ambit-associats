@@ -21,7 +21,7 @@
 //                l'apartat 12; genera la còpia final i la registra.
 // El PDF d'ÀMBIT amb el càlcul del percentatge no es lliura mai per aquí.
 
-import { clientAdmin, deBase64, entrada, formatToken, ipClient, llegeixCos, sha256Hex, text } from '../_shared/portal.ts';
+import { clientAdmin, deBase64, entrada, formatToken, ipClient, llegeixCos, provaFalla, serveix, sha256Hex, text } from '../_shared/portal.ts';
 import { generaPdfIrpf } from '../_shared/pdf-irpf.ts';
 import { VERSIONS_ACCEPTADES, campsPendents, netejaDades } from '../_shared/irpf-regles.js';
 
@@ -83,7 +83,7 @@ const avisa = async (cos: Record<string, string>) => {
   }
 };
 
-Deno.serve(async (req) => {
+serveix('portal-irpf', async (req) => {
   const { atura, resposta } = entrada(req);
   if (atura) return atura;
 
@@ -222,27 +222,27 @@ Deno.serve(async (req) => {
     });
     if (e1 || !emp) return resposta(500, { error: 'Error intern' });
 
-    // e) Pujar les firmes, generar i pujar el PDF (sempre camins nous)
+    // e) Generar el PDF i, només si s'ha generat, pujar les firmes i el PDF
+    //    (sempre camins nous). Un error en generar-lo no deixa cap fitxer.
     const signatAt = new Date();
     const firmaPath = `requests/${sol.request_id}/evidencies/${crypto.randomUUID()}-signatura.png`;
-    if (!(await puja(firmaPath, firma, 'image/png'))) return resposta(500, { error: 'No s\'ha pogut desar la signatura' });
-
     let recepcio = null;
     let pRecepcio = null;
+    let recPath = '';
     if (sol.doble_signatura && firmaRec) {
       // L'empremta de la recepció inclou la de la comunicació signada
       const { data: empRecepcio, error: e2 } = await portal.rpc('empremta_irpf_recepcio_de', {
         p_request_id: sol.request_id, p_empremta_perceptor: emp, p_nom: nom, p_carrec: carrec,
       });
       if (e2 || !empRecepcio) return resposta(500, { error: 'Error intern' });
-      const recPath = `requests/${sol.request_id}/evidencies/${crypto.randomUUID()}-recepcio.png`;
-      if (!(await puja(recPath, firmaRec, 'image/png'))) return resposta(500, { error: 'No s\'ha pogut desar la signatura' });
+      recPath = `requests/${sol.request_id}/evidencies/${crypto.randomUUID()}-recepcio.png`;
       recepcio = {
         nom, carrec: carrec!, signatAt, ip, userAgent, empremtaDades: empRecepcio as string, png: firmaRec, sha256: shaRec, mateixaSessio: true,
       };
       pRecepcio = { empremta: empRecepcio, nom, carrec, imatge_path: recPath, imatge_sha256: shaRec, imatge_mida: firmaRec.length };
     }
 
+    provaFalla(req, 'pdf');
     const pdf = await generaPdfIrpf({
       mode: 'perceptor',
       requestId: sol.request_id,
@@ -256,6 +256,8 @@ Deno.serve(async (req) => {
     });
     const shaPdf = await sha256Hex(pdf);
     const pdfPath = `requests/${sol.request_id}/signat/${crypto.randomUUID()}.pdf`;
+    if (!(await puja(firmaPath, firma, 'image/png'))) return resposta(500, { error: 'No s\'ha pogut desar la signatura' });
+    if (recepcio && !(await puja(recPath, firmaRec!, 'image/png'))) return resposta(500, { error: 'No s\'ha pogut desar la signatura' });
     if (!(await puja(pdfPath, pdf, 'application/pdf'))) return resposta(500, { error: 'No s\'ha pogut desar el document' });
 
     // f) Registrar-ho tot (una sola transacció a la base)
@@ -307,11 +309,11 @@ Deno.serve(async (req) => {
     if (errBaixa || !fitxer) return resposta(500, { error: 'Error intern' });
     const firmaPerceptor = new Uint8Array(await fitxer.arrayBuffer());
 
+    // Primer el PDF; després, la firma i el PDF (cap fitxer si no es genera)
     const signatAt = new Date();
     const firmaPath = `requests/${sol.request_id}/evidencies/${crypto.randomUUID()}-recepcio.png`;
-    if (!(await puja(firmaPath, firma, 'image/png'))) return resposta(500, { error: 'No s\'ha pogut desar la signatura' });
-
     const s = sol.signatura;
+    provaFalla(req, 'pdf');
     const pdf = await generaPdfIrpf({
       mode: 'copia',
       requestId: sol.request_id,
@@ -328,6 +330,7 @@ Deno.serve(async (req) => {
     });
     const shaPdf = await sha256Hex(pdf);
     const pdfPath = `requests/${sol.request_id}/copia-client/${crypto.randomUUID()}.pdf`;
+    if (!(await puja(firmaPath, firma, 'image/png'))) return resposta(500, { error: 'No s\'ha pogut desar la signatura' });
     if (!(await puja(pdfPath, pdf, 'application/pdf'))) return resposta(500, { error: 'No s\'ha pogut desar el document' });
 
     const { error: errRec } = await portal.rpc('registra_recepcio_irpf', {

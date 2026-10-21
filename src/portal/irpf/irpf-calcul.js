@@ -111,6 +111,22 @@ export const vigenciaInicial = ({ dataEfectes, comunicacio }) => {
   };
 };
 
+// Data en què el pagador coneix la variació, per defecte: la de recepció de la
+// comunicació, si el càlcul anterior no la va fer servir (una comunicació nova,
+// o la mateixa encara no aplicada: calculat sense comunicació o inicial fora de
+// termini). Si ja la va fer servir, no n'hi ha: la variació és d'una altra dada.
+//   anterior: { request_id, mode_aplicat } del càlcul anterior de l'exercici
+export const coneixementPerDefecte = ({ mode, requestId, anterior, rebudaEl }) => {
+  if (mode !== 'comunicacio' || !anterior || !DATA.test(String(rebudaEl || ''))) return null;
+  return anterior.request_id === requestId && anterior.mode_aplicat === 'comunicacio' ? null : rebudaEl;
+};
+
+// Avís al personal: hi ha una comunicació rebuda pel pagador i el càlcul no la fa servir
+export const AVIS_SENSE_COMUNICACIO = {
+  ca: 'Hi ha una comunicació rebuda pel pagador i aquest càlcul no la fa servir: s\'ha calculat sense comunicació (art. 24.4 del Reglament).',
+  en: 'There is a communication received by the payer and this calculation does not use it: calculated without communication (Article 24.4 of the Regulation).',
+};
+
 // Situació del cònjuge per a un càlcul: { aplica, des_de, avis }
 //   exercici, dataEfectes: les del càlcul
 //   comunicacio: { data_efectes, rebuda_el } (rebuda_el: data en què el pagador la va rebre)
@@ -222,6 +238,7 @@ const reduccionsFamiliars = (dades, exercici, P) => {
 //   comunicacio,              { data_efectes, rebuda_el } de la comunicació (si hi ha dades)
 //   anterior,                 { percentatge, percentatge_aplicat } del càlcul anterior del mateix exercici, o null
 //   coneixement,              data en què el pagador coneix la variació (si n'hi ha d'anterior)
+//   comunicacio_rebuda,       true si hi ha una comunicació rebuda pel pagador (avís si no es fa servir)
 //   regularitzacio,           { retribucions_satisfetes, retencions_practicades } (euros), si n'hi ha d'anterior
 // }
 export const calcula = (entrada) => {
@@ -236,6 +253,7 @@ export const calcula = (entrada) => {
   const dataEfectes = String(entrada.data_efectes || `${exercici}-01-01`);
   if (!DATA.test(dataEfectes) || Number(dataEfectes.slice(0, 4)) !== exercici) throw new Error('Data d\'efectes no vàlida per a l\'exercici');
   const avisos = [];
+  if (!d && entrada.comunicacio_rebuda === true) avisos.push(AVIS_SENSE_COMUNICACIO);
   // Comunicació inicial rebuda fora de termini: fins que s'aplica, sense comunicació
   if (d && entrada.comunicacio?.tipus === 'inicial') {
     const v = vigenciaInicial({ dataEfectes, comunicacio: entrada.comunicacio });

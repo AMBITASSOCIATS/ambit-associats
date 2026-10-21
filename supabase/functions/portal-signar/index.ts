@@ -15,7 +15,7 @@
 
 import {
   aBytea, clientAdmin, deBase64, entrada, formatToken, ipClient, llegeixCos,
-  sha256Hex, text, validaIban, xifraIban,
+  provaFalla, serveix, sha256Hex, text, validaIban, xifraIban,
 } from '../_shared/portal.ts';
 import { generaPdf, VERSIO_PLANTILLA } from '../_shared/pdf.ts';
 
@@ -58,7 +58,7 @@ type Info = {
   client_facturat_nom: string | null;
 };
 
-Deno.serve(async (req) => {
+serveix('portal-signar', async (req) => {
   const { atura, resposta } = entrada(req);
   if (atura) return atura;
 
@@ -237,14 +237,13 @@ Deno.serve(async (req) => {
   const { data: req2 } = await portal.from('requests').select('client_id').eq('id', sol.request_id).single();
   const { data: client } = await portal.from('clients').select('referencia_client').eq('id', req2!.client_id).single();
 
-  // d) Pujar la firma i generar i pujar el PDF (sempre camins nous, sense sobreescriure)
+  // d) Generar el PDF i, només si s'ha generat, pujar la firma i el PDF (sempre
+  //    camins nous, sense sobreescriure). Un error en generar-lo no deixa cap fitxer.
   const signatAt = new Date();
   const firmaSha = await sha256Hex(firma);
   const firmaPath = `requests/${sol.request_id}/evidencies/${crypto.randomUUID()}-signatura.png`;
-  const { error: errFirma } = await admin.storage.from(BUCKET)
-    .upload(firmaPath, firma, { contentType: 'image/png', upsert: false });
-  if (errFirma) return resposta(500, { error: 'No s\'ha pogut desar la signatura' });
 
+  provaFalla(req, 'pdf');
   const pdf = await generaPdf({
     requestId: sol.request_id,
     referenciaClient: client?.referencia_client ?? null,
@@ -271,6 +270,9 @@ Deno.serve(async (req) => {
   });
   const pdfSha = await sha256Hex(pdf);
   const pdfPath = `requests/${sol.request_id}/signat/${crypto.randomUUID()}.pdf`;
+  const { error: errFirma } = await admin.storage.from(BUCKET)
+    .upload(firmaPath, firma, { contentType: 'image/png', upsert: false });
+  if (errFirma) return resposta(500, { error: 'No s\'ha pogut desar la signatura' });
   const { error: errPdf } = await admin.storage.from(BUCKET)
     .upload(pdfPath, pdf, { contentType: 'application/pdf', upsert: false });
   if (errPdf) return resposta(500, { error: 'No s\'ha pogut desar el document' });

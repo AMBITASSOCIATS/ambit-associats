@@ -30,7 +30,7 @@
 // La validació la fa sempre la sessió de l'OCIC (clientUsuari): ni el
 // servei ni un gestor no poden validar (ho impedeix la base).
 
-import { clientAdmin, clientUsuari, entrada, llegeixCos, sha256Hex, text, verificaPersonal } from '../_shared/portal.ts';
+import { clientAdmin, clientUsuari, entrada, llegeixCos, provaFalla, serveix, sha256Hex, text, verificaPersonal } from '../_shared/portal.ts';
 import { generaPdfKyc } from '../_shared/pdf-kyc.ts';
 
 const BUCKET = 'portal-docs';
@@ -45,7 +45,7 @@ const TIPUS_ADJUNT: Record<string, { ext: string; magic: number[] }> = {
 };
 const comencaAmb = (b: Uint8Array, m: number[]) => m.every((v, i) => b[i] === v);
 
-Deno.serve(async (req) => {
+serveix('portal-kyc-personal', async (req) => {
   const { atura, resposta } = entrada(req);
   if (atura) return atura;
 
@@ -251,34 +251,40 @@ Deno.serve(async (req) => {
       return { sha256: sha, url: url?.signedUrl ?? null };
     };
 
-    const resultat: Record<string, unknown> = { ok: true };
+    // Primer es generen els PDF que falten; només si s'han generat tots, es
+    // pugen i es registren (un error en generar-los no deixa cap fitxer).
+    provaFalla(req, 'pdf');
     // 1. Versió interna validada: apartat reservat i full de validació
-    if (!x.te_validat) {
-      const r = await desa(await generaPdfKyc({
-        ...comuns,
-        mode: 'intern',
-        validacio: {
-          ...v,
-          validat_at: new Date(v.validat_at),
-          sancions_evidencia_sha256: x.evidencia.sha256,
-          ocicNom: x.firma.nom,
-          firmaOcic: imgOcic,
-          firmaOcicSha256: x.firma.sha256,
-          pdfSignatSha256: signat?.sha256 || '—',
-        },
-      }), 'validat');
+    const pdfValidat = x.te_validat ? null : await generaPdfKyc({
+      ...comuns,
+      mode: 'intern',
+      validacio: {
+        ...v,
+        validat_at: new Date(v.validat_at),
+        sancions_evidencia_sha256: x.evidencia.sha256,
+        ocicNom: x.firma.nom,
+        firmaOcic: imgOcic,
+        firmaOcicSha256: x.firma.sha256,
+        pdfSignatSha256: signat?.sha256 || '—',
+      },
+    });
+    // 2. Còpia per al client: sense l'apartat reservat; només la recepció
+    //    (data de validació i firma de l'OCIC), cap dada de la validació
+    const pdfCopia = x.te_copia ? null : await generaPdfKyc({
+      ...comuns,
+      mode: 'copia',
+      recepcio: { data: new Date(v.validat_at), nom: x.firma.nom, firma: imgOcic },
+    });
+
+    const resultat: Record<string, unknown> = { ok: true };
+    if (pdfValidat) {
+      const r = await desa(pdfValidat, 'validat');
       if ('errReg' in r) return errorSql(r.errReg!, 'registra_pdf_validat');
       if ('error' in r) return resposta(500, { error: r.error });
       resultat.pdf_final = r;
     }
-    // 2. Còpia per al client: sense l'apartat reservat; només la recepció
-    //    (data de validació i firma de l'OCIC), cap dada de la validació
-    if (!x.te_copia) {
-      const r = await desa(await generaPdfKyc({
-        ...comuns,
-        mode: 'copia',
-        recepcio: { data: new Date(v.validat_at), nom: x.firma.nom, firma: imgOcic },
-      }), 'copia_client');
+    if (pdfCopia) {
+      const r = await desa(pdfCopia, 'copia_client');
       if ('errReg' in r) return errorSql(r.errReg!, 'registra_pdf_validat');
       if ('error' in r) return resposta(500, { error: r.error });
       resultat.copia_client = r;

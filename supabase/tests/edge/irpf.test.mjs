@@ -8,6 +8,8 @@
 // on <fitxer> és supabase/functions/.env més aquestes dues línies:
 //   FORMSPREE_FORM_ID=prova-local
 //   FORMSPREE_BASE_URL=http://host.docker.internal:54399/f/
+// i, per provocar una fallada en generar el PDF (capçalera x-portal-prova-falla):
+//   PORTAL_PROVES_FALLADA=1
 // Execució: node supabase/tests/edge/irpf.test.mjs [carpeta-per-als-pdf]
 // Les claus locals es llegeixen de `supabase status -o env` i no s'imprimeixen.
 // Totes les dades són fictícies.
@@ -128,20 +130,35 @@ const firma = (llavor) => png(420, 140, (t) => {
 const dataUrl = (b) => `data:image/png;base64,${b.toString('base64')}`;
 
 // ─── Crides ─────────────────────────────────────────────────────────────────
-const crida = async (funcio, cos, { jwt = ANON, origen = 'https://www.ambit.ad' } = {}) => {
+const crida = async (funcio, cos, { jwt = ANON, origen = 'https://www.ambit.ad', falla = null } = {}) => {
   const r = await fetch(`${URL}/functions/v1/${funcio}`, {
     method: 'POST',
     headers: {
       ...(origen ? { Origin: origen } : {}),
+      ...(falla ? { 'x-portal-prova-falla': falla } : {}),
       Authorization: `Bearer ${jwt}`, apikey: ANON, 'Content-Type': 'application/json',
       'User-Agent': 'Prova-local/1.0 (irpf.test.mjs)',
     },
     body: JSON.stringify(cos),
   });
-  return { status: r.status, cos: await r.json().catch(() => ({})) };
+  return { status: r.status, cos: await r.json().catch(() => ({})), cors: r.headers.get('access-control-allow-origin'), metodes: r.headers.get('access-control-allow-methods') };
 };
-const irpf = (token, cos) => crida('portal-irpf', { token, ...cos });
-const personal = (cos, jwt = JWT_GESTOR) => crida('portal-irpf-personal', cos, { jwt });
+const irpf = (token, cos, opts = {}) => crida('portal-irpf', { token, ...cos }, opts);
+const personal = (cos, jwt = JWT_GESTOR, opts = {}) => crida('portal-irpf-personal', cos, { jwt, ...opts });
+// Missatge de qualsevol error no previst (mai l'error real)
+const ERROR_DOCUMENT = 'No s\'ha pogut generar el document. Torneu-ho a provar més tard. / The document could not be generated. Please try again later.';
+// En local el gateway (Kong) posa sempre Access-Control-Allow-Origin: *; es comprova que hi són
+// les capçaleres CORS de la mateixa funció (a producció, l'origen permès)
+const errorNet = (r) => r.status === 500 && r.cos.error === ERROR_DOCUMENT && Object.keys(r.cos).length === 1 && r.cors !== null && r.metodes === 'POST, OPTIONS';
+// Fitxers d'una sol·licitud al bucket (totes les carpetes)
+const fitxers = async (requestId) => {
+  let n = 0;
+  for (const c of ['evidencies', 'signat', 'copia-client', 'intern', 'adjunts', 'validat']) {
+    const { data } = await admin.storage.from('portal-docs').list(`requests/${requestId}/${c}`, { limit: 1000 });
+    n += (data || []).filter((f) => f.id).length;
+  }
+  return n;
+};
 const enllac = async (requestId) => {
   const r = await crida('portal-enllac', { request_id: requestId }, { jwt: JWT_GESTOR });
   return { ...r, token: r.cos.enllac?.split('/irpf/')[1] };
@@ -542,6 +559,101 @@ try {
   comprova((alienes || []).length === 0, 'Un usuari de la web no veu cap comunicació');
   const { error: errDel } = await admin.schema('portal').from('irpf_calculs').delete().eq('id', c1.cos.calcul_id);
   comprova(!!errDel, 'Ningú no pot esborrar un càlcul (tampoc el servei)');
+
+  // ─── 6. Error en generar el PDF: cap fitxer i resposta JSON neta ─────────
+  seccio('Error en generar el PDF: cap fitxer pujat, JSON amb CORS i missatge únic');
+  {
+    // Perceptor: doble signatura (dues firmes i el PDF)
+    const id = await crea({ nom: 'Eva Fallada Prova', nrt: 'F-100020-K', email: 'eva@test.local', es_representant: true });
+    const tk = (await enllac(id)).token;
+    await irpf(tk, { accio: 'obrir' });
+    const cos = { accio: 'signar', dades: resp('Eva Fallada Prova', 'F-100020-K'), lloc: 'Andorra la Vella', signatura: dataUrl(firma(20)),
+      carrec_recepcio: 'Administradora única', signatura_recepcio: dataUrl(firma(21)) };
+    const f1 = await irpf(tk, cos, { falla: 'pdf' });
+    comprova(errorNet(f1), `Signatura: 500 amb "${ERROR_DOCUMENT.slice(0, 40)}…", JSON i capçalera CORS (${f1.status}, ${f1.cors})`);
+    comprova(!/provocada|Error:|stack|at /.test(JSON.stringify(f1.cos)), 'L\'error real no arriba mai a qui crida');
+    comprova(await fitxers(id) === 0, 'No s\'ha pujat cap fitxer (ni les firmes ni el PDF)');
+    const { count: nSig } = await adminPortal.from('signatures').select('id', { count: 'exact', head: true }).eq('request_id', id);
+    comprova(await estat(id) === 'en_curs' && nSig === 0, 'Res registrat: segueix en curs, sense signatura');
+    const f2 = await irpf(tk, cos);
+    comprova(f2.status === 200 && f2.cos.rebuda === true && await fitxers(id) === 3, 'Reintent amb el mateix enllaç: signat (2 firmes i el PDF)');
+
+    // Representant del pagador: recepció (firma i còpia)
+    const id2 = await crea({ nom: 'Lluc Fallada Prova', nrt: 'F-100021-L', email: 'lluc@test.local' });
+    const tk2 = (await enllac(id2)).token;
+    await irpf(tk2, { accio: 'obrir' });
+    await irpf(tk2, { accio: 'signar', dades: resp('Lluc Fallada Prova', 'F-100021-L'), lloc: 'Andorra la Vella', signatura: dataUrl(firma(22)) });
+    const abans = await fitxers(id2);
+    const tkRec = (await enllac(id2)).token;
+    const cosRec = { accio: 'signar_recepcio', nom: 'Marta Gerent Prova', carrec: 'Gerent', signatura: dataUrl(firma(23)) };
+    const f3 = await irpf(tkRec, cosRec, { falla: 'pdf' });
+    comprova(errorNet(f3), 'Recepció: 500, JSON, CORS i el missatge únic');
+    comprova(await fitxers(id2) === abans && await estat(id2) === 'signat', 'Cap fitxer nou i segueix pendent de recepció');
+    const f4 = await irpf(tkRec, cosRec);
+    comprova(f4.status === 200 && await estat(id2) === 'actiu' && await fitxers(id2) === abans + 2, 'Reintent: rebuda (firma i còpia)');
+
+    // Personal: càlcul i PDF intern
+    const f5 = await personal({ accio: 'calcula', request_id: id2, data_efectes: `${ANY}-01-01`, retribucions: '60000' }, JWT_GESTOR, { falla: 'pdf' });
+    comprova(errorNet(f5), 'Càlcul: 500, JSON, CORS i el missatge únic');
+    const { count: nCalc } = await adminPortal.from('irpf_calculs').select('id', { count: 'exact', head: true }).eq('request_id', id2);
+    comprova(nCalc === 0 && await fitxers(id2) === abans + 2, 'Cap càlcul desat ni cap PDF intern pujat');
+    const f6 = await personal({ accio: 'calcula', request_id: id2, data_efectes: `${ANY}-01-01`, retribucions: '60000' });
+    comprova(f6.status === 200 && f6.cos.calcul_id, 'Reintent: càlcul desat');
+  }
+
+  // ─── 7. Cas de producció: inicial no laboral fora de termini ─────────────
+  seccio('Inicial no laboral fora de termini: el segon càlcul fa servir la comunicació (cas 138d9033)');
+  if (mesSeguent(AVUI).startsWith(String(ANY))) {
+    const INICI = `${AVUI.slice(0, 7)}-01`;
+    const dadesCas = (nom, nrt) => resp(nom, nrt, {
+      estat_civil: { estat: 'casat', des_de: '2015-06-20' }, conjuge: { nom: 'Cònjuge Cas Prova', document: 'Passaport C1', situacio: 'a' }, data_efectes: INICI,
+    });
+    const nouCas = async (nom, nrt, llavor) => {
+      const id = await crea({ nom, nrt, email: `${nrt.toLowerCase()}@test.local`, inici_relacio: INICI, relacio_laboral: false, es_representant: true });
+      const tk = (await enllac(id)).token;
+      await irpf(tk, { accio: 'obrir' });
+      const r = await irpf(tk, { accio: 'signar', dades: dadesCas(nom, nrt), lloc: 'Andorra la Vella', signatura: dataUrl(firma(llavor)),
+        carrec_recepcio: 'Administradora única', signatura_recepcio: dataUrl(firma(llavor + 1)) });
+      return r.status === 200 ? id : null;
+    };
+    // a) Mode per defecte del panell (comunicació rebuda): el primer càlcul ja la fa servir
+    const idA = await nouCas('Clara Cas Prova', 'F-100030-M', 30);
+    comprova(!!idA && await estat(idA) === 'actiu', `Comunicació inicial (no laboral, inici ${INICI}) signada i rebuda avui: fora del termini de l'art. 31.b`);
+    const a1 = await personal({ accio: 'calcula', request_id: idA, mode: 'comunicacio', data_efectes: INICI, retribucions: '60000', cotitzacions: '0' });
+    comprova(a1.status === 200 && a1.cos.percentatge === '4.37' && a1.cos.mode === 'comunicacio' && a1.cos.detall.mode === 'sense_comunicacio'
+      && /fora del termini/.test(a1.cos.detall.avisos[0]?.ca || ''), `Efectes ${INICI}: encara sense comunicació, 4,37 % (${a1.cos.percentatge}), amb avís`);
+    const a2 = await personal({ accio: 'calcula', request_id: idA, mode: 'comunicacio', data_efectes: mesSeguent(AVUI), retribucions: '60000', cotitzacions: '0',
+      retribucions_satisfetes: '5000', retencions_practicades: '218.50' });
+    comprova(a2.status === 200 && a2.cos.calcul_id && a2.cos.detall.mode === 'comunicacio' && a2.cos.percentatge === '1.70'
+      && a2.cos.detall.imports.QL === 102000 && a2.cos.detall.imports.minimTotal === 4000000,
+    `Efectes ${mesSeguent(AVUI)} sense indicar la data: amb la comunicació i el cònjuge, quota 1.020 €, 1,70 % (${a2.cos.percentatge ?? `${a2.status} ${a2.cos.error}`})`);
+    comprova(a2.cos.regularitzat === true && a2.cos.percentatge_aplicat === '1.46', `Regularització (art. 25): aplicat ${a2.cos.percentatge_aplicat} %`);
+    const { data: fa2 } = await adminPortal.from('irpf_calculs').select('data_coneixement, mode').eq('id', a2.cos.calcul_id).single();
+    comprova(fa2?.data_coneixement === AVUI && fa2?.mode === 'comunicacio', `Desat amb la data de coneixement per defecte: la de recepció (${fa2?.data_coneixement})`);
+
+    // b) Com a producció: primer càlcul sense comunicació (avís), segon amb la comunicació
+    const idB = await nouCas('Biel Cas Prova', 'F-100031-N', 32);
+    const b1 = await personal({ accio: 'calcula', request_id: idB, mode: 'sense_comunicacio', data_efectes: INICI, retribucions: '60000', cotitzacions: '0' });
+    comprova(b1.status === 200 && b1.cos.mode === 'sense_comunicacio' && /no la fa servir/.test(b1.cos.detall.avisos[0]?.ca || ''),
+      'Sense comunicació amb una de rebuda: avís al resultat');
+    const { data: fb1 } = await adminPortal.from('irpf_calculs').select('detall').eq('id', b1.cos.calcul_id).single();
+    comprova(/no la fa servir/.test(fb1?.detall?.avisos?.[0]?.ca || ''), 'L\'avís queda desat amb el càlcul');
+    const pdfB1 = await llegeixPdf(await baixaUrl(b1.cos.pdf_intern.url, 'irpf-4-sense-comunicacio-amb-avis-intern-ambit.pdf'));
+    comprova(pdfB1.text.includes('aquest càlcul no la fa servir'), 'I surt al PDF intern');
+    const b2 = await personal({ accio: 'calcula', request_id: idB, previsualitza: true, mode: 'comunicacio', data_efectes: mesSeguent(AVUI), retribucions: '60000',
+      cotitzacions: '0', retribucions_satisfetes: '5000', retencions_practicades: '218.50' });
+    comprova(b2.status === 200 && b2.cos.percentatge === '1.70' && b2.cos.data_coneixement === AVUI && !b2.cos.detall.avisos.some((x) => /no la fa servir/.test(x.ca)),
+      `Segon càlcul amb la comunicació, sense indicar la data: 1,70 % (${b2.cos.percentatge ?? b2.cos.error}), coneixement ${b2.cos.data_coneixement}`);
+
+    // c) Data de coneixement futura: rebutjada també en previsualitzar
+    const dema = new Date(Date.now() + 86400000).toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' });
+    const b3 = await personal({ accio: 'calcula', request_id: idB, previsualitza: true, mode: 'comunicacio', data_efectes: mesSeguent(dema), retribucions: '60000',
+      cotitzacions: '0', retribucions_satisfetes: '5000', retencions_practicades: '218.50', data_coneixement: dema });
+    comprova(b3.status === 400 && b3.cos.error === 'Cal la data (no futura) en què el pagador coneix la variació',
+      'Previsualitzar amb una data de coneixement futura → 400, amb el mateix criteri que la base');
+  } else {
+    comprova(true, 'Desembre: el mes següent és d\'un altre exercici; comprovació omesa (la cobreix calcul.test.mjs)');
+  }
 } catch (e) {
   comprova(false, `Error inesperat: ${e.message}`);
   console.error(e);
