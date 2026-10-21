@@ -18,16 +18,16 @@ import {
 } from './pdf.ts';
 
 // Variant clara per a vores i detalls
-const VERD_CLAR = rgb(0x4d / 255, 0xb6 / 255, 0xb7 / 255);
+export const VERD_CLAR = rgb(0x4d / 255, 0xb6 / 255, 0xb7 / 255);
 
-const MIDA = 12;        // cos (català)
-const MIDA_EN = 9;      // anglès
+export const MIDA = 12;        // cos (català)
+export const MIDA_EN = 9;      // anglès
 const MIDA_ETQ = 11;    // etiquetes
 const MIDA_ETQ_EN = 8;
 const MIDA_VALOR = 11.5;
 const BAIX = 58;        // per sota d'aquí hi va el peu
 
-type Bi = { ca: string; en: string };
+export type Bi = { ca: string; en: string };
 type Json = Record<string, any>;
 
 export type Adjunt = {
@@ -130,7 +130,7 @@ const esPng = (b: Uint8Array) => b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e
 // d'una línia és la suma de les paraules i els espais (pdf-lib ja la calcula
 // així, sense interlletratge), i el text codificat d'una paraula és sempre el
 // mateix. Només per als documents d'aquest fitxer.
-const accelera = (font: PDFFont) => {
+export const accelera = (font: PDFFont) => {
   const amples = new Map<string, number>();
   const codis = new Map<string, ReturnType<PDFFont['encodeText']>>();
   const ampleOriginal = font.widthOfTextAtSize.bind(font);
@@ -155,7 +155,15 @@ const accelera = (font: PDFFont) => {
 };
 
 // ─── Maquetació amb salts de pàgina ─────────────────────────────────────────
-class Maqueta {
+// Capçalera i peu propis d'un document (p. ex. la comunicació IRPF, amb les
+// dades del pagador en lloc del logotip). Sense disseny, els de pdf.ts.
+export type Disseny = {
+  capcalera: (page: PDFPage, f: Fonts) => number;  // retorna la y on comença el contingut
+  peu: (page: PDFPage, f: Fonts, num: number, total: number) => void;
+  baix: number;                                    // per sota d'aquí hi va el peu
+};
+
+export class Maqueta {
   pages: PDFPage[] = [];
   page!: PDFPage;
   y = 0;
@@ -163,11 +171,16 @@ class Maqueta {
   // element que la segueix, a la mateixa pàgina (mai sola al peu)
   private barraPendent: { ca: string; en: string; cap: boolean } | null = null;
 
-  constructor(public pdf: PDFDocument, public f: Fonts, public logo: PDFImage, public titol: Bi) {}
+  constructor(public pdf: PDFDocument, public f: Fonts, public logo: PDFImage | null, public titol: Bi, public disseny?: Disseny) {}
 
   nova() {
     this.page = this.pdf.addPage([AMPLE, ALT]);
-    capcalera(this.page, this.f, this.logo, this.titol);
+    if (this.disseny) {
+      this.pages.push(this.page);
+      this.y = this.disseny.capcalera(this.page, this.f);
+      return;
+    }
+    capcalera(this.page, this.f, this.logo!, this.titol);
     this.pages.push(this.page);
     this.y = ALT - 100;
   }
@@ -177,7 +190,7 @@ class Maqueta {
   cal(h: number) {
     const b = this.barraPendent;
     const hBarra = b ? 8 + (b.cap ? 20 : 33) + 6 : 0;
-    if (this.y - h - hBarra < BAIX) this.nova();
+    if (this.y - h - hBarra < (this.disseny?.baix ?? BAIX)) this.nova();
     if (b) {
       this.barraPendent = null;
       this.dibuixaBarra(b);
@@ -463,7 +476,8 @@ class Maqueta {
   tanca() {
     if (this.barraPendent) this.cal(0);
     const total = this.pages.length;
-    this.pages.forEach((p, i) => peu(p, this.f, i + 1, total));
+    const dibuixaPeu = this.disseny?.peu ?? peu;
+    this.pages.forEach((p, i) => dibuixaPeu(p, this.f, i + 1, total));
   }
 }
 

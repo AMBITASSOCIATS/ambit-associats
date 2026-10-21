@@ -6,9 +6,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import ModalMissatge from '../auth/ModalMissatge';
 import {
-  ENTITATS, ESTATS, TIPUS_DOCUMENT, dataCurta, dataHora, esKyc, ibanEmmascarat, invoca, missatgeEnllac, portal, urlDocument,
+  ENTITATS, ESTATS, TIPUS_DOCUMENT, dataCurta, dataHora, esIrpf, esKyc, ibanEmmascarat, invoca, missatgeEnllac, portal, urlDocument,
 } from './portalApi';
 import DetallKyc from './DetallKyc';
+import DetallIrpf from './DetallIrpf';
 import { Avis, Boto, Dada, Entrada, EtiquetaEstat, Selector, Targeta } from './ui';
 
 const avui = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' }); // AAAA-MM-DD
@@ -303,10 +304,14 @@ const ObreSolicitud = ({ id, tipus, onObre, rol }) => {
   }, [id, tipus, onObre]);
   if (!t) return <p className="text-sm text-gray-400">Carregant...</p>;
   if (esKyc(t)) return <DetallKyc key={id} id={id} onTorna={(nou) => onObre(nou || null)} rol={rol} />;
+  if (esIrpf(t)) return <DetallIrpf key={id} id={id} onTorna={(nou) => onObre(nou || null)} rol={rol} />;
   return <Detall id={id} onTorna={() => onObre(null)} rol={rol} />;
 };
 
 // ─── Llista ─────────────────────────────────────────────────────────────────
+// Nom del perceptor d'una comunicació IRPF (l'embedding retorna una llista)
+const perceptor = (s) => (Array.isArray(s.irpf_comunicacions) ? s.irpf_comunicacions[0] : s.irpf_comunicacions)?.irpf_perceptors?.nom;
+
 const Solicituds = ({ oberta, onObre, rol }) => {
   const [llista, setLlista] = useState([]);
   const [carregant, setCarregant] = useState(true);
@@ -319,7 +324,7 @@ const Solicituds = ({ oberta, onObre, rol }) => {
     if (oberta) return;
     setCarregant(true);
     portal.from('requests')
-      .select('id, status, document_type, created_at, enviat_at, signat_at, clients(nom_mostrat, referencia_client, party_type)')
+      .select('id, status, document_type, created_at, enviat_at, signat_at, clients(nom_mostrat, referencia_client, party_type), irpf_comunicacions(irpf_perceptors(nom))')
       .neq('document_type', 'pdp')
       .order('created_at', { ascending: false })
       .then(({ data }) => { setLlista(data || []); setCarregant(false); });
@@ -333,10 +338,12 @@ const Solicituds = ({ oberta, onObre, rol }) => {
   const filtrades = llista.filter((s) => {
     if (filtreTipus === 'kyc' && !esKyc(s.document_type)) return false;
     if (filtreTipus === 'autoritzacio_carrec' && s.document_type !== 'autoritzacio_carrec') return false;
+    if (filtreTipus === 'irpf' && !esIrpf(s.document_type)) return false;
     if (filtre !== 'totes' && s.status !== filtre) return false;
     if (!cerca) return true;
     const q = cerca.toLowerCase();
-    return s.clients.nom_mostrat.toLowerCase().includes(q) || (s.clients.referencia_client || '').toLowerCase().includes(q);
+    return s.clients.nom_mostrat.toLowerCase().includes(q) || (s.clients.referencia_client || '').toLowerCase().includes(q)
+      || (perceptor(s) || '').toLowerCase().includes(q);
   });
   const recompte = (e) => llista.filter((s) => s.status === e).length;
 
@@ -350,6 +357,7 @@ const Solicituds = ({ oberta, onObre, rol }) => {
             <option value="tots">Tots els documents</option>
             <option value="autoritzacio_carrec">Autoritzacions de càrrec</option>
             <option value="kyc">KYC i protecció de dades</option>
+            <option value="irpf">Comunicacions IRPF</option>
           </Selector>
           <Selector value={filtre} onChange={(e) => setFiltre(e.target.value)}>
             <option value="totes">Tots els estats ({llista.length})</option>
@@ -371,7 +379,7 @@ const Solicituds = ({ oberta, onObre, rol }) => {
               <div className="flex-1 min-w-[200px]">
                 <p className="text-sm font-semibold text-gray-800">{s.clients.nom_mostrat}</p>
                 <p className="text-xs text-gray-400">
-                  {TIPUS_DOCUMENT[s.document_type]} · <span className="font-mono">{s.clients.referencia_client || 'sense referència'}</span> · creada {dataCurta(s.created_at)}
+                  {TIPUS_DOCUMENT[s.document_type]}{perceptor(s) && ` · perceptor: ${perceptor(s)}`} · <span className="font-mono">{s.clients.referencia_client || 'sense referència'}</span> · creada {dataCurta(s.created_at)}
                   {s.signat_at && ` · signada ${dataCurta(s.signat_at)}`}
                 </p>
               </div>
