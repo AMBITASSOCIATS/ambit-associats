@@ -427,6 +427,14 @@ static_files = ["./functions/_shared/assets/*"]
 verify_jwt = true
 static_files = ["./functions/_shared/assets/*"]
 
+# Contractes: el signant no té sessió (només el token de l'enllaç)
+[functions.portal-contracte]
+verify_jwt = false
+
+[functions.portal-contracte-personal]
+verify_jwt = true
+static_files = ["./functions/_shared/assets/*"]
+
 [analytics]
 enabled = true
 port = 54327

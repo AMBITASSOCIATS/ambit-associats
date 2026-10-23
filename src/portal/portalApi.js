@@ -2,6 +2,7 @@
 // Accés a l'esquema portal i a les Edge Functions del portal de signatura.
 import { supabase } from '../supabaseClient';
 import TK from './kyc/text-kyc.json';
+import TC from './contracte/text-contracte.json';
 
 export const portal = supabase.schema('portal');
 
@@ -30,6 +31,8 @@ export const ESTATS = {
   esborrany: { nom: 'Esborrany', color: 'bg-gray-100 text-gray-700 border-gray-200' },
   enviat:    { nom: 'Enviat',    color: 'bg-blue-100 text-blue-700 border-blue-200' },
   en_curs:   { nom: 'En curs',   color: 'bg-amber-100 text-amber-700 border-amber-200' },
+  parcialment_signat: { nom: 'Parcialment signat', color: 'bg-amber-100 text-amber-700 border-amber-200' },
+  pendent_ambit: { nom: 'Pendent de signatura d\'ÀMBIT', color: 'bg-orange-100 text-orange-700 border-orange-200' },
   signat:    { nom: 'Signat',    color: 'bg-teal-100 text-teal-700 border-teal-200' },
   actiu:     { nom: 'Actiu',     color: 'bg-green-100 text-green-700 border-green-200' },
   retirat:   { nom: 'Retirat',   color: 'bg-purple-100 text-purple-700 border-purple-200' },
@@ -43,9 +46,11 @@ export const TIPUS_DOCUMENT = {
   kyc_pj: 'KYC i protecció de dades · persona jurídica',
   pdp: 'Protecció de dades',
   irpf_comunicacio: 'Comunicació de dades al pagador (IRPF)',
+  contracte: 'Contracte',
 };
 export const esKyc = (t) => t === 'kyc_pf' || t === 'kyc_pj';
 export const esIrpf = (t) => t === 'irpf_comunicacio';
+export const esContracte = (t) => t === 'contracte';
 
 // Noms d'estat propis del KYC: signat = pendent de validació de l'OCIC; actiu = validat
 export const nomEstat = (estat, tipus) => {
@@ -157,5 +162,24 @@ export const missatgeEnllacIrpf = ({ nom, perceptor, pagador, enllac, expira, de
         `${enllac}\n\n` +
         `This link is personal, can only be used once and expires on ${data}. Your answers are saved automatically: you can continue later with the same link.\n\n` +
         `${contacteEn}\n\nKind regards,\n\nÀMBIT Associats`,
+  };
+};
+
+// ─── Correu amb l'enllaç d'un signant del contracte (text literal) ──────────
+// idioma 'ca': només català; 'ca_en': català i, a sota, anglès
+export const missatgeEnllacContracte = ({ nom, titol, enllac, expira, idioma, email }) => {
+  const data = new Date(expira).toLocaleDateString('ca-AD', {
+    timeZone: 'Europe/Andorra', day: '2-digit', month: '2-digit', year: 'numeric',
+  });
+  const omple = (t) => t.split('{nom}').join(nom).split('{títol}').join(titol).split('{enllaç}').join(enllac).split('{data}').join(data);
+  const ca = TC.correu.ca;
+  const en = TC.correu.en;
+  const bilingue = idioma === 'ca_en';
+  return {
+    titol: 'Enllaç per signar el contracte',
+    ajuda: 'Envia aquest missatge al signant des del teu correu. L\'enllaç és personal: no el comparteixis amb ningú més.',
+    email: email || '',
+    assumpte: bilingue ? `${ca.assumpte} / ${en.assumpte}` : ca.assumpte,
+    cos: bilingue ? `${omple(ca.cos)}\n\n${omple(en.cos)}` : omple(ca.cos),
   };
 };

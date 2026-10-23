@@ -53,7 +53,8 @@ Deno.serve(async (req) => {
     return resposta(200, { ok: true, enllac: `${BASE}/irpf/${token}`, expira_at: expira.toISOString(), destinatari: 'recepcio' });
   }
 
-  if (!['esborrany', 'enviat', 'en_curs'].includes(sol.status) || sol.document_type === 'pdp') {
+  // Els contractes tenen un enllaç per signant (portal-contracte-personal)
+  if (!['esborrany', 'enviat', 'en_curs'].includes(sol.status) || sol.document_type === 'pdp' || sol.document_type === 'contracte') {
     return resposta(409, { error: 'Aquesta sol·licitud ja no admet cap enllaç nou' });
   }
   const kyc = sol.document_type === 'kyc_pf' || sol.document_type === 'kyc_pj';

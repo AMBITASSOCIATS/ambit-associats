@@ -1,0 +1,126 @@
+{
+  "versio": "CONTRACTE v1",
+  "clausula": {
+    "titol": {
+      "ca": "Clàusula addicional. Signatura electrònica",
+      "en": "Additional clause. Electronic signature"
+    },
+    "punts": [
+      {
+        "ca": "Les parts acorden signar aquest contracte mitjançant el sistema de signatura electrònica del portal de signatura de DEL SOTO – PALEARI & ASSOCIATS, SL, que consisteix en la signatura manuscrita feta per cada signant en pantalla, vinculada al document per mitjà de l'empremta digital SHA-256 del contracte i acompanyada d'un full d'evidències amb la data i l'hora de cada signatura, l'adreça IP i el navegador utilitzats.",
+        "en": "The parties agree to sign this agreement using the electronic signature system of the signing portal of DEL SOTO – PALEARI & ASSOCIATS, SL, consisting of each signatory's handwritten signature made on screen, linked to the document by the SHA-256 digital fingerprint of the agreement and accompanied by an evidence sheet stating the date and time of each signature and the IP address and browser used."
+      },
+      {
+        "ca": "Abans de signar, cada signant ha acceptat expressament al portal les condicions d'aquest sistema. D'acord amb l'article 5.4 de la Llei 35/2014, del 27 de novembre, les parts el reconeixen com a mitjà vàlid per manifestar el seu consentiment i atribueixen a la signatura així feta plena eficàcia entre elles.",
+        "en": "Before signing, each signatory expressly accepted the conditions of this system on the portal. In accordance with Article 5.4 of Andorran Law 35/2014, of 27 November, the parties recognise it as a valid means of expressing their consent and give the signature so made full effect between them."
+      },
+      {
+        "ca": "El contracte signat és un document electrònic als efectes de l'article 22 de la mateixa Llei. Qualsevol modificació posterior seria detectable comparant-ne l'empremta digital amb la que consta al full d'evidències.",
+        "en": "The signed agreement is an electronic document for the purposes of Article 22 of that Law. Any subsequent alteration would be detectable by comparing its digital fingerprint with the one recorded on the evidence sheet."
+      },
+      {
+        "ca": "Cada part rep una còpia electrònica del contracte signat per totes les parts.",
+        "en": "Each party receives an electronic copy of the agreement signed by all parties."
+      }
+    ]
+  },
+  "casella_lectura": {
+    "ca": "He llegit el contracte complet.",
+    "en": "I have read the full agreement."
+  },
+  "casella_acceptacio": {
+    "ca": "Accepto signar electrònicament aquest contracte mitjançant el portal de signatura de DEL SOTO – PALEARI & ASSOCIATS, SL, en les condicions descrites a la clàusula addicional de signatura electrònica, i reconec a aquesta signatura plena eficàcia entre les parts.",
+    "en": "I agree to sign this agreement electronically through the signing portal of DEL SOTO – PALEARI & ASSOCIATS, SL, under the conditions described in the additional electronic signature clause, and I recognise this signature as fully effective between the parties."
+  },
+  "lloc_exemple": "p. ex. Andorra la Vella",
+  "ambit": {
+    "nom": "Martín Paleari · Administrador solidari",
+    "societat": "DEL SOTO – PALEARI & ASSOCIATS, SL"
+  },
+  "correu": {
+    "ca": {
+      "assumpte": "Contracte per signar · ÀMBIT Associats",
+      "cos": "Benvolgut/da {nom},\n\nUs fem arribar el contracte {títol} perquè el pugueu llegir i signar electrònicament a través de l'enllaç següent:\n\n{enllaç}\n\nL'enllaç és personal i d'un sol ús, i caduca el {data}.\n\nPer a qualsevol dubte, podeu contactar amb nosaltres a info@ambit.ad o al +376 655 382.\n\nAtentament,\n\nÀMBIT Associats"
+    },
+    "en": {
+      "assumpte": "Agreement for signature · ÀMBIT Associats",
+      "cos": "Dear {nom},\n\nPlease find the agreement {títol} for you to read and sign electronically using the following link:\n\n{enllaç}\n\nThis link is personal, can only be used once and expires on {data}.\n\nIf you have any questions, please contact us at info@ambit.ad or on +376 655 382.\n\nKind regards,\n\nÀMBIT Associats"
+    }
+  },
+  "avis": {
+    "_subject": "Nou contracte signat al portal",
+    "message": "S'ha signat un contracte al portal de signatura d'ÀMBIT Associats. Podeu consultar-lo a https://www.ambit.ad/portal"
+  },
+  "pdf": {
+    "capcalera": { "ca": "SIGNATURA ELECTRÒNICA DEL CONTRACTE", "en": "Electronic signature of the agreement" },
+    "contracte": { "ca": "Contracte", "en": "Agreement" },
+    "signatures": { "ca": "Signatures", "en": "Signatures" },
+    "signant": { "ca": "Signant", "en": "Signatory" },
+    "nom": { "ca": "Nom i cognoms", "en": "Full name" },
+    "qualitat": { "ca": "En qualitat de", "en": "Capacity" },
+    "lloc": { "ca": "Lloc", "en": "Place" },
+    "data": { "ca": "Data", "en": "Date" },
+    "signatura": { "ca": "Signatura", "en": "Signature" },
+    "per_ambit": { "ca": "Per DEL SOTO – PALEARI & ASSOCIATS, SL", "en": "For DEL SOTO – PALEARI & ASSOCIATS, SL" },
+    "en_nom_de": { "ca": "En nom de DEL SOTO – PALEARI & ASSOCIATS, SL", "en": "On behalf of DEL SOTO – PALEARI & ASSOCIATS, SL" },
+    "signat_portal": { "ca": "Signat electrònicament al portal de signatura d’ÀMBIT Associats", "en": "Signed electronically through the ÀMBIT Associats signing portal" },
+    "evidencies": { "ca": "Full d’evidències de la signatura", "en": "Signature evidence sheet" },
+    "e_titol": { "ca": "Títol del contracte", "en": "Agreement title" },
+    "e_fitxer": { "ca": "Fitxer original", "en": "Original file name" },
+    "e_pagines": { "ca": "Pàgines del PDF original", "en": "Pages of the original PDF" },
+    "e_sha_original": { "ca": "Empremta del PDF original (SHA-256)", "en": "Original PDF fingerprint (SHA-256)" },
+    "e_referencia": { "ca": "Referència de la sol·licitud", "en": "Request reference" },
+    "e_client": { "ca": "Client", "en": "Client" },
+    "e_signant": { "ca": "Signant", "en": "Signatory" },
+    "e_acceptacio": { "ca": "Acceptació prèvia de la signatura electrònica", "en": "Prior acceptance of the electronic signature" },
+    "e_signatura": { "ca": "Data i hora de la signatura", "en": "Date and time of signature" },
+    "e_ip": { "ca": "Adreça IP", "en": "IP address" },
+    "e_navegador": { "ca": "Navegador", "en": "Browser" },
+    "e_sha_firma": { "ca": "Empremta de la imatge de la signatura (SHA-256)", "en": "Signature image fingerprint (SHA-256)" },
+    "e_sha_dades": { "ca": "Empremta de les dades (SHA-256)", "en": "Data fingerprint (SHA-256)" },
+    "e_ambit": { "ca": "Signatura d’ÀMBIT", "en": "ÀMBIT signature" },
+    "e_ambit_data": { "ca": "Data i hora de la signatura", "en": "Date and time of signature" },
+    "e_versio": { "ca": "Versió de les pàgines afegides", "en": "Version of the added pages" },
+    "no_disponible": { "ca": "No disponible", "en": "Not available" },
+    "nota": {
+      "ca": "Les pàgines de la 1 a la {pagines} d’aquest PDF són el PDF original del contracte, sense cap modificació: els primers {bytes} bytes d’aquest fitxer són exactament el fitxer original i tenen l’empremta SHA-256 indicada més amunt. Les pàgines de la clàusula addicional, de les signatures i d’aquest full s’hi han afegit a continuació. L’empremta d’aquest PDF final queda registrada a ÀMBIT Associats en el moment de la signatura d’ÀMBIT.",
+      "en": "Pages 1 to {pagines} of this PDF are the original PDF of the agreement, without any modification: the first {bytes} bytes of this file are exactly the original file and have the SHA-256 fingerprint shown above. The pages of the additional clause, the signatures and this sheet have been added after them. The fingerprint of this final PDF is recorded by ÀMBIT Associats at the time of ÀMBIT’s signature."
+    }
+  },
+  "pantalla": {
+    "titol": { "ca": "Signatura del contracte", "en": "Agreement signature" },
+    "carregant": { "ca": "Carregant…", "en": "Loading…" },
+    "invalid": { "ca": "Enllaç no vàlid o caducat", "en": "Invalid or expired link" },
+    "invalid_ajuda": { "ca": "Si necessiteu un enllaç nou, contacteu amb ÀMBIT Associats a info@ambit.ad o al +376 655 382.", "en": "If you need a new link, please contact ÀMBIT Associats at info@ambit.ad or on +376 655 382." },
+    "salutacio": { "ca": "Benvolgut/da {nom}", "en": "Dear {nom}" },
+    "intro": { "ca": "Llegiu el contracte complet. A continuació se’n mostren totes les pàgines.", "en": "Please read the full agreement. All of its pages are shown below." },
+    "pas_contracte": { "ca": "1. Contracte", "en": "1. Agreement" },
+    "pas_clausula": { "ca": "2. Signatura electrònica", "en": "2. Electronic signature" },
+    "pas_signatura": { "ca": "3. Signatura", "en": "3. Signature" },
+    "pagina": { "ca": "Pàgina {n} de {total}", "en": "Page {n} of {total}" },
+    "carregant_contracte": { "ca": "Carregant el contracte…", "en": "Loading the agreement…" },
+    "error_visor": { "ca": "No s’ha pogut mostrar el contracte. Torneu-ho a provar.", "en": "The agreement could not be displayed. Please try again." },
+    "clausula_intro": { "ca": "Aquesta clàusula s’afegeix al final del contracte. Llegiu-la i, si hi esteu d’acord, accepteu la signatura electrònica.", "en": "This clause is added at the end of the agreement. Please read it and, if you agree, accept the electronic signature." },
+    "continuar": { "ca": "Continuar", "en": "Continue" },
+    "tornar": { "ca": "Tornar", "en": "Back" },
+    "acceptat": { "ca": "Acceptació registrada el {data} a les {hora}.", "en": "Acceptance recorded on {data} at {hora}." },
+    "signant": { "ca": "Signant", "en": "Signatory" },
+    "nom": { "ca": "Nom i cognoms", "en": "Full name" },
+    "qualitat": { "ca": "En qualitat de", "en": "Capacity" },
+    "lloc": { "ca": "Lloc", "en": "Place" },
+    "signatura": { "ca": "Signatura", "en": "Signature" },
+    "signeu_aqui": { "ca": "Si us plau, signeu aquí", "en": "Please sign here" },
+    "esborrar_firma": { "ca": "Esborrar la signatura", "en": "Clear signature" },
+    "signar": { "ca": "Signar el contracte", "en": "Sign the agreement" },
+    "signant_ara": { "ca": "Signant…", "en": "Signing…" },
+    "falta_lloc": { "ca": "Indiqueu el lloc.", "en": "Please enter the place." },
+    "falta_firma": { "ca": "Falta la signatura.", "en": "The signature is missing." },
+    "fet_titol": { "ca": "Contracte signat", "en": "Agreement signed" },
+    "fet_text": { "ca": "Hem registrat la vostra signatura. Quan hagin signat totes les parts, ÀMBIT Associats us farà arribar una còpia electrònica del contracte signat.", "en": "Your signature has been recorded. Once all parties have signed, ÀMBIT Associats will send you an electronic copy of the signed agreement." },
+    "error": { "ca": "No s’ha pogut completar l’operació. Torneu-ho a provar.", "en": "The operation could not be completed. Please try again." },
+    "error_connexio": { "ca": "No s’ha pogut connectar. Torneu-ho a provar.", "en": "Could not connect. Please try again." },
+    "massa_intents": { "ca": "Massa intents. Torneu-ho a provar d’aquí a uns minuts.", "en": "Too many attempts. Please try again in a few minutes." },
+    "dades_canviades": { "ca": "Les dades han canviat mentre se signava. Torneu a carregar la pàgina.", "en": "The data changed while signing. Please reload the page." },
+    "caduca": { "ca": "L’enllaç caduca el {data}.", "en": "The link expires on {data}." }
+  }
+}

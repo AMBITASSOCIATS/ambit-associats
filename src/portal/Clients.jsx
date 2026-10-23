@@ -1,11 +1,12 @@
 // src/portal/Clients.jsx
 // Clients del portal: llista, cerca, alta, referència (ABA-01, màx. 14 caràcters),
 // creació de sol·licituds (autorització de càrrec, KYC i protecció de dades,
-// comunicació de dades al pagador IRPF), fi de la relació (només OCIC) i
+// comunicació de dades al pagador IRPF, contracte), fi de la relació (només OCIC) i
 // consentiment de comunicacions comercials.
 import React, { useEffect, useState } from 'react';
 import { portal, VERSIO_PLANTILLA, dataCurta, invoca } from './portalApi';
 import { Avis, Boto, Entrada, Selector, Targeta } from './ui';
+import NouContracte from './contracte/NouContracte';
 
 const Referencia = ({ client, onDesat }) => {
   const [valor, setValor] = useState(client.referencia_client || '');
@@ -217,6 +218,7 @@ const Clients = ({ onObreSolicitud, rol }) => {
   };
 
   const [triaIrpf, setTriaIrpf] = useState(null);  // client per al qual es crea una comunicació IRPF
+  const [triaContracte, setTriaContracte] = useState(null);  // client per al qual es crea un contracte
 
   const filtrats = clients.filter((c) => {
     if (!cerca) return true;
@@ -274,6 +276,8 @@ const Clients = ({ onObreSolicitud, rol }) => {
                 )}
                 {triaIrpf !== c.id && <Boto variant="secundari" onClick={() => setTriaIrpf(c.id)}>+ Comunicació IRPF</Boto>}
                 {triaIrpf === c.id && <NovaIrpf client={c} onCancel={() => setTriaIrpf(null)} onCreada={(id) => { setTriaIrpf(null); onObreSolicitud(id); }} />}
+                {triaContracte !== c.id && <Boto variant="secundari" onClick={() => setTriaContracte(c.id)}>+ Contracte</Boto>}
+                {triaContracte === c.id && <NouContracte client={c} onCancel={() => setTriaContracte(null)} onCreat={(id) => { setTriaContracte(null); onObreSolicitud(id); }} />}
                 <RelacioIConsentiment client={c} rol={rol} onDesat={carrega} />
               </div>
             ))}

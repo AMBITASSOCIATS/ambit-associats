@@ -9,12 +9,13 @@ import reportWebVitals from './reportWebVitals';
 // Portal de signatura: /portal (personal d'ÀMBIT), /signar/<token> (autorització
 // de càrrec), /kyc/<token> (KYC i protecció de dades), per al client, i
 // /irpf/<token> (comunicació de dades al pagador), per al perceptor i el
-// representant del pagador.
+// representant del pagador, i /contracte/<token>, per a cada signant d'un contracte.
 // Es carreguen a part perquè no pesin a la web.
 const PortalApp = lazy(() => import('./portal/PortalApp'));
 const PaginaSignar = lazy(() => import('./portal/signar/PaginaSignar'));
 const PaginaKyc = lazy(() => import('./portal/kyc/PaginaKyc'));
 const PaginaIrpf = lazy(() => import('./portal/irpf/PaginaIrpf'));
+const PaginaContracte = lazy(() => import('./portal/contracte/PaginaContracte'));
 
 const ruta = window.location.pathname;
 const contingut = ruta === '/portal' || ruta.startsWith('/portal/')
@@ -25,7 +26,9 @@ const contingut = ruta === '/portal' || ruta.startsWith('/portal/')
       ? <PaginaKyc />
       : ruta.startsWith('/irpf/')
         ? <PaginaIrpf />
-        : <AuthProvider><App /></AuthProvider>;
+        : ruta.startsWith('/contracte/')
+          ? <PaginaContracte />
+          : <AuthProvider><App /></AuthProvider>;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
