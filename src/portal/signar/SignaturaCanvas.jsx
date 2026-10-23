@@ -1,9 +1,12 @@
 // src/portal/signar/SignaturaCanvas.jsx
 // Requadre per signar amb el dit, el llapis o el ratolí (funciona al mòbil).
-// Exporta la firma en PNG amb fons transparent.
+// Exporta la firma en PNG amb fons transparent. Els textos es poden canviar
+// (p. ex. el contracte en català, sense anglès); per defecte, català i anglès.
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
-const SignaturaCanvas = forwardRef(({ onCanvi, etiqueta }, ref) => {
+const TEXTOS = { signeu: 'Si us plau, signeu aquí / Please sign here', esborrar: 'Esborrar la firma / Clear signature' };
+
+const SignaturaCanvas = forwardRef(({ onCanvi, etiqueta, textos = TEXTOS }, ref) => {
   const canvas = useRef(null);
   const dibuixant = useRef(false);
   const ultim = useRef(null);
@@ -93,12 +96,12 @@ const SignaturaCanvas = forwardRef(({ onCanvi, etiqueta }, ref) => {
         />
         {buida && (
           <span className="pointer-events-none absolute bottom-2 right-3 text-[11px] italic text-[#009B9C]">
-            Si us plau, signeu aquí / Please sign here
+            {textos.signeu}
           </span>
         )}
       </div>
       <button type="button" onClick={prepara} className="mt-1 text-xs text-gray-500 hover:text-gray-700 underline">
-        Esborrar la firma / Clear signature
+        {textos.esborrar}
       </button>
     </div>
   );

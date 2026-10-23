@@ -4,7 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { dataHora, invoca, portal } from './portalApi';
 import { Boto, Entrada, Selector, Targeta } from './ui';
 
-const ENTITATS = ['clients', 'requests', 'autoritzacions_carrec', 'access_tokens', 'signatures', 'documents', 'staff_profiles', 'remesa', 'retencions', 'config_conservacio'];
+const ENTITATS = ['clients', 'requests', 'autoritzacions_carrec', 'access_tokens', 'signatures', 'documents', 'staff_profiles', 'remesa', 'retencions', 'config_conservacio',
+  'contractes', 'contracte_originals', 'contracte_signants', 'contracte_contrafirmes', 'firmes_ambit'];
 const ACCIONS = ['INSERT', 'UPDATE', 'DELETE', 'EXPORT', 'ACCES_REQUERIMENT', 'DESTRUCCIO'];
 const PAGINA = 100;
 

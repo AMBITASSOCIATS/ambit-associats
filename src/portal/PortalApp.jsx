@@ -122,7 +122,7 @@ const PortalApp = () => {
           <div>
             <h1 className="text-xl font-bold">Portal de signatura</h1>
             <p className="text-white/70 text-xs mt-0.5">
-              Autoritzacions de càrrec · KYC i protecció de dades · Comunicacions IRPF · {user.email} · {rol === 'ocic' ? 'OCIC' : 'Gestor'}
+              Autoritzacions de càrrec · KYC i protecció de dades · Comunicacions IRPF · Contractes · {user.email} · {rol === 'ocic' ? 'OCIC' : 'Gestor'}
             </p>
           </div>
           <button onClick={logout}
