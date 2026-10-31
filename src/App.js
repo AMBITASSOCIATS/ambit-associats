@@ -1072,8 +1072,8 @@ const App = () => {
 
   // ── En obrir un article, un servei o un perfil, començar per dalt ────────
   useEffect(() => {
-    if (currentBlogPost || currentService || currentMembre) window.scrollTo(0, 0);
-  }, [currentBlogPost, currentService, currentMembre]);
+    if (currentBlogPost || currentService || currentMembre || showIrpf || showCalendari || showPdfMd) window.scrollTo(0, 0);
+  }, [currentBlogPost, currentService, currentMembre, showIrpf, showCalendari, showPdfMd]);
 
   // ── Historial navegador: gestionar fletxa enrere ─────────────────────────
   useEffect(() => {
@@ -1132,14 +1132,19 @@ const App = () => {
   const services = mainServices[language];
   const details = serviceDetails[language];
 
+  // Eina pública oberta: es mostra dins la capçalera i el peu de la web
+  const tornaEines = () => anarA("eines");
+  const eina = showIrpf ? <IrpfCalculadora onBack={tornaEines} />
+    : showCalendari ? <CalendariLaboral onBack={tornaEines} language={language} />
+    : showPdfMd ? <PdfATextMd onBack={tornaEines} language={language} />
+    : null;
+  const vistaInterior = Boolean(currentService || currentBlogPost || currentMembre || eina);
+
   const handleLanguageChange = (langCode) => {
     setLanguage(langCode);
     setCurrentService(null);
     setCurrentBlogPost(null);
-    setShowIrpf(false);
     setShowEinaFiscal(false);
-    setShowCalendari(false);
-    setShowPdfMd(false);
     setMenuOpen(false);
     setServicesDropdown(false);
   };
@@ -1148,10 +1153,18 @@ const App = () => {
     setCurrentService(id);
   };
 
-  const tornaInici = () => {
+  // Tanca les pàgines interiors (servei, article, perfil i eines) i torna a la portada
+  const tancaInteriors = () => {
     setCurrentService(null);
     setCurrentBlogPost(null);
     setCurrentMembre(null);
+    setShowIrpf(false);
+    setShowCalendari(false);
+    setShowPdfMd(false);
+  };
+
+  const tornaInici = () => {
+    tancaInteriors();
     setMenuOpen(false);
     window.scrollTo(0, 0);
   };
@@ -1190,27 +1203,13 @@ const App = () => {
     setMenuOpen(false);
     setServicesDropdown(false);
     const desplaca = () => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    if (currentService || currentBlogPost || currentMembre) {
-      setCurrentService(null);
-      setCurrentBlogPost(null);
-      setCurrentMembre(null);
+    if (vistaInterior) {
+      tancaInteriors();
       setTimeout(desplaca, 50);
     } else {
       desplaca();
     }
   };
-
-  if (showIrpf) {
-    return <IrpfCalculadora onBack={() => setShowIrpf(false)} />;
-  }
-
-  if (showCalendari) {
-    return <CalendariLaboral onBack={() => setShowCalendari(false)} language={language} />;
-  }
-
-  if (showPdfMd) {
-    return <PdfATextMd onBack={() => setShowPdfMd(false)} language={language} />;
-  }
 
   if (showEinaFiscal) {
     return (
@@ -1224,8 +1223,8 @@ const App = () => {
   return (
     <div className="bg-white text-gray-800 min-h-screen flex flex-col font-text">
       {/* Franja de la vall: capçalera i, a la portada, el hero */}
-      <div className="relative isolate overflow-hidden bg-[#007A7B] text-white">
-        <Topo etiquetes={!currentService && !currentBlogPost && !currentMembre} />
+      <div className="relative isolate overflow-hidden bg-[#007A7B] text-white print:hidden">
+        <Topo etiquetes={!vistaInterior} />
         <header className="max-w-6xl mx-auto px-5 md:px-10">
           {/* Línia d'utilitats: idiomes, accés del personal i Zona Professionals */}
           <div className="hidden lg:flex justify-end items-center gap-5 pt-3 text-[13px] text-[#BFE4E4]">
@@ -1345,7 +1344,7 @@ const App = () => {
           )}
         </header>
 
-        {!currentService && !currentBlogPost && !currentMembre && (
+        {!vistaInterior && (
           <section>
             <div className="max-w-6xl mx-auto px-5 md:px-10 pt-9 pb-10 md:pt-20 md:pb-14 grid gap-6 md:grid-cols-[1fr_auto] md:items-end md:gap-10">
               <div className="grid gap-6">
@@ -1429,7 +1428,7 @@ const App = () => {
         <Serralada />
       </div>
 
-      {!currentService && !currentBlogPost && !currentMembre ? (
+      {!vistaInterior ? (
         <>
 
 {/* Serveis */}
@@ -1762,6 +1761,8 @@ const App = () => {
             <Serralada fons="#F4F8F7" id="serralada-contacte" />
           </section>
         </>
+      ) : eina ? (
+        <main className="flex-1 bg-white">{eina}</main>
       ) : currentMembre ? (
         /* Pàgina de perfil d'un membre de l'equip */
         (() => {
@@ -2044,7 +2045,7 @@ const App = () => {
   </div>
 )}
       {/* Peu: logotip en color, notes legals i accés del personal */}
-      <footer id="legal" className="bg-[#F4F8F7] border-t border-[#D6E4E2]">
+      <footer id="legal" className="bg-[#F4F8F7] border-t border-[#D6E4E2] print:hidden">
         <div className="max-w-6xl mx-auto px-5 md:px-10 py-7 md:py-8 grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-center md:gap-7 text-sm text-[#4E6765]">
           <img src="/logo-color.png" alt="ÀMBIT Associats" width="624" height="234" className="block w-[116px] h-auto" />
           <p>{t.footer}</p>
