@@ -932,6 +932,11 @@ const App = () => {
     }
   }, [showEinaFiscal, showIrpf, showCalendari, showPdfMd, currentBlogPost, currentService]);
 
+  // ── En obrir un article del blog, començar per dalt ──────────────────────
+  useEffect(() => {
+    if (currentBlogPost) window.scrollTo(0, 0);
+  }, [currentBlogPost]);
+
   // ── Historial navegador: gestionar fletxa enrere ─────────────────────────
   useEffect(() => {
     const handlePopState = (e) => {
@@ -1464,7 +1469,7 @@ const App = () => {
                     {language === "fr" && "Estimez votre impôt IRPF en moins d'une minute. Mise à jour avec la Loi 5/2014, L2023005 et L2025005. Inclut les réductions personnelles, familiales, logement et retraites."}
                   </p>
                   <button
-                    onClick={() => window.location.href = "/calculadora-irpf"}
+                    onClick={() => setShowIrpf(true)}
                     className="bg-white text-[#009B9C] font-bold px-7 py-3 rounded-xl hover:bg-gray-50 transition shadow-lg text-sm"
                   >
                     {language === "ca" && "Obrir la calculadora →"}
