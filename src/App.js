@@ -37,7 +37,7 @@ const Logo = () => (
     alt="ÀMBIT Associats"
     width="624"
     height="234"
-    className="block w-[132px] md:w-[150px] h-auto"
+    className="block w-[172px] md:w-[200px] lg:w-[224px] h-auto"
   />
 );
 
@@ -1180,7 +1180,34 @@ const App = () => {
       <div className="relative isolate overflow-hidden bg-[#007A7B] text-white">
         <Topo etiquetes={!currentService && !currentBlogPost} />
         <header className="max-w-6xl mx-auto px-5 md:px-10">
-          <div className="flex items-center gap-6 py-5">
+          {/* Línia d'utilitats: idiomes, accés del personal i Zona Professionals */}
+          <div className="hidden lg:flex justify-end items-center gap-5 pt-3 text-[13px] text-[#BFE4E4]">
+            <div className="flex items-center gap-1">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => handleLanguageChange(lang.code)}
+                  aria-label={lang.name}
+                  aria-pressed={lang.code === language}
+                  className={`px-1.5 py-0.5 rounded ${lang.code === language ? "text-white font-semibold" : "hover:text-white"}`}
+                >
+                  {lang.code.toUpperCase()}
+                </button>
+              ))}
+            </div>
+            <span className="h-3.5 border-l border-white/30" aria-hidden="true" />
+            <a href="/portal" className="inline-flex items-center gap-1.5 hover:text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+              {t.nav?.personal}
+            </a>
+            <button onClick={() => setShowEinaFiscal(true)} className="hover:text-white">
+              {t.nav?.professionals}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-6 py-4 lg:pt-2 lg:pb-5">
             <button onClick={tornaInici} aria-label="ÀMBIT Associats" className="shrink-0 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#4DB6B7]">
               <Logo />
             </button>
@@ -1215,32 +1242,9 @@ const App = () => {
               <button onClick={() => anarA("blog")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.articles}</button>
               <button onClick={() => anarA("contact")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.contacte}</button>
             </nav>
-            <div className="hidden lg:flex items-center gap-1 pl-5 border-l border-white/30 text-sm">
-              {languages.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => handleLanguageChange(lang.code)}
-                  aria-label={lang.name}
-                  aria-pressed={lang.code === language}
-                  className={`px-1.5 py-1 rounded ${lang.code === language ? "text-white font-semibold" : "text-[#BFE4E4] hover:text-white"}`}
-                >
-                  {lang.code.toUpperCase()}
-                </button>
-              ))}
-            </div>
-            <a
-              href="/portal"
-              title={t.nav?.personal}
-              aria-label={t.nav?.personal}
-              className="hidden lg:inline-flex text-[#BFE4E4] hover:text-white"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-5 h-5" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-              </svg>
-            </a>
             <button
               onClick={() => anarA("contact")}
-              className="hidden lg:inline-flex border border-white/75 rounded-full px-4 py-2 text-sm font-semibold hover:bg-white hover:text-[#00676A] transition"
+              className="hidden lg:inline-flex whitespace-nowrap border border-white/75 rounded-full px-4 py-2 text-sm font-semibold hover:bg-white hover:text-[#00676A] transition"
             >
               {t.nav?.consulta}
             </button>
@@ -1283,7 +1287,10 @@ const App = () => {
                     {lang.name}
                   </button>
                 ))}
-                <a href="/portal" className="ml-auto text-[#BFE4E4] underline underline-offset-4">{t.nav?.personal}</a>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-3 pt-3 text-sm">
+                <button onClick={() => { setShowEinaFiscal(true); setMenuOpen(false); }} className="text-[#BFE4E4] underline underline-offset-4">{t.nav?.professionals}</button>
+                <a href="/portal" className="text-[#BFE4E4] underline underline-offset-4">{t.nav?.personal}</a>
               </div>
             </nav>
           )}
