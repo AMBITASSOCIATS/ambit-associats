@@ -1022,10 +1022,10 @@ const App = () => {
     }
   }, [showEinaFiscal, showIrpf, showCalendari, showPdfMd, currentBlogPost, currentService]);
 
-  // ── En obrir un article del blog, començar per dalt ──────────────────────
+  // ── En obrir un article o un servei, començar per dalt ───────────────────
   useEffect(() => {
-    if (currentBlogPost) window.scrollTo(0, 0);
-  }, [currentBlogPost]);
+    if (currentBlogPost || currentService) window.scrollTo(0, 0);
+  }, [currentBlogPost, currentService]);
 
   // ── Historial navegador: gestionar fletxa enrere ─────────────────────────
   useEffect(() => {
@@ -1097,10 +1097,6 @@ const App = () => {
 
   const openService = (id) => {
     setCurrentService(id);
-  };
-
-  const goBack = () => {
-    setCurrentService(null);
   };
 
   const tornaInici = () => {
@@ -1682,50 +1678,158 @@ const App = () => {
         </>
       ) : currentBlogPost ? (
         /* Vista detallada d'un article del blog */
-        <section className="py-16 flex-1">
-          <div className="container mx-auto px-4 max-w-3xl">
+        <section className="flex-1 bg-white">
+          <div className="max-w-6xl mx-auto px-5 md:px-10 py-10 md:py-16">
             <button
-              onClick={() => setCurrentBlogPost(null)}
-              className="mb-6 text-[#009B9C] hover:underline flex items-center"
+              onClick={() => anarA("blog")}
+              className="text-[15px] font-semibold text-[#007A7B] hover:underline underline-offset-4"
             >
-              ← {t.back}
+              ← {{ ca: "Torna als articles", es: "Volver a los artículos", en: "Back to articles", fr: "Retour aux articles" }[language]}
             </button>
-            <span className="text-xs font-semibold text-[#009B9C] uppercase tracking-wide">{currentBlogPost.category}</span>
-            <h1 className="text-3xl font-bold mb-2 mt-1 text-gray-800">{currentBlogPost.title}</h1>
-            <p className="text-sm text-gray-500 mb-8">{currentBlogPost.date}</p>
-            <div
-              className="text-gray-700 leading-relaxed space-y-4 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-gray-800 [&_h2]:mt-6 [&_h2]:mb-3 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-gray-800 [&_h3]:mt-5 [&_h3]:mb-2 [&_a]:text-[#009B9C] [&_a]:underline [&_strong]:font-semibold"
-              dangerouslySetInnerHTML={{ __html: currentBlogPost.content }}
-            />
-            <div className="mt-10 p-6 bg-[#e6f7f7] rounded-xl border border-[#009B9C] border-opacity-30">
-              <p className="font-semibold text-[#009B9C] mb-1">ÀMBIT Associats</p>
-              <p className="text-sm text-gray-700">
-                <a href="mailto:info@ambit.ad" className="text-[#009B9C] underline">info@ambit.ad</a>
-                {" · "}
-                <a href="tel:+376655382" className="text-[#009B9C] underline">+376 655 382</a>
-              </p>
+            <article className="max-w-[68ch] mt-8 md:mt-10">
+              <p className="text-sm font-semibold text-[#007A7B]">{currentBlogPost.category}</p>
+              <h1 className="font-display font-medium text-[32px] md:text-[44px] leading-[1.1] tracking-[-0.015em] text-[#12302F] mt-2">{currentBlogPost.title}</h1>
+              <p className="text-sm text-[#4E6765] mt-3 tabular-nums">{currentBlogPost.date}</p>
+              <div
+                className="mt-8 pt-8 border-t border-[#D6E4E2] text-[17px] text-[#2B4644] leading-[1.75] space-y-5 [&_h2]:font-display [&_h2]:font-medium [&_h2]:text-[26px] [&_h2]:leading-tight [&_h2]:text-[#12302F] [&_h2]:mt-10 [&_h2]:mb-1 [&_h3]:font-display [&_h3]:font-medium [&_h3]:text-[21px] [&_h3]:text-[#12302F] [&_h3]:mt-8 [&_h3]:mb-1 [&_a]:text-[#007A7B] [&_a]:underline [&_a]:underline-offset-4 [&_strong]:font-semibold [&_strong]:text-[#12302F] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-2"
+                dangerouslySetInnerHTML={{ __html: currentBlogPost.content.trim().replace(`<h2>${currentBlogPost.title}</h2>`, "") }}
+              />
+            </article>
+
+            {/* Crida a l'acció */}
+            <div className="relative isolate overflow-hidden mt-14 rounded-2xl bg-[#007A7B] text-white">
+              <Topo />
+              <div className="px-6 py-8 md:px-10 md:py-10 grid gap-5 md:grid-cols-[1fr_auto] md:items-center md:gap-10">
+                <div className="grid gap-2">
+                  <h2 className="font-display font-medium text-[24px] md:text-[28px] leading-tight">
+                    {{
+                      ca: "Vols aplicar-ho al teu cas?",
+                      es: "¿Quieres aplicarlo a tu caso?",
+                      en: "Want to apply this to your situation?",
+                      fr: "Vous voulez l'appliquer à votre cas ?",
+                    }[language]}
+                  </h2>
+                  <p className="text-[15px] leading-relaxed text-[#D2ECEC] max-w-[52ch]">
+                    {{
+                      ca: "La primera consulta és gratuïta. Escriu-nos a info@ambit.ad o truca al +376 655 382.",
+                      es: "La primera consulta es gratuita. Escríbenos a info@ambit.ad o llama al +376 655 382.",
+                      en: "The first consultation is free. Email info@ambit.ad or call +376 655 382.",
+                      fr: "La première consultation est gratuite. Écrivez à info@ambit.ad ou appelez le +376 655 382.",
+                    }[language]}
+                  </p>
+                </div>
+                <button
+                  onClick={() => anarA("contact")}
+                  className="justify-self-start bg-white text-[#00676A] font-semibold text-base px-6 py-3.5 rounded-full hover:bg-[#E8F6F6] transition whitespace-nowrap"
+                >
+                  {{
+                    ca: "Demana una consulta gratuïta",
+                    es: "Solicita una consulta gratuita",
+                    en: "Request a free consultation",
+                    fr: "Demandez une consultation gratuite",
+                  }[language]}
+                </button>
+              </div>
+            </div>
+
+            {/* Altres articles */}
+            <div className="mt-14 grid gap-4">
+              <h2 className="font-display font-medium text-[24px] text-[#12302F]">
+                {{ ca: "Altres articles", es: "Otros artículos", en: "More articles", fr: "Autres articles" }[language]}
+              </h2>
+              <div className="grid">
+                {(blogPosts[language] || blogPosts.ca)
+                  .filter((post) => post.slug !== currentBlogPost.slug)
+                  .slice(0, 3)
+                  .map((post) => (
+                    <button
+                      key={post.slug}
+                      onClick={() => setCurrentBlogPost(post)}
+                      className="group text-left grid gap-1 md:grid-cols-[120px_1fr_auto] md:gap-6 md:items-baseline py-4 border-t border-[#D6E4E2]"
+                    >
+                      <span className="text-[13px] text-[#4E6765] tabular-nums">{post.date}</span>
+                      <span className="font-display font-medium text-[18px] leading-snug text-[#12302F] group-hover:text-[#007A7B] transition-colors">{post.title}</span>
+                      <span className="text-sm font-semibold text-[#007A7B]">{post.category}</span>
+                    </button>
+                  ))}
+              </div>
             </div>
           </div>
         </section>
       ) : (
         /* Vista detallada del servei */
-        <section className="py-20 flex-1">
-          <div className="container mx-auto px-4">
+        <section className="flex-1 bg-white">
+          <div className="max-w-6xl mx-auto px-5 md:px-10 py-10 md:py-16">
             <button
-              onClick={goBack}
-              className="mb-6 text-[#009B9C] hover:underline flex items-center"
+              onClick={() => anarA("services")}
+              className="text-[15px] font-semibold text-[#007A7B] hover:underline underline-offset-4"
             >
               ← {t.back}
             </button>
-            <h2 className="text-3xl font-bold mb-8 text-[#009B9C]">{details[currentService].title}</h2>
-            <ul className="space-y-3">
-              {details[currentService].items.map((item, i) => (
-                <li key={i} className="flex items-start">
-                  <span className="text-[#009B9C] mr-2">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="mt-8 md:mt-10 grid gap-8 md:grid-cols-[minmax(260px,1fr)_2fr] md:gap-14">
+              <h1 className="font-display font-medium text-[32px] md:text-[44px] leading-[1.1] tracking-[-0.015em] text-[#12302F]">{details[currentService].title}</h1>
+              <ul className="grid">
+                {details[currentService].items.map((item, i) => (
+                  <li key={i} className="py-4 border-t border-[#D6E4E2] last:border-b text-[17px] leading-relaxed text-[#2B4644]">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Crida a l'acció */}
+            <div className="relative isolate overflow-hidden mt-14 rounded-2xl bg-[#007A7B] text-white">
+              <Topo />
+              <div className="px-6 py-8 md:px-10 md:py-10 grid gap-5 md:grid-cols-[1fr_auto] md:items-center md:gap-10">
+                <div className="grid gap-2">
+                  <h2 className="font-display font-medium text-[24px] md:text-[28px] leading-tight">
+                    {{
+                      ca: "Vols que t'ajudem amb això?",
+                      es: "¿Quieres que te ayudemos con esto?",
+                      en: "Would you like our help with this?",
+                      fr: "Voulez-vous que nous vous aidions ?",
+                    }[language]}
+                  </h2>
+                  <p className="text-[15px] leading-relaxed text-[#D2ECEC] max-w-[52ch]">
+                    {{
+                      ca: "La primera consulta és gratuïta. Explica'ns el teu cas i et proposarem com fer-ho.",
+                      es: "La primera consulta es gratuita. Cuéntanos tu caso y te propondremos cómo hacerlo.",
+                      en: "The first consultation is free. Tell us about your case and we'll suggest how to proceed.",
+                      fr: "La première consultation est gratuite. Expliquez-nous votre cas et nous vous proposerons comment procéder.",
+                    }[language]}
+                  </p>
+                </div>
+                <button
+                  onClick={() => anarA("contact")}
+                  className="justify-self-start bg-white text-[#00676A] font-semibold text-base px-6 py-3.5 rounded-full hover:bg-[#E8F6F6] transition whitespace-nowrap"
+                >
+                  {{
+                    ca: "Demana una consulta gratuïta",
+                    es: "Solicita una consulta gratuita",
+                    en: "Request a free consultation",
+                    fr: "Demandez une consultation gratuite",
+                  }[language]}
+                </button>
+              </div>
+            </div>
+
+            {/* Altres serveis */}
+            <div className="mt-14 grid gap-4">
+              <h2 className="font-display font-medium text-[24px] text-[#12302F]">
+                {{ ca: "Altres serveis", es: "Otros servicios", en: "Other services", fr: "Autres services" }[language]}
+              </h2>
+              <div className="flex flex-wrap gap-2.5">
+                {services.filter((s) => s.id !== currentService).map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => openService(s.id)}
+                    className="border border-[#C7DCDA] rounded-full px-4 py-2 text-[15px] text-[#12302F] hover:border-[#007A7B] hover:text-[#007A7B] transition"
+                  >
+                    {s.title}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
       )}
