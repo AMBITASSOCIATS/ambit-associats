@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import izquierdaImg from './izquierda.png';
-import derechaImg from './derecha.png';
 import legalBottomLeftImg from './legal-bottom-left.png';
 import legalBottomRightImg from './legal-bottom-right.png';
 import IrpfCalculadora from './irpf/IrpfCalculadora';
@@ -11,14 +9,89 @@ import PdfATextMd from './pages/PdfATextMd';
 import { useAuth } from './auth/AuthContext';
 
 
-// Logo – més gran i centrat
+// Serralada al peu de la franja: els antics triangles girats, amb la punta cap amunt.
+// Els pics verds i el ratllat queden darrere; la silueta blanca enllaça amb la secció següent.
+const Serralada = () => (
+  <svg
+    className="block w-full h-[56px] md:h-[104px]"
+    viewBox="0 0 1440 120"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+  >
+    <defs>
+      <pattern id="serralada-ratlles" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(-34)">
+        <rect width="6" height="16" fill="#AFCFCF" />
+      </pattern>
+    </defs>
+    <polygon points="70,120 250,14 430,120" fill="#009B9C" />
+    <polygon points="980,120 1150,0 1320,120" fill="#009B9C" />
+    <polygon points="1060,120 1250,8 1440,120" fill="url(#serralada-ratlles)" />
+    <path
+      d="M0 120 L0 98 L160 74 L250 90 L330 62 L470 104 L640 80 L780 98 L900 70 L1010 102 L1150 58 L1250 84 L1350 66 L1440 92 L1440 120 Z"
+      fill="#FFFFFF"
+    />
+  </svg>
+);
+
+// Logo – el mateix dibuix en blanc i sense marc, sobre la franja verda
 const Logo = () => (
   <img
-  src="/ÀMBIT Associats.png"
-  alt="ÀMBIT Associats"
-  className="h-32 md:h-40 mx-auto mb-2"
-/>
+    src="/logo-blanc.png"
+    alt="ÀMBIT Associats"
+    width="624"
+    height="234"
+    className="block w-[132px] md:w-[150px] h-auto"
+  />
 );
+
+// Corbes de nivell de la vall: una línia per altitud; les mestres (cada 500 m) porten etiqueta
+const ALTITUDS = [2500, 2400, 2300, 2200, 2100, 2000, 1900, 1800, 1700, 1600, 1500, 1400, 1300, 1200, 1100];
+const CORBES = ALTITUDS.map((alt, k) => {
+  let d = "";
+  for (let x = -20; x <= 1460; x += 20) {
+    const carena = -150 * Math.exp(-(((x - 1080) / 300) ** 2)) - 70 * Math.exp(-(((x - 360) / 240) ** 2));
+    const y = 30 + k * 52 + carena * (1 - k / 16) + 18 * Math.sin(x / 150 + k * 0.6) + 8 * Math.sin(x / 47 + k * 1.7);
+    d += `${x === -20 ? "M" : "L"}${x} ${y.toFixed(1)}`;
+  }
+  return { alt, k, d, mestra: alt % 500 === 0 };
+});
+
+// Només s'anima la primera vegada que es carrega la pàgina
+let corbesDibuixades = false;
+
+const Topo = ({ etiquetes }) => {
+  const animar = useRef(!corbesDibuixades);
+  useEffect(() => { corbesDibuixades = true; }, []);
+  return (
+    <svg
+      className={`absolute inset-0 w-full h-full -z-10 pointer-events-none ${animar.current ? "topo-traca" : ""}`}
+      viewBox="0 0 1440 760"
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden="true"
+    >
+      {CORBES.map((c) => (
+        <path
+          key={c.alt}
+          id={etiquetes ? `corba-${c.alt}` : undefined}
+          d={c.d}
+          pathLength="1"
+          fill="none"
+          stroke="#4DB6B7"
+          strokeOpacity={c.mestra ? 0.6 : 0.28}
+          strokeWidth={c.mestra ? 1.4 : 0.9}
+          style={animar.current ? { animationDelay: `${(c.k * 0.06).toFixed(2)}s` } : undefined}
+        />
+      ))}
+      {etiquetes && CORBES.filter((c) => c.mestra).map((c) => (
+        <text key={c.alt} dy="-4" fill="#4DB6B7" fontSize="11" letterSpacing="0.04em">
+          <textPath href={`#corba-${c.alt}`} startOffset={c.k < 6 ? "74%" : "56%"}>
+            {c.alt.toLocaleString("ca-ES")} m
+          </textPath>
+        </text>
+      ))}
+    </svg>
+  );
+};
 
 // Selector d'idiomes
 const languages = [
@@ -72,6 +145,11 @@ const translations = {
       pdfmd: "PDF a text",
       blog: "Blog",
       contacte: "Contacte",
+      eines: "Eines",
+      articles: "Articles",
+      consulta: "Consulta gratuïta",
+      menu: "Menú",
+      personal: "Accés del personal",
     },
     professionals: {
       badge: "Accés exclusiu",
@@ -129,6 +207,11 @@ const translations = {
       pdfmd: "PDF a texto",
       blog: "Blog",
       contacte: "Contacto",
+      eines: "Herramientas",
+      articles: "Artículos",
+      consulta: "Consulta gratuita",
+      menu: "Menú",
+      personal: "Acceso del personal",
     },
     professionals: {
       badge: "Acceso exclusivo",
@@ -186,6 +269,11 @@ const translations = {
       pdfmd: "PDF to text",
       blog: "Blog",
       contacte: "Contact",
+      eines: "Tools",
+      articles: "Articles",
+      consulta: "Free consultation",
+      menu: "Menu",
+      personal: "Staff access",
     },
     professionals: {
       badge: "Exclusive access",
@@ -243,6 +331,11 @@ const translations = {
       pdfmd: "PDF en texte",
       blog: "Blog",
       contacte: "Contact",
+      eines: "Outils",
+      articles: "Articles",
+      consulta: "Consultation gratuite",
+      menu: "Menu",
+      personal: "Accès du personnel",
     },
     professionals: {
       badge: "Accès exclusif",
@@ -1013,6 +1106,27 @@ const App = () => {
     setCurrentService(null);
   };
 
+  const tornaInici = () => {
+    setCurrentService(null);
+    setCurrentBlogPost(null);
+    setMenuOpen(false);
+    window.scrollTo(0, 0);
+  };
+
+  // Navega a una secció de la portada, també des d'un servei o un article
+  const anarA = (id) => {
+    setMenuOpen(false);
+    setServicesDropdown(false);
+    const desplaca = () => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    if (currentService || currentBlogPost) {
+      setCurrentService(null);
+      setCurrentBlogPost(null);
+      setTimeout(desplaca, 50);
+    } else {
+      desplaca();
+    }
+  };
+
   if (showIrpf) {
     return <IrpfCalculadora onBack={() => setShowIrpf(false)} />;
   }
@@ -1035,282 +1149,209 @@ const App = () => {
   }
 
   return (
-    <div className="bg-white text-gray-800 min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="bg-[#009B9C] text-white py-6">
-        <div className="container mx-auto px-4">
-          {/* Si no hi cap tot (mòbil), l'enllaç passa a una línia a sobre dels idiomes */}
-          <div className="flex flex-wrap justify-end items-center gap-x-4 gap-y-2 mb-4">
-            <a
-              href="/portal"
-              className="px-3 py-1 rounded-md text-sm bg-opacity-20 hover:bg-white hover:text-[#009B9C] inline-flex items-center gap-1.5"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-              </svg>
-              Accés del personal
-            </a>
-            <div className="flex flex-wrap justify-end gap-x-4 gap-y-2">
-              {languages.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => handleLanguageChange(lang.code)}
-                  className={`px-3 py-1 rounded-md text-sm ${
-                    lang.code === language
-                      ? "bg-white text-[#009B9C] font-semibold"
-                      : "bg-opacity-20 hover:bg-white hover:text-[#009B9C]"
-                  }`}
-                >
-                  {lang.name}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-col items-center">
-            <Logo />
-            <p className="text-center text-lg opacity-90">{t.tagline}</p>
-          </div>
+    <div className="bg-white text-gray-800 min-h-screen flex flex-col font-text">
+      {/* Franja de la vall: capçalera i, a la portada, el hero */}
+      <div className="relative isolate overflow-hidden bg-[#007A7B] text-white">
+        <Topo etiquetes={!currentService && !currentBlogPost} />
+        <header className="max-w-6xl mx-auto px-5 md:px-10">
+          <div className="flex items-center gap-6 py-5">
+            <button onClick={tornaInici} aria-label="ÀMBIT Associats" className="shrink-0 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#4DB6B7]">
+              <Logo />
+            </button>
 
-          {/* Menú de navegació */}
-          <nav className="mt-4 relative">
             {/* Desktop */}
-            <div className="hidden md:flex items-center justify-center gap-6 text-sm text-white/90">
+            <nav className="hidden lg:flex items-center gap-7 ml-auto text-[15px] font-medium">
               <div
                 className="relative"
                 onMouseEnter={() => setServicesDropdown(true)}
                 onMouseLeave={() => setServicesDropdown(false)}
               >
-                <button className="hover:text-white flex items-center gap-1">
-                  {t.nav?.serveis} <span className="text-xs">▾</span>
+                <button onClick={() => setServicesDropdown(!servicesDropdown)} className="py-1 border-b border-transparent hover:border-white/70 flex items-center gap-1">
+                  {t.nav?.serveis} <span className="text-xs" aria-hidden="true">▾</span>
                 </button>
                 {servicesDropdown && (
-                  <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-xl shadow-xl border border-[#009B9C]/20 z-50 py-2">
-                    {services.map((s) => (
-                      <button
-                        key={s.id}
-                        onClick={() => { openService(s.id); setServicesDropdown(false); }}
-                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-[#009B9C]/10 hover:text-[#009B9C] transition"
-                      >
-                        {s.title}
-                      </button>
-                    ))}
+                  <div className="absolute top-full left-0 pt-2 w-72 z-50">
+                    <div className="bg-white rounded-xl shadow-xl py-2">
+                      {services.map((s) => (
+                        <button
+                          key={s.id}
+                          onClick={() => { openService(s.id); setServicesDropdown(false); }}
+                          className="w-full text-left px-4 py-2.5 text-sm text-[#12302F] hover:bg-[#F4F8F7] hover:text-[#007A7B] transition"
+                        >
+                          {s.title}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
-              <button onClick={() => setShowIrpf(true)} className="hover:text-white hover:underline">
-                {t.nav?.calculadora}
-              </button>
-              <button onClick={() => document.getElementById("professionals")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-white hover:underline">
-                {t.nav?.professionals}
-              </button>
-              <button onClick={() => setShowEinaFiscal(true)} className="hover:text-white hover:underline flex items-center gap-1">
-                {t.nav?.einaFiscal}
-                <span className="text-xs bg-teal-300 text-teal-900 font-semibold px-1.5 py-0.5 rounded-full">Nou</span>
-              </button>
-              <button onClick={() => setShowCalendari(true)} className="hover:text-white hover:underline">
-                {t.nav?.calendari}
-              </button>
-              <button onClick={() => setShowPdfMd(true)} className="text-white font-semibold hover:underline flex items-center gap-1" style={{ textShadow: '0 0 8px rgba(255,255,255,0.75)' }}>
-                {t.nav?.pdfmd}
-                <span className="text-xs bg-teal-300 text-teal-900 font-semibold px-1.5 py-0.5 rounded-full">Nou</span>
-              </button>
-              <button onClick={() => document.getElementById("blog")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-white hover:underline">
-                {t.nav?.blog}
-              </button>
-              <button onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })} className="bg-white/20 hover:bg-white/30 px-4 py-1.5 rounded-full font-semibold transition">
-                {t.nav?.contacte}
-              </button>
+              <button onClick={() => anarA("professionals")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.eines}</button>
+              <button onClick={() => anarA("blog")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.articles}</button>
+              <button onClick={() => anarA("contact")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.contacte}</button>
+            </nav>
+            <div className="hidden lg:flex items-center gap-1 pl-5 border-l border-white/30 text-sm">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => handleLanguageChange(lang.code)}
+                  aria-label={lang.name}
+                  aria-pressed={lang.code === language}
+                  className={`px-1.5 py-1 rounded ${lang.code === language ? "text-white font-semibold" : "text-[#BFE4E4] hover:text-white"}`}
+                >
+                  {lang.code.toUpperCase()}
+                </button>
+              ))}
             </div>
-            {/* Mòbil: hamburguesa */}
-            <div className="md:hidden flex justify-center mt-2">
-              <button onClick={() => setMenuOpen(!menuOpen)} className="text-white text-2xl px-3 py-1">
-                ≡
-              </button>
-              {menuOpen && (
-                <div className="absolute top-full left-0 right-0 bg-[#007A7B] z-50 py-3 flex flex-col items-center gap-3 text-white text-sm">
-                  <div className="relative w-full text-center">
-                    <button onClick={() => setServicesDropdown(!servicesDropdown)} className="hover:text-white font-medium">
-                      {t.nav?.serveis} <span className="text-xs">▾</span>
-                    </button>
-                    {servicesDropdown && (
-                      <div className="w-full bg-white/10 py-2 flex flex-col items-center gap-2 mt-1">
-                        {services.map((s) => (
-                          <button key={s.id} onClick={() => { openService(s.id); setMenuOpen(false); }} className="text-xs text-white/90 hover:text-white py-1">
-                            {s.title}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <button onClick={() => { setShowIrpf(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.calculadora}</button>
-                  <button onClick={() => { document.getElementById("professionals")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="hover:underline">{t.nav?.professionals}</button>
-                  <button onClick={() => { setShowEinaFiscal(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.einaFiscal}</button>
-                  <button onClick={() => { setShowCalendari(true); setMenuOpen(false); }} className="hover:underline">{t.nav?.calendari}</button>
-                  <button onClick={() => { setShowPdfMd(true); setMenuOpen(false); }} className="text-white font-semibold hover:underline flex items-center gap-1" style={{ textShadow: '0 0 8px rgba(255,255,255,0.75)' }}>{t.nav?.pdfmd}<span className="text-xs bg-teal-300 text-teal-900 font-semibold px-1.5 py-0.5 rounded-full">Nou</span></button>
-                  <button onClick={() => { document.getElementById("blog")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="hover:underline">{t.nav?.blog}</button>
-                  <button onClick={() => { document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }} className="bg-white/20 px-4 py-1.5 rounded-full font-semibold">{t.nav?.contacte}</button>
-                </div>
-              )}
-            </div>
-          </nav>
-        </div>
-      </header>
+            <a
+              href="/portal"
+              title={t.nav?.personal}
+              aria-label={t.nav?.personal}
+              className="hidden lg:inline-flex text-[#BFE4E4] hover:text-white"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-5 h-5" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            </a>
+            <button
+              onClick={() => anarA("contact")}
+              className="hidden lg:inline-flex border border-white/75 rounded-full px-4 py-2 text-sm font-semibold hover:bg-white hover:text-[#00676A] transition"
+            >
+              {t.nav?.consulta}
+            </button>
 
-      {!currentService && !currentBlogPost ? (
-        <>
-          {/* HERO PRINCIPAL ÀMBIT ASSOCIATS */}
-          <section className="relative bg-gradient-to-br from-[#007A7B] via-[#009B9C] to-[#00B5B6] overflow-hidden py-20 md:py-28">
-            {/* Fons decoratiu subtil */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
-            </div>
-            <div className="container mx-auto px-4 relative z-10">
-              <div className="max-w-5xl mx-auto">
-                {/* Etiqueta superior */}
-                <div className="flex justify-center mb-6">
-                  <span className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white text-xs font-semibold px-4 py-2 rounded-full border border-white/30">
-                    <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                    {language === "ca" && "Despatx d’assessoria a Escaldes-Engordany, Andorra"}
-                    {language === "es" && "Despacho de asesoría en Escaldes-Engordany, Andorra"}
-                    {language === "en" && "Advisory firm in Escaldes-Engordany, Andorra"}
-                    {language === "fr" && "Cabinet de conseil à Escaldes-Engordany, Andorre"}
-                  </span>
-                </div>
-                {/* Títol principal */}
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center leading-tight mb-6">
-                  {language === "ca" && (
-                    <>
-                      {"Estructurem el teu "}
-                      <span className="text-white/80">patrimoni i la teva empresa</span>
-                      <br className="hidden md:block" />
-                      {" a Andorra"}
-                    </>
-                  )}
-                  {language === "es" && (
-                    <>
-                      {"Estructuramos tu "}
-                      <span className="text-white/80">patrimonio y tu empresa</span>
-                      <br className="hidden md:block" />
-                      {" en Andorra"}
-                    </>
-                  )}
-                  {language === "en" && (
-                    <>
-                      {"We structure your "}
-                      <span className="text-white/80">wealth and your company</span>
-                      <br className="hidden md:block" />
-                      {" in Andorra"}
-                    </>
-                  )}
-                  {language === "fr" && (
-                    <>
-                      {"Nous structurons votre "}
-                      <span className="text-white/80">patrimoine et votre entreprise</span>
-                      <br className="hidden md:block" />
-                      {" en Andorre"}
-                    </>
-                  )}
-                </h1>
-                {/* Subtítol */}
-                <p className="text-white/85 text-lg md:text-xl text-center max-w-2xl mx-auto mb-10 leading-relaxed">
-                  {language === "ca" && "Constitució de societats, holdings, planificació patrimonial i successions. Comptabilitat i fiscalitat del dia a dia. Un únic despatx per a totes les necessitats de la teva empresa a Andorra."}
-                  {language === "es" && "Constitución de sociedades, holdings, planificación patrimonial y sucesiones. Contabilidad y fiscalidad del día a día. Un único despacho para todas las necesidades de tu empresa en Andorra."}
-                  {language === "en" && "Company incorporation, holdings, wealth planning and succession. Day-to-day accounting and tax compliance. One firm for all your business needs in Andorra."}
-                  {language === "fr" && "Constitution de sociétés, holdings, planification patrimoniale et successions. Comptabilité et fiscalité au quotidien. Un seul cabinet pour tous vos besoins en Andorre."}
-                </p>
-                {/* Botons CTA */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
-                  <button
-                    onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-                    className="bg-white text-[#009B9C] font-bold px-8 py-4 rounded-xl hover:bg-gray-50 transition shadow-lg text-base w-full sm:w-auto"
-                  >
-                    {language === "ca" && "Sol·licita una consulta gratuïta →"}
-                    {language === "es" && "Solicitar consulta gratuita →"}
-                    {language === "en" && "Request a free consultation →"}
-                    {language === "fr" && "Demander une consultation gratuite →"}
-                  </button>
-                  <button
-                    onClick={() => document.getElementById("services")?.scrollIntoView({ behavior: "smooth" })}
-                    className="border-2 border-white/60 text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/10 transition text-base w-full sm:w-auto"
-                  >
-                    {language === "ca" && "Veure els nostres serveis"}
-                    {language === "es" && "Ver nuestros servicios"}
-                    {language === "en" && "See our services"}
-                    {language === "fr" && "Voir nos services"}
-                  </button>
-                </div>
-                {/* 4 pilars de servei */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {[
-                    {
-                      icon: (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
-                        </svg>
-                      ),
-                      label: { ca: "Constitució de societats", es: "Constitución de sociedades", en: "Company incorporation", fr: "Constitution de sociétés" }
-                    },
-                    {
-                      icon: (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5 0H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 00-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125V11.25c0-.621-.504-1.125-1.125-1.125H3.75" />
-                        </svg>
-                      ),
-                      label: { ca: "Planificació patrimonial", es: "Planificación patrimonial", en: "Wealth planning", fr: "Planification patrimoniale" }
-                    },
-                    {
-                      icon: (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185z" />
-                        </svg>
-                      ),
-                      label: { ca: "Fiscalitat andorrana", es: "Fiscalidad andorrana", en: "Andorran taxation", fr: "Fiscalité andorrane" }
-                    },
-                    {
-                      icon: (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                        </svg>
-                      ),
-                      label: { ca: "Residència a Andorra", es: "Residencia en Andorra", en: "Andorra residency", fr: "Résidence en Andorre" }
-                    },
-                  ].map((item, i) => (
-                    <div key={i} className="bg-white/15 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20 hover:bg-white/25 transition">
-                      <div className="flex justify-center mb-2 text-white">
-                        {item.icon}
-                      </div>
-                      <p className="text-white text-xs font-semibold leading-tight">
-                        {item.label[language]}
-                      </p>
-                    </div>
+            {/* Mòbil */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-expanded={menuOpen}
+              className="lg:hidden ml-auto border border-white/60 rounded-full px-4 py-1.5 text-sm"
+            >
+              {t.nav?.menu}
+            </button>
+          </div>
+
+          {menuOpen && (
+            <nav className="lg:hidden border-t border-white/25 py-4 grid gap-1 text-base">
+              <button onClick={() => setServicesDropdown(!servicesDropdown)} aria-expanded={servicesDropdown} className="text-left py-2 flex items-center gap-1">
+                {t.nav?.serveis} <span className="text-xs" aria-hidden="true">▾</span>
+              </button>
+              {servicesDropdown && (
+                <div className="grid gap-1 pl-4 pb-2">
+                  {services.map((s) => (
+                    <button key={s.id} onClick={() => { openService(s.id); setMenuOpen(false); setServicesDropdown(false); }} className="text-left py-1.5 text-sm text-[#DDF1F1]">
+                      {s.title}
+                    </button>
                   ))}
                 </div>
+              )}
+              <button onClick={() => anarA("professionals")} className="text-left py-2">{t.nav?.eines}</button>
+              <button onClick={() => anarA("blog")} className="text-left py-2">{t.nav?.articles}</button>
+              <button onClick={() => anarA("contact")} className="text-left py-2">{t.nav?.contacte}</button>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-3 pt-4 mt-2 border-t border-white/25 text-sm">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => handleLanguageChange(lang.code)}
+                    aria-pressed={lang.code === language}
+                    className={lang.code === language ? "font-semibold text-white" : "text-[#BFE4E4]"}
+                  >
+                    {lang.name}
+                  </button>
+                ))}
+                <a href="/portal" className="ml-auto text-[#BFE4E4] underline underline-offset-4">{t.nav?.personal}</a>
+              </div>
+            </nav>
+          )}
+        </header>
+
+        {!currentService && !currentBlogPost && (
+          <section>
+            <div className="max-w-6xl mx-auto px-5 md:px-10 pt-9 pb-10 md:pt-20 md:pb-14 grid gap-6 md:grid-cols-[1fr_auto] md:items-end md:gap-10">
+              <div className="grid gap-6">
+                <h1 className="font-display font-medium text-[36px] md:text-[56px] xl:text-[68px] leading-[1.07] tracking-[-0.02em] max-w-[15ch]">
+                  {language === "ca" && "El teu despatx a Andorra per a l'empresa, el patrimoni i la residència"}
+                  {language === "es" && "Tu despacho en Andorra para la empresa, el patrimonio y la residencia"}
+                  {language === "en" && "Your firm in Andorra for your company, your wealth and your residency"}
+                  {language === "fr" && "Votre cabinet en Andorre pour l'entreprise, le patrimoine et la résidence"}
+                </h1>
+                <p className="text-[17px] md:text-lg leading-relaxed text-[#DDF1F1] max-w-[42ch]">
+                  {language === "ca" && "Constitució de societats, comptabilitat, nòmines i trasllat de residència, amb un sol interlocutor a Escaldes-Engordany."}
+                  {language === "es" && "Constitución de sociedades, contabilidad, nóminas y traslado de residencia, con un solo interlocutor en Escaldes-Engordany."}
+                  {language === "en" && "Company formation, accounting, payroll and relocation of residence, with a single point of contact in Escaldes-Engordany."}
+                  {language === "fr" && "Constitution de sociétés, comptabilité, paie et transfert de résidence, avec un seul interlocuteur à Escaldes-Engordany."}
+                </p>
+                <button
+                  onClick={() => anarA("contact")}
+                  className="justify-self-start bg-white text-[#00676A] font-semibold text-base px-6 py-3.5 rounded-full hover:bg-[#E8F6F6] transition"
+                >
+                  {language === "ca" && "Demana una consulta gratuïta"}
+                  {language === "es" && "Solicita una consulta gratuita"}
+                  {language === "en" && "Request a free consultation"}
+                  {language === "fr" && "Demandez une consultation gratuite"}
+                </button>
+              </div>
+              <p className="text-[13px] leading-relaxed text-[#BFE4E4] tabular-nums md:text-right">
+                <strong className="block text-white font-semibold">Escaldes-Engordany</strong>
+                42° 30′ N, 1° 32′ E<br />
+                {language === "ca" && "1.050 m d'altitud"}
+                {language === "es" && "1.050 m de altitud"}
+                {language === "en" && "1,050 m above sea level"}
+                {language === "fr" && "1 050 m d'altitude"}
+              </p>
+            </div>
+            <div className="max-w-6xl mx-auto px-5 md:px-10">
+              <div className="grid md:grid-cols-2 border-t border-white/30">
+                <button onClick={() => anarA("services")} className="group text-left grid gap-1.5 py-6 md:py-8 md:pr-8">
+                  <span className="font-display font-medium text-[22px] md:text-[26px] tracking-[-0.01em]">
+                    {language === "ca" && "Tinc o vull crear una empresa"}
+                    {language === "es" && "Tengo o quiero crear una empresa"}
+                    {language === "en" && "I have or want to set up a company"}
+                    {language === "fr" && "J'ai ou je veux créer une entreprise"}
+                  </span>
+                  <span className="text-[15px] text-[#CFEAEA]">
+                    {language === "ca" && "Societats, holding, comptabilitat, IGI i nòmines."}
+                    {language === "es" && "Sociedades, holding, contabilidad, IGI y nóminas."}
+                    {language === "en" && "Companies, holdings, accounting, IGI and payroll."}
+                    {language === "fr" && "Sociétés, holding, comptabilité, IGI et paie."}
+                  </span>
+                  <span className="text-sm font-semibold underline underline-offset-4 decoration-white/50 group-hover:decoration-white">
+                    {language === "ca" && "Serveis per a empreses"}
+                    {language === "es" && "Servicios para empresas"}
+                    {language === "en" && "Services for companies"}
+                    {language === "fr" && "Services aux entreprises"}
+                  </span>
+                </button>
+                <button onClick={() => openService("residencia")} className="group text-left grid gap-1.5 py-6 md:py-8 border-t border-white/20 md:border-t-0 md:border-l md:border-white/30 md:pl-9">
+                  <span className="font-display font-medium text-[22px] md:text-[26px] tracking-[-0.01em]">
+                    {language === "ca" && "Vull viure a Andorra"}
+                    {language === "es" && "Quiero vivir en Andorra"}
+                    {language === "en" && "I want to live in Andorra"}
+                    {language === "fr" && "Je veux vivre en Andorre"}
+                  </span>
+                  <span className="text-[15px] text-[#CFEAEA]">
+                    {language === "ca" && "Residència activa o passiva, IRPF i planificació patrimonial."}
+                    {language === "es" && "Residencia activa o pasiva, IRPF y planificación patrimonial."}
+                    {language === "en" && "Active or passive residency, income tax and wealth planning."}
+                    {language === "fr" && "Résidence active ou passive, IRPF et planification patrimoniale."}
+                  </span>
+                  <span className="text-sm font-semibold underline underline-offset-4 decoration-white/50 group-hover:decoration-white">
+                    {language === "ca" && "Serveis per a particulars"}
+                    {language === "es" && "Servicios para particulares"}
+                    {language === "en" && "Services for individuals"}
+                    {language === "fr" && "Services aux particuliers"}
+                  </span>
+                </button>
               </div>
             </div>
           </section>
-          {/* FI HERO PRINCIPAL */}
+        )}
+        <Serralada />
+      </div>
+
+      {!currentService && !currentBlogPost ? (
+        <>
 
 {/* Serveis */}
 <section id="services" className="py-16 bg-white border border-white relative overflow-hidden">
-  {/* Imatge esquerra (triangle) */}
-  <div className="absolute top-0 left-0 w-1/5 h-full pointer-events-none z-0 flex items-start">
-    <img
-      src={izquierdaImg}
-      alt="Triangle esquerre decoratiu"
-      className="max-h-full max-w-full object-contain object-left opacity-100"
-    />
-  </div>
-
-  {/* Imatge dreta (línies) */}
-  <div className="absolute top-0 right-0 w-1/4 h-full pointer-events-none z-0 flex items-start">
-    <img
-      src={derechaImg}
-      alt="Línies diagonals dreta"
-      className="max-h-full max-w-full object-contain object-right opacity-100"
-    />
-  </div>
-
   {/* Contingut principal */}
   <div className="container mx-auto px-4 relative z-10">
     <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">{t.services}</h2>
