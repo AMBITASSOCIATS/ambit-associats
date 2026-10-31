@@ -1,7 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import legalBottomLeftImg from './legal-bottom-left.png';
-import legalBottomRightImg from './legal-bottom-right.png';
 import IrpfCalculadora from './irpf/IrpfCalculadora';
 import EinaFiscalRouter from './EinaFiscal/EinaFiscalRouter';
 import CalendariLaboral from './pages/CalendariLaboral';
@@ -11,7 +8,7 @@ import { useAuth } from './auth/AuthContext';
 
 // Serralada al peu de la franja: els antics triangles girats, amb la punta cap amunt.
 // Els pics verds i el ratllat queden darrere; la silueta blanca enllaça amb la secció següent.
-const Serralada = () => (
+const Serralada = ({ fons = "#FFFFFF", id = "serralada" }) => (
   <svg
     className="block w-full h-[56px] md:h-[104px]"
     viewBox="0 0 1440 120"
@@ -19,16 +16,16 @@ const Serralada = () => (
     aria-hidden="true"
   >
     <defs>
-      <pattern id="serralada-ratlles" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(-34)">
+      <pattern id={`${id}-ratlles`} width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(-34)">
         <rect width="6" height="16" fill="#AFCFCF" />
       </pattern>
     </defs>
     <polygon points="70,120 250,14 430,120" fill="#009B9C" />
     <polygon points="980,120 1150,0 1320,120" fill="#009B9C" />
-    <polygon points="1060,120 1250,8 1440,120" fill="url(#serralada-ratlles)" />
+    <polygon points="1060,120 1250,8 1440,120" fill={`url(#${id}-ratlles)`} />
     <path
       d="M0 120 L0 98 L160 74 L250 90 L330 62 L470 104 L640 80 L780 98 L900 70 L1010 102 L1150 58 L1250 84 L1350 66 L1440 92 L1440 120 Z"
-      fill="#FFFFFF"
+      fill={fons}
     />
   </svg>
 );
@@ -1113,6 +1110,35 @@ const App = () => {
     window.scrollTo(0, 0);
   };
 
+  // Obre una pàgina legal en una finestra nova
+  const obreLegal = (key) => {
+    const win = window.open("", "_blank");
+    win.document.write(`
+      <!DOCTYPE html>
+      <html lang="${language}">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>${t.legalTabs[key]} - ÀMBIT Associats</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <style>
+          body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; padding: 2rem; }
+          h3, h4 { color: #009B9C; }
+          a { color: #009B9C; text-decoration: underline; }
+          .container { max-width: 900px; margin: 0 auto; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          ${legalContent[language][key]}
+          <p><br><a href="javascript:window.close()" style="color:#006667">Tancar aquesta finestra</a></p>
+        </div>
+      </body>
+      </html>
+    `);
+    win.document.close();
+  };
+
   // Navega a una secció de la portada, també des d'un servei o un article
   const anarA = (id) => {
     setMenuOpen(false);
@@ -1185,7 +1211,7 @@ const App = () => {
                   </div>
                 )}
               </div>
-              <button onClick={() => anarA("professionals")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.eines}</button>
+              <button onClick={() => anarA("eines")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.eines}</button>
               <button onClick={() => anarA("blog")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.articles}</button>
               <button onClick={() => anarA("contact")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.contacte}</button>
             </nav>
@@ -1243,7 +1269,7 @@ const App = () => {
                   ))}
                 </div>
               )}
-              <button onClick={() => anarA("professionals")} className="text-left py-2">{t.nav?.eines}</button>
+              <button onClick={() => anarA("eines")} className="text-left py-2">{t.nav?.eines}</button>
               <button onClick={() => anarA("blog")} className="text-left py-2">{t.nav?.articles}</button>
               <button onClick={() => anarA("contact")} className="text-left py-2">{t.nav?.contacte}</button>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-3 pt-4 mt-2 border-t border-white/25 text-sm">
@@ -1351,396 +1377,301 @@ const App = () => {
         <>
 
 {/* Serveis */}
-<section id="services" className="py-16 bg-white border border-white relative overflow-hidden">
-  {/* Contingut principal */}
-  <div className="container mx-auto px-4 relative z-10">
-    <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">{t.services}</h2>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {services.map((service) => (
-        <motion.button
-          key={service.id}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.98 }}
-          className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-left border border-gray-100"
-          onClick={() => openService(service.id)}
-        >
-          <h3 className="text-xl font-bold mb-3 text-[#009B9C]">{service.title}</h3>
-          <p className="text-gray-600">Clica per veure tots els serveis</p>
-        </motion.button>
-      ))}
-    </div>
-  </div>
-</section>
-
-          {/* Zona Professionals */}
-          <section id="professionals" className="py-20 bg-gradient-to-r from-[#009B9C] to-[#007A7B] text-white">
-            <div className="container mx-auto px-4">
-              <div className="text-center mb-12">
-                <span className="inline-block bg-[#009B9C] text-white text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-widest">
-                  {t.professionals.badge}
-                </span>
-                <h2 className="text-3xl font-bold mb-3">{t.professionals.title}</h2>
-                <p className="text-gray-400 max-w-xl mx-auto">{t.professionals.subtitle}</p>
+          <section id="services" className="bg-white">
+            <div className="max-w-6xl mx-auto px-5 md:px-10 py-14 md:py-20 grid gap-7 md:gap-9">
+              <div className="grid gap-2.5 max-w-[58ch]">
+                <h2 className="font-display font-medium text-[30px] md:text-[40px] leading-[1.12] tracking-[-0.015em] text-[#12302F]">{t.services}</h2>
+                <p className="text-base leading-relaxed text-[#4E6765]">
+                  {{
+                    ca: "Portem la gestió d'empreses i particulars, del primer tràmit a la declaració anual.",
+                    es: "Llevamos la gestión de empresas y particulares, del primer trámite a la declaración anual.",
+                    en: "We look after companies and individuals, from the first formality to the annual return.",
+                    fr: "Nous accompagnons entreprises et particuliers, de la première démarche à la déclaration annuelle.",
+                  }[language]}
+                </p>
               </div>
-              {/* Botó accés directe Zona Professionals */}
-              <div className="flex justify-center mb-8">
-                <button
-                  onClick={() => setShowEinaFiscal(true)}
-                  className="bg-white text-[#009B9C] font-bold px-8 py-3 rounded-xl hover:bg-gray-50 transition shadow-lg text-sm flex items-center gap-2"
-                >
-                  🔐 Accedir a la Zona Professionals →
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                {/* Eina Bretxa — activa */}
-                <button
-                  onClick={() => {
-                    if (!user || !perfil) {
-                      setShowEinaFiscal(true);
-                      return;
-                    }
-                    if (perfil.rol !== 'maestro' && !(perfil.eines || []).includes('bretxa')) {
-                      setShowEinaFiscal(true);
-                      return;
-                    }
-                    window.open('https://bretxa-genere.onrender.com', '_blank');
-                  }}
-                  className="bg-gray-800 rounded-2xl p-7 border border-gray-700 hover:border-[#009B9C] hover:bg-gray-750 transition-all duration-300 group flex flex-col text-left w-full"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 bg-[#009B9C] rounded-xl flex items-center justify-center flex-shrink-0">
-                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
-                    </div>
-                    <span className="bg-green-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">{t.professionals.available}</span>
-                  </div>
-                  <h3 className="text-lg font-bold mb-2 group-hover:text-[#009B9C] transition-colors text-white">{t.professionals.bretxaTitle}</h3>
-                  <p className="text-gray-400 text-sm flex-1 mb-5">{t.professionals.bretxaDesc}</p>
-                  <span className="inline-flex items-center gap-2 text-[#009B9C] font-semibold text-sm">
-                    {t.professionals.bretxaCta}
-                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </span>
-                </button>
-
-                {/* Eina Fiscal IRPF — activa */}
-                <button
-                  onClick={() => {
-                    if (!user || !perfil) {
-                      setShowEinaFiscal(true);
-                      return;
-                    }
-                    if (perfil.rol !== 'maestro' && !(perfil.eines || []).includes('irpf')) {
-                      setShowEinaFiscal(true);
-                      return;
-                    }
-                    setShowEinaFiscal(true);
-                  }}
-                  className="bg-gray-800 rounded-2xl p-7 border border-gray-700 hover:border-[#009B9C] hover:bg-gray-750 transition-all duration-300 group flex flex-col text-left"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 bg-[#009B9C] rounded-xl flex items-center justify-center flex-shrink-0">
-                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <span className="bg-teal-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">{t.professionals.fiscalNou}</span>
-                  </div>
-                  <h3 className="text-lg font-bold mb-2 group-hover:text-[#009B9C] transition-colors">{t.professionals.fiscalTitle}</h3>
-                  <p className="text-gray-400 text-sm flex-1 mb-5">{t.professionals.fiscalDesc}</p>
-                  <span className="inline-flex items-center gap-2 text-[#009B9C] font-semibold text-sm">
-                    {t.professionals.fiscalCta}
-                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </span>
-                </button>
-              </div>
-            </div>
-          </section>
-
-          {/* Blog / Articles SEO */}
-          <section id="blog" className="py-16 bg-gray-50">
-            <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">{t.blogTitle}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                {(blogPosts[language] || blogPosts.ca).map((post) => (
-                  <article
-                    key={post.slug}
-                    className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col cursor-pointer hover:shadow-lg transition"
-                    onClick={() => setCurrentBlogPost(post)}
+              <div className="grid">
+                {services.map((service) => (
+                  <button
+                    key={service.id}
+                    onClick={() => openService(service.id)}
+                    className="group text-left grid gap-2 md:grid-cols-[minmax(240px,1fr)_2fr] md:gap-8 py-5 md:py-6 border-t border-[#D6E4E2]"
                   >
-                    <div className="p-6 flex flex-col flex-1">
-                      <span className="text-xs font-semibold text-[#009B9C] uppercase tracking-wide mb-2">{post.category}</span>
-                      <h3 className="text-lg font-bold text-gray-800 mb-3 leading-snug">{post.title}</h3>
-                      <p className="text-sm text-gray-600 flex-1 mb-4">{post.excerpt}</p>
-                      <span className="text-xs text-gray-400">{post.date}</span>
-                    </div>
-                  </article>
+                    <span className="font-display font-medium text-[21px] text-[#12302F] group-hover:text-[#007A7B] transition-colors">{service.title}</span>
+                    <span className="text-[15px] leading-relaxed text-[#4E6765]">
+                      {(details[service.id]?.items || []).slice(0, 3).join(" ")}
+                    </span>
+                  </button>
                 ))}
               </div>
             </div>
           </section>
 
-
-          {/* BANNER CALCULADORA IRPF — entre blog i secció SEO */}
-          <section className="py-14 bg-gradient-to-r from-[#009B9C] to-[#007A7B]">
-            <div className="container mx-auto px-4">
-              <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8">
-                <div className="flex-1 text-white">
-                  <span className="inline-block bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
-                    {language === "ca" && "Eina gratuïta"}
-                    {language === "es" && "Herramienta gratuita"}
-                    {language === "en" && "Free tool"}
-                    {language === "fr" && "Outil gratuit"}
-                  </span>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-3">
-                    {language === "ca" && "Calculadora IRPF Andorra 2025"}
-                    {language === "es" && "Calculadora IRPF Andorra 2025"}
-                    {language === "en" && "Andorra IRPF Tax Calculator 2025"}
-                    {language === "fr" && "Calculatrice IRPF Andorre 2025"}
-                  </h2>
-                  <p className="text-white/85 mb-6 max-w-lg">
-                    {language === "ca" && "Estima la teva quota de l'IRPF en menys d'un minut. Actualitzada amb la Llei 5/2014, L2023005 i L2025005. Inclou mínim personal, familiar, habitatge i pensions."}
-                    {language === "es" && "Estima tu cuota del IRPF en menos de un minuto. Actualizada con la Ley 5/2014, L2023005 y L2025005. Incluye mínimo personal, familiar, vivienda y pensiones."}
-                    {language === "en" && "Estimate your IRPF tax in under a minute. Updated with Law 5/2014, L2023005 and L2025005. Includes personal, family, housing and pension allowances."}
-                    {language === "fr" && "Estimez votre impôt IRPF en moins d'une minute. Mise à jour avec la Loi 5/2014, L2023005 et L2025005. Inclut les réductions personnelles, familiales, logement et retraites."}
-                  </p>
-                  <button
-                    onClick={() => setShowIrpf(true)}
-                    className="bg-white text-[#009B9C] font-bold px-7 py-3 rounded-xl hover:bg-gray-50 transition shadow-lg text-sm"
-                  >
-                    {language === "ca" && "Obrir la calculadora →"}
-                    {language === "es" && "Abrir la calculadora →"}
-                    {language === "en" && "Open calculator →"}
-                    {language === "fr" && "Ouvrir la calculatrice →"}
-                  </button>
-                </div>
-                <div className="md:w-72 bg-white/15 rounded-2xl p-6 text-white text-sm border border-white/20 flex-shrink-0">
-                  <div className="text-xs font-semibold text-white/70 uppercase tracking-wide mb-3">
-                    {language === "ca" && "Exemple de càlcul"}
-                    {language === "es" && "Ejemplo de cálculo"}
-                    {language === "en" && "Calculation example"}
-                    {language === "fr" && "Exemple de calcul"}
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-white/75">
-                        {language === "ca" && "Renda del treball"}
-                        {language === "es" && "Renta del trabajo"}
-                        {language === "en" && "Employment income"}
-                        {language === "fr" && "Revenu du travail"}
-                      </span>
-                      <span>30.000 €</span>
+          {/* Eines */}
+          <section id="eines" className="bg-[#F4F8F7]">
+            <div className="max-w-6xl mx-auto px-5 md:px-10 py-14 md:py-20 grid gap-7 md:gap-9">
+              <div className="grid gap-2.5 max-w-[58ch]">
+                <h2 className="font-display font-medium text-[30px] md:text-[40px] leading-[1.12] tracking-[-0.015em] text-[#12302F]">{t.nav?.eines}</h2>
+                <p className="text-base leading-relaxed text-[#4E6765]">
+                  {{
+                    ca: "Les fem servir cada dia al despatx. Algunes són d'accés lliure.",
+                    es: "Las usamos cada día en el despacho. Algunas son de acceso libre.",
+                    en: "We use them every day at the firm. Some are open to everyone.",
+                    fr: "Nous les utilisons chaque jour au cabinet. Certaines sont en accès libre.",
+                  }[language]}
+                </p>
+              </div>
+              <div className="grid md:grid-cols-2 md:gap-x-12">
+                {[
+                  {
+                    id: "calculadora",
+                    titol: t.nav?.calculadora,
+                    desc: {
+                      ca: "Estima la teva quota de l'IRPF en un minut.",
+                      es: "Estima tu cuota del IRPF en un minuto.",
+                      en: "Estimate your income tax in one minute.",
+                      fr: "Estimez votre IRPF en une minute.",
+                    }[language],
+                    estat: "lliure",
+                    obre: () => setShowIrpf(true),
+                  },
+                  {
+                    id: "calendari",
+                    titol: t.nav?.calendari,
+                    desc: {
+                      ca: "Els 14 festius nacionals i les festes de cada parròquia.",
+                      es: "Los 14 festivos nacionales y las fiestas de cada parroquia.",
+                      en: "The 14 national holidays and each parish's local holidays.",
+                      fr: "Les 14 jours fériés nationaux et les fêtes de chaque paroisse.",
+                    }[language],
+                    estat: "lliure",
+                    obre: () => setShowCalendari(true),
+                  },
+                  {
+                    id: "bretxa",
+                    titol: t.professionals.bretxaTitle,
+                    desc: t.professionals.bretxaDesc,
+                    estat: "acces",
+                    obre: () => {
+                      if (!user || !perfil) {
+                        setShowEinaFiscal(true);
+                        return;
+                      }
+                      if (perfil.rol !== 'maestro' && !(perfil.eines || []).includes('bretxa')) {
+                        setShowEinaFiscal(true);
+                        return;
+                      }
+                      window.open('https://bretxa-genere.onrender.com', '_blank');
+                    },
+                  },
+                  {
+                    id: "einaFiscal",
+                    titol: t.professionals.fiscalTitle,
+                    desc: t.professionals.fiscalDesc,
+                    estat: "acces",
+                    obre: () => setShowEinaFiscal(true),
+                  },
+                  {
+                    id: "pdfmd",
+                    titol: t.nav?.pdfmd,
+                    desc: {
+                      ca: "Converteix documents PDF en text editable.",
+                      es: "Convierte documentos PDF en texto editable.",
+                      en: "Turn PDF documents into editable text.",
+                      fr: "Convertissez des PDF en texte modifiable.",
+                    }[language],
+                    estat: "lliure",
+                    obre: () => setShowPdfMd(true),
+                  },
+                  {
+                    id: "despatxos",
+                    titol: { ca: "Eines per a despatxos", es: "Herramientas para despachos", en: "Tools for firms", fr: "Outils pour cabinets" }[language],
+                    desc: {
+                      ca: "Llicències per a altres professionals d'Andorra.",
+                      es: "Licencias para otros profesionales de Andorra.",
+                      en: "Licences for other professionals in Andorra.",
+                      fr: "Licences pour d'autres professionnels d'Andorre.",
+                    }[language],
+                    estat: "aviat",
+                  },
+                ].map((eina) => {
+                  const estat = {
+                    lliure: { ca: "Accés lliure", es: "Acceso libre", en: "Open access", fr: "Accès libre" },
+                    acces: { ca: "Amb accés", es: "Con acceso", en: "Sign-in required", fr: "Accès réservé" },
+                    aviat: { ca: "Properament", es: "Próximamente", en: "Coming soon", fr: "Bientôt" },
+                  }[eina.estat][language];
+                  const contingut = (
+                    <>
+                      <span className={`font-display font-medium text-[19px] ${eina.obre ? "text-[#12302F] group-hover:text-[#007A7B] transition-colors" : "text-[#4E6765]"}`}>{eina.titol}</span>
+                      <span className={`col-start-2 row-start-1 text-[13px] font-semibold ${eina.estat === "aviat" ? "text-[#4E6765]" : "text-[#007A7B]"}`}>{estat}</span>
+                      <span className="text-sm leading-relaxed text-[#4E6765]">{eina.desc}</span>
+                    </>
+                  );
+                  return eina.obre ? (
+                    <button key={eina.id} onClick={eina.obre} className="group text-left grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 items-baseline py-4 border-t border-[#D6E4E2]">
+                      {contingut}
+                    </button>
+                  ) : (
+                    <div key={eina.id} className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 items-baseline py-4 border-t border-[#D6E4E2]">
+                      {contingut}
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-white/75">
-                        {language === "ca" && "Mínim personal"}
-                        {language === "es" && "Mínimo personal"}
-                        {language === "en" && "Personal allowance"}
-                        {language === "fr" && "Minimum personnel"}
-                      </span>
-                      <span className="text-white/60">– 24.000 €</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white/75">
-                        {language === "ca" && "Bonificació Art. 46"}
-                        {language === "es" && "Bonificación Art. 46"}
-                        {language === "en" && "Art. 46 allowance"}
-                        {language === "fr" && "Bonification Art. 46"}
-                      </span>
-                      <span className="text-white/60">– 300 €</span>
-                    </div>
-                    <div className="border-t border-white/20 pt-2 mt-1 flex justify-between font-bold text-base">
-                      <span>
-                        {language === "ca" && "Quota final"}
-                        {language === "es" && "Cuota final"}
-                        {language === "en" && "Final tax"}
-                        {language === "fr" && "Impôt final"}
-                      </span>
-                      <span>300 €</span>
-                    </div>
-                    <div className="text-right text-white/50 text-xs">
-                      {language === "ca" && "Tipus efectiu: 1,00%"}
-                      {language === "es" && "Tipo efectivo: 1,00%"}
-                      {language === "en" && "Effective rate: 1.00%"}
-                      {language === "fr" && "Taux effectif : 1,00 %"}
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
           </section>
-          {/* FI BANNER CALCULADORA */}
+
+          {/* Articles */}
+          <section id="blog" className="bg-white">
+            <div className="max-w-6xl mx-auto px-5 md:px-10 py-14 md:py-20 grid gap-7 md:gap-9">
+              <div className="grid gap-2.5 max-w-[58ch]">
+                <h2 className="font-display font-medium text-[30px] md:text-[40px] leading-[1.12] tracking-[-0.015em] text-[#12302F]">{t.blogTitle}</h2>
+                <p className="text-base leading-relaxed text-[#4E6765]">
+                  {{
+                    ca: "Guies del despatx sobre societats, fiscalitat i residència a Andorra.",
+                    es: "Guías del despacho sobre sociedades, fiscalidad y residencia en Andorra.",
+                    en: "Our guides on companies, tax and residency in Andorra.",
+                    fr: "Nos guides sur les sociétés, la fiscalité et la résidence en Andorre.",
+                  }[language]}
+                </p>
+              </div>
+              <div className="grid">
+                {(blogPosts[language] || blogPosts.ca).map((post) => (
+                  <button
+                    key={post.slug}
+                    onClick={() => setCurrentBlogPost(post)}
+                    className="group text-left grid gap-1.5 md:grid-cols-[120px_1fr_auto] md:gap-6 md:items-baseline py-5 border-t border-[#D6E4E2]"
+                  >
+                    <span className="text-[13px] text-[#4E6765] tabular-nums">{post.date}</span>
+                    <span className="font-display font-medium text-[20px] leading-snug text-[#12302F] group-hover:text-[#007A7B] transition-colors">{post.title}</span>
+                    <span className="text-sm font-semibold text-[#007A7B]">{post.category}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
 
           {/* Secció SEO — text estàtic indexable per Google */}
-          <section className="py-16 bg-white">
-            <div className="container mx-auto px-4 max-w-4xl">
-              <h2 className="text-2xl font-bold mb-6 text-gray-800">{t.seoTitle}</h2>
-              {language === "ca" && (
-                <>
-                  <p className="text-gray-600 mb-4">ÀMBIT Associats és un despatx d'assessoria fiscal, comptable i mercantil amb seu a Escaldes-Engordany. Acompanyem tant a particulars com a empreses en les seves obligacions tributàries i en l'estructuració societària i patrimonial al Principat d'Andorra.</p>
-                  <p className="text-gray-600 mb-6">Som especialistes en la constitució i estructuració de societats andorranes, en la planificació fiscal i patrimonial a llarg termini, i en la gestió comptable i laboral del dia a dia. Un únic despatx per a totes les necessitats de la teva empresa a Andorra.</p>
-                  <h3 className="text-xl font-semibold mb-4 text-gray-800">Trams de l'IRPF a Andorra 2025</h3>
-                </>
-              )}
-              {language === "es" && (
-                <>
-                  <p className="text-gray-600 mb-4">ÀMBIT Associats es un despacho de asesoría fiscal, contable y mercantil con sede en Escaldes-Engordany. Acompañamos a particulares y empresas en sus obligaciones tributarias y en la estructuración societaria y patrimonial en el Principado de Andorra.</p>
-                  <p className="text-gray-600 mb-6">Somos especialistas en la constitución y estructuración de sociedades andorranas, en la planificación fiscal y patrimonial a largo plazo, y en la gestión contable y laboral del día a día. Un único despacho para todas las necesidades de tu empresa en Andorra.</p>
-                  <h3 className="text-xl font-semibold mb-4 text-gray-800">Tramos del IRPF en Andorra 2025</h3>
-                </>
-              )}
-              {language === "en" && (
-                <>
-                  <p className="text-gray-600 mb-4">ÀMBIT Associats is a tax, accounting and corporate advisory firm based in Escaldes-Engordany. We support both individuals and companies in their tax obligations and in corporate and wealth structuring in the Principality of Andorra.</p>
-                  <p className="text-gray-600 mb-6">We specialise in the incorporation and structuring of Andorran companies, long-term tax and wealth planning, and day-to-day accounting and payroll management. One firm for all your business needs in Andorra.</p>
-                  <h3 className="text-xl font-semibold mb-4 text-gray-800">Andorra IRPF 2025 tax brackets</h3>
-                </>
-              )}
-              {language === "fr" && (
-                <>
-                  <p className="text-gray-600 mb-4">ÀMBIT Associats est un cabinet de conseil fiscal, comptable et mercantile basé à Escaldes-Engordany. Nous accompagnons particuliers et entreprises dans leurs obligations fiscales et dans la structuration sociétaire et patrimoniale en Principauté d'Andorre.</p>
-                  <p className="text-gray-600 mb-6">Nous sommes spécialisés dans la constitution et la structuration de sociétés andorranes, dans la planification fiscale et patrimoniale à long terme, et dans la gestion comptable et sociale au quotidien. Un seul cabinet pour tous vos besoins en Andorre.</p>
-                  <h3 className="text-xl font-semibold mb-4 text-gray-800">Tranches IRPF Andorre 2025</h3>
-                </>
-              )}
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr className="bg-[#009B9C] text-white">
-                      <th className="p-3 text-left">{language === "en" ? "Taxable base" : language === "fr" ? "Base imposable" : "Base liquidable"}</th>
-                      <th className="p-3 text-left">{language === "en" ? "Rate" : language === "fr" ? "Taux" : "Tipus"}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b"><td className="p-3">{language === "en" ? "€0 – €24,000" : language === "fr" ? "0 – 24 000 €" : "0 – 24.000 €"}</td><td className="p-3">0%</td></tr>
-                    <tr className="border-b bg-gray-50"><td className="p-3">{language === "en" ? "€24,001 – €40,000" : language === "fr" ? "24 001 – 40 000 €" : "24.001 – 40.000 €"}</td><td className="p-3">5%</td></tr>
-                    <tr className="border-b"><td className="p-3">{language === "en" ? "Above €40,000" : language === "fr" ? "Plus de 40 000 €" : language === "es" ? "Más de 40.000 €" : "Més de 40.000 €"}</td><td className="p-3">10%</td></tr>
-                  </tbody>
-                </table>
+          <section className="bg-[#F4F8F7]">
+            <div className="max-w-6xl mx-auto px-5 md:px-10 py-14 md:py-20 grid gap-8 md:grid-cols-[1.2fr_1fr] md:gap-16">
+              <div className="grid gap-4 content-start text-[15px] leading-relaxed text-[#4E6765]">
+                <h2 className="font-display font-medium text-[26px] md:text-[30px] leading-[1.15] tracking-[-0.01em] text-[#12302F]">{t.seoTitle}</h2>
+                {language === "ca" && (
+                  <>
+                    <p>ÀMBIT Associats és un despatx d'assessoria fiscal, comptable i mercantil amb seu a Escaldes-Engordany. Acompanyem tant a particulars com a empreses en les seves obligacions tributàries i en l'estructuració societària i patrimonial al Principat d'Andorra.</p>
+                    <p>Som especialistes en la constitució i estructuració de societats andorranes, en la planificació fiscal i patrimonial a llarg termini, i en la gestió comptable i laboral del dia a dia. Un únic despatx per a totes les necessitats de la teva empresa a Andorra.</p>
+                  </>
+                )}
+                {language === "es" && (
+                  <>
+                    <p>ÀMBIT Associats es un despacho de asesoría fiscal, contable y mercantil con sede en Escaldes-Engordany. Acompañamos a particulares y empresas en sus obligaciones tributarias y en la estructuración societaria y patrimonial en el Principado de Andorra.</p>
+                    <p>Somos especialistas en la constitución y estructuración de sociedades andorranas, en la planificación fiscal y patrimonial a largo plazo, y en la gestión contable y laboral del día a día. Un único despacho para todas las necesidades de tu empresa en Andorra.</p>
+                  </>
+                )}
+                {language === "en" && (
+                  <>
+                    <p>ÀMBIT Associats is a tax, accounting and corporate advisory firm based in Escaldes-Engordany. We support both individuals and companies in their tax obligations and in corporate and wealth structuring in the Principality of Andorra.</p>
+                    <p>We specialise in the incorporation and structuring of Andorran companies, long-term tax and wealth planning, and day-to-day accounting and payroll management. One firm for all your business needs in Andorra.</p>
+                  </>
+                )}
+                {language === "fr" && (
+                  <>
+                    <p>ÀMBIT Associats est un cabinet de conseil fiscal, comptable et mercantile basé à Escaldes-Engordany. Nous accompagnons particuliers et entreprises dans leurs obligations fiscales et dans la structuration sociétaire et patrimoniale en Principauté d'Andorre.</p>
+                    <p>Nous sommes spécialisés dans la constitution et la structuration de sociétés andorranes, dans la planification fiscale et patrimoniale à long terme, et dans la gestion comptable et sociale au quotidien. Un seul cabinet pour tous vos besoins en Andorre.</p>
+                  </>
+                )}
+              </div>
+              <div className="grid gap-3 content-start">
+                <h3 className="font-display font-medium text-xl text-[#12302F]">
+                  {language === "ca" && "Trams de l'IRPF a Andorra 2025"}
+                  {language === "es" && "Tramos del IRPF en Andorra 2025"}
+                  {language === "en" && "Andorra IRPF 2025 tax brackets"}
+                  {language === "fr" && "Tranches IRPF Andorre 2025"}
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-[15px] border-collapse tabular-nums">
+                    <thead>
+                      <tr className="text-[13px] text-[#4E6765]">
+                        <th className="py-2 text-left font-semibold">{language === "en" ? "Taxable base" : language === "fr" ? "Base imposable" : "Base liquidable"}</th>
+                        <th className="py-2 text-right font-semibold">{language === "en" ? "Rate" : language === "fr" ? "Taux" : "Tipus"}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-[#12302F]">
+                      <tr className="border-t border-[#D6E4E2]"><td className="py-3">{language === "en" ? "€0 – €24,000" : language === "fr" ? "0 – 24 000 €" : "0 – 24.000 €"}</td><td className="py-3 text-right">0%</td></tr>
+                      <tr className="border-t border-[#D6E4E2]"><td className="py-3">{language === "en" ? "€24,001 – €40,000" : language === "fr" ? "24 001 – 40 000 €" : "24.001 – 40.000 €"}</td><td className="py-3 text-right">5%</td></tr>
+                      <tr className="border-t border-[#D6E4E2]"><td className="py-3">{language === "en" ? "Above €40,000" : language === "fr" ? "Plus de 40 000 €" : language === "es" ? "Más de 40.000 €" : "Més de 40.000 €"}</td><td className="py-3 text-right">10%</td></tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </section>
 
           {/* Contacte */}
-          <section id="contact" className="py-20 bg-[#009B9C] text-white">
-            <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center mb-8">{t.contact}</h2>
-              <p className="text-center text-lg mb-10">{t.contactInfo}</p>
-              <div className="max-w-lg mx-auto space-y-4">
-                <form action="https://formspree.io/f/mdkdrkze" method="POST" className="space-y-4">
-  <input
-    type="text"
-    name="name"
-    placeholder={t.form.name}
-    className="w-full p-3 rounded bg-white text-gray-800"
-    required
-  />
-  <input
-    type="email"
-    name="email"
-    placeholder={t.form.email}
-    className="w-full p-3 rounded bg-white text-gray-800"
-    required
-  />
-  <input
-    type="tel"
-    name="phone"
-    placeholder={t.form.phone}
-    className="w-full p-3 rounded bg-white text-gray-800"
-  />
-  <textarea
-    name="message"
-    placeholder={t.form.message}
-    className="w-full p-3 rounded bg-white text-gray-800"
-    rows="4"
-    required
-  ></textarea>
-  <button
-    type="submit"
-    className="w-full bg-[#006667] text-white py-3 rounded-lg hover:bg-white hover:text-[#006667] transition"
-  >
-    {t.form.send}
-  </button>
-  <a
-    href="https://wa.me/376650042"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="block w-full bg-[#00C8C9] hover:bg-[#00A8A9] text-white py-3 rounded-lg text-center font-semibold transition"
-  >
-    {t.whatsapp}
-  </a>
-</form>
-                
-              </div>
-            </div>
-          </section>
-
-         {/* Nota Legal */}
-<section id="legal" className="py-20 bg-white relative">
-  {/* Imatge inferior esquerra */}
-  <div className="absolute bottom-0 left-0 w-1/3 h-260 pointer-events-none z-0 flex items-end justify-start">
-    <img
-      src={legalBottomLeftImg}
-      alt="Decoració inferior esquerra"
-      className="max-h-full max-w-full object-contain opacity-100"
-    />
-  </div>
-
-  {/* Imatge inferior dreta */}
-  <div className="absolute bottom-0 right-0 w-1/3 h-180 pointer-events-none z-0 flex items-end justify-end">
-    <img
-      src={legalBottomRightImg}
-      alt="Decoració inferior dreta"
-      className="max-h-full max-w-full object-contain opacity-100"
-    />
-  </div>
-
-  <div className="container mx-auto px-4 relative z-10">
-    <h2 className="text-3xl font-bold text-center mb-8">{t.legal}</h2>
-    <div className="flex flex-wrap justify-center gap-6">
-      {Object.keys(t.legalTabs).map((key) => (
-        <button
-          key={key}
-          onClick={() => {
-            const win = window.open("", "_blank");
-            win.document.write(`
-              <!DOCTYPE html>
-              <html lang="${language}">
-              <head>
-                <meta charset="UTF-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-                <title>${t.legalTabs[key]} - ÀMBIT Associats</title>
-                <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-                <style>
-                  body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; padding: 2rem; }
-                  h3, h4 { color: #009B9C; }
-                  a { color: #009B9C; text-decoration: underline; }
-                  .container { max-width: 900px; margin: 0 auto; }
-                </style>
-              </head>
-              <body>
-                <div class="container">
-                  ${legalContent[language][key]}
-                  <p><br><a href="javascript:window.close()" style="color:#006667">Tancar aquesta finestra</a></p>
+          <section id="contact" className="relative isolate overflow-hidden bg-[#007A7B] text-white">
+            <Topo />
+            <div className="max-w-6xl mx-auto px-5 md:px-10 pt-14 pb-10 md:pt-20 md:pb-14 grid gap-8 md:grid-cols-[1fr_1.15fr] md:gap-16">
+              <div className="grid gap-5 content-start">
+                <div className="grid gap-2.5">
+                  <h2 className="font-display font-medium text-[30px] md:text-[40px] leading-[1.12] tracking-[-0.015em]">{t.contact}</h2>
+                  <p className="text-base leading-relaxed text-[#D2ECEC] max-w-[44ch]">
+                    {{
+                      ca: "Explica'ns què necessites i et respondrem per correu o per telèfon.",
+                      es: "Cuéntanos qué necesitas y te responderemos por correo o por teléfono.",
+                      en: "Tell us what you need and we'll reply by email or phone.",
+                      fr: "Dites-nous ce dont vous avez besoin et nous vous répondrons par e-mail ou par téléphone.",
+                    }[language]}
+                  </p>
                 </div>
-              </body>
-              </html>
-            `);
-            win.document.close();
-          }}
-          className="text-[#009B9C] hover:underline text-lg font-medium"
-        >
-          {t.legalTabs[key]}
-        </button>
-      ))}
-    </div>
-  </div>
-</section>
+                <dl className="grid gap-3 text-base">
+                  <div>
+                    <dt className="text-[13px] text-[#BFE4E4]">{t.form.email}</dt>
+                    <dd className="font-medium">info@ambit.ad</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[13px] text-[#BFE4E4]">{{ ca: "Mòbil i WhatsApp", es: "Móvil y WhatsApp", en: "Mobile and WhatsApp", fr: "Mobile et WhatsApp" }[language]}</dt>
+                    <dd className="font-medium">+376 650 042</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[13px] text-[#BFE4E4]">{{ ca: "Despatx", es: "Despacho", en: "Office", fr: "Cabinet" }[language]}</dt>
+                    <dd className="font-medium">Escaldes-Engordany, Andorra</dd>
+                  </div>
+                </dl>
+              </div>
+              <form action="https://formspree.io/f/mdkdrkze" method="POST" className="grid gap-3">
+                <label className="grid gap-1.5 text-sm font-medium text-[#E6F5F5]">
+                  {t.form.name}
+                  <input type="text" name="name" required className="w-full px-3.5 py-2.5 rounded-[10px] bg-white text-[#12302F] text-[15px] focus:outline-none focus-visible:ring-[3px] focus-visible:ring-[#4DB6B7]" />
+                </label>
+                <label className="grid gap-1.5 text-sm font-medium text-[#E6F5F5]">
+                  {t.form.email}
+                  <input type="email" name="email" required className="w-full px-3.5 py-2.5 rounded-[10px] bg-white text-[#12302F] text-[15px] focus:outline-none focus-visible:ring-[3px] focus-visible:ring-[#4DB6B7]" />
+                </label>
+                <label className="grid gap-1.5 text-sm font-medium text-[#E6F5F5]">
+                  {t.form.phone}
+                  <input type="tel" name="phone" className="w-full px-3.5 py-2.5 rounded-[10px] bg-white text-[#12302F] text-[15px] focus:outline-none focus-visible:ring-[3px] focus-visible:ring-[#4DB6B7]" />
+                </label>
+                <label className="grid gap-1.5 text-sm font-medium text-[#E6F5F5]">
+                  {t.form.message}
+                  <textarea name="message" rows="4" required className="w-full px-3.5 py-2.5 rounded-[10px] bg-white text-[#12302F] text-[15px] focus:outline-none focus-visible:ring-[3px] focus-visible:ring-[#4DB6B7]"></textarea>
+                </label>
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-3 pt-1">
+                  <button type="submit" className="bg-white text-[#00676A] font-semibold text-base px-6 py-3 rounded-full hover:bg-[#E8F6F6] transition">
+                    {t.form.send}
+                  </button>
+                  <a
+                    href="https://wa.me/376650042"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-[15px] underline underline-offset-4 decoration-white/55 hover:decoration-white"
+                  >
+                    {t.whatsapp}
+                  </a>
+                </div>
+              </form>
+            </div>
+            <Serralada fons="#F4F8F7" id="serralada-contacte" />
+          </section>
         </>
       ) : currentBlogPost ? (
         /* Vista detallada d'un article del blog */
@@ -1830,13 +1761,19 @@ const App = () => {
     </div>
   </div>
 )}
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-6 text-center text-sm">
-        <div className="container mx-auto px-4">
+      {/* Peu: logotip en color, notes legals i accés del personal */}
+      <footer id="legal" className="bg-[#F4F8F7] border-t border-[#D6E4E2]">
+        <div className="max-w-6xl mx-auto px-5 md:px-10 py-7 md:py-8 grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-center md:gap-7 text-sm text-[#4E6765]">
+          <img src="/logo-color.png" alt="ÀMBIT Associats" width="624" height="234" className="block w-[116px] h-auto" />
           <p>{t.footer}</p>
-          <a href="/portal" className="inline-block mt-2 text-xs text-gray-400 hover:text-gray-200 hover:underline">
-            Accés del personal
-          </a>
+          <nav aria-label={t.legal} className="flex flex-wrap gap-x-5 gap-y-2">
+            {Object.keys(t.legalTabs).map((key) => (
+              <button key={key} onClick={() => obreLegal(key)} className="text-[#12302F] hover:text-[#007A7B] hover:underline underline-offset-4">
+                {t.legalTabs[key]}
+              </button>
+            ))}
+            <a href="/portal" className="text-[#12302F] hover:text-[#007A7B] hover:underline underline-offset-4">{t.nav?.personal}</a>
+          </nav>
         </div>
       </footer>
     </div>
