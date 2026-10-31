@@ -23,32 +23,32 @@ const ModalMissatge = ({ missatge, onTancar }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
-        <h3 className="text-lg font-bold text-gray-800 mb-1">{missatge.titol}</h3>
-        <p className="text-xs text-gray-500 mb-4">
+    <div className="fixed inset-0 bg-[#12302F]/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 font-text">
+        <h3 className="font-display font-medium text-[21px] text-[#12302F] mb-1">{missatge.titol}</h3>
+        <p className="text-xs text-[#4E6765] mb-4">
           {missatge.ajuda || 'Envia aquest missatge a l\'usuari des del teu correu.'}
         </p>
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">Per a</label>
-            <p className="text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-              {missatge.email || <span className="text-gray-400 italic">Escriu l'adreça al teu programa de correu</span>}
+            <label className="block text-xs font-semibold text-[#4E6765] mb-1">Per a</label>
+            <p className="text-sm text-[#2B4644] bg-[#F4F8F7] border border-[#D6E4E2] rounded-lg px-3 py-2">
+              {missatge.email || <span className="text-[#6B8280] italic">Escriu l'adreça al teu programa de correu</span>}
             </p>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">Assumpte</label>
-            <p className="text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+            <label className="block text-xs font-semibold text-[#4E6765] mb-1">Assumpte</label>
+            <p className="text-sm text-[#2B4644] bg-[#F4F8F7] border border-[#D6E4E2] rounded-lg px-3 py-2">
               {missatge.assumpte}
             </p>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">Missatge</label>
+            <label className="block text-xs font-semibold text-[#4E6765] mb-1">Missatge</label>
             <textarea
               readOnly
               value={missatge.cos}
               rows={10}
-              className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 font-mono"
+              className="w-full text-sm text-[#2B4644] bg-[#F4F8F7] border border-[#D6E4E2] rounded-lg px-3 py-2 font-mono"
             />
           </div>
         </div>
@@ -56,23 +56,23 @@ const ModalMissatge = ({ missatge, onTancar }) => {
           <button
             type="button"
             onClick={copiar}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold
-                       py-2.5 rounded-xl transition text-sm"
+            className="flex-1 bg-[#EAF2F0] hover:bg-[#DCE9E6] text-[#2B4644] font-semibold
+                       py-2.5 rounded-full transition text-sm"
           >
             {copiat ? 'Copiat ✓' : 'Copiar'}
           </button>
           <a
             href={mailto}
-            className="flex-1 text-center bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold
-                       py-2.5 rounded-xl transition text-sm"
+            className="flex-1 text-center bg-[#007A7B] hover:bg-[#00676A] text-white font-semibold
+                       py-2.5 rounded-full transition text-sm"
           >
             Obrir correu
           </a>
           <button
             type="button"
             onClick={onTancar}
-            className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700
-                       font-semibold rounded-xl transition text-sm"
+            className="px-4 py-2.5 bg-[#EAF2F0] hover:bg-[#DCE9E6] text-[#2B4644]
+                       font-semibold rounded-full transition text-sm"
           >
             Tancar
           </button>

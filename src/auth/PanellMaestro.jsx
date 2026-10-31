@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from './AuthContext';
 import ModalMissatge from './ModalMissatge';
+import CapcaleraEina, { botoCapcalera } from './CapcaleraEina';
 
 // El rol maestro només s'assigna a mà a Supabase, mai des del panell.
 const ROLS = ['individual', 'empleat', 'empresa'];
@@ -16,8 +17,8 @@ const ESTAT_COLORS = {
 const ROL_COLORS = {
   maestro:    'bg-purple-100 text-purple-700',
   empresa:    'bg-blue-100 text-blue-700',
-  empleat:    'bg-teal-100 text-teal-700',
-  individual: 'bg-gray-100 text-gray-600',
+  empleat:    'bg-[#E8F6F6] text-[#00676A]',
+  individual: 'bg-[#EAF2F0] text-[#4E6765]',
 };
 
 // ─── Missatges per a l'usuari ────────────────────────────────────────────────
@@ -215,36 +216,26 @@ const actualitzar = async (id, canvis) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Capçalera */}
-      <header className="bg-gradient-to-r from-[#007A7B] to-[#009B9C] text-white py-4 px-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold">Panel d'administració — Accés Maestro</h1>
-            <p className="text-white/70 text-xs mt-0.5">Gestió d'usuaris i accessos · ÀMBIT Associats</p>
-          </div>
-          <button
-            onClick={onTancar}
-            className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl text-sm font-semibold transition"
-          >
-            ← Zona Professionals
-          </button>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#F4F8F7] font-text text-[#12302F]">
+      <CapcaleraEina
+        titol="Panell d'administració"
+        subtitol="Gestió d'usuaris i accessos de la Zona Professionals"
+        accions={<button onClick={onTancar} className={botoCapcalera}>← Zona Professionals</button>}
+      />
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-5 md:px-10 py-8">
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {[
-            { label: 'Total usuaris', valor: stats.total, color: 'text-gray-700' },
+            { label: 'Total usuaris', valor: stats.total, color: 'text-[#2B4644]' },
             { label: 'Pendents aprovació', valor: stats.pendents, color: 'text-amber-600' },
             { label: 'Actius', valor: stats.actius, color: 'text-green-600' },
             { label: 'Bloquejats', valor: stats.bloquejats, color: 'text-red-600' },
           ].map((s, i) => (
-            <div key={i} className="bg-white rounded-xl border border-gray-200 p-4 text-center">
-              <p className={`text-2xl font-bold ${s.color}`}>{s.valor}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+            <div key={i} className="bg-white rounded-xl border border-[#D6E4E2] p-4 text-center">
+              <p className={`font-display font-medium text-[28px] tabular-nums ${s.color}`}>{s.valor}</p>
+              <p className="text-xs text-[#4E6765] mt-0.5">{s.label}</p>
             </div>
           ))}
         </div>
@@ -262,12 +253,12 @@ const actualitzar = async (id, canvis) => {
               {solicituds.map(s => (
                 <div key={s.id} className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm text-gray-800">{s.nom}</p>
-                    <p className="text-xs text-gray-500">{s.email}</p>
-                    <p className="text-xs text-teal-600 font-medium mt-0.5">
+                    <p className="font-semibold text-sm text-[#12302F]">{s.nom}</p>
+                    <p className="text-xs text-[#4E6765]">{s.email}</p>
+                    <p className="text-xs text-[#007A7B] font-medium mt-0.5">
                       Sol·licita: {(s.eines || []).map(e => e === 'irpf' ? 'IRPF' : 'Bretxa').join(' + ') || '—'}
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5">
+                    <p className="text-xs text-[#6B8280] mt-0.5">
                       Sol·licitat: {new Date(s.creat_el).toLocaleDateString('ca-AD')}
                     </p>
                   </div>
@@ -275,7 +266,7 @@ const actualitzar = async (id, canvis) => {
                     {(s.eines || []).includes('irpf') && (
                       <button
                         onClick={() => { setModalCrear(s); setContrasenyaCrear(''); setErrorCrear(''); setEinesAprovant(['irpf']); }}
-                        className="px-3 py-1.5 bg-teal-500 hover:bg-teal-600 text-white text-xs font-semibold rounded-lg transition"
+                        className="px-3 py-1.5 bg-[#007A7B] hover:bg-[#00676A] text-white text-xs font-semibold rounded-lg transition"
                       >
                         ✓ Aprovar IRPF
                       </button>
@@ -316,18 +307,18 @@ const actualitzar = async (id, canvis) => {
         {modalCrear && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">
+              <h3 className="text-lg font-bold text-[#12302F] mb-4">
                 Crear compte per a {modalCrear.nom}
               </h3>
               <form onSubmit={(e) => { e.preventDefault(); aprovarSolicitud(modalCrear, einesAprovant); }} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">Email</label>
-                  <p className="text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                  <label className="block text-xs font-semibold text-[#4E6765] mb-1">Email</label>
+                  <p className="text-sm text-[#2B4644] bg-[#F4F8F7] border border-[#D6E4E2] rounded-lg px-3 py-2">
                     {modalCrear.email}
                   </p>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1">
+                  <label className="block text-xs font-semibold text-[#4E6765] mb-1">
                     Contrasenya temporal
                   </label>
                   <input
@@ -337,8 +328,8 @@ const actualitzar = async (id, canvis) => {
                     required
                     minLength={8}
                     placeholder="Mínim 8 caràcters"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-                               focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+                    className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm
+                               focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
                   />
                 </div>
                 {errorCrear && (
@@ -350,16 +341,16 @@ const actualitzar = async (id, canvis) => {
                   <button
                     type="submit"
                     disabled={carregantCrear}
-                    className="flex-1 bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold
-                               py-2.5 rounded-xl transition disabled:opacity-50 text-sm"
+                    className="flex-1 bg-[#007A7B] hover:bg-[#00676A] text-white font-bold
+                               py-2.5 rounded-full transition disabled:opacity-50 text-sm"
                   >
                     {carregantCrear ? 'Creant...' : '✓ Crear compte'}
                   </button>
                   <button
                     type="button"
                     onClick={() => { setModalCrear(null); setContrasenyaCrear(''); setErrorCrear(''); setEinesAprovant([]); }}
-                    className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700
-                               font-semibold rounded-xl transition text-sm"
+                    className="px-4 py-2.5 bg-[#EAF2F0] hover:bg-[#DCE9E6] text-[#2B4644]
+                               font-semibold rounded-full transition text-sm"
                   >
                     Cancel·lar
                   </button>
@@ -373,20 +364,20 @@ const actualitzar = async (id, canvis) => {
         {missatge && <ModalMissatge missatge={missatge} onTancar={() => setMissatge(null)} />}
 
         {/* Filtres */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex gap-3">
+        <div className="bg-white rounded-xl border border-[#D6E4E2] p-4 mb-4 flex gap-3">
           <input
             type="text"
             value={cerca}
             onChange={e => setCerca(e.target.value)}
             placeholder="Cercar per nom o email..."
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+            className="flex-1 border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm
+                       focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
           />
           <select
             value={filtreEstat}
             onChange={e => setFiltreEstat(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm
-                       focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+            className="border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm
+                       focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
           >
             <option value="tots">Tots els estats</option>
             <option value="pendent">Pendents</option>
@@ -397,18 +388,18 @@ const actualitzar = async (id, canvis) => {
 
         {/* Taula d'usuaris */}
         {carregant ? (
-          <div className="text-center py-12 text-gray-400">Carregant usuaris...</div>
+          <div className="text-center py-12 text-[#6B8280]">Carregant usuaris...</div>
         ) : usuarisFiltrats.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">Cap usuari trobat</div>
+          <div className="text-center py-12 text-[#6B8280]">Cap usuari trobat</div>
         ) : (
           <div className="space-y-2">
             {usuarisFiltrats.map(u => (
-              <div key={u.id} className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
+              <div key={u.id} className="bg-white rounded-xl border border-[#D6E4E2] p-4 flex items-center gap-4">
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <p className="font-semibold text-gray-800 text-sm truncate">
-                      {u.nom || <span className="text-gray-400 italic">Sense nom</span>}
+                    <p className="font-semibold text-[#12302F] text-sm truncate">
+                      {u.nom || <span className="text-[#6B8280] italic">Sense nom</span>}
                     </p>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ROL_COLORS[u.rol]}`}>
                       {u.rol}
@@ -417,13 +408,13 @@ const actualitzar = async (id, canvis) => {
                       {u.estat}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400">{u.email}</p>
-                  <span className="text-xs text-gray-400">
+                  <p className="text-xs text-[#6B8280]">{u.email}</p>
+                  <span className="text-xs text-[#6B8280]">
                     {(u.eines || []).map(e => e === 'irpf' ? 'IRPF' : 'Bretxa').join(' + ') || 'Sense eines'}
                   </span>
-                  <p className="text-xs text-gray-300 mt-0.5">
+                  <p className="text-xs text-[#9FB3B0] mt-0.5">
                     Registrat: {new Date(u.creat_el).toLocaleDateString('ca-AD')}
-                    {u.id === user?.id && <span className="ml-2 text-[#009B9C] font-semibold">(Tu)</span>}
+                    {u.id === user?.id && <span className="ml-2 text-[#007A7B] font-semibold">(Tu)</span>}
                   </p>
                 </div>
 
@@ -434,8 +425,8 @@ const actualitzar = async (id, canvis) => {
                     <select
                       value={u.rol}
                       onChange={e => actualitzar(u.id, { rol: e.target.value })}
-                      className="border border-gray-300 rounded-lg px-2 py-1.5 text-xs
-                                 focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+                      className="border border-[#C5D6D3] rounded-lg px-2 py-1.5 text-xs
+                                 focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
                     >
                       {ROLS.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
@@ -484,7 +475,7 @@ const actualitzar = async (id, canvis) => {
           </div>
         )}
 
-        <p className="text-center text-xs text-gray-400 mt-6">
+        <p className="text-center text-xs text-[#6B8280] mt-6">
           {usuaris.length} usuari{usuaris.length !== 1 ? 's' : ''} registrat{usuaris.length !== 1 ? 's' : ''}
         </p>
       </div>
