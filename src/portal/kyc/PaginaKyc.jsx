@@ -15,7 +15,7 @@ import { AVIS_25, campsPendents } from './kyc-regles';
 import { FormCtx, ambValor, Bilingue, Seccio } from './camps';
 import { SECCIONS_PF, SECCIONS_PJ } from './Seccions';
 import SignaturaCanvas from '../signar/SignaturaCanvas';
-import logo from '../signar/logo-ambit.jpg';
+import MarcClient from '../MarcClient';
 
 const MAX_ADJUNT = 20 * 1024 * 1024;
 const TIPUS_ADJUNT = ['application/pdf', 'image/jpeg', 'image/png'];
@@ -38,42 +38,37 @@ const crida = async (body) => {
 
 // ─── Pantalla ───────────────────────────────────────────────────────────────
 const Pantalla = ({ titol, children }) => (
-  <div className="min-h-screen bg-gray-100 py-6 sm:py-10 px-3">
-    <div className="max-w-3xl mx-auto bg-white shadow-sm rounded-lg px-4 sm:px-10 py-8">
-      <header className="flex items-start justify-between gap-4 pb-4 border-b-2 border-[#009B9C]">
-        <img src={logo} alt="ÀMBIT Associats" className="h-12 sm:h-14 w-auto" />
-        <div className="text-right">
-          <h1 className="text-sm sm:text-lg font-bold text-[#009B9C] leading-tight">{titol.ca}</h1>
-          <p className="text-xs sm:text-sm italic text-gray-500">{titol.en}</p>
-        </div>
+  <MarcClient>
+      <header className="pb-5 border-b border-[#D6E4E2]">
+        <h1 className="font-display font-medium text-[22px] sm:text-[28px] leading-tight text-[#12302F]">{titol.ca}</h1>
+        <p className="text-sm italic text-[#4E6765] mt-1">{titol.en}</p>
       </header>
       {children}
-      <footer className="mt-10 pt-3 border-t border-[#009B9C]/60 text-[10px] text-gray-500 leading-relaxed">
+      <footer className="mt-10 pt-4 border-t border-[#D6E4E2] text-[11px] text-[#4E6765] leading-relaxed">
         <p>{T.peu[0]}</p>
         <p>{T.peu[1]}</p>
       </footer>
-    </div>
-  </div>
+  </MarcClient>
 );
 
 const Missatge = ({ icona, ca, en, children, titol }) => (
   <Pantalla titol={titol}>
     <div className="text-center py-12">
       <div className="text-5xl mb-4">{icona}</div>
-      <h2 className="text-xl font-bold text-gray-800">{ca}</h2>
-      <p className="text-sm italic text-gray-500 mt-1">{en}</p>
+      <h2 className="font-display font-medium text-[24px] text-[#12302F]">{ca}</h2>
+      <p className="text-sm italic text-[#4E6765] mt-1">{en}</p>
       {children}
     </div>
   </Pantalla>
 );
 
 const BotoPrimari = ({ children, ...p }) => (
-  <button type="button" {...p} className="bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold px-5 py-3 rounded-xl text-sm transition disabled:opacity-50">
+  <button type="button" {...p} className="bg-[#007A7B] hover:bg-[#00676A] text-white font-semibold px-6 py-3 rounded-full text-sm transition disabled:opacity-50">
     {children}
   </button>
 );
 const BotoSecundari = ({ children, ...p }) => (
-  <button type="button" {...p} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-5 py-3 rounded-xl text-sm transition disabled:opacity-50">
+  <button type="button" {...p} className="bg-[#EAF2F0] hover:bg-[#DCE9E6] text-[#2B4644] font-semibold px-6 py-3 rounded-full text-sm transition disabled:opacity-50">
     {children}
   </button>
 );
@@ -98,11 +93,11 @@ const FilaDocument = ({ tipus, persona, nom, obligatori, opcionalAmbit, adjunts,
   const [dataValor, setDataValor] = useState('');
   const valids = meus.filter((a) => a.valid !== false);
   return (
-    <div className={`py-3 border-b border-gray-100 ${pendent ? 'bg-red-50/60 -mx-2 px-2 rounded' : ''}`}>
+    <div className={`py-3 border-b border-[#E4EEEC] ${pendent ? 'bg-red-50/60 -mx-2 px-2 rounded' : ''}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex-1 min-w-[14rem]">
           <Bilingue ca={nom.ca} en={nom.en} />
-          <p className={`text-[11px] mt-1 font-semibold ${obligatori && !opcionalAmbit ? (valids.length ? 'text-green-700' : 'text-red-600') : 'text-gray-400'}`}>
+          <p className={`text-[11px] mt-1 font-semibold ${obligatori && !opcionalAmbit ? (valids.length ? 'text-green-700' : 'text-red-600') : 'text-[#6B8280]'}`}>
             {obligatori && opcionalAmbit
               ? (valids.length ? 'Adjuntat ✓ / Attached ✓' : 'Opcional: ÀMBIT ja disposa d\'aquesta documentació / Optional: ÀMBIT already holds this document')
               : obligatori ? (valids.length ? 'Adjuntat ✓ / Attached ✓' : 'Obligatori / Required') : 'Si escau / If applicable'}
@@ -110,22 +105,22 @@ const FilaDocument = ({ tipus, persona, nom, obligatori, opcionalAmbit, adjunts,
         </div>
         <div className="text-right">
           {dataDoc && (
-            <label className="block text-[11px] text-gray-600 mb-1">
-              {dataDoc.ca} <span className="italic text-gray-400">/ {dataDoc.en}</span>
+            <label className="block text-[11px] text-[#4E6765] mb-1">
+              {dataDoc.ca} <span className="italic text-[#6B8280]">/ {dataDoc.en}</span>
               <input type="date" value={dataValor} onChange={(e) => setDataValor(e.target.value)}
-                className="block ml-auto mt-0.5 bg-[#FBFAF1] border border-[#C2BD6B] rounded-sm px-2 py-1 text-sm" />
+                className="block ml-auto mt-0.5 bg-[#F7FBFA] border border-[#B9D3CF] rounded-sm px-2 py-1 text-sm" />
             </label>
           )}
           <input ref={entrada} type="file" accept="application/pdf,image/jpeg,image/png" className="hidden"
             onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) onPuja(tipus, persona, f, dataDoc ? { [dataDoc.camp]: dataValor } : {}); }} />
           <button type="button" disabled={ocupat || (dataDoc && !dataValor)} onClick={() => entrada.current?.click()}
-            className="text-sm font-semibold text-[#007A7B] border border-[#009B9C]/50 rounded-lg px-3 py-1.5 hover:bg-[#009B9C]/5 disabled:opacity-50">
+            className="text-sm font-semibold text-[#007A7B] border border-[#007A7B]/50 rounded-lg px-3 py-1.5 hover:bg-[#007A7B]/5 disabled:opacity-50">
             + Adjuntar / Attach
           </button>
         </div>
       </div>
       {meus.map((a) => (
-        <div key={a.id} className="flex items-center gap-2 text-xs text-gray-600 mt-1.5 pl-1">
+        <div key={a.id} className="flex items-center gap-2 text-xs text-[#4E6765] mt-1.5 pl-1">
           <span>📎 {a.nom_fitxer || 'document'} · {(a.mida / 1024).toFixed(0)} KB
             {a.data_caducitat && ` · caduca el / expires on ${dataCurta(a.data_caducitat)}`}
             {a.data_document && ` · data / date ${dataCurta(a.data_document)}`}
@@ -193,13 +188,13 @@ const PasDocuments = ({ tipus, dades, docs, setDocs }) => {
   return (
     <>
       <Seccio ca={textos.titol.ca} en={textos.titol.en} />
-      <p className="text-xs text-gray-500 mb-2">PDF, JPG o PNG, màxim 20 MB per fitxer. Podeu adjuntar més d'un fitxer per document (p. ex. les dues cares). /
+      <p className="text-xs text-[#4E6765] mb-2">PDF, JPG o PNG, màxim 20 MB per fitxer. Podeu adjuntar més d'un fitxer per document (p. ex. les dues cares). /
         <span className="italic"> PDF, JPG or PNG, up to 20 MB per file. You may attach more than one file per document (e.g. both sides).</span></p>
       {files.map((f) => (
         <FilaDocument key={`${f.t}-${f.p || ''}`} tipus={f.t} persona={f.p} nom={f.nom} obligatori={requerit(f.t, f.p)}
           opcionalAmbit={docs.documentacio_ambit} pendent={pendent(f.t, f.p) && !docs.documentacio_ambit} adjunts={docs.adjunts} onPuja={puja} onTreu={treu} ocupat={ocupat} />
       ))}
-      {ocupat && <p className="text-xs text-gray-500 mt-2">Un moment… / One moment…</p>}
+      {ocupat && <p className="text-xs text-[#4E6765] mt-2">Un moment… / One moment…</p>}
       <AvisError>{error}</AvisError>
     </>
   );
@@ -211,14 +206,14 @@ const TextPdp = () => (
     {T.pdp.seccions.map((s) => (
       <div key={s.titol.ca}>
         <Seccio ca={s.titol.ca} en={s.titol.en} />
-        {s.nota && <p className="text-[11px] italic text-gray-500 mb-1">({s.nota.ca} · {s.nota.en})</p>}
+        {s.nota && <p className="text-[11px] italic text-[#4E6765] mb-1">({s.nota.ca} · {s.nota.en})</p>}
         {(s.paragrafs || []).map((p) => <Bilingue key={p.ca} ca={p.ca} en={p.en} className="mb-2" />)}
         {(s.numerats || s.punts || []).map((p, i) => (
           <div key={i} className="flex gap-2 mb-2">
             <span className="text-[15px]">{s.numerats ? `${i + 1}.` : '•'}</span>
             <div>
-              <p className="text-[15px] text-gray-900 leading-snug"><strong>{p.ca_negreta}</strong>{p.ca}</p>
-              <p className="text-xs italic text-gray-500 leading-snug mt-0.5"><strong>{p.en_negreta}</strong>{p.en}</p>
+              <p className="text-[15px] text-[#12302F] leading-snug"><strong>{p.ca_negreta}</strong>{p.ca}</p>
+              <p className="text-xs italic text-[#4E6765] leading-snug mt-0.5"><strong>{p.en_negreta}</strong>{p.en}</p>
             </div>
           </div>
         ))}
@@ -324,16 +319,16 @@ const PaginaKyc = () => {
   };
 
   if (estat === 'carregant') {
-    return <div className="min-h-screen flex items-center justify-center text-gray-400 text-sm">Carregant... / Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-[#6B8280] text-sm">Carregant... / Loading...</div>;
   }
   if (estat === 'invalid') {
     return (
       <Missatge icona="🔒" ca={errorInicial || 'Enllaç no vàlid o caducat'} en="Invalid or expired link" titol={T.pf.titol}>
-        <p className="text-sm text-gray-600 mt-6">
+        <p className="text-sm text-[#4E6765] mt-6">
           Si necessiteu un enllaç nou, contacteu amb nosaltres a{' '}
-          <a href="mailto:info@ambit.ad" className="text-[#009B9C] underline">info@ambit.ad</a> o al +376 655 382.
+          <a href="mailto:info@ambit.ad" className="text-[#007A7B] underline">info@ambit.ad</a> o al +376 655 382.
         </p>
-        <p className="text-xs italic text-gray-500 mt-1">If you need a new link, please contact us at info@ambit.ad or on +376 655 382.</p>
+        <p className="text-xs italic text-[#4E6765] mt-1">If you need a new link, please contact us at info@ambit.ad or on +376 655 382.</p>
       </Missatge>
     );
   }
@@ -341,26 +336,26 @@ const PaginaKyc = () => {
   if (estat === 'fet') {
     return (
       <Missatge icona="✅" ca="Documents signats" en="Documents signed" titol={titolKyc}>
-        <p className="text-sm text-gray-600 mt-6">Gràcies. Hem rebut el formulari d'identificació i la informació sobre protecció de dades signats.</p>
-        <p className="text-xs italic text-gray-500">Thank you. We have received the signed identification form and data protection information.</p>
+        <p className="text-sm text-[#4E6765] mt-6">Gràcies. Hem rebut el formulari d'identificació i la informació sobre protecció de dades signats.</p>
+        <p className="text-xs italic text-[#4E6765]">Thank you. We have received the signed identification form and data protection information.</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
           {resultat?.kyc?.url && (
             <a href={resultat.kyc.url} download={resultat.kyc.nom_fitxer}
-              className="bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold px-6 py-3 rounded-xl text-sm">
+              className="bg-[#007A7B] hover:bg-[#00676A] text-white font-semibold px-6 py-3 rounded-full text-sm">
               Formulari KYC (PDF) / KYC form (PDF)
             </a>
           )}
           {resultat?.pdp?.url && (
             <a href={resultat.pdp.url} download={resultat.pdp.nom_fitxer}
-              className="bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold px-6 py-3 rounded-xl text-sm">
+              className="bg-[#007A7B] hover:bg-[#00676A] text-white font-semibold px-6 py-3 rounded-full text-sm">
               Protecció de dades (PDF) / Data protection (PDF)
             </a>
           )}
         </div>
-        <p className="text-xs text-gray-500 mt-4">
+        <p className="text-xs text-[#4E6765] mt-4">
           Els enllaços de descàrrega són vàlids durant 5 minuts. Si els necessiteu més endavant, demaneu-nos-en una còpia a info@ambit.ad.
         </p>
-        <p className="text-[11px] italic text-gray-400">
+        <p className="text-[11px] italic text-[#6B8280]">
           The download links are valid for 5 minutes. If you need them later, ask us for a copy at info@ambit.ad.
         </p>
       </Missatge>
@@ -416,9 +411,9 @@ const PaginaKyc = () => {
 
   return (
     <Pantalla titol={pas === PAS_PDP ? T.pdp.titol : titolKyc}>
-      <div className="mt-5 bg-[#009B9C]/5 border border-[#009B9C]/30 rounded-lg p-4 text-sm text-gray-700">
+      <div className="mt-5 bg-[#007A7B]/5 border border-[#007A7B]/30 rounded-lg p-4 text-sm text-[#2B4644]">
         <p><strong>{info.client_nom}</strong>: empleneu el formulari, adjunteu-hi els documents i signeu. Les respostes es desen soles; podeu continuar més tard amb el mateix enllaç fins al {expira}.</p>
-        <p className="text-xs italic text-gray-500 mt-1">Please complete the form, attach the documents and sign. Your answers are saved automatically; you can continue later with the same link until {expira}.</p>
+        <p className="text-xs italic text-[#4E6765] mt-1">Please complete the form, attach the documents and sign. Your answers are saved automatically; you can continue later with the same link until {expira}.</p>
       </div>
 
       {/* Passos */}
@@ -426,13 +421,13 @@ const PaginaKyc = () => {
         {passos.map((p) => (
           <button key={p.n} type="button" disabled={estat === 'signant' || (p.n === PAS_PDP && !firmaKyc)}
             onClick={() => (p.n === PAS_PDP ? null : vesA(p.n))}
-            className={`text-[11px] px-2 py-1 rounded-full border transition ${pas === p.n ? 'bg-[#009B9C] text-white border-[#009B9C]'
-              : vistos.has(p.n) && p.falten ? 'border-red-300 text-red-700 bg-red-50' : 'border-gray-200 text-gray-600 hover:border-[#009B9C]'} disabled:opacity-40`}>
+            className={`text-[11px] px-2 py-1 rounded-full border transition ${pas === p.n ? 'bg-[#007A7B] text-white border-[#007A7B]'
+              : vistos.has(p.n) && p.falten ? 'border-red-300 text-red-700 bg-red-50' : 'border-[#D6E4E2] text-[#4E6765] hover:border-[#007A7B]'} disabled:opacity-40`}>
             {p.nom}{vistos.has(p.n) && p.falten ? ` (${p.falten})` : ''}
           </button>
         ))}
       </nav>
-      <p className="text-[11px] text-gray-400 mt-2 h-4" aria-live="polite">
+      <p className="text-[11px] text-[#6B8280] mt-2 h-4" aria-live="polite">
         {desat.error || (desat.desant ? 'Desant… / Saving…' : desat.at ? `Desat a les ${hora(desat.at)} / Saved at ${hora(desat.at)}` : '')}
       </p>
 
@@ -450,8 +445,8 @@ const PaginaKyc = () => {
       {pas === PAS_REVISIO && (
         <>
           <Seccio ca="Revisió" en="Review" />
-          <p className="text-sm text-gray-700">Reviseu totes les respostes abans de signar. Per corregir-ne alguna, torneu a l'apartat corresponent.</p>
-          <p className="text-xs italic text-gray-500 mb-2">Please review all your answers before signing. To correct any of them, go back to the relevant section.</p>
+          <p className="text-sm text-[#2B4644]">Reviseu totes les respostes abans de signar. Per corregir-ne alguna, torneu a l'apartat corresponent.</p>
+          <p className="text-xs italic text-[#4E6765] mb-2">Please review all your answers before signing. To correct any of them, go back to the relevant section.</p>
           {(!formulariComplet || !documentsComplets) && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700 mt-3">
               <p className="font-semibold">Falta completar: / Still to complete:</p>
@@ -470,24 +465,24 @@ const PaginaKyc = () => {
               {seccions.map((s) => <s.C key={s.num} />)}
             </fieldset>
           </FormCtx.Provider>
-          <div className="mt-4 text-sm text-gray-700">
+          <div className="mt-4 text-sm text-[#2B4644]">
             <p className="font-semibold">Documents adjuntats: {docs.adjunts.length} / Attached documents: {docs.adjunts.length}</p>
           </div>
 
           <Seccio ca={tipus === 'kyc_pj' ? `12. ${T.pj.s12.titol.ca}` : `10. ${T.pf.s10.titol.ca}`} en={tipus === 'kyc_pj' ? T.pj.s12.titol.en : T.pf.s10.titol.en} />
-          {tipus === 'kyc_pj' && <p className="text-xs italic text-gray-600 mb-2">{T.pj.s12.avis.ca} / {T.pj.s12.avis.en}</p>}
+          {tipus === 'kyc_pj' && <p className="text-xs italic text-[#4E6765] mb-2">{T.pj.s12.avis.ca} / {T.pj.s12.avis.en}</p>}
           <div className="sm:flex sm:items-start gap-4 py-1.5">
-            <label htmlFor="llocKyc" className="block sm:w-56 font-bold text-[15px]">* {T.signatura.lloc.ca} <span className="block italic font-normal text-[11px] text-gray-500 pl-3">{T.signatura.lloc.en}</span></label>
+            <label htmlFor="llocKyc" className="block sm:w-56 font-bold text-[15px]">* {T.signatura.lloc.ca} <span className="block italic font-normal text-[11px] text-[#4E6765] pl-3">{T.signatura.lloc.en}</span></label>
             <input id="llocKyc" value={lloc.kyc} maxLength={100} onChange={(e) => setLloc({ ...lloc, kyc: e.target.value })}
               placeholder="p. ex. Andorra la Vella / e.g. Andorra la Vella"
-              className="flex-1 w-full bg-[#FBFAF1] border border-[#C2BD6B] rounded-sm px-3 py-2 text-[15px]" />
+              className="flex-1 w-full bg-[#F7FBFA] border border-[#B9D3CF] rounded-lg px-3 py-2 text-[15px]" />
           </div>
           <div className="sm:flex sm:items-start gap-4 py-1.5">
-            <span className="block sm:w-56 font-bold text-[15px]">{T.signatura.data.ca} <span className="block italic font-normal text-[11px] text-gray-500 pl-3">{T.signatura.data.en}</span></span>
-            <p className="text-[15px] py-2">{dataCurta(new Date())} <span className="text-[11px] text-gray-400">(la posa el sistema / set by the system)</span></p>
+            <span className="block sm:w-56 font-bold text-[15px]">{T.signatura.data.ca} <span className="block italic font-normal text-[11px] text-[#4E6765] pl-3">{T.signatura.data.en}</span></span>
+            <p className="text-[15px] py-2">{dataCurta(new Date())} <span className="text-[11px] text-[#6B8280]">(la posa el sistema / set by the system)</span></p>
           </div>
           <div className="sm:flex sm:items-start gap-4 py-1.5">
-            <span className="block sm:w-56 font-bold text-[15px]">* {T.signatura.signatura.ca} <span className="block italic font-normal text-[11px] text-gray-500 pl-3">{T.signatura.signatura.en}</span></span>
+            <span className="block sm:w-56 font-bold text-[15px]">* {T.signatura.signatura.ca} <span className="block italic font-normal text-[11px] text-[#4E6765] pl-3">{T.signatura.signatura.en}</span></span>
             <div className="flex-1">
               <SignaturaCanvas ref={canvasKyc} onCanvi={setTeFirma} etiqueta={T.signatura.signatura.ca} />
             </div>
@@ -500,23 +495,23 @@ const PaginaKyc = () => {
           <TextPdp />
           <Seccio ca={T.pdp.consentiment.titol.ca} en={T.pdp.consentiment.titol.en} />
           <label className="flex items-start gap-3 py-2">
-            <input type="checkbox" checked={consentiment} onChange={(e) => setConsentiment(e.target.checked)} className="accent-[#009B9C] mt-1.5 w-4 h-4 flex-shrink-0" />
+            <input type="checkbox" checked={consentiment} onChange={(e) => setConsentiment(e.target.checked)} className="accent-[#007A7B] mt-1.5 w-4 h-4 flex-shrink-0" />
             <Bilingue ca={T.pdp.consentiment.ca} en={T.pdp.consentiment.en} />
           </label>
-          <p className="text-[11px] text-gray-500">Voluntari: si no ho marqueu, no us enviarem aquesta informació i els serveis es presten igualment. / <span className="italic">Optional: if you leave it unticked, we will not send you this information and the services are provided in the same way.</span></p>
+          <p className="text-[11px] text-[#4E6765]">Voluntari: si no ho marqueu, no us enviarem aquesta informació i els serveis es presten igualment. / <span className="italic">Optional: if you leave it unticked, we will not send you this information and the services are provided in the same way.</span></p>
 
           <Seccio ca={T.pdp.signatura.titol.ca} en={T.pdp.signatura.titol.en} />
           <Bilingue ca={T.pdp.signatura.declaracio.ca} en={T.pdp.signatura.declaracio.en} className="mb-2" />
           <div className="sm:flex sm:items-start gap-4 py-1.5">
-            <label htmlFor="llocPdp" className="block sm:w-56 font-bold text-[15px]">* {T.signatura.lloc.ca} <span className="block italic font-normal text-[11px] text-gray-500 pl-3">{T.signatura.lloc.en}</span></label>
+            <label htmlFor="llocPdp" className="block sm:w-56 font-bold text-[15px]">* {T.signatura.lloc.ca} <span className="block italic font-normal text-[11px] text-[#4E6765] pl-3">{T.signatura.lloc.en}</span></label>
             <input id="llocPdp" value={lloc.pdp} maxLength={100} onChange={(e) => setLloc({ ...lloc, pdp: e.target.value })}
               placeholder="p. ex. Andorra la Vella / e.g. Andorra la Vella"
-              className="flex-1 w-full bg-[#FBFAF1] border border-[#C2BD6B] rounded-sm px-3 py-2 text-[15px]" />
+              className="flex-1 w-full bg-[#F7FBFA] border border-[#B9D3CF] rounded-lg px-3 py-2 text-[15px]" />
           </div>
           <div className="sm:flex sm:items-start gap-4 py-1.5">
-            <span className="block sm:w-56 font-bold text-[15px]">* {T.signatura.signatura.ca} <span className="block italic font-normal text-[11px] text-gray-500 pl-3">{T.signatura.signatura.en}</span></span>
+            <span className="block sm:w-56 font-bold text-[15px]">* {T.signatura.signatura.ca} <span className="block italic font-normal text-[11px] text-[#4E6765] pl-3">{T.signatura.signatura.en}</span></span>
             <div className="flex-1">
-              <p className="text-[11px] text-gray-500 mb-1">Aquesta és una segona signatura, diferent de la del formulari KYC. / <span className="italic">This is a second signature, separate from the one on the KYC form.</span></p>
+              <p className="text-[11px] text-[#4E6765] mb-1">Aquesta és una segona signatura, diferent de la del formulari KYC. / <span className="italic">This is a second signature, separate from the one on the KYC form.</span></p>
               <SignaturaCanvas ref={canvasPdp} onCanvi={setTeFirmaPdp} etiqueta={T.signatura.signatura.ca} />
             </div>
           </div>
@@ -544,7 +539,7 @@ const PaginaKyc = () => {
         )}
       </div>
       {(pas === PAS_REVISIO || pas === PAS_PDP) && (
-        <p className="text-[11px] text-gray-500 text-center mt-3">
+        <p className="text-[11px] text-[#4E6765] text-center mt-3">
           En signar, s'enregistren la data i l'hora, l'adreça IP i el navegador com a evidència.
           <span className="italic block">When you sign, the date and time, IP address and browser are recorded as evidence.</span>
         </p>

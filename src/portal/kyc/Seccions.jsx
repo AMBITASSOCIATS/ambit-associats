@@ -87,8 +87,8 @@ const Declaracions = ({ num, S }) => (
 
 // La barra verda (el component pare la mostra; aquí es reutilitza al resum)
 const SeccioTitol = ({ num, t }) => (
-  <div className="flex items-baseline justify-between gap-3 bg-[#009B9C] text-white px-3 py-1.5 mt-6 mb-2">
-    <span className="font-bold text-[15px]">{num}. {t.ca}</span>
+  <div className="flex items-baseline justify-between gap-3 bg-[#007A7B] text-white px-3 py-1.5 mt-6 mb-2">
+    <span className="font-display font-medium text-[16px]">{num}. {t.ca}</span>
     <span className="italic text-xs text-right">{t.en}</span>
   </div>
 );
@@ -143,7 +143,7 @@ const PfRepresentacio = () => {
           <Text cami="representacio.document" t={S.document} max={100} />
           <Opcio cami="representacio.tipus" t={S.tipus} opcions={S.tipus_opcions} />
           {r.tipus === 'altres' && <Text cami="representacio.tipus_altres" t={T.altres} maj />}
-          <p className="text-[11px] text-gray-500 sm:pl-60">
+          <p className="text-[11px] text-[#4E6765] sm:pl-60">
             {S.acreditacio.ca} / <span className="italic">{S.acreditacio.en}</span>: es demana al pas de documents. / requested in the documents step.
           </p>
         </>
@@ -165,7 +165,7 @@ const PfActivitat = () => {
         <div key={k} className="py-1">
           <label className="flex items-start gap-3">
             <input type="radio" name="activitat" checked={a.tipus === k} disabled={llegir}
-              onChange={() => posa('activitat', { tipus: k })} className="accent-[#009B9C] mt-1.5" />
+              onChange={() => posa('activitat', { tipus: k })} className="accent-[#007A7B] mt-1.5" />
             <Bilingue ca={tipus.ca} en={tipus.en} />
           </label>
           {a.tipus === k && k !== 'sense' && (
@@ -211,7 +211,7 @@ const PfActivitat = () => {
 const PfPpe = () => (
   <>
     <SeccioTitol num={6} t={T.ppe.titol} />
-    <details className="mb-2 border border-[#009B9C]/30 rounded-lg px-3 py-2" open>
+    <details className="mb-2 border border-[#007A7B]/30 rounded-lg px-3 py-2" open>
       <summary className="cursor-pointer text-sm font-semibold text-[#007A7B]">Definició / Definition</summary>
       {T.ppe.explicacio.ca.map((p, i) => <Bilingue key={i} ca={p} en={T.ppe.explicacio.en[i]} className="mt-2" />)}
     </details>
@@ -361,7 +361,7 @@ const PjPropietat = () => {
       {socis.filter((s) => !s.soci_de).map((s) => <React.Fragment key={s.id}>{soci(s, 0)}</React.Fragment>)}
       {!llegir && socis.length < 40 && (
         <button type="button" onClick={() => afegeix(null)}
-          className="mt-3 text-sm font-semibold text-[#007A7B] border border-[#009B9C]/50 rounded-lg px-3 py-1.5 hover:bg-[#009B9C]/5">
+          className="mt-3 text-sm font-semibold text-[#007A7B] border border-[#007A7B]/50 rounded-lg px-3 py-1.5 hover:bg-[#007A7B]/5">
           + Afegir un soci directe / Add a direct shareholder
         </button>
       )}
@@ -377,14 +377,14 @@ const MateixaPersona = ({ cami }) => {
   if (reps.length === 0) return null;
   return (
     <div className="sm:flex sm:items-start gap-4 py-1.5">
-      <span className="block sm:w-56 text-[13px] text-gray-700">És també representant? <span className="block italic text-[11px] text-gray-500">Is this person also a representative?</span></span>
+      <span className="block sm:w-56 text-[13px] text-[#2B4644]">És també representant? <span className="block italic text-[11px] text-[#4E6765]">Is this person also a representative?</span></span>
       <div className="flex-1">
         <select value={valor} disabled={llegir} onChange={(e) => posa(`${cami}.representant_id`, e.target.value || null)}
-          className="w-full bg-[#FBFAF1] border border-[#C2BD6B] rounded-sm px-3 py-2 text-[15px]">
+          className="w-full bg-[#F7FBFA] border border-[#B9D3CF] rounded-lg px-3 py-2 text-[15px]">
           <option value="">No / No</option>
           {reps.map((r, i) => <option key={r.id} value={r.id}>Sí: {i + 1}. {r.nom || '—'} / Yes</option>)}
         </select>
-        {valor && <p className="text-[11px] text-gray-500 mt-1">N'hi ha prou amb el document d'identitat del representant. / The representative's identity document is enough.</p>}
+        {valor && <p className="text-[11px] text-[#4E6765] mt-1">N'hi ha prou amb el document d'identitat del representant. / The representative's identity document is enough.</p>}
       </div>
     </div>
   );
@@ -399,12 +399,12 @@ const AvisParticipacions = () => {
   const declarats = new Set((dades.beneficiaris || []).map((b) => nomNormal(b.nom)));
   return (
     <div className="mt-3 border border-[#4DB6B7]/60 rounded-lg p-3 text-sm">
-      <p className="font-semibold text-[#007A7B]">Participació directa i indirecta (segons l'estructura de propietat) <span className="font-normal italic text-[11px] text-gray-500">/ Direct and indirect holding (from the ownership structure)</span></p>
+      <p className="font-semibold text-[#007A7B]">Participació directa i indirecta (segons l'estructura de propietat) <span className="font-normal italic text-[11px] text-[#4E6765]">/ Direct and indirect holding (from the ownership structure)</span></p>
       <ul className="mt-1 space-y-1">
         {parts.map((p) => {
           const falta = p.percentatge > LLINDAR_BE && !declarats.has(nomNormal(p.nom));
           return (
-            <li key={p.nom} className={falta ? 'text-red-700' : 'text-gray-700'}>
+            <li key={p.nom} className={falta ? 'text-red-700' : 'text-[#2B4644]'}>
               {p.nom}: {p.percentatge.toLocaleString('ca-AD')} %
               {falta && (
                 <span className="block text-xs font-semibold">

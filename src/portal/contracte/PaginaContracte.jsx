@@ -12,7 +12,7 @@ import T from './text-contracte.json';
 import TK from '../kyc/text-kyc.json';
 import SignaturaCanvas from '../signar/SignaturaCanvas';
 import VisorPdf from './VisorPdf';
-import logo from '../signar/logo-ambit.jpg';
+import MarcClient from '../MarcClient';
 
 const token = window.location.pathname.replace(/^\/contracte\//, '').replace(/\/+$/, '');
 const P = T.pantalla;
@@ -35,47 +35,42 @@ const crida = async (body) => {
 // Text en l'idioma del contracte: català i, si és bilingüe, l'anglès a sota en cursiva
 const Text = ({ t, bi, v, gran = false, className = '' }) => (
   <div className={className}>
-    <p className={gran ? 'text-[15px] text-gray-900 text-justify leading-snug' : 'text-sm text-gray-800'}>{omple(t.ca, v)}</p>
-    {bi && t.en && <p className="text-xs italic text-gray-500 text-justify mt-1 leading-snug">{omple(t.en, v)}</p>}
+    <p className={gran ? 'text-[15px] text-[#12302F] text-justify leading-snug' : 'text-sm text-[#12302F]'}>{omple(t.ca, v)}</p>
+    {bi && t.en && <p className="text-xs italic text-[#4E6765] text-justify mt-1 leading-snug">{omple(t.en, v)}</p>}
   </div>
 );
 
 const Pantalla = ({ bi, children }) => (
-  <div className="min-h-screen bg-gray-100 py-6 sm:py-10 px-3">
-    <div className="max-w-3xl mx-auto bg-white shadow-sm rounded-lg px-4 sm:px-10 py-8">
-      <header className="flex items-start justify-between gap-4 pb-4 border-b-2 border-[#009B9C]">
-        <img src={logo} alt="ÀMBIT Associats" className="h-12 sm:h-14 w-auto" />
-        <div className="text-right">
-          <h1 className="text-sm sm:text-lg font-bold text-[#009B9C] leading-tight">{P.titol.ca}</h1>
-          {bi && <p className="text-xs sm:text-sm italic text-gray-500">{P.titol.en}</p>}
-        </div>
+  <MarcClient>
+      <header className="pb-5 border-b border-[#D6E4E2]">
+        <h1 className="font-display font-medium text-[22px] sm:text-[28px] leading-tight text-[#12302F]">{P.titol.ca}</h1>
+        {bi && <p className="text-sm italic text-[#4E6765] mt-1">{P.titol.en}</p>}
       </header>
       {children}
-      <footer className="mt-10 pt-3 border-t border-[#009B9C]/60 text-[10px] text-gray-500 leading-relaxed">
+      <footer className="mt-10 pt-4 border-t border-[#D6E4E2] text-[11px] text-[#4E6765] leading-relaxed">
         <p>{TK.peu[0]}</p>
         <p>{TK.peu[1]}</p>
       </footer>
-    </div>
-  </div>
+  </MarcClient>
 );
 
 const Seccio = ({ t, bi }) => (
-  <div className="flex items-baseline justify-between gap-3 bg-[#009B9C] text-white px-3 py-1.5 mt-7 mb-3">
-    <span className="font-bold text-[15px]">{t.ca}</span>
+  <div className="flex items-baseline justify-between gap-3 bg-[#007A7B] text-white rounded-md px-4 py-2 mt-8 mb-3">
+    <span className="font-display font-medium text-[16px]">{t.ca}</span>
     {bi && <span className="italic text-xs text-right">{t.en}</span>}
   </div>
 );
 
 const Casella = ({ t, bi, marcada, onCanvi, disabled }) => (
-  <label className={`flex items-start gap-3 p-3 rounded-lg border ${marcada ? 'border-[#009B9C] bg-[#009B9C]/5' : 'border-gray-300'} ${disabled ? 'opacity-70' : 'cursor-pointer'}`}>
-    <input type="checkbox" checked={marcada} disabled={disabled} onChange={(e) => onCanvi(e.target.checked)} className="mt-1 w-5 h-5 accent-[#009B9C] flex-shrink-0" />
+  <label className={`flex items-start gap-3 p-3 rounded-lg border ${marcada ? 'border-[#007A7B] bg-[#007A7B]/5' : 'border-[#C5D6D3]'} ${disabled ? 'opacity-70' : 'cursor-pointer'}`}>
+    <input type="checkbox" checked={marcada} disabled={disabled} onChange={(e) => onCanvi(e.target.checked)} className="mt-1 w-5 h-5 accent-[#007A7B] flex-shrink-0" />
     <Text t={t} bi={bi} gran />
   </label>
 );
 
 const Boto = ({ children, secundari, ...p }) => (
   <button type="button" {...p}
-    className={`${secundari ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' : 'bg-[#009B9C] hover:bg-[#007A7B] text-white'} font-bold px-5 py-3 rounded-xl text-sm transition disabled:opacity-50`}>
+    className={`${secundari ? 'bg-[#EAF2F0] hover:bg-[#DCE9E6] text-[#2B4644]' : 'bg-[#007A7B] hover:bg-[#00676A] text-white'} font-semibold px-6 py-3 rounded-full text-sm transition disabled:opacity-50`}>
     {children}
   </button>
 );
@@ -110,14 +105,14 @@ const PaginaContracte = () => {
   const amunt = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   // Enllaç no vàlid: no se sap l'idioma del contracte; només en català
-  if (estat === 'carregant') return <Pantalla bi={false}><p className="text-sm text-gray-500 py-12 text-center">{P.carregant.ca}</p></Pantalla>;
+  if (estat === 'carregant') return <Pantalla bi={false}><p className="text-sm text-[#4E6765] py-12 text-center">{P.carregant.ca}</p></Pantalla>;
   if (estat === 'invalid') {
     return (
       <Pantalla bi={false}>
         <div className="text-center py-12">
           <div className="text-5xl mb-4">🔒</div>
-          <h2 className="text-xl font-bold text-gray-800">{P.invalid.ca}</h2>
-          <p className="text-sm text-gray-500 mt-3">{P.invalid_ajuda.ca}</p>
+          <h2 className="font-display font-medium text-[24px] text-[#12302F]">{P.invalid.ca}</h2>
+          <p className="text-sm text-[#4E6765] mt-3">{P.invalid_ajuda.ca}</p>
         </div>
       </Pantalla>
     );
@@ -127,8 +122,8 @@ const PaginaContracte = () => {
       <Pantalla bi={bi}>
         <div className="text-center py-12">
           <div className="text-5xl mb-4">✅</div>
-          <h2 className="text-xl font-bold text-gray-800">{P.fet_titol.ca}</h2>
-          {bi && <p className="text-sm italic text-gray-500 mt-1">{P.fet_titol.en}</p>}
+          <h2 className="font-display font-medium text-[24px] text-[#12302F]">{P.fet_titol.ca}</h2>
+          {bi && <p className="text-sm italic text-[#4E6765] mt-1">{P.fet_titol.en}</p>}
           <Text t={P.fet_text} bi={bi} className="mt-4 max-w-lg mx-auto" />
         </div>
       </Pantalla>
@@ -174,14 +169,14 @@ const PaginaContracte = () => {
   return (
     <Pantalla bi={bi}>
       <div className="mt-6">
-        <h2 className="text-lg font-bold text-gray-800">{info.titol}</h2>
+        <h2 className="text-lg font-bold text-[#12302F]">{info.titol}</h2>
         <Text t={P.salutacio} v={{ nom: info.signant.nom }} bi={bi} className="mt-2" />
         <Text t={P.caduca} v={{ data: dataCurta(info.expira_at) }} bi={bi} className="mt-1 opacity-70" />
       </div>
 
       <ol className="flex flex-wrap gap-2 mt-5">
         {passos.map((t, i) => (
-          <li key={t.ca} className={`text-xs px-3 py-1.5 rounded-full border ${pas === i + 1 ? 'bg-[#009B9C] text-white border-[#009B9C]' : pas > i + 1 ? 'border-[#4DB6B7] text-[#007A7B]' : 'border-gray-200 text-gray-400'}`}>
+          <li key={t.ca} className={`text-xs px-3 py-1.5 rounded-full border ${pas === i + 1 ? 'bg-[#007A7B] text-white border-[#007A7B]' : pas > i + 1 ? 'border-[#4DB6B7] text-[#007A7B]' : 'border-[#D6E4E2] text-[#6B8280]'}`}>
             {t.ca}{bi && <span className="italic"> · {t.en}</span>}
           </li>
         ))}
@@ -211,7 +206,7 @@ const PaginaContracte = () => {
           <Text t={P.clausula_intro} bi={bi} className="mb-4 opacity-80" />
           {T.clausula.punts.map((p, i) => (
             <div key={i} className="flex gap-2 mb-3">
-              <span className="text-[15px] font-semibold text-gray-700">{i + 1}.</span>
+              <span className="text-[15px] font-semibold text-[#2B4644]">{i + 1}.</span>
               <Text t={p} bi={bi} gran className="flex-1" />
             </div>
           ))}
@@ -231,20 +226,20 @@ const PaginaContracte = () => {
           <Seccio t={P.pas_signatura} bi={bi} />
           <dl className="space-y-3">
             <div>
-              <dt className="text-sm font-bold text-gray-900">{P.nom.ca}{bi && <span className="block font-normal italic text-[11px] text-gray-500">{P.nom.en}</span>}</dt>
-              <dd className="text-[15px] text-gray-900 bg-[#FBFAF1] border border-[#C2BD6B] rounded-sm px-3 py-2 mt-1">{info.signant.nom}</dd>
+              <dt className="text-sm font-bold text-[#12302F]">{P.nom.ca}{bi && <span className="block font-normal italic text-[11px] text-[#4E6765]">{P.nom.en}</span>}</dt>
+              <dd className="text-[15px] text-[#12302F] bg-[#F7FBFA] border border-[#B9D3CF] rounded-lg px-3 py-2 mt-1">{info.signant.nom}</dd>
             </div>
             <div>
-              <dt className="text-sm font-bold text-gray-900">{P.qualitat.ca}{bi && <span className="block font-normal italic text-[11px] text-gray-500">{P.qualitat.en}</span>}</dt>
-              <dd className="text-[15px] text-gray-900 bg-[#FBFAF1] border border-[#C2BD6B] rounded-sm px-3 py-2 mt-1">{info.signant.qualitat}</dd>
+              <dt className="text-sm font-bold text-[#12302F]">{P.qualitat.ca}{bi && <span className="block font-normal italic text-[11px] text-[#4E6765]">{P.qualitat.en}</span>}</dt>
+              <dd className="text-[15px] text-[#12302F] bg-[#F7FBFA] border border-[#B9D3CF] rounded-lg px-3 py-2 mt-1">{info.signant.qualitat}</dd>
             </div>
             <label className="block">
-              <span className="text-sm font-bold text-gray-900">* {P.lloc.ca}{bi && <span className="block font-normal italic text-[11px] text-gray-500">{P.lloc.en}</span>}</span>
+              <span className="text-sm font-bold text-[#12302F]">* {P.lloc.ca}{bi && <span className="block font-normal italic text-[11px] text-[#4E6765]">{P.lloc.en}</span>}</span>
               <input value={lloc} maxLength={100} onChange={(e) => setLloc(e.target.value)} placeholder={T.lloc_exemple}
-                className="w-full bg-[#FBFAF1] border border-[#C2BD6B] rounded-sm px-3 py-2 text-[15px] mt-1 focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40" />
+                className="w-full bg-[#F7FBFA] border border-[#B9D3CF] rounded-lg px-3 py-2 text-[15px] mt-1 focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
             </label>
             <div>
-              <span className="text-sm font-bold text-gray-900">* {P.signatura.ca}{bi && <span className="block font-normal italic text-[11px] text-gray-500">{P.signatura.en}</span>}</span>
+              <span className="text-sm font-bold text-[#12302F]">* {P.signatura.ca}{bi && <span className="block font-normal italic text-[11px] text-[#4E6765]">{P.signatura.en}</span>}</span>
               <div className="mt-1">
                 <SignaturaCanvas ref={canvas} onCanvi={setTeFirma} etiqueta={P.signatura.ca}
                   textos={{

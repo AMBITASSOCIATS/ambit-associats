@@ -30,41 +30,41 @@ export const nouId = () => (window.crypto?.randomUUID ? window.crypto.randomUUID
 const majuscula = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
 export const estilEntrada = (error) =>
-  `w-full bg-[#FBFAF1] border ${error ? 'border-red-500 ring-1 ring-red-300' : 'border-[#C2BD6B]'} rounded-sm px-3 py-2 text-[15px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40 disabled:opacity-80`;
+  `w-full bg-[#F7FBFA] border ${error ? 'border-red-500 ring-1 ring-red-300' : 'border-[#B9D3CF]'} rounded-lg px-3 py-2 text-[15px] text-[#12302F] focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40 disabled:opacity-80`;
 
 // ─── Estructura ─────────────────────────────────────────────────────────────
 export const Seccio = ({ num, ca, en }) => (
-  <div className="flex items-baseline justify-between gap-3 bg-[#009B9C] text-white px-3 py-1.5 mt-7 mb-2">
-    <span className="font-bold text-[15px]">{num ? `${num}. ` : ''}{ca}</span>
+  <div className="flex items-baseline justify-between gap-3 bg-[#007A7B] text-white rounded-md px-4 py-2 mt-8 mb-2">
+    <span className="font-display font-medium text-[16px]">{num ? `${num}. ` : ''}{ca}</span>
     <span className="italic text-xs text-right">{en}</span>
   </div>
 );
 
 export const Subtitol = ({ ca, en, children }) => (
   <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#4DB6B7] mt-5 mb-2 pb-1">
-    <p className="font-bold text-[#007A7B] text-[15px]">{ca} {en && <span className="font-normal italic text-[11px] text-gray-500">{en}</span>}</p>
+    <p className="font-bold text-[#007A7B] text-[15px]">{ca} {en && <span className="font-normal italic text-[11px] text-[#4E6765]">{en}</span>}</p>
     {children}
   </div>
 );
 
 export const Avis = ({ t }) => (
   <div className="mb-2">
-    <p className="text-[12px] italic text-gray-600">{t.ca}</p>
-    <p className="text-[11px] italic text-gray-400">{t.en}</p>
+    <p className="text-[12px] italic text-[#4E6765]">{t.ca}</p>
+    <p className="text-[11px] italic text-[#6B8280]">{t.en}</p>
   </div>
 );
 
 export const Bilingue = ({ ca, en, className = '' }) => (
   <div className={className}>
-    <p className="text-[15px] text-gray-900 text-justify leading-snug">{ca}</p>
-    <p className="text-xs italic text-gray-500 text-justify mt-1 leading-snug">{en}</p>
+    <p className="text-[15px] text-[#12302F] text-justify leading-snug">{ca}</p>
+    <p className="text-xs italic text-[#4E6765] text-justify mt-1 leading-snug">{en}</p>
   </div>
 );
 
 export const Etiqueta = ({ ca, en, obligatori, htmlFor, maj = false }) => (
   <label htmlFor={htmlFor} className="block sm:w-56 sm:flex-shrink-0 mb-1 sm:mb-0">
-    <span className="font-bold text-[15px] text-gray-900">{obligatori && <span className="font-normal">* </span>}{maj ? majuscula(ca) : ca}</span>
-    <span className="block italic text-[11px] text-gray-500 pl-3">{maj ? majuscula(en) : en}</span>
+    <span className="font-bold text-[15px] text-[#12302F]">{obligatori && <span className="font-normal">* </span>}{maj ? majuscula(ca) : ca}</span>
+    <span className="block italic text-[11px] text-[#4E6765] pl-3">{maj ? majuscula(en) : en}</span>
   </label>
 );
 
@@ -108,8 +108,8 @@ export const Opcio = ({ cami, t, opcions, obligatori = true, maj = false, detall
       <div className="flex flex-wrap gap-x-6 gap-y-1.5 pt-1">
         {Object.entries(opcions).map(([k, o]) => (
           <label key={k} className="flex items-start gap-2 text-[15px] min-w-[8rem]">
-            <input type="radio" name={nom} checked={valor === k} disabled={llegir} onChange={() => posa(cami, k)} className="accent-[#009B9C] mt-1" />
-            <span>{o.ca}{o.en !== o.ca && <span className="italic text-[11px] text-gray-500"> / {o.en}</span>}</span>
+            <input type="radio" name={nom} checked={valor === k} disabled={llegir} onChange={() => posa(cami, k)} className="accent-[#007A7B] mt-1" />
+            <span>{o.ca}{o.en !== o.ca && <span className="italic text-[11px] text-[#4E6765]"> / {o.en}</span>}</span>
           </label>
         ))}
       </div>
@@ -129,8 +129,8 @@ export const SiNo = ({ cami, t, obligatori = true, si, no, maj }) => {
       <div className="flex flex-wrap gap-x-8 gap-y-1.5 pt-1">
         {opcions.map(([v, o]) => (
           <label key={String(v)} className="flex items-center gap-2 text-[15px]">
-            <input type="radio" name={nom} checked={valor === v} disabled={llegir} onChange={() => posa(cami, v)} className="accent-[#009B9C]" />
-            {o.ca} <span className="italic text-[11px] text-gray-500">/ {o.en}</span>
+            <input type="radio" name={nom} checked={valor === v} disabled={llegir} onChange={() => posa(cami, v)} className="accent-[#007A7B]" />
+            {o.ca} <span className="italic text-[11px] text-[#4E6765]">/ {o.en}</span>
           </label>
         ))}
       </div>
@@ -153,8 +153,8 @@ export const Opcions = ({ cami, t, opcions, camiAltres, exclusiva }) => {
       <div className="space-y-1.5 pt-1">
         {Object.entries(opcions).map(([k, o]) => (
           <label key={k} className="flex items-start gap-2 text-[15px]">
-            <input type="checkbox" checked={valor.includes(k)} disabled={llegir} onChange={() => canvia(k)} className="accent-[#009B9C] mt-1" />
-            <span>{o.ca} <span className="italic text-[11px] text-gray-500">/ {o.en}</span></span>
+            <input type="checkbox" checked={valor.includes(k)} disabled={llegir} onChange={() => canvia(k)} className="accent-[#007A7B] mt-1" />
+            <span>{o.ca} <span className="italic text-[11px] text-[#4E6765]">/ {o.en}</span></span>
           </label>
         ))}
       </div>
@@ -194,7 +194,7 @@ export const Paisos = ({ cami, t, obligatori = true, max = 30, maj }) => {
         {valor.map((c) => {
           const p = PAISOS.find((x) => x.codi === c);
           return (
-            <span key={c} className="inline-flex items-center gap-1 bg-[#009B9C]/10 text-[#007A7B] text-sm px-2 py-0.5 rounded-full">
+            <span key={c} className="inline-flex items-center gap-1 bg-[#007A7B]/10 text-[#007A7B] text-sm px-2 py-0.5 rounded-full">
               {p ? p.ca : c}
               {!llegir && <button type="button" onClick={() => posa(cami, valor.filter((x) => x !== c))} aria-label={`Treure ${p ? p.ca : c}`} className="font-bold">×</button>}
             </span>
@@ -217,7 +217,7 @@ export const Declaracio = ({ cami, t }) => {
   return (
     <label className={`flex items-start gap-3 py-2 ${err(cami) ? 'bg-red-50 -mx-2 px-2 rounded' : ''}`}>
       <input type="checkbox" checked={llegeix(dades, cami) === true} disabled={llegir}
-        onChange={(e) => posa(cami, e.target.checked)} className="accent-[#009B9C] mt-1.5 w-4 h-4 flex-shrink-0" />
+        onChange={(e) => posa(cami, e.target.checked)} className="accent-[#007A7B] mt-1.5 w-4 h-4 flex-shrink-0" />
       <Bilingue ca={t.ca} en={t.en} />
     </label>
   );
@@ -248,7 +248,7 @@ export const Llista = ({ cami, max, nou, titol, render, minim = 0, afegir }) => 
       ))}
       {!llegir && items.length < max && (
         <button type="button" onClick={() => posa(cami, [...items, { id: nouId(), ...nou() }])}
-          className="mt-3 text-sm font-semibold text-[#007A7B] border border-[#009B9C]/50 rounded-lg px-3 py-1.5 hover:bg-[#009B9C]/5">
+          className="mt-3 text-sm font-semibold text-[#007A7B] border border-[#007A7B]/50 rounded-lg px-3 py-1.5 hover:bg-[#007A7B]/5">
           {afegir || '+ Afegir / Add'}
         </button>
       )}

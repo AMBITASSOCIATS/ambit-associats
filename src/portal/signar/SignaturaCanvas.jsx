@@ -91,16 +91,16 @@ const SignaturaCanvas = forwardRef(({ onCanvi, etiqueta, textos = TEXTOS }, ref)
           onPointerCancel={fi}
           onPointerLeave={fi}
           aria-label={etiqueta}
-          className="w-full h-44 sm:h-40 bg-white border-2 border-[#009B9C] rounded-xl cursor-crosshair"
+          className="w-full h-44 sm:h-40 bg-white border-2 border-[#007A7B] rounded-xl cursor-crosshair"
           style={{ touchAction: 'none' }}
         />
         {buida && (
-          <span className="pointer-events-none absolute bottom-2 right-3 text-[11px] italic text-[#009B9C]">
+          <span className="pointer-events-none absolute bottom-2 right-3 text-[11px] italic text-[#007A7B]">
             {textos.signeu}
           </span>
         )}
       </div>
-      <button type="button" onClick={prepara} className="mt-1 text-xs text-gray-500 hover:text-gray-700 underline">
+      <button type="button" onClick={prepara} className="mt-1 text-xs text-[#4E6765] hover:text-[#12302F] underline">
         {textos.esborrar}
       </button>
     </div>

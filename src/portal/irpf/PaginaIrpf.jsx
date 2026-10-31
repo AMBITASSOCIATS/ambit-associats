@@ -16,6 +16,7 @@ import { avisosEdat, campsPendents } from './irpf-regles';
 import { FormCtx, ambValor, Bilingue, Seccio } from '../kyc/camps';
 import { PASSOS, S13, Tota } from './Seccions';
 import SignaturaCanvas from '../signar/SignaturaCanvas';
+import MarcClient from '../MarcClient';
 
 const token = window.location.pathname.replace(/^\/irpf\//, '').replace(/\/+$/, '');
 const avui = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' });
@@ -36,24 +37,23 @@ const crida = async (body) => {
 
 // ─── Pantalla: el pagador a l'esquerra (sense logotip) i el títol a la dreta ──
 const Pantalla = ({ pagador, children }) => (
-  <div className="min-h-screen bg-gray-100 py-6 sm:py-10 px-3">
-    <div className="max-w-3xl mx-auto bg-white shadow-sm rounded-lg px-4 sm:px-10 py-8">
-      <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-4 border-b-2 border-[#009B9C]">
-        <div className="text-[#009B9C] sm:max-w-[45%]">
+  <MarcClient logotip={false}>
+      <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-5 border-b border-[#D6E4E2]">
+        <div className="text-[#007A7B] sm:max-w-[45%]">
           {pagador ? (
             <>
-              <p className="font-bold text-base sm:text-lg leading-tight">{pagador.denominacio}</p>
-              <p className="text-sm">NRT {pagador.nrt}</p>
+              <p className="font-display font-medium text-[19px] sm:text-[21px] leading-tight text-[#12302F]">{pagador.denominacio}</p>
+              <p className="text-sm text-[#4E6765] mt-0.5">NRT {pagador.nrt}</p>
             </>
-          ) : <p className="font-bold text-base">ÀMBIT Associats</p>}
+          ) : <p className="font-display font-medium text-[19px] text-[#12302F]">ÀMBIT Associats</p>}
         </div>
         <div className="sm:text-right sm:max-w-[55%]">
-          <h1 className="text-sm sm:text-base font-bold text-[#009B9C] leading-tight">{T.titol.ca}</h1>
-          <p className="text-xs italic text-gray-500 mt-0.5">{T.titol.en}</p>
+          <h1 className="font-display font-medium text-[17px] sm:text-[19px] leading-tight text-[#007A7B]">{T.titol.ca}</h1>
+          <p className="text-sm italic text-[#4E6765] mt-1">{T.titol.en}</p>
         </div>
       </header>
       {children}
-      <footer className="mt-10 pt-3 border-t border-[#009B9C]/60 text-[10px] text-gray-500 leading-relaxed">
+      <footer className="mt-10 pt-4 border-t border-[#D6E4E2] text-[11px] text-[#4E6765] leading-relaxed">
         {pagador && (
           <>
             <p>{T.pdf.gestionat.ca.replace('{pagador}', pagador.denominacio)}</p>
@@ -63,28 +63,27 @@ const Pantalla = ({ pagador, children }) => (
         <p>{T.peu[0]}</p>
         <p>{T.peu[1]}</p>
       </footer>
-    </div>
-  </div>
+  </MarcClient>
 );
 
 const Missatge = ({ icona, ca, en, children, pagador }) => (
   <Pantalla pagador={pagador}>
     <div className="text-center py-12">
       <div className="text-5xl mb-4">{icona}</div>
-      <h2 className="text-xl font-bold text-gray-800">{ca}</h2>
-      <p className="text-sm italic text-gray-500 mt-1">{en}</p>
+      <h2 className="font-display font-medium text-[24px] text-[#12302F]">{ca}</h2>
+      <p className="text-sm italic text-[#4E6765] mt-1">{en}</p>
       {children}
     </div>
   </Pantalla>
 );
 
 const BotoPrimari = ({ children, ...p }) => (
-  <button type="button" {...p} className="bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold px-5 py-3 rounded-xl text-sm transition disabled:opacity-50">
+  <button type="button" {...p} className="bg-[#007A7B] hover:bg-[#00676A] text-white font-semibold px-6 py-3 rounded-full text-sm transition disabled:opacity-50">
     {children}
   </button>
 );
 const BotoSecundari = ({ children, ...p }) => (
-  <button type="button" {...p} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-5 py-3 rounded-xl text-sm transition disabled:opacity-50">
+  <button type="button" {...p} className="bg-[#EAF2F0] hover:bg-[#DCE9E6] text-[#2B4644] font-semibold px-6 py-3 rounded-full text-sm transition disabled:opacity-50">
     {children}
   </button>
 );
@@ -92,24 +91,24 @@ const AvisError = ({ children }) => (children ? <div className="mt-4 bg-red-50 b
 
 const FilaSignatura = ({ ca, en, obligatori = true, children }) => (
   <div className="sm:flex sm:items-start gap-4 py-1.5">
-    <span className="block sm:w-56 font-bold text-[15px]">{obligatori && '* '}{ca} <span className="block italic font-normal text-[11px] text-gray-500 pl-3">{en}</span></span>
+    <span className="block sm:w-56 font-bold text-[15px]">{obligatori && '* '}{ca} <span className="block italic font-normal text-[11px] text-[#4E6765] pl-3">{en}</span></span>
     <div className="flex-1">{children}</div>
   </div>
 );
-const estilInput = 'flex-1 w-full bg-[#FBFAF1] border border-[#C2BD6B] rounded-sm px-3 py-2 text-[15px]';
+const estilInput = 'flex-1 w-full bg-[#F7FBFA] border border-[#B9D3CF] rounded-lg px-3 py-2 text-[15px]';
 
 const Descarrega = ({ pdf }) => (
   <>
     {pdf?.url && (
       <a href={pdf.url} download={pdf.nom_fitxer}
-        className="inline-block mt-6 bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold px-6 py-3 rounded-xl text-sm">
+        className="inline-block mt-6 bg-[#007A7B] hover:bg-[#00676A] text-white font-semibold px-6 py-3 rounded-full text-sm">
         Comunicació signada (PDF) / Signed communication (PDF)
       </a>
     )}
-    <p className="text-xs text-gray-500 mt-4">
+    <p className="text-xs text-[#4E6765] mt-4">
       L'enllaç de descàrrega és vàlid durant 5 minuts. Si el necessiteu més endavant, demaneu-nos-en una còpia a info@ambit.ad.
     </p>
-    <p className="text-[11px] italic text-gray-400">
+    <p className="text-[11px] italic text-[#6B8280]">
       The download link is valid for 5 minutes. If you need it later, ask us for a copy at info@ambit.ad.
     </p>
   </>
@@ -146,8 +145,8 @@ const Recepcio = ({ info }) => {
   if (estat === 'fet') {
     return (
       <Missatge icona="✅" ca="Recepció signada" en="Receipt signed" pagador={info.pagador}>
-        <p className="text-sm text-gray-600 mt-6">Gràcies. La comunicació consta com a rebuda pel pagador.</p>
-        <p className="text-xs italic text-gray-500">Thank you. The communication is recorded as received by the payer.</p>
+        <p className="text-sm text-[#4E6765] mt-6">Gràcies. La comunicació consta com a rebuda pel pagador.</p>
+        <p className="text-xs italic text-[#4E6765]">Thank you. The communication is recorded as received by the payer.</p>
         <Descarrega pdf={resultat?.pdf} />
       </Missatge>
     );
@@ -155,9 +154,9 @@ const Recepcio = ({ info }) => {
 
   return (
     <Pantalla pagador={info.pagador}>
-      <div className="mt-5 bg-[#009B9C]/5 border border-[#009B9C]/30 rounded-lg p-4 text-sm text-gray-700">
+      <div className="mt-5 bg-[#007A7B]/5 border border-[#007A7B]/30 rounded-lg p-4 text-sm text-[#2B4644]">
         <p><strong>{info.signatura?.signatari_nom || info.perceptor_nom}</strong> ha signat la comunicació el {info.signatura ? dataCurta(info.signatura.signat_at) : '—'}. Com a representant del pagador, signeu-ne la recepció.</p>
-        <p className="text-xs italic text-gray-500 mt-1">{info.signatura?.signatari_nom || info.perceptor_nom} signed the communication. As the payer's representative, please sign the receipt.</p>
+        <p className="text-xs italic text-[#4E6765] mt-1">{info.signatura?.signatari_nom || info.perceptor_nom} signed the communication. As the payer's representative, please sign the receipt.</p>
       </div>
       <button type="button" onClick={() => setVeure(!veure)} className="mt-4 text-sm font-semibold text-[#007A7B] hover:underline">
         {veure ? '− Amagar la comunicació / Hide the communication' : '+ Veure la comunicació / View the communication'}
@@ -177,7 +176,7 @@ const Recepcio = ({ info }) => {
         </div>
       </FilaSignatura>
       <FilaSignatura ca={T.s11.data.ca} en={T.s11.data.en} obligatori={false}>
-        <p className="text-[15px] py-2">{dataCurta(new Date())} <span className="text-[11px] text-gray-400">(la posa el sistema / set by the system)</span></p>
+        <p className="text-[15px] py-2">{dataCurta(new Date())} <span className="text-[11px] text-[#6B8280]">(la posa el sistema / set by the system)</span></p>
       </FilaSignatura>
       <FilaSignatura ca={T.s11.signatura.ca} en={T.s11.signatura.en}>
         <SignaturaCanvas ref={canvas} onCanvi={setTeFirma} etiqueta={T.s11.signatura.ca} />
@@ -186,7 +185,7 @@ const Recepcio = ({ info }) => {
       <div className="flex justify-end mt-8">
         <BotoPrimari onClick={signa} disabled={estat === 'signant'}>{estat === 'signant' ? 'Signant… / Signing…' : 'Signar la recepció / Sign the receipt'}</BotoPrimari>
       </div>
-      <p className="text-[11px] text-gray-500 text-center mt-3">
+      <p className="text-[11px] text-[#4E6765] text-center mt-3">
         En signar, s'enregistren la data i l'hora, l'adreça IP i el navegador com a evidència.
         <span className="italic block">When you sign, the date and time, IP address and browser are recorded as evidence.</span>
       </p>
@@ -280,16 +279,16 @@ const PaginaIrpf = () => {
   };
 
   if (estat === 'carregant') {
-    return <div className="min-h-screen flex items-center justify-center text-gray-400 text-sm">Carregant... / Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-[#6B8280] text-sm">Carregant... / Loading...</div>;
   }
   if (estat === 'invalid') {
     return (
       <Missatge icona="🔒" ca={errorInicial || 'Enllaç no vàlid o caducat'} en="Invalid or expired link">
-        <p className="text-sm text-gray-600 mt-6">
+        <p className="text-sm text-[#4E6765] mt-6">
           Si necessiteu un enllaç nou, contacteu amb nosaltres a{' '}
-          <a href="mailto:info@ambit.ad" className="text-[#009B9C] underline">info@ambit.ad</a> o al +376 655 382.
+          <a href="mailto:info@ambit.ad" className="text-[#007A7B] underline">info@ambit.ad</a> o al +376 655 382.
         </p>
-        <p className="text-xs italic text-gray-500 mt-1">If you need a new link, please contact us at info@ambit.ad or on +376 655 382.</p>
+        <p className="text-xs italic text-[#4E6765] mt-1">If you need a new link, please contact us at info@ambit.ad or on +376 655 382.</p>
       </Missatge>
     );
   }
@@ -298,10 +297,10 @@ const PaginaIrpf = () => {
   if (estat === 'fet') {
     return (
       <Missatge icona="✅" ca="Comunicació signada" en="Communication signed" pagador={info.pagador}>
-        <p className="text-sm text-gray-600 mt-6">
+        <p className="text-sm text-[#4E6765] mt-6">
           Gràcies. Hem rebut la comunicació signada{resultat?.rebuda ? ', i també la recepció pel pagador.' : '. El pagador en signarà la recepció.'}
         </p>
-        <p className="text-xs italic text-gray-500">
+        <p className="text-xs italic text-[#4E6765]">
           Thank you. We have received the signed communication{resultat?.rebuda ? ', and the receipt by the payer.' : '. The payer will sign the receipt.'}
         </p>
         <Descarrega pdf={resultat?.pdf} />
@@ -346,21 +345,21 @@ const PaginaIrpf = () => {
 
   return (
     <Pantalla pagador={info.pagador}>
-      <div className="mt-5 bg-[#009B9C]/5 border border-[#009B9C]/30 rounded-lg p-4 text-sm text-gray-700">
+      <div className="mt-5 bg-[#007A7B]/5 border border-[#007A7B]/30 rounded-lg p-4 text-sm text-[#2B4644]">
         <p>Empleneu la comunicació i signeu-la. Les respostes es desen soles; podeu continuar més tard amb el mateix enllaç fins al {expira}.</p>
-        <p className="text-xs italic text-gray-500 mt-1">Please complete and sign the communication. Your answers are saved automatically; you can continue later with the same link until {expira}.</p>
+        <p className="text-xs italic text-[#4E6765] mt-1">Please complete and sign the communication. Your answers are saved automatically; you can continue later with the same link until {expira}.</p>
       </div>
 
       <nav className="mt-4 flex flex-wrap gap-1.5" aria-label="Passos / Steps">
         {passos.map((p) => (
           <button key={p.n} type="button" disabled={estat === 'signant'} onClick={() => vesA(p.n)}
-            className={`text-[11px] px-2 py-1 rounded-full border transition ${pas === p.n ? 'bg-[#009B9C] text-white border-[#009B9C]'
-              : vistos.has(p.n) && p.falten ? 'border-red-300 text-red-700 bg-red-50' : 'border-gray-200 text-gray-600 hover:border-[#009B9C]'} disabled:opacity-40`}>
+            className={`text-[11px] px-2 py-1 rounded-full border transition ${pas === p.n ? 'bg-[#007A7B] text-white border-[#007A7B]'
+              : vistos.has(p.n) && p.falten ? 'border-red-300 text-red-700 bg-red-50' : 'border-[#D6E4E2] text-[#4E6765] hover:border-[#007A7B]'} disabled:opacity-40`}>
             {p.nom}{vistos.has(p.n) && p.falten ? ` (${p.falten})` : ''}
           </button>
         ))}
       </nav>
-      <p className="text-[11px] text-gray-400 mt-2 h-4" aria-live="polite">
+      <p className="text-[11px] text-[#6B8280] mt-2 h-4" aria-live="polite">
         {desat.error || (desat.desant ? 'Desant… / Saving…' : desat.at ? `Desat a les ${hora(desat.at)} / Saved at ${hora(desat.at)}` : '')}
       </p>
 
@@ -371,8 +370,8 @@ const PaginaIrpf = () => {
       {pas === PAS_REVISIO && (
         <>
           <Seccio ca="Revisió" en="Review" />
-          <p className="text-sm text-gray-700">Reviseu totes les respostes abans de signar. Per corregir-ne alguna, torneu a l'apartat corresponent.</p>
-          <p className="text-xs italic text-gray-500 mb-2">Please review all your answers before signing. To correct any of them, go back to the relevant section.</p>
+          <p className="text-sm text-[#2B4644]">Reviseu totes les respostes abans de signar. Per corregir-ne alguna, torneu a l'apartat corresponent.</p>
+          <p className="text-xs italic text-[#4E6765] mb-2">Please review all your answers before signing. To correct any of them, go back to the relevant section.</p>
           {!complet && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700 mt-3">
               <p className="font-semibold">Falta completar: / Still to complete:</p>
@@ -400,7 +399,7 @@ const PaginaIrpf = () => {
             <input value={lloc} maxLength={100} onChange={(e) => setLloc(e.target.value)} placeholder={`${T.s11.exemple_lloc} / e.g. Andorra la Vella`} className={estilInput} />
           </FilaSignatura>
           <FilaSignatura ca={T.s11.data.ca} en={T.s11.data.en} obligatori={false}>
-            <p className="text-[15px] py-2">{dataCurta(new Date())} <span className="text-[11px] text-gray-400">(la posa el sistema / set by the system)</span></p>
+            <p className="text-[15px] py-2">{dataCurta(new Date())} <span className="text-[11px] text-[#6B8280]">(la posa el sistema / set by the system)</span></p>
           </FilaSignatura>
           <FilaSignatura ca={T.s11.signatura.ca} en={T.s11.signatura.en}>
             <SignaturaCanvas ref={canvas} onCanvi={setTeFirma} etiqueta={T.s11.signatura.ca} />
@@ -410,12 +409,12 @@ const PaginaIrpf = () => {
             <>
               <Seccio num="12" ca={T.s12.titol.ca} en={T.s12.titol.en} />
               <Bilingue ca={T.s12.text.ca} en={T.s12.text.en} className="mb-2" />
-              <p className="text-[12px] bg-[#009B9C]/5 border border-[#009B9C]/30 rounded px-2 py-1 mb-2">
+              <p className="text-[12px] bg-[#007A7B]/5 border border-[#007A7B]/30 rounded px-2 py-1 mb-2">
                 Sou el representant del pagador: signeu també la recepció, amb una segona signatura. / <span className="italic">You are the payer's representative: please also sign the receipt, with a second signature.</span>
               </p>
               <FilaSignatura ca={T.s12.representant.ca} en={T.s12.representant.en}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <p className="bg-gray-50 border border-gray-200 rounded-sm px-3 py-2 text-[15px]">{dades.perceptor?.nom || '—'}</p>
+                  <p className="bg-[#F4F8F7] border border-[#D6E4E2] rounded-lg px-3 py-2 text-[15px]">{dades.perceptor?.nom || '—'}</p>
                   <input value={carrec} maxLength={200} onChange={(e) => setCarrec(e.target.value)} placeholder="Càrrec, p. ex. administrador únic / Position" className={estilInput} />
                 </div>
               </FilaSignatura>
@@ -438,7 +437,7 @@ const PaginaIrpf = () => {
         )}
       </div>
       {pas === PAS_REVISIO && (
-        <p className="text-[11px] text-gray-500 text-center mt-3">
+        <p className="text-[11px] text-[#4E6765] text-center mt-3">
           En signar, s'enregistren la data i l'hora, l'adreça IP i el navegador com a evidència.
           <span className="italic block">When you sign, the date and time, IP address and browser are recorded as evidence.</span>
         </p>
