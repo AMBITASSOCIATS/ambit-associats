@@ -107,7 +107,7 @@ const translations = {
     about: "Qui som",
     contact: "Contacta'ns",
     footer: "Tots els drets reservats © DEL SOTO-PALEARI & Associats, SL",
-    contactInfo: "El millor mitjà de contacte és per correu electrònic a info@ambit.ad o bé al mòbil +376 650 042.",
+    contactInfo: "El millor mitjà de contacte és per correu electrònic a info@ambit.ad o bé al mòbil +376 655 382.",
     whatsapp: "Parla amb nosaltres per WhatsApp",
     legal: "Nota legal",
     legalTabs: {
@@ -169,7 +169,7 @@ const translations = {
     about: "¿Quiénes somos?",
     contact: "Contáctanos",
     footer: "Todos los derechos reservados © DEL SOTO-PALEARI & Associats, SL",
-    contactInfo: "La mejor forma de contactarnos es por correo electrónico a info@ambit.ad o por móvil +376 650 042.",
+    contactInfo: "La mejor forma de contactarnos es por correo electrónico a info@ambit.ad o por móvil +376 655 382.",
     whatsapp: "Habla con nosotros por WhatsApp",
     legal: "Nota legal",
     legalTabs: {
@@ -231,7 +231,7 @@ const translations = {
     about: "About Us",
     contact: "Contact Us",
     footer: "All rights reserved © DEL SOTO-PALEARI & Associats, SL",
-    contactInfo: "The best way to reach us is by email at info@ambit.ad or by mobile +376 650 042.",
+    contactInfo: "The best way to reach us is by email at info@ambit.ad or by mobile +376 655 382.",
     whatsapp: "Chat with us on WhatsApp",
     legal: "Legal notice",
     legalTabs: {
@@ -293,7 +293,7 @@ const translations = {
     about: "Qui sommes-nous ?",
     contact: "Contactez-nous",
     footer: "Tous droits réservés © DEL SOTO-PALEARI & Associats, SL",
-    contactInfo: "Le meilleur moyen de nous contacter est par email à info@ambit.ad ou par mobile +376 650 042.",
+    contactInfo: "Le meilleur moyen de nous contacter est par email à info@ambit.ad ou par mobile +376 655 382.",
     whatsapp: "Parlez-nous sur WhatsApp",
     legal: "Note légale",
     legalTabs: {
@@ -362,7 +362,7 @@ const legalContent = {
       <p><strong>Nom o raó social:</strong> DEL SOTO – PALEARI & Associats, S.L.</p>
       <p><strong>NRT:</strong> L-720543-P</p>
       <p><strong>Domicili social:</strong> Av. Fiter i Rossell, núm. 78, Edifici Carlemany, 2n B, Escaldes-Engordany (Principat d’Andorra)</p>
-      <p><strong>Telèfon de contacte:</strong> +376 650 042</p>
+      <p><strong>Telèfon de contacte:</strong> +376 655 382</p>
       <p><strong>Correu electrònic de contacte:</strong> <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a></p>
       <p><strong>Nom de domini:</strong> www.ambit.ad</p>
 
@@ -411,7 +411,7 @@ const legalContent = {
       <p><strong>Nombre o razón social:</strong> DEL SOTO – PALEARI & Associats, S.L.</p>
       <p><strong>NRT:</strong> L-720543-P</p>
       <p><strong>Domicilio social:</strong> Av. Fiter i Rossell, núm. 78, Edificio Carlemany, 2n B, Escaldes-Engordany (Principado de Andorra)</p>
-      <p><strong>Teléfono de contacto:</strong> +376 650 042</p>
+      <p><strong>Teléfono de contacto:</strong> +376 655 382</p>
       <p><strong>Correo electrónico de contacto:</strong> <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a></p>
       <p><strong>Nombre de dominio:</strong> www.ambit.ad</p>
 
@@ -460,7 +460,7 @@ const legalContent = {
       <p><strong>Name or legal entity:</strong> DEL SOTO – PALEARI & Associats, S.L.</p>
       <p><strong>NRT:</strong> L-720543-P</p>
       <p><strong>Registered office:</strong> Av. Fiter i Rossell, No. 78, Edifici Carlemany, 2n B, Escaldes-Engordany (Principality of Andorra)</p>
-      <p><strong>Contact phone:</strong> +376 650 042</p>
+      <p><strong>Contact phone:</strong> +376 655 382</p>
       <p><strong>Contact email:</strong> <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a></p>
       <p><strong>Domain name:</strong> www.ambit.ad</p>
 
@@ -509,7 +509,7 @@ const legalContent = {
       <p><strong>Nom ou raison sociale :</strong> DEL SOTO – PALEARI & Associats, S.L.</p>
       <p><strong>NRT :</strong> L-720543-P</p>
       <p><strong>Siège social :</strong> Av. Fiter i Rossell, n° 78, Édifice Carlemany, 2e B, Escaldes-Engordany (Principauté d’Andorre)</p>
-      <p><strong>Téléphone de contact :</strong> +376 650 042</p>
+      <p><strong>Téléphone de contact :</strong> +376 655 382</p>
       <p><strong>Adresse e-mail :</strong> <a href="mailto:info@ambit.ad" style="color:#009B9C">info@ambit.ad</a></p>
       <p><strong>Nom de domaine :</strong> www.ambit.ad</p>
 
@@ -1637,7 +1637,7 @@ const App = () => {
                   </div>
                   <div>
                     <dt className="text-[13px] text-[#BFE4E4]">{{ ca: "Mòbil i WhatsApp", es: "Móvil y WhatsApp", en: "Mobile and WhatsApp", fr: "Mobile et WhatsApp" }[language]}</dt>
-                    <dd className="font-medium">+376 650 042</dd>
+                    <dd className="font-medium">+376 655 382</dd>
                   </div>
                   <div>
                     <dt className="text-[13px] text-[#BFE4E4]">{{ ca: "Despatx", es: "Despacho", en: "Office", fr: "Cabinet" }[language]}</dt>
@@ -1667,7 +1667,7 @@ const App = () => {
                     {t.form.send}
                   </button>
                   <a
-                    href="https://wa.me/376650042"
+                    href="https://wa.me/376655382"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-semibold text-[15px] underline underline-offset-4 decoration-white/55 hover:decoration-white"
@@ -1702,7 +1702,7 @@ const App = () => {
               <p className="text-sm text-gray-700">
                 <a href="mailto:info@ambit.ad" className="text-[#009B9C] underline">info@ambit.ad</a>
                 {" · "}
-                <a href="tel:+376650042" className="text-[#009B9C] underline">+376 650 042</a>
+                <a href="tel:+376655382" className="text-[#009B9C] underline">+376 655 382</a>
               </p>
             </div>
           </div>
