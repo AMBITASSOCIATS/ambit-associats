@@ -14,7 +14,7 @@ const InputNum = ({ value, onChange, className = '' }) => (
     value={value === 0 ? '' : value}
     placeholder="0"
     onChange={e => { const v = e.target.value; onChange(v === '' ? 0 : parseFloat(v) || 0); }}
-    className={`border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C] ${className}`}
+    className={`border border-[#D6E4E2] rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#007A7B] ${className}`}
   />
 );
 
@@ -48,42 +48,42 @@ const TaulaBasesNeg = ({ titol, descr, dades, onUpdate, maxFiles = 10, casellaTo
     <div className="mb-6">
       <div className="flex items-center justify-between mb-2">
         <div>
-          <h3 className="text-sm font-semibold text-gray-700">{titol}</h3>
-          <p className="text-xs text-gray-500">{descr}</p>
+          <h3 className="text-sm font-semibold text-[#2B4644]">{titol}</h3>
+          <p className="text-xs text-[#4E6765]">{descr}</p>
         </div>
         <button
           onClick={addFila}
           disabled={dades.length >= maxFiles}
-          className="text-xs bg-[#009B9C] text-white px-3 py-1.5 rounded-lg hover:bg-[#007A7B] transition disabled:opacity-40"
+          className="text-xs bg-[#007A7B] text-white px-3 py-1.5 rounded-lg hover:bg-[#00676A] transition disabled:opacity-40"
         >
           + Afegir exercici
         </button>
       </div>
 
       {dades.length === 0 ? (
-        <div className="text-center py-4 text-gray-400 text-xs border border-dashed border-gray-200 rounded-xl">
+        <div className="text-center py-4 text-[#6B8280] text-xs border border-dashed border-[#D6E4E2] rounded-xl">
           Cap base negativa pendent. Afegiu si s'escau.
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-xs border border-gray-200 rounded-xl overflow-hidden">
+          <table className="w-full text-xs border border-[#D6E4E2] rounded-xl overflow-hidden">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="text-left px-3 py-2 font-medium text-gray-600">Exercici</th>
-                <th className="text-right px-3 py-2 font-medium text-gray-600">Pendent inici (euros)</th>
-                <th className="text-right px-3 py-2 font-medium text-gray-600">Aplicat en aquesta declaracio (euros)</th>
-                <th className="text-right px-3 py-2 font-medium text-gray-600">Pendent exercicis futurs (euros)</th>
+              <tr className="bg-[#F4F8F7] border-b border-[#D6E4E2]">
+                <th className="text-left px-3 py-2 font-medium text-[#4E6765]">Exercici</th>
+                <th className="text-right px-3 py-2 font-medium text-[#4E6765]">Pendent inici (euros)</th>
+                <th className="text-right px-3 py-2 font-medium text-[#4E6765]">Aplicat en aquesta declaracio (euros)</th>
+                <th className="text-right px-3 py-2 font-medium text-[#4E6765]">Pendent exercicis futurs (euros)</th>
                 <th className="px-3 py-2"></th>
               </tr>
             </thead>
             <tbody>
               {dades.map((fila, i) => (
-                <tr key={i} className="border-b border-gray-100 hover:bg-gray-50/50">
+                <tr key={i} className="border-b border-[#E4EEEC] hover:bg-[#F4F8F7]/50">
                   <td className="px-3 py-2">
                     <select
                       value={fila.exercici}
                       onChange={e => updateFila(i, 'exercici', parseInt(e.target.value))}
-                      className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                      className="border border-[#D6E4E2] rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#007A7B]"
                     >
                       {EXERCICIS_DISPONIBLES.map(ex => (
                         <option key={ex} value={ex}>{ex}</option>
@@ -105,21 +105,21 @@ const TaulaBasesNeg = ({ titol, descr, dades, onUpdate, maxFiles = 10, casellaTo
                     />
                   </td>
                   <td className="px-3 py-2 text-right">
-                    <span className="font-mono text-gray-700">
+                    <span className="font-mono text-[#2B4644]">
                       {Math.max(0, (fila.pendentInici || 0) - (fila.aplicat || 0)).toFixed(2)}
                     </span>
                   </td>
                   <td className="px-3 py-2">
-                    <button onClick={() => removeFila(i)} className="text-gray-400 hover:text-red-500 text-xs">Eliminar</button>
+                    <button onClick={() => removeFila(i)} className="text-[#6B8280] hover:text-red-500 text-xs">Eliminar</button>
                   </td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              <tr className="bg-[#009B9C]/5 font-semibold text-sm border-t border-gray-200">
-                <td className="px-3 py-2 text-[#009B9C]">Total (casella {casellaTotal})</td>
+              <tr className="bg-[#007A7B]/5 font-semibold text-sm border-t border-[#D6E4E2]">
+                <td className="px-3 py-2 text-[#007A7B]">Total (casella {casellaTotal})</td>
                 <td className="px-3 py-2 text-right font-mono">{dades.reduce((a, f) => a + (f.pendentInici || 0), 0).toFixed(2)}</td>
-                <td className="px-3 py-2 text-right font-mono text-[#009B9C]">{totalAplicat.toFixed(2)}</td>
+                <td className="px-3 py-2 text-right font-mono text-[#007A7B]">{totalAplicat.toFixed(2)}</td>
                 <td className="px-3 py-2 text-right font-mono">{dades.reduce((a, f) => a + Math.max(0, (f.pendentInici || 0) - (f.aplicat || 0)), 0).toFixed(2)}</td>
                 <td></td>
               </tr>
@@ -199,16 +199,16 @@ const Step8Bases300F = ({ dades, update }) => {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6">
         <div className="flex items-center gap-2 mb-5">
-          <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">9</span>
+          <span className="w-8 h-8 rounded-full bg-[#007A7B] text-white text-sm font-bold flex items-center justify-center">9</span>
           <div>
-            <h2 className="font-bold text-gray-800">Bases negatives i deduccions anteriors</h2>
-            <p className="text-xs text-gray-500">Formulari 300-F · Art. 33-34 Llei 5/2014</p>
+            <h2 className="font-bold text-[#12302F]">Bases negatives i deduccions anteriors</h2>
+            <p className="text-xs text-[#4E6765]">Formulari 300-F · Art. 33-34 Llei 5/2014</p>
           </div>
         </div>
 
-        <div className="bg-blue-50 rounded-xl p-3 text-xs text-blue-700 mb-5">
+        <div className="bg-[#EEF6F6] rounded-xl p-3 text-xs text-[#00676A] mb-5">
           <strong>Art. 33 Llei 5/2014:</strong> Les bases de tributacio negatives es poden compensar en els <strong>{anysVigBNGeneral} exercicis</strong> fiscals posteriors (base general) o en els <strong>{anysVigBNEstalvi} exercicis</strong> posteriors (base de l'estalvi). Art. 34: les deduccions de quota pendents es poden aplicar en els {anysVigDeducc} exercicis posteriors.
         </div>
 
@@ -236,43 +236,43 @@ const Step8Bases300F = ({ dades, update }) => {
         <div className="mb-2">
           <div className="flex items-center justify-between mb-2">
             <div>
-              <h3 className="text-sm font-semibold text-gray-700">Apartat 3 — Deduccions de quota d'exercicis anteriors</h3>
-              <p className="text-xs text-gray-500">Casella (12) = suma de 'Deduccio aplicada'</p>
+              <h3 className="text-sm font-semibold text-[#2B4644]">Apartat 3 — Deduccions de quota d'exercicis anteriors</h3>
+              <p className="text-xs text-[#4E6765]">Casella (12) = suma de 'Deduccio aplicada'</p>
             </div>
             <button
               onClick={addDeducc}
               disabled={!potAfegirDeducc}
-              className="text-xs bg-[#009B9C] text-white px-3 py-1.5 rounded-lg hover:bg-[#007A7B] transition disabled:opacity-40"
+              className="text-xs bg-[#007A7B] text-white px-3 py-1.5 rounded-lg hover:bg-[#00676A] transition disabled:opacity-40"
             >
               + Afegir deducció
             </button>
           </div>
 
           {deduccionsAnteriors.length === 0 ? (
-            <div className="text-center py-4 text-gray-400 text-xs border border-dashed border-gray-200 rounded-xl">
+            <div className="text-center py-4 text-[#6B8280] text-xs border border-dashed border-[#D6E4E2] rounded-xl">
               Cap deduccio pendent. Afegiu si s'escau.
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-xs border border-gray-200 rounded-xl overflow-hidden">
+              <table className="w-full text-xs border border-[#D6E4E2] rounded-xl overflow-hidden">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Tipus de deducció</th>
-                    <th className="text-left px-3 py-2 font-medium text-gray-600">Exercici</th>
-                    <th className="text-right px-3 py-2 font-medium text-gray-600">Pendent inici (euros)</th>
-                    <th className="text-right px-3 py-2 font-medium text-gray-600">Deduccio aplicada (euros)</th>
-                    <th className="text-right px-3 py-2 font-medium text-gray-600">Import diferit (euros)</th>
+                  <tr className="bg-[#F4F8F7] border-b border-[#D6E4E2]">
+                    <th className="text-left px-3 py-2 font-medium text-[#4E6765]">Tipus de deducció</th>
+                    <th className="text-left px-3 py-2 font-medium text-[#4E6765]">Exercici</th>
+                    <th className="text-right px-3 py-2 font-medium text-[#4E6765]">Pendent inici (euros)</th>
+                    <th className="text-right px-3 py-2 font-medium text-[#4E6765]">Deduccio aplicada (euros)</th>
+                    <th className="text-right px-3 py-2 font-medium text-[#4E6765]">Import diferit (euros)</th>
                     <th className="px-3 py-2"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {deduccionsAnteriors.map((fila, i) => (
-                    <tr key={i} className="border-b border-gray-100 hover:bg-gray-50/50">
+                    <tr key={i} className="border-b border-[#E4EEEC] hover:bg-[#F4F8F7]/50">
                       <td className="px-3 py-2">
                         <select
                           value={fila.tipus || ''}
                           onChange={e => updateDeducc(i, 'tipus', e.target.value)}
-                          className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C] max-w-[220px]"
+                          className="border border-[#D6E4E2] rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#007A7B] max-w-[220px]"
                         >
                           {!fila.tipus && <option value="">— Tipus —</option>}
                           {fila.tipus && !tipusDeduccionsPerExercici(fila.exercici).some(t => t.id === fila.tipus) && (
@@ -288,7 +288,7 @@ const Step8Bases300F = ({ dades, update }) => {
                             value={fila.descripcio || ''}
                             onChange={e => updateDeducc(i, 'descripcio', e.target.value)}
                             placeholder="Nom de la deducció"
-                            className="mt-1 block w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C] max-w-[220px]"
+                            className="mt-1 block w-full border border-[#D6E4E2] rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#007A7B] max-w-[220px]"
                           />
                         )}
                       </td>
@@ -296,7 +296,7 @@ const Step8Bases300F = ({ dades, update }) => {
                         <select
                           value={fila.exercici}
                           onChange={e => updateDeducc(i, 'exercici', parseInt(e.target.value))}
-                          className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                          className="border border-[#D6E4E2] rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#007A7B]"
                         >
                           {anysPermesosFila(i).map(ex => (
                             <option key={ex} value={ex}>{ex}</option>
@@ -318,21 +318,21 @@ const Step8Bases300F = ({ dades, update }) => {
                         />
                       </td>
                       <td className="px-3 py-2 text-right">
-                        <span className="font-mono text-gray-700">
+                        <span className="font-mono text-[#2B4644]">
                           {Math.max(0, (fila.pendentInici || 0) - (fila.aplicat || 0)).toFixed(2)}
                         </span>
                       </td>
                       <td className="px-3 py-2">
-                        <button onClick={() => removeDeducc(i)} className="text-gray-400 hover:text-red-500 text-xs">Eliminar</button>
+                        <button onClick={() => removeDeducc(i)} className="text-[#6B8280] hover:text-red-500 text-xs">Eliminar</button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="bg-[#009B9C]/5 font-semibold text-sm border-t border-gray-200">
-                    <td className="px-3 py-2 text-[#009B9C]" colSpan={2}>Total (casella 12)</td>
+                  <tr className="bg-[#007A7B]/5 font-semibold text-sm border-t border-[#D6E4E2]">
+                    <td className="px-3 py-2 text-[#007A7B]" colSpan={2}>Total (casella 12)</td>
                     <td className="px-3 py-2 text-right font-mono">{deduccionsAnteriors.reduce((a, f) => a + (f.pendentInici || 0), 0).toFixed(2)}</td>
-                    <td className="px-3 py-2 text-right font-mono text-[#009B9C]">{totalDeduccions.toFixed(2)}</td>
+                    <td className="px-3 py-2 text-right font-mono text-[#007A7B]">{totalDeduccions.toFixed(2)}</td>
                     <td className="px-3 py-2 text-right font-mono">{deduccionsAnteriors.reduce((a, f) => a + Math.max(0, (f.pendentInici || 0) - (f.aplicat || 0)), 0).toFixed(2)}</td>
                     <td></td>
                   </tr>
@@ -345,23 +345,23 @@ const Step8Bases300F = ({ dades, update }) => {
 
       {/* Resum 300-F */}
       {(totalAplicatGenerals > 0 || totalAplicatEstalvi > 0 || totalDeduccions > 0) && (
-        <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-4 text-sm">
-          <h4 className="font-semibold text-[#009B9C] mb-3">Resum 300-F — Compensacions aplicades</h4>
+        <div className="bg-[#007A7B]/5 border border-[#007A7B]/20 rounded-xl p-4 text-sm">
+          <h4 className="font-semibold text-[#007A7B] mb-3">Resum 300-F — Compensacions aplicades</h4>
           <div className="space-y-1 text-xs">
             {totalAplicatGenerals > 0 && (
-              <div className="flex justify-between text-gray-700">
+              <div className="flex justify-between text-[#2B4644]">
                 <span>Bases neg. generals aplicades (casella 4):</span>
                 <span className="font-bold">{totalAplicatGenerals.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</span>
               </div>
             )}
             {totalAplicatEstalvi > 0 && (
-              <div className="flex justify-between text-gray-700">
+              <div className="flex justify-between text-[#2B4644]">
                 <span>Bases neg. estalvi aplicades (casella 11):</span>
                 <span className="font-bold">{totalAplicatEstalvi.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</span>
               </div>
             )}
             {totalDeduccions > 0 && (
-              <div className="flex justify-between text-gray-700">
+              <div className="flex justify-between text-[#2B4644]">
                 <span>Deduccions quota aplicades (casella 12):</span>
                 <span className="font-bold">{totalDeduccions.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</span>
               </div>

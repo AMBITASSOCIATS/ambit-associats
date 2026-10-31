@@ -44,7 +44,7 @@ const cdiMaxPerTipus = (codiPais, tipusRenda) => {
 
 const InputNum = ({ label, value, onChange, min = 0, sufix }) => (
   <div>
-    <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+    <label className="block text-xs font-medium text-[#4E6765] mb-1">{label}</label>
     <div className="relative">
       <input
         type="number" onWheel={e => e.target.blur()}
@@ -53,9 +53,9 @@ const InputNum = ({ label, value, onChange, min = 0, sufix }) => (
         value={value === 0 ? '' : value}
         placeholder="0"
         onChange={e => { const v = e.target.value; onChange(v === '' ? 0 : parseFloat(v) || 0); }}
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
       />
-      {sufix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">{sufix}</span>}
+      {sufix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#6B8280]">{sufix}</span>}
     </div>
   </div>
 );
@@ -124,11 +124,11 @@ const RendaEstrangeraForm = ({ renda, index, onUpdate, onEliminar }) => {
     <RentaBlock titol={titol} numero={index + 1} onEliminar={onEliminar}>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">País d'origen</label>
+          <label className="block text-xs font-medium text-[#4E6765] mb-1">País d'origen</label>
           <select
             value={renda.pais}
             onChange={e => onPaisChange(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+            className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
           >
             <option value="">— Selecciona país —</option>
             {PAISOS.map(p => (
@@ -141,7 +141,7 @@ const RendaEstrangeraForm = ({ renda, index, onUpdate, onEliminar }) => {
 
         {!renda.tensCDI && renda.pais === 'OTHER' && (
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
+            <label className="block text-xs font-medium text-[#4E6765] mb-1">
               Nom del país (sense CDI amb Andorra)
             </label>
             <input
@@ -149,20 +149,20 @@ const RendaEstrangeraForm = ({ renda, index, onUpdate, onEliminar }) => {
               value={renda.paisLliure || ''}
               onChange={e => update('paisLliure', e.target.value)}
               placeholder="Ex: Austràlia, Brasil, Estats Units..."
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+              className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-[#6B8280] mt-1">
               Sense CDI, la DDI = mínim entre la retenció efectiva i el 10% andorrà (Art. 48.1 Llei 5/2014).
             </p>
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Tipus de renda</label>
+          <label className="block text-xs font-medium text-[#4E6765] mb-1">Tipus de renda</label>
           <select
             value={renda.tipusRenda}
             onChange={e => onTipusChange(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+            className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
           >
             <option value="">— Selecciona tipus —</option>
             {TIPUS_RENDA.map(t => (
@@ -188,9 +188,9 @@ const RendaEstrangeraForm = ({ renda, index, onUpdate, onEliminar }) => {
             type="checkbox"
             checked={renda.tensCDI}
             onChange={e => update('tensCDI', e.target.checked)}
-            className="w-4 h-4 accent-[#009B9C]"
+            className="w-4 h-4 accent-[#007A7B]"
           />
-          <label htmlFor={`cdi-${renda.id}`} className="text-xs font-medium text-gray-600">
+          <label htmlFor={`cdi-${renda.id}`} className="text-xs font-medium text-[#4E6765]">
             Hi ha CDI vigent amb aquest país
           </label>
         </div>
@@ -205,25 +205,25 @@ const RendaEstrangeraForm = ({ renda, index, onUpdate, onEliminar }) => {
       </div>
 
       {ddiInfo && (
-        <div className="mt-3 bg-gray-50 rounded-lg p-3 text-xs">
+        <div className="mt-3 bg-[#F4F8F7] rounded-lg p-3 text-xs">
           <div className="grid grid-cols-4 gap-2">
             <div>
-              <span className="text-gray-500">Impost estranger computable:</span>
-              <p className="font-bold text-gray-800">{ddiInfo.impostEtopat.toFixed(2)} €</p>
+              <span className="text-[#4E6765]">Impost estranger computable:</span>
+              <p className="font-bold text-[#12302F]">{ddiInfo.impostEtopat.toFixed(2)} €</p>
             </div>
             <div>
-              <span className="text-gray-500">Límit quota andorrana (10%):</span>
-              <p className="font-bold text-gray-800">{ddiInfo.quotaAndorrana.toFixed(2)} €</p>
+              <span className="text-[#4E6765]">Límit quota andorrana (10%):</span>
+              <p className="font-bold text-[#12302F]">{ddiInfo.quotaAndorrana.toFixed(2)} €</p>
             </div>
             {renda.tensCDI && ddiInfo.excesCDI > 0 && (
               <div>
-                <span className="text-gray-500">Excés no computable:</span>
+                <span className="text-[#4E6765]">Excés no computable:</span>
                 <p className="font-bold text-red-600">{ddiInfo.excesCDI.toFixed(2)} €</p>
               </div>
             )}
             <div>
-              <span className="text-gray-500">DDI aplicable:</span>
-              <p className="font-bold text-[#009B9C]">{ddiInfo.ddi.toFixed(2)} €</p>
+              <span className="text-[#4E6765]">DDI aplicable:</span>
+              <p className="font-bold text-[#007A7B]">{ddiInfo.ddi.toFixed(2)} €</p>
             </div>
           </div>
         </div>
@@ -285,18 +285,18 @@ const Step7DDI = ({ dades, update }) => {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">7</span>
+            <span className="w-8 h-8 rounded-full bg-[#007A7B] text-white text-sm font-bold flex items-center justify-center">7</span>
             <div>
-              <h2 className="font-bold text-gray-800">Deduccio per doble imposicio (DDI)</h2>
-              <p className="text-xs text-gray-500">Art. 48.3 Llei 5/2014 (mod. L2023005) · Convenis de doble imposicio</p>
+              <h2 className="font-bold text-[#12302F]">Deduccio per doble imposicio (DDI)</h2>
+              <p className="text-xs text-[#4E6765]">Art. 48.3 Llei 5/2014 (mod. L2023005) · Convenis de doble imposicio</p>
             </div>
           </div>
           <button
             onClick={addRenda}
-            className="text-sm bg-[#009B9C] text-white px-4 py-2 rounded-xl hover:bg-[#007A7B] transition font-medium"
+            className="text-sm bg-[#007A7B] text-white px-4 py-2 rounded-xl hover:bg-[#00676A] transition font-medium"
           >
             + Afegir renda estrangera
           </button>
@@ -308,20 +308,20 @@ const Step7DDI = ({ dades, update }) => {
 
         {/* Alerta: retencions del pas 5 pendents d'importar */}
         {totalRetOrigenMobiliaris > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-800 mb-4">
+          <div className="bg-[#EEF6F6] border border-[#CFE3E1] rounded-xl p-3 text-sm text-[#12302F] mb-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="font-semibold mb-1">
                   Retencions al pais d'origen detectades al Pas 5
                 </p>
-                <p className="text-xs text-blue-600">
+                <p className="text-xs text-[#007A7B]">
                   S'han detectat {retencionsOrigenMobiliaris.length} partida(es) amb retencio al pais d'origen
                   (total: <strong>{totalRetOrigenMobiliaris.toFixed(2)} euros</strong>) al capital mobiliari.
                   Importeu-les aqui i completeu el país i el CDI per declarar la DDI corresponent.
                 </p>
                 <ul className="mt-1 space-y-0.5">
                   {retencionsOrigenMobiliaris.map((r, i) => (
-                    <li key={i} className="text-xs text-blue-700">
+                    <li key={i} className="text-xs text-[#00676A]">
                       {r.descripcio}: <strong>{r.retencioOrigen.toFixed(2)} euros</strong>
                     </li>
                   ))}
@@ -329,7 +329,7 @@ const Step7DDI = ({ dades, update }) => {
               </div>
               <button
                 onClick={importarDesMobiliaris}
-                className="flex-shrink-0 bg-blue-600 text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-blue-700 transition"
+                className="flex-shrink-0 bg-[#007A7B] text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-blue-700 transition"
               >
                 Importar
               </button>
@@ -338,16 +338,16 @@ const Step7DDI = ({ dades, update }) => {
         )}
 
         {dades.rendesExterior.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-[#6B8280]">
             <p className="text-sm">Cap renda estrangera afegida.</p>
             <p className="text-xs mt-1">Afegiu una entrada per cada renda obtinguda a l'estranger (país i tipus de renda).</p>
           </div>
         )}
 
         {dades.rendesExterior.length > 0 && (
-          <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-3 text-sm">
-            <span className="font-semibold text-[#009B9C]">Total DDI deduible (suma país per país): </span>
-            <span className="font-bold text-gray-800">
+          <div className="bg-[#007A7B]/5 border border-[#007A7B]/20 rounded-xl p-3 text-sm">
+            <span className="font-semibold text-[#007A7B]">Total DDI deduible (suma país per país): </span>
+            <span className="font-bold text-[#12302F]">
               {totalDDI.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros
             </span>
           </div>
@@ -365,27 +365,27 @@ const Step7DDI = ({ dades, update }) => {
       ))}
 
       {ddiResults.length > 0 && totalDDI > 0 && (
-        <div className="bg-white rounded-2xl border border-[#009B9C]/30 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-[#007A7B]/30 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-4">
-            <span className="w-8 h-8 rounded-full bg-[#009B9C]/10 text-[#009B9C] text-sm font-bold flex items-center justify-center">Σ</span>
+            <span className="w-8 h-8 rounded-full bg-[#007A7B]/10 text-[#007A7B] text-sm font-bold flex items-center justify-center">Σ</span>
             <div>
-              <h3 className="font-bold text-gray-800">Resum DDI — país per país</h3>
-              <p className="text-xs text-gray-500">Art. 48.3 Llei 5/2014 · Càlcul detallat</p>
+              <h3 className="font-bold text-[#12302F]">Resum DDI — país per país</h3>
+              <p className="text-xs text-[#4E6765]">Art. 48.3 Llei 5/2014 · Càlcul detallat</p>
             </div>
           </div>
 
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 text-gray-500 font-medium">País</th>
-                <th className="text-left py-2 text-gray-500 font-medium">Tipus renda</th>
-                <th className="text-right py-2 text-gray-500 font-medium">Renda bruta</th>
-                <th className="text-right py-2 text-gray-500 font-medium">Ret. efectiva</th>
-                <th className="text-right py-2 text-gray-500 font-medium">Límit 10% AND</th>
+              <tr className="border-b border-[#D6E4E2]">
+                <th className="text-left py-2 text-[#4E6765] font-medium">País</th>
+                <th className="text-left py-2 text-[#4E6765] font-medium">Tipus renda</th>
+                <th className="text-right py-2 text-[#4E6765] font-medium">Renda bruta</th>
+                <th className="text-right py-2 text-[#4E6765] font-medium">Ret. efectiva</th>
+                <th className="text-right py-2 text-[#4E6765] font-medium">Límit 10% AND</th>
                 {ddiResults.some(r => r.excesCDI > 0) && (
-                  <th className="text-right py-2 text-gray-500 font-medium">Excés CDI</th>
+                  <th className="text-right py-2 text-[#4E6765] font-medium">Excés CDI</th>
                 )}
-                <th className="text-right py-2 text-[#009B9C] font-bold">DDI</th>
+                <th className="text-right py-2 text-[#007A7B] font-bold">DDI</th>
               </tr>
             </thead>
             <tbody>
@@ -395,23 +395,23 @@ const Step7DDI = ({ dades, update }) => {
                   ? renda.paisLliure
                   : PAISOS.find(p => p.codi === renda?.pais)?.nom || renda?.pais || '—';
                 return (
-                  <tr key={i} className="border-b border-gray-100">
-                    <td className="py-2 text-gray-700">
+                  <tr key={i} className="border-b border-[#E4EEEC]">
+                    <td className="py-2 text-[#2B4644]">
                       {nomPais}
                       {renda?.tensCDI && (
                         <span className="ml-1 text-green-600 text-xs">(CDI)</span>
                       )}
                     </td>
-                    <td className="py-2 text-gray-600">
+                    <td className="py-2 text-[#4E6765]">
                       {TIPUS_LABEL[renda?.tipusRenda] || '—'}
                     </td>
-                    <td className="py-2 text-right font-mono text-gray-700">
+                    <td className="py-2 text-right font-mono text-[#2B4644]">
                       {(renda?.importBrut || 0).toFixed(2)} €
                     </td>
-                    <td className="py-2 text-right font-mono text-gray-700">
+                    <td className="py-2 text-right font-mono text-[#2B4644]">
                       {(renda?.retencioEfectiva || 0).toFixed(2)} €
                     </td>
-                    <td className="py-2 text-right font-mono text-gray-700">
+                    <td className="py-2 text-right font-mono text-[#2B4644]">
                       {r.quotaAndorrana.toFixed(2)} €
                     </td>
                     {ddiResults.some(d => d.excesCDI > 0) && (
@@ -419,7 +419,7 @@ const Step7DDI = ({ dades, update }) => {
                         {r.excesCDI > 0 ? `${r.excesCDI.toFixed(2)} €` : '—'}
                       </td>
                     )}
-                    <td className="py-2 text-right font-mono font-bold text-[#009B9C]">
+                    <td className="py-2 text-right font-mono font-bold text-[#007A7B]">
                       {r.ddi.toFixed(2)} €
                     </td>
                   </tr>
@@ -427,12 +427,12 @@ const Step7DDI = ({ dades, update }) => {
               })}
             </tbody>
             <tfoot>
-              <tr className="border-t-2 border-[#009B9C]">
+              <tr className="border-t-2 border-[#007A7B]">
                 <td colSpan={ddiResults.some(r => r.excesCDI > 0) ? 6 : 5}
-                  className="py-2 font-bold text-gray-800">
+                  className="py-2 font-bold text-[#12302F]">
                   TOTAL DDI deduïble (300-G)
                 </td>
-                <td className="py-2 text-right font-mono font-bold text-[#009B9C] text-sm">
+                <td className="py-2 text-right font-mono font-bold text-[#007A7B] text-sm">
                   {totalDDI.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €
                 </td>
               </tr>

@@ -29,7 +29,7 @@ const AvisRevisio = () => {
   const d = avui().slice(5);
   const proper = d >= '10-15' && d <= '12-15';
   return (
-    <div className={`border rounded-lg p-3 text-xs ${proper ? 'bg-amber-50 border-amber-300 text-amber-900' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
+    <div className={`border rounded-lg p-3 text-xs ${proper ? 'bg-amber-50 border-amber-300 text-amber-900' : 'bg-[#EEF6F6] border-[#CFE3E1] text-[#00676A]'}`}>
       <strong>Revisió anual.</strong> La situació del cònjuge s'ha de comunicar cada any abans del 15 de desembre de l'any anterior
       (arts. 28.3 i 31.d del Reglament de l'IRPF); si no, no es té en compte. Envieu la revisió anual abans d'aquesta data, no al gener.
     </div>
@@ -90,7 +90,7 @@ const Calcul = ({ id, s, calculs, onFet }) => {
 
   return (
     <Targeta titol="Càlcul del percentatge de retenció (ús intern)">
-      <p className="text-xs text-gray-500 mb-3">
+      <p className="text-xs text-[#4E6765] mb-3">
         Art. 24.1 del Reglament, amb els paràmetres de l'exercici de la data d'efectes (pestanya Paràmetres IRPF). El detall de cada pas
         es desa amb la comunicació i va a un full intern del PDF d'ÀMBIT; mai a la còpia del perceptor.
       </p>
@@ -110,12 +110,12 @@ const Calcul = ({ id, s, calculs, onFet }) => {
         <div className="mt-3"><Avis tipus="info">Hi ha una comunicació rebuda pel pagador i aquest càlcul no la farà servir (sense comunicació, art. 24.4).</Avis></div>
       )}
       {anterior && (
-        <div className="mt-3 border border-gray-200 rounded-lg p-3">
-          <p className="text-xs text-gray-600 mb-2">
+        <div className="mt-3 border border-[#D6E4E2] rounded-lg p-3">
+          <p className="text-xs text-[#4E6765] mb-2">
             Hi ha un càlcul anterior de l'exercici {exercici} (efectes {dataCurta(anterior.data_efectes)}: {pc(anterior.percentatge)}, aplicat {pc(anterior.percentatge_aplicat)}).
             Si la variació supera un punt, es regularitza sobre la resta del període (art. 25): cal indicar el que ja s'ha satisfet i retingut.
           </p>
-          <p className="text-xs text-gray-600 mb-2">
+          <p className="text-xs text-[#4E6765] mb-2">
             Una variació s'aplica des del mes següent a aquell en què el pagador la coneix (art. 27.1.b): la data d'efectes ha de ser posterior.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -143,31 +143,31 @@ const Calcul = ({ id, s, calculs, onFet }) => {
             <p className="text-sm">Percentatge calculat: <strong className="text-lg">{pc(res.percentatge)}</strong></p>
             <p className="text-sm">Percentatge aplicat: <strong className="text-lg text-[#007A7B]">{pc(res.percentatge_aplicat)}</strong></p>
             {res.detall?.regularitzacio && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-[#4E6765]">
                 {res.detall.regularitzacio.aplica ? 'Regularitzat (variació de més d\'un punt)' : `Sense regularització (variació de ${percent(res.detall.regularitzacio.variacio)})`}
               </p>
             )}
             {res.calcul_id && <span className="text-xs text-green-700">Desat ✓</span>}
           </div>
-          <p className="text-xs text-gray-600 mt-2">
+          <p className="text-xs text-[#4E6765] mt-2">
             Dades: <strong>{NOM_MODE[res.mode]}</strong>
             {res.detall?.mode && res.detall.mode !== res.mode && <> · aplicades: <strong>{NOM_MODE[res.detall.mode]}</strong></>}
           </p>
           {(res.detall?.avisos || []).map((a, i) => <div key={i} className="mt-2"><Avis tipus="info">{a.ca}</Avis></div>)}
           <table className="w-full text-xs mt-3">
-            <thead><tr className="text-left text-gray-500 border-b"><th className="py-1 pr-2">Pas</th><th className="pr-2">Concepte</th><th className="pr-2">Fórmula</th><th className="text-right">Import</th></tr></thead>
+            <thead><tr className="text-left text-[#4E6765] border-b"><th className="py-1 pr-2">Pas</th><th className="pr-2">Concepte</th><th className="pr-2">Fórmula</th><th className="text-right">Import</th></tr></thead>
             <tbody>
               {res.detall.passos.map((p, i) => (
-                <tr key={i} className="border-b border-gray-100 align-top">
+                <tr key={i} className="border-b border-[#E4EEEC] align-top">
                   <td className="py-1 pr-2 font-mono">{p.num}</td><td className="pr-2">{p.ca}</td>
-                  <td className="pr-2 text-gray-600">{p.formula}</td>
+                  <td className="pr-2 text-[#4E6765]">{p.formula}</td>
                   <td className="text-right whitespace-nowrap">{typeof p.valor === 'number' ? euros(p.valor) : p.valor || ''}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           {res.detall.persones?.length > 0 && (
-            <ul className="mt-3 text-xs text-gray-700 list-disc pl-5">
+            <ul className="mt-3 text-xs text-[#2B4644] list-disc pl-5">
               {res.detall.persones.map((p, i) => <li key={i}><strong>{p.nom}</strong>{p.edat !== null ? ` (${p.edat} anys a 31/12)` : ''}: {p.formula}</li>)}
             </ul>
           )}
@@ -191,27 +191,27 @@ const Versions = ({ s, comunicacions, calculs, onObre, onRevisio, ocupat }) => {
   return (
     <Targeta titol={`Versions de ${s.com.irpf_perceptors.nom}`}
       accions={teRebuda && <Boto onClick={onRevisio} disabled={ocupat}>Enviar revisió anual</Boto>}>
-      <p className="text-xs text-gray-500 mb-2">Cada comunicació substitueix l'anterior des de la seva data d'efectes, sense esborrar-la.</p>
+      <p className="text-xs text-[#4E6765] mb-2">Cada comunicació substitueix l'anterior des de la seva data d'efectes, sense esborrar-la.</p>
       <table className="w-full text-xs">
-        <thead><tr className="text-left text-gray-500 border-b"><th className="py-1">Efectes</th><th>Tipus</th><th>Estat</th><th>Signada</th><th /></tr></thead>
+        <thead><tr className="text-left text-[#4E6765] border-b"><th className="py-1">Efectes</th><th>Tipus</th><th>Estat</th><th>Signada</th><th /></tr></thead>
         <tbody>
           {comunicacions.map((c) => (
-            <tr key={c.request_id} className={`border-b border-gray-100 ${c.request_id === s.id ? 'bg-[#009B9C]/5 font-semibold' : ''}`}>
+            <tr key={c.request_id} className={`border-b border-[#E4EEEC] ${c.request_id === s.id ? 'bg-[#007A7B]/5 font-semibold' : ''}`}>
               <td className="py-1">{c.data_efectes ? dataCurta(c.data_efectes) : '—'}</td>
               <td>{TIPUS[c.comunicacio?.tipus] || '—'}</td>
               <td>{nomEstat(c.requests?.status, 'irpf_comunicacio')}</td>
               <td>{c.requests?.signat_at ? dataCurta(c.requests.signat_at) : '—'}</td>
-              <td className="text-right">{c.request_id !== s.id && <button type="button" className="text-[#009B9C] hover:underline" onClick={() => onObre(c.request_id)}>Obrir</button>}</td>
+              <td className="text-right">{c.request_id !== s.id && <button type="button" className="text-[#007A7B] hover:underline" onClick={() => onObre(c.request_id)}>Obrir</button>}</td>
             </tr>
           ))}
         </tbody>
       </table>
       {calculs.length > 0 && (
         <table className="w-full text-xs mt-4">
-          <thead><tr className="text-left text-gray-500 border-b"><th className="py-1">Exercici</th><th>Efectes</th><th>Dades</th><th>Calculat</th><th>Aplicat</th><th>Fet el</th></tr></thead>
+          <thead><tr className="text-left text-[#4E6765] border-b"><th className="py-1">Exercici</th><th>Efectes</th><th>Dades</th><th>Calculat</th><th>Aplicat</th><th>Fet el</th></tr></thead>
           <tbody>
             {calculs.map((c) => (
-              <tr key={c.id} className="border-b border-gray-100">
+              <tr key={c.id} className="border-b border-[#E4EEEC]">
                 <td className="py-1">{c.exercici}</td><td>{dataCurta(c.data_efectes)}</td>
                 <td>{c.mode === 'comunicacio' ? 'Comunicació' : 'Sense comunicació (art. 24.4)'}{c.mode_aplicat && c.mode_aplicat !== c.mode ? ' (encara no aplicada)' : ''}</td>
                 <td>{pc(c.percentatge)}</td><td className="font-semibold">{pc(c.percentatge_aplicat)}{c.regularitzat ? ' (regularitzat)' : ''}</td>
@@ -254,14 +254,14 @@ const Relacio = ({ p, onDesat }) => {
   };
   return (
     <Targeta titol="Relació amb el pagador">
-      <p className="text-xs text-gray-500 mb-3">
+      <p className="text-xs text-[#4E6765] mb-3">
         La comunicació inicial compta des de la seva data d'efectes si el pagador la rep dins dels 10 dies següents a l'inici de la relació
         laboral (art. 31.a) o, si no és laboral, com a molt tard el dia anterior al primer pagament (art. 31.b). Si no, és una variació: des del mes següent a rebre-la.
       </p>
       <div className="flex flex-wrap items-end gap-3">
         <Entrada etiqueta={laboral ? 'Inici de la relació laboral' : 'Data del primer pagament'} type="date" value={inici} onChange={(e) => setInici(e.target.value)} />
-        <label className="flex items-center gap-2 text-xs text-gray-700 pb-2">
-          <input type="checkbox" checked={!laboral} onChange={(e) => setLaboral(!e.target.checked)} className="accent-[#009B9C]" />
+        <label className="flex items-center gap-2 text-xs text-[#2B4644] pb-2">
+          <input type="checkbox" checked={!laboral} onChange={(e) => setLaboral(!e.target.checked)} className="accent-[#007A7B]" />
           Rendes que no són d'una relació laboral
         </label>
         {canviat && <Boto onClick={desa}>Desar</Boto>}
@@ -368,24 +368,24 @@ const DetallIrpf = ({ id, onTorna, rol }) => {
     window.open(url, '_blank', 'noopener');
   });
 
-  if (!s) return <p className="text-sm text-gray-400">{error || 'Carregant...'}</p>;
+  if (!s) return <p className="text-sm text-[#6B8280]">{error || 'Carregant...'}</p>;
   const p = s.com.irpf_perceptors;
   const potEnllac = ['esborrany', 'enviat', 'en_curs'].includes(s.status);
   const pendentRecepcio = s.status === 'signat' && !s.rec;
 
   return (
     <div className="space-y-5">
-      <button onClick={() => onTorna()} className="text-sm text-[#009B9C] hover:underline">← Totes les sol·licituds</button>
+      <button onClick={() => onTorna()} className="text-sm text-[#007A7B] hover:underline">← Totes les sol·licituds</button>
 
       <Targeta>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs text-gray-400 mb-1">Comunicació de dades al pagador (IRPF) · {s.template_version}</p>
-            <h2 className="text-lg font-bold text-gray-800">{p.nom}</h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[#6B8280] mb-1">Comunicació de dades al pagador (IRPF) · {s.template_version}</p>
+            <h2 className="text-lg font-bold text-[#12302F]">{p.nom}</h2>
+            <p className="text-xs text-[#4E6765]">
               Perceptor · NRT {p.nrt} · {p.email}{s.com.doble_signatura ? ' · representant del pagador (doble signatura)' : ''}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[#4E6765] mt-1">
               Pagador: <strong>{s.com.pagador.denominacio}</strong> · NRT {s.com.pagador.nrt} · client{' '}
               <span className="font-mono">{s.clients.referencia_client || 'sense referència'}</span>
             </p>
@@ -408,7 +408,7 @@ const DetallIrpf = ({ id, onTorna, rol }) => {
 
       {potEnllac && (
         <Targeta titol="Enllaç per al perceptor">
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-[#4E6765] mb-3">
             {s.enllac
               ? `Hi ha un enllaç vigent fins al ${dataHora(s.enllac.expira_at)}. Si el generes de nou, l'anterior deixarà de funcionar.`
               : 'Genera l\'enllaç i envia\'l al perceptor des del teu correu. Caduca als 7 dies i només serveix una vegada.'}
@@ -423,13 +423,13 @@ const DetallIrpf = ({ id, onTorna, rol }) => {
 
       {pendentRecepcio && (
         <Targeta titol="Recepció pel pagador (apartat 12)">
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-[#4E6765] mb-3">
             El perceptor ja ha signat. Genera l'enllaç perquè el representant del pagador en signi la recepció.
             {s.enllac && ` Hi ha un enllaç vigent fins al ${dataHora(s.enllac.expira_at)}.`}
           </p>
           <Boto onClick={generaEnllac} disabled={ocupat}>{s.enllac ? 'Regenerar l\'enllaç del representant' : 'Generar l\'enllaç del representant'}</Boto>
           {rol === 'ocic' && (
-            <div className="flex flex-wrap items-end gap-3 mt-4 pt-3 border-t border-gray-100">
+            <div className="flex flex-wrap items-end gap-3 mt-4 pt-3 border-t border-[#E4EEEC]">
               <Entrada etiqueta="Anul·lar la comunicació signada (només OCIC) · motiu" value={motiu} className="flex-1 min-w-[240px]" maxLength={500}
                 onChange={(e) => setMotiu(e.target.value)} />
               <Boto variant="perill" onClick={() => anulla(true)} disabled={ocupat || !motiu.trim()}>Anul·lar</Boto>
@@ -452,21 +452,21 @@ const DetallIrpf = ({ id, onTorna, rol }) => {
       <Relacio p={p} onDesat={carrega} />
 
       <Targeta titol="Conservació">
-        <p className="text-xs text-gray-500 mb-3">
+        <p className="text-xs text-[#4E6765] mb-3">
           Mentre el perceptor rep rendes del pagador i sis anys després; després, bloqueig de tres anys i destrucció (pestanya Conservació).
         </p>
         <div className="flex flex-wrap items-end gap-3">
           <Entrada etiqueta="Fi de les rendes del pagador" type="date" value={fiRendes} max={avui()} onChange={(e) => setFiRendes(e.target.value)} />
           {fiRendes !== (p.data_fi_rendes || '') && <Boto onClick={desaFiRendes} disabled={ocupat}>Desar</Boto>}
           {p.data_fi_rendes && (
-            <span className="text-xs text-gray-500">Conservació fins al {dataCurta(`${Number(p.data_fi_rendes.slice(0, 4)) + 6}${p.data_fi_rendes.slice(4)}`)}</span>
+            <span className="text-xs text-[#4E6765]">Conservació fins al {dataCurta(`${Number(p.data_fi_rendes.slice(0, 4)) + 6}${p.data_fi_rendes.slice(4)}`)}</span>
           )}
         </div>
       </Targeta>
 
       <Targeta titol="Respostes de la comunicació">
         {s.status === 'esborrany' && !s.com.desat_at ? (
-          <p className="text-sm text-gray-400">El perceptor encara no ha omplert el formulari.</p>
+          <p className="text-sm text-[#6B8280]">El perceptor encara no ha omplert el formulari.</p>
         ) : (
           <FormCtx.Provider value={{ dades: s.com.dades || {}, posa: () => {}, err: () => false, llegir: true }}>
             <fieldset disabled className="opacity-95"><Tota pagador={s.com.pagador} /></fieldset>
@@ -500,12 +500,12 @@ const DetallIrpf = ({ id, onTorna, rol }) => {
 
       {s.docs.length > 0 && (
         <Targeta titol="Documents">
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-[#E4EEEC]">
             {s.docs.map((d) => (
               <div key={d.id} className="py-2.5 flex flex-wrap items-center gap-3">
                 <div className="flex-1 min-w-[200px]">
-                  <p className="text-sm text-gray-800">{NOM_DOC[d.kind] || d.kind}</p>
-                  <p className="text-[11px] text-gray-400 font-mono break-all">
+                  <p className="text-sm text-[#12302F]">{NOM_DOC[d.kind] || d.kind}</p>
+                  <p className="text-[11px] text-[#6B8280] font-mono break-all">
                     SHA-256 {d.sha256} · {(d.mida_bytes / 1024).toFixed(0)} KB · {dataHora(d.created_at)}
                   </p>
                 </div>

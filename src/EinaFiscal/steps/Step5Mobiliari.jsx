@@ -124,11 +124,11 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
   const totalNet = totalBrut - totalDespeses;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm overflow-hidden">
       {/* Capçalera entitat */}
-      <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-200">
+      <div className="flex items-center justify-between px-5 py-3 bg-[#F4F8F7] border-b border-[#D6E4E2]">
         <div className="flex items-center gap-3">
-          <span className="w-7 h-7 rounded-full bg-[#009B9C]/20 text-[#009B9C] text-xs font-bold flex items-center justify-center">
+          <span className="w-7 h-7 rounded-full bg-[#007A7B]/20 text-[#007A7B] text-xs font-bold flex items-center justify-center">
             {index + 1}
           </span>
           <div>
@@ -137,13 +137,13 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
               value={entitat.entitat}
               onChange={e => update('entitat', e.target.value)}
               placeholder="Nom de l'entitat (MoraBanc, Credit Andorra...)"
-              className="font-semibold text-gray-800 text-sm bg-transparent border-0 focus:outline-none focus:ring-0 w-64 placeholder-gray-400"
+              className="font-semibold text-[#12302F] text-sm bg-transparent border-0 focus:outline-none focus:ring-0 w-64 placeholder-gray-400"
             />
           </div>
         </div>
         <button
           onClick={onEliminar}
-          className="text-gray-400 hover:text-red-500 text-xs transition"
+          className="text-[#6B8280] hover:text-red-500 text-xs transition"
         >
           Eliminar entitat
         </button>
@@ -153,13 +153,13 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="text-left px-4 py-2 font-medium text-gray-600 w-48">Partida 300-D</th>
-              <th className="text-right px-3 py-2 font-medium text-gray-600">Import brut (euros)</th>
-              <th className="text-right px-3 py-2 font-medium text-gray-600">Despeses (euros)</th>
-              <th className="text-right px-3 py-2 font-medium text-gray-600">Ret. Andorra (euros)</th>
-              <th className="text-right px-3 py-2 font-medium text-gray-600">Ret. Origen (euros)</th>
-              <th className="text-right px-3 py-2 font-medium text-gray-600">Net (euros)</th>
+            <tr className="bg-[#F4F8F7] border-b border-[#D6E4E2]">
+              <th className="text-left px-4 py-2 font-medium text-[#4E6765] w-48">Partida 300-D</th>
+              <th className="text-right px-3 py-2 font-medium text-[#4E6765]">Import brut (euros)</th>
+              <th className="text-right px-3 py-2 font-medium text-[#4E6765]">Despeses (euros)</th>
+              <th className="text-right px-3 py-2 font-medium text-[#4E6765]">Ret. Andorra (euros)</th>
+              <th className="text-right px-3 py-2 font-medium text-[#4E6765]">Ret. Origen (euros)</th>
+              <th className="text-right px-3 py-2 font-medium text-[#4E6765]">Net (euros)</th>
               <th className="px-2 py-2 w-8"></th>
             </tr>
           </thead>
@@ -173,10 +173,10 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                   {linies.map((linia) => {
                     const net = (linia.importBrut || 0) - (linia.despeses || 0);
                     return (
-                      <tr key={linia.id} className="border-b border-gray-100 hover:bg-gray-50/50">
+                      <tr key={linia.id} className="border-b border-[#E4EEEC] hover:bg-[#F4F8F7]/50">
                         <td className="px-4 py-2">
-                          <div className="font-medium text-gray-700 text-xs mb-1">
-                            <span className="inline-block bg-[#009B9C]/10 text-[#009B9C] text-xs font-bold rounded px-1.5 py-0.5 mr-1.5">{partida.tipus.toUpperCase()}</span>
+                          <div className="font-medium text-[#2B4644] text-xs mb-1">
+                            <span className="inline-block bg-[#007A7B]/10 text-[#007A7B] text-xs font-bold rounded px-1.5 py-0.5 mr-1.5">{partida.tipus.toUpperCase()}</span>
                             {partida.label}
                           </div>
                           <input
@@ -184,7 +184,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                             value={linia.concepte}
                             onChange={e => updateLinia(partida.tipus, linia.id, 'concepte', e.target.value)}
                             placeholder="Concepte / descripció"
-                            className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]/40"
+                            className="w-full border border-[#D6E4E2] rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#007A7B]/40"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -193,7 +193,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                             value={linia.importBrut === 0 ? '' : linia.importBrut}
                             placeholder="0"
                             onChange={e => { const v = e.target.value; updateLinia(partida.tipus, linia.id, 'importBrut', v === '' ? 0 : parseFloat(v) || 0); }}
-                            className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs font-mono"
+                            className="w-full text-right border border-[#D6E4E2] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#007A7B] text-xs font-mono"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -202,7 +202,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                             value={linia.despeses === 0 ? '' : linia.despeses}
                             placeholder="0"
                             onChange={e => { const v = e.target.value; updateLinia(partida.tipus, linia.id, 'despeses', v === '' ? 0 : parseFloat(v) || 0); }}
-                            className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs font-mono"
+                            className="w-full text-right border border-[#D6E4E2] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#007A7B] text-xs font-mono"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -211,7 +211,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                             value={linia.retencioAndorra === 0 ? '' : linia.retencioAndorra}
                             placeholder="0"
                             onChange={e => { const v = e.target.value; updateLinia(partida.tipus, linia.id, 'retencioAndorra', v === '' ? 0 : parseFloat(v) || 0); }}
-                            className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs font-mono"
+                            className="w-full text-right border border-[#D6E4E2] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#007A7B] text-xs font-mono"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -220,11 +220,11 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                             value={linia.retencioOrigen === 0 ? '' : linia.retencioOrigen}
                             placeholder="0"
                             onChange={e => { const v = e.target.value; updateLinia(partida.tipus, linia.id, 'retencioOrigen', v === '' ? 0 : parseFloat(v) || 0); }}
-                            className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs font-mono text-amber-600"
+                            className="w-full text-right border border-[#D6E4E2] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#007A7B] text-xs font-mono text-amber-600"
                           />
                         </td>
                         <td className="px-3 py-2 text-right">
-                          <span className={`font-mono font-medium ${net >= 0 ? 'text-gray-700' : 'text-red-600'}`}>
+                          <span className={`font-mono font-medium ${net >= 0 ? 'text-[#2B4644]' : 'text-red-600'}`}>
                             {net.toFixed(2)}
                           </span>
                         </td>
@@ -248,7 +248,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                     <td colSpan={7} className="px-4 py-1">
                       <button
                         onClick={() => addLinia(partida.tipus)}
-                        className="text-xs text-[#009B9C] hover:text-[#007A7B] font-medium"
+                        className="text-xs text-[#007A7B] hover:text-[#007A7B] font-medium"
                       >
                         + Afegir línia a {partida.label}
                       </button>
@@ -258,8 +258,8 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
               );
             })}
             {/* Despeses de custodia */}
-            <tr className="border-b border-gray-200 bg-gray-50/50">
-              <td className="px-4 py-2 text-gray-600 italic text-xs">
+            <tr className="border-b border-[#D6E4E2] bg-[#F4F8F7]/50">
+              <td className="px-4 py-2 text-[#4E6765] italic text-xs">
                 Despeses d'administracio i custodia (300-D)
               </td>
               <td className="px-3 py-2" colSpan={1}></td>
@@ -269,14 +269,14 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                   value={entitat.despesesCustodia === 0 ? '' : entitat.despesesCustodia}
                   placeholder="0"
                   onChange={e => { const v = e.target.value; update('despesesCustodia', v === '' ? 0 : parseFloat(v) || 0); }}
-                  className="w-full text-right border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C] text-xs"
+                  className="w-full text-right border border-[#D6E4E2] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#007A7B] text-xs"
                 />
               </td>
               <td colSpan={4}></td>
             </tr>
             {/* Total */}
-            <tr className="bg-[#009B9C]/5 font-semibold text-sm">
-              <td className="px-4 py-2 text-[#009B9C]">Total entitat</td>
+            <tr className="bg-[#007A7B]/5 font-semibold text-sm">
+              <td className="px-4 py-2 text-[#007A7B]">Total entitat</td>
               <td className="px-3 py-2 text-right font-mono">{totalBrut.toFixed(2)}</td>
               <td className="px-3 py-2 text-right font-mono">{totalDespeses.toFixed(2)}</td>
               <td className="px-3 py-2 text-right font-mono">{totalRetAndorra.toFixed(2)}</td>
@@ -287,7 +287,7 @@ const EntitatForm = ({ entitat, index, onUpdate, onEliminar }) => {
                 {totalRetOrigen === 0 && '0.00'}
               </td>
               <td className="px-3 py-2 text-right font-mono">
-                <span className={totalNet >= 0 ? 'text-gray-800' : 'text-red-600'}>
+                <span className={totalNet >= 0 ? 'text-[#12302F]' : 'text-red-600'}>
                   {totalNet.toFixed(2)}
                 </span>
               </td>
@@ -397,30 +397,30 @@ const Step5Mobiliari = ({ dades, update }) => {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">5</span>
+            <span className="w-8 h-8 rounded-full bg-[#007A7B] text-white text-sm font-bold flex items-center justify-center">5</span>
             <div>
-              <h2 className="font-bold text-gray-800">Capital mobiliari</h2>
-              <p className="text-xs text-gray-500">Formulari 300-D · Art. 23-29 Llei 5/2014</p>
+              <h2 className="font-bold text-[#12302F]">Capital mobiliari</h2>
+              <p className="text-xs text-[#4E6765]">Formulari 300-D · Art. 23-29 Llei 5/2014</p>
             </div>
           </div>
           <button
             onClick={addEntitat}
-            className="text-sm bg-[#009B9C] text-white px-4 py-2 rounded-xl hover:bg-[#007A7B] transition font-medium"
+            className="text-sm bg-[#007A7B] text-white px-4 py-2 rounded-xl hover:bg-[#00676A] transition font-medium"
           >
             + Afegir entitat
           </button>
         </div>
 
-        <div className="bg-blue-50 rounded-xl p-3 text-xs text-blue-700 mb-4">
+        <div className="bg-[#EEF6F6] rounded-xl p-3 text-xs text-[#00676A] mb-4">
           <strong>Art. 37 Llei 5/2014:</strong> S'aplica un minim exempt de <strong>3.000 euros</strong> sobre el total de rendes de l'estalvi (capital mobiliari + guanys capital). L'exces tributa al 10%.
         </div>
 
-        <div className="bg-gray-50 rounded-xl p-3 text-xs text-gray-600 mb-4">
+        <div className="bg-[#F4F8F7] rounded-xl p-3 text-xs text-[#4E6765] mb-4">
           <p className="font-medium mb-1">Com introduir les dades:</p>
-          <ol className="list-decimal list-inside space-y-1 text-gray-500">
+          <ol className="list-decimal list-inside space-y-1 text-[#4E6765]">
             <li>Afegiu una entitat per cada informe fiscal (banc, broker...)</li>
             <li>Per cada entitat, ompliu les 4 partides del 300-D amb les xifres de l'informe</li>
             <li>Si hi ha retencio al pais d'origen (dividends estrangers, etc.), introduir-la a la columna "Ret. Origen"</li>
@@ -428,7 +428,7 @@ const Step5Mobiliari = ({ dades, update }) => {
         </div>
 
         {dades.mobiliaris.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-[#6B8280]">
             <p className="text-sm">Cap entitat afegida.</p>
             <p className="text-xs mt-1">Afegiu una entitat per cada informe fiscal (banc, broker...).</p>
           </div>
@@ -436,13 +436,13 @@ const Step5Mobiliari = ({ dades, update }) => {
 
         {dades.mobiliaris.length > 0 && (
           <div className="grid grid-cols-3 gap-3">
-            <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-3 text-sm">
-              <p className="text-xs text-gray-500">Import brut total</p>
-              <p className="font-bold text-gray-800">{totalBrutGlobal.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</p>
+            <div className="bg-[#007A7B]/5 border border-[#007A7B]/20 rounded-xl p-3 text-sm">
+              <p className="text-xs text-[#4E6765]">Import brut total</p>
+              <p className="font-bold text-[#12302F]">{totalBrutGlobal.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</p>
             </div>
-            <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-3 text-sm">
-              <p className="text-xs text-gray-500">Renda neta total</p>
-              <p className="font-bold text-gray-800">{totalNetGlobal.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</p>
+            <div className="bg-[#007A7B]/5 border border-[#007A7B]/20 rounded-xl p-3 text-sm">
+              <p className="text-xs text-[#4E6765]">Renda neta total</p>
+              <p className="font-bold text-[#12302F]">{totalNetGlobal.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</p>
             </div>
             {totalRetOrigenGlobal > 0 && (
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm">
@@ -484,43 +484,43 @@ const Step5Mobiliari = ({ dades, update }) => {
         const f = (n) => n.toLocaleString('ca-AD', { minimumFractionDigits: 2 });
 
         return (
-          <div className="mt-6 bg-[#f0fafa] border border-[#b2e0e0] rounded-xl p-4">
+          <div className="mt-6 bg-[#f0fafa] border border-[#B9D3CF] rounded-xl p-4">
             <p className="text-xs font-bold text-[#007A7B] uppercase tracking-wide mb-3">
               Resum total capital mobiliari — totes les entitats
             </p>
             <div className="space-y-1">
               {tipusKeys.map(t => totalPerTipus[t] > 0 && (
-                <div key={t} className="flex justify-between text-xs text-gray-600">
+                <div key={t} className="flex justify-between text-xs text-[#4E6765]">
                   <span>
-                    <span className="inline-block bg-[#009B9C]/10 text-[#009B9C] text-xs font-bold rounded px-1 mr-1">{t.toUpperCase()}</span>
+                    <span className="inline-block bg-[#007A7B]/10 text-[#007A7B] text-xs font-bold rounded px-1 mr-1">{t.toUpperCase()}</span>
                     {PARTIDA_LABELS[t]}
                   </span>
                   <span className="font-mono">{f(totalPerTipus[t])} €</span>
                 </div>
               ))}
-              <div className="flex justify-between text-xs text-gray-700 font-semibold border-t border-[#b2e0e0] pt-1 mt-1">
+              <div className="flex justify-between text-xs text-[#2B4644] font-semibold border-t border-[#B9D3CF] pt-1 mt-1">
                 <span>Total ingressos bruts</span>
                 <span className="font-mono">{f(totalBrut)} €</span>
               </div>
               {totalDespesesPartida > 0 && (
-                <div className="flex justify-between text-xs text-gray-500">
+                <div className="flex justify-between text-xs text-[#4E6765]">
                   <span>  − Despeses per partida</span>
                   <span className="font-mono text-red-600">−{f(totalDespesesPartida)} €</span>
                 </div>
               )}
               {totalDespesesCustodia > 0 && (
-                <div className="flex justify-between text-xs text-gray-500">
+                <div className="flex justify-between text-xs text-[#4E6765]">
                   <span>  − Despeses d'administració i custòdia</span>
                   <span className="font-mono text-red-600">−{f(totalDespesesCustodia)} €</span>
                 </div>
               )}
               {totalDespeses > 0 && (
-                <div className="flex justify-between text-xs text-gray-500 border-t border-[#b2e0e0] pt-1 mt-1">
+                <div className="flex justify-between text-xs text-[#4E6765] border-t border-[#B9D3CF] pt-1 mt-1">
                   <span>  − Total despeses deduïbles</span>
                   <span className="font-mono text-red-600">−{f(totalDespeses)} €</span>
                 </div>
               )}
-              <div className="flex justify-between text-sm font-bold text-[#007A7B] border-t-2 border-[#009B9C] pt-2 mt-2">
+              <div className="flex justify-between text-sm font-bold text-[#007A7B] border-t-2 border-[#007A7B] pt-2 mt-2">
                 <span>= Renda neta total capital mobiliari</span>
                 <span className="font-mono">{f(totalNet)} €</span>
               </div>

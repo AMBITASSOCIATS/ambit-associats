@@ -64,7 +64,7 @@ const DocumentsAmbit = ({ s, persones, onFet }) => {
 
   return (
     <Targeta titol={`Documents obligatoris pendents (${pendents.length})`}>
-      <p className="text-xs text-gray-500 mb-3">
+      <p className="text-xs text-[#4E6765] mb-3">
         {s.f.documentacio_ambit ? 'Documentació: ja la té ÀMBIT. ' : 'Documentació: l\'aporta el client. '}
         L'OCIC no pot validar mentre en falti cap o n'hi hagi de no vigents (document d'identitat caducat; certificat de vigència o
         extracte del Registre de beneficiaris efectius de més de 3 mesos). Els que adjuntis aquí consten com a «Aportat per ÀMBIT».
@@ -81,9 +81,9 @@ const DocumentsAmbit = ({ s, persones, onFet }) => {
             {pendents.map((p) => <option key={`${p.tipus}|${p.persona || ''}`} value={`${p.tipus}|${p.persona || ''}`}>{nomPend(p)}</option>)}
           </Selector>
           <label className="block">
-            <span className="block text-xs font-semibold text-gray-600 mb-1">Fitxer (PDF, JPG o PNG) *</span>
+            <span className="block text-xs font-semibold text-[#4E6765] mb-1">Fitxer (PDF, JPG o PNG) *</span>
             <input type="file" accept="application/pdf,image/jpeg,image/png" onChange={(e) => setFitxer(e.target.files?.[0] || null)}
-              className="block text-sm text-gray-700 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#009B9C]/10 file:text-[#007A7B] file:font-semibold" />
+              className="block text-sm text-[#2B4644] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#007A7B]/10 file:text-[#007A7B] file:font-semibold" />
           </label>
           <Entrada etiqueta={`Data del document *${DATA_DOC[tipus] === 'menys de 3 mesos' ? ' (menys de 3 mesos)' : ''}`} type="date" max={avui()}
             value={d.data_document} onChange={(e) => setD({ ...d, data_document: e.target.value })} />
@@ -109,7 +109,7 @@ const COLOR_MARCA = {
   pais_risc: 'bg-red-100 text-red-800 border border-red-200',
   ppe: 'bg-amber-100 text-amber-800 border border-amber-200',
   russia_belarus: 'bg-purple-100 text-purple-800 border border-purple-200',
-  trust: 'bg-blue-100 text-blue-800 border border-blue-200',
+  trust: 'bg-blue-100 text-[#12302F] border border-[#CFE3E1]',
   be_no_declarat: 'bg-red-100 text-red-800 border border-red-200',
 };
 const NOM_MARCA = { prohibicio_total: 'Prohibició total', pais_risc: 'País de risc', ppe: 'PPE', russia_belarus: 'Rússia / Belarús', trust: 'Trust', be_no_declarat: 'BE no declarat (+25 %)' };
@@ -203,18 +203,18 @@ const Validacio = ({ s, marques, onFet }) => {
           {Object.entries(A.vies).map(([k, o]) => <option key={k} value={k}>{o.ca}</option>)}
         </Selector>
         <label className="block md:col-span-2">
-          <span className="block text-xs font-semibold text-gray-600 mb-1">Justificació del nivell de diligència *</span>
+          <span className="block text-xs font-semibold text-[#4E6765] mb-1">Justificació del nivell de diligència *</span>
           <textarea rows={2} value={v.justificacio} onChange={canvi('justificacio')} maxLength={2000}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40" />
+            className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
         </label>
         <Entrada etiqueta="Verificació de la identitat: data *" type="date" value={v.verificacio_data} max={avui()} onChange={canvi('verificacio_data')} />
         <Entrada etiqueta="Verificació de la identitat: persona que la comprova *" value={v.verificacio_persona} maxLength={200} onChange={canvi('verificacio_persona')} />
         <Entrada etiqueta="Llistes de sancions: data *" type="date" value={v.sancions_data} max={avui()} onChange={canvi('sancions_data')} />
         <div className="md:col-span-2">
-          <span className="block text-xs font-semibold text-gray-600 mb-1">Llistes de sancions consultades (totes obligatòries) *</span>
+          <span className="block text-xs font-semibold text-[#4E6765] mb-1">Llistes de sancions consultades (totes obligatòries) *</span>
           {LLISTES_SANCIONS.map((l) => (
-            <label key={l.codi} className="flex items-start gap-2 text-sm text-gray-700 py-0.5">
-              <input type="checkbox" className="accent-[#009B9C] mt-1" checked={llistes.includes(l.codi)}
+            <label key={l.codi} className="flex items-start gap-2 text-sm text-[#2B4644] py-0.5">
+              <input type="checkbox" className="accent-[#007A7B] mt-1" checked={llistes.includes(l.codi)}
                 onChange={(e) => setLlistes(e.target.checked ? [...llistes, l.codi] : llistes.filter((x) => x !== l.codi))} />
               {l.nom}
             </label>
@@ -223,9 +223,9 @@ const Validacio = ({ s, marques, onFet }) => {
         <Entrada etiqueta="Altres llistes consultades (opcional)" value={v.sancions_altres} maxLength={500} onChange={canvi('sancions_altres')} />
         <Entrada etiqueta="Resultat de la comprovació de sancions *" value={v.sancions_resultat} maxLength={500} onChange={canvi('sancions_resultat')} className="md:col-span-2" />
         <div className="md:col-span-2">
-          <span className="block text-xs font-semibold text-gray-600 mb-1">Evidència de la comprovació de sancions (obligatòria) *</span>
+          <span className="block text-xs font-semibold text-[#4E6765] mb-1">Evidència de la comprovació de sancions (obligatòria) *</span>
           <input type="file" accept="application/pdf,image/jpeg,image/png" disabled={ocupat} onChange={(e) => pujaEvidencia(e.target.files?.[0])}
-            className="block text-sm text-gray-700 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#009B9C]/10 file:text-[#007A7B] file:font-semibold" />
+            className="block text-sm text-[#2B4644] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#007A7B]/10 file:text-[#007A7B] file:font-semibold" />
           {evidencia && <p className="text-xs text-green-700 mt-1">Adjuntada ✓ {evidencia.nom}</p>}
         </div>
         {pj && (
@@ -238,7 +238,7 @@ const Validacio = ({ s, marques, onFet }) => {
           <>
             <Entrada etiqueta={`${A.alta_direccio.ca}: qui l'autoritza *`} value={v.alta_direccio_nom} maxLength={200} onChange={canvi('alta_direccio_nom')} />
             <Entrada etiqueta={`${A.alta_direccio.ca}: data *`} type="date" value={v.alta_direccio_data} max={avui()} onChange={canvi('alta_direccio_data')} />
-            <p className="md:col-span-2 text-[11px] text-gray-500">Obligatòria perquè hi ha {[codis.has('ppe') && 'una PPE', codis.has('pais_risc') && 'un país de risc', v.nivell === 'reforcada' && 'diligència reforçada'].filter(Boolean).join(', ')}.</p>
+            <p className="md:col-span-2 text-[11px] text-[#4E6765]">Obligatòria perquè hi ha {[codis.has('ppe') && 'una PPE', codis.has('pais_risc') && 'un país de risc', v.nivell === 'reforcada' && 'diligència reforçada'].filter(Boolean).join(', ')}.</p>
           </>
         )}
       </div>
@@ -319,7 +319,7 @@ const DetallKyc = ({ id, onTorna, rol }) => {
     window.open(url, '_blank', 'noopener');
   });
 
-  if (!s) return <p className="text-sm text-gray-400">{error || 'Carregant...'}</p>;
+  if (!s) return <p className="text-sm text-[#6B8280]">{error || 'Carregant...'}</p>;
   const client = s.clients;
   const pj = s.document_type === 'kyc_pj';
   const seccions = pj ? SECCIONS_PJ : SECCIONS_PF;
@@ -340,15 +340,15 @@ const DetallKyc = ({ id, onTorna, rol }) => {
     return (
       <div className={`py-2.5 flex flex-wrap items-center gap-3 ${a?.retirat_at ? 'opacity-50' : ''}`}>
         <div className="flex-1 min-w-[200px]">
-          <p className="text-sm text-gray-800">{nom}{a?.nom_fitxer ? <span className="text-gray-400"> · {a.nom_fitxer}</span> : ''}{a?.retirat_at ? ' (tret)' : ''}</p>
+          <p className="text-sm text-[#12302F]">{nom}{a?.nom_fitxer ? <span className="text-[#6B8280]"> · {a.nom_fitxer}</span> : ''}{a?.retirat_at ? ' (tret)' : ''}</p>
           {a?.aportat_per_ambit && (
             <p className="text-[11px] text-[#007A7B]">Aportat per ÀMBIT, rebut el {dataCurta(a.rebut_el)} · data del document {dataCurta(a.data_document)}
               {a.data_caducitat && ` · caduca el ${dataCurta(a.data_caducitat)}`}</p>
           )}
           {!a?.aportat_per_ambit && (a?.data_caducitat || a?.data_document) && (
-            <p className="text-[11px] text-gray-500">{a.data_caducitat ? `Caduca el ${dataCurta(a.data_caducitat)}` : `Data del document ${dataCurta(a.data_document)}`}</p>
+            <p className="text-[11px] text-[#4E6765]">{a.data_caducitat ? `Caduca el ${dataCurta(a.data_caducitat)}` : `Data del document ${dataCurta(a.data_document)}`}</p>
           )}
-          <p className="text-[11px] text-gray-400 font-mono break-all">SHA-256 {d.sha256} · {(d.mida_bytes / 1024).toFixed(0)} KB · {dataHora(d.created_at)}</p>
+          <p className="text-[11px] text-[#6B8280] font-mono break-all">SHA-256 {d.sha256} · {(d.mida_bytes / 1024).toFixed(0)} KB · {dataHora(d.created_at)}</p>
         </div>
         <Boto variant="secundari" onClick={() => descarrega(d)} disabled={ocupat}>Descarregar</Boto>
       </div>
@@ -357,14 +357,14 @@ const DetallKyc = ({ id, onTorna, rol }) => {
 
   return (
     <div className="space-y-5">
-      <button onClick={() => onTorna(null)} className="text-sm text-[#009B9C] hover:underline">← Totes les sol·licituds</button>
+      <button onClick={() => onTorna(null)} className="text-sm text-[#007A7B] hover:underline">← Totes les sol·licituds</button>
 
       <Targeta>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs text-gray-400 mb-1">{TIPUS_DOCUMENT[s.document_type]} · {s.template_version} + {s.pdp?.template_version}</p>
-            <h2 className="text-lg font-bold text-gray-800">{client.nom_mostrat}</h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[#6B8280] mb-1">{TIPUS_DOCUMENT[s.document_type]} · {s.template_version} + {s.pdp?.template_version}</p>
+            <h2 className="text-lg font-bold text-[#12302F]">{client.nom_mostrat}</h2>
+            <p className="text-xs text-[#4E6765]">
               {pj ? 'Persona jurídica' : 'Persona física'} · Referència: <span className="font-mono">{client.referencia_client || 'sense assignar'}</span>
               {s.f.revisio_de && ' · Revisió d\'un KYC anterior'}{s.f.motiu_revisio && ` (${s.f.motiu_revisio})`}
               {' · '}<strong>{s.f.documentacio_ambit ? 'Documentació: ja la té ÀMBIT' : 'Documentació: l\'aporta el client'}</strong>
@@ -392,23 +392,23 @@ const DetallKyc = ({ id, onTorna, rol }) => {
       {/* Marques automàtiques (només per al personal; mai no es mostren al client) */}
       <Targeta titol="Marques automàtiques">
         {s.marques.length === 0 ? (
-          <p className="text-sm text-gray-500">Cap marca amb les respostes actuals i les llistes vigents.</p>
+          <p className="text-sm text-[#4E6765]">Cap marca amb les respostes actuals i les llistes vigents.</p>
         ) : (
           <ul className="space-y-1.5">
             {s.marques.map((m, i) => (
               <li key={i} className="flex flex-wrap items-center gap-2 text-sm">
                 <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${COLOR_MARCA[m.codi] || ''}`}>{NOM_MARCA[m.codi] || m.codi}</span>
-                <span className="text-gray-700">{m.detall}</span>
+                <span className="text-[#2B4644]">{m.detall}</span>
               </li>
             ))}
           </ul>
         )}
-        <p className="text-[11px] text-gray-400 mt-2">No es comuniquen mai al client (art. 26 Llei 14/2017).</p>
+        <p className="text-[11px] text-[#6B8280] mt-2">No es comuniquen mai al client (art. 26 Llei 14/2017).</p>
       </Targeta>
 
       {potEnllac && (
         <Targeta titol="Enllaç per al client">
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-[#4E6765] mb-3">
             {s.enllac
               ? `Hi ha un enllaç vigent fins al ${dataHora(s.enllac.expira_at)}. Si el generes de nou, l'anterior deixarà de funcionar (les respostes desades es mantenen).`
               : 'Genera l\'enllaç i envia\'l al client des del teu correu. Un sol enllaç per al KYC i la protecció de dades; caduca als 7 dies.'}
@@ -423,7 +423,7 @@ const DetallKyc = ({ id, onTorna, rol }) => {
             <Entrada etiqueta="Motiu (obligatori)" value={motiu} className="flex-1 min-w-[240px]" maxLength={500} onChange={(e) => setMotiu(e.target.value)} />
             <Boto variant="perill" onClick={anulla} disabled={ocupat || !motiu.trim()}>Anul·lar</Boto>
           </div>
-          <p className="text-[11px] text-gray-400 mt-2">El motiu és intern: no es comunica al client.</p>
+          <p className="text-[11px] text-[#6B8280] mt-2">El motiu és intern: no es comunica al client.</p>
         </Targeta>
       )}
 
@@ -460,8 +460,8 @@ const DetallKyc = ({ id, onTorna, rol }) => {
               <Boto onClick={pdfFinal} disabled={ocupat}>Generar el PDF final</Boto>
             </div>
           )}
-          <div className="mt-4 border-t border-gray-100 pt-3">
-            <p className="text-xs text-gray-500 mb-2">Revisió per un fet rellevant o periòdica: crea una sol·licitud nova preomplerta amb aquestes dades. Aquest KYC es conserva intacte.</p>
+          <div className="mt-4 border-t border-[#E4EEEC] pt-3">
+            <p className="text-xs text-[#4E6765] mb-2">Revisió per un fet rellevant o periòdica: crea una sol·licitud nova preomplerta amb aquestes dades. Aquest KYC es conserva intacte.</p>
             <div className="flex flex-wrap items-end gap-3">
               <Entrada etiqueta="Motiu intern (opcional, no es mostra al client)" value={motiuRevisio} maxLength={500} className="flex-1 min-w-[240px]" onChange={(e) => setMotiuRevisio(e.target.value)} />
               <Selector value={docRevisio} onChange={(e) => setDocRevisio(e.target.value)}>
@@ -478,13 +478,13 @@ const DetallKyc = ({ id, onTorna, rol }) => {
       <Targeta titol="Respostes del formulari"
         accions={<Boto variant="secundari" onClick={() => setVeureRespostes(!veureRespostes)}>{veureRespostes ? 'Amagar' : 'Mostrar'}</Boto>}>
         {Object.keys(s.f.dades || {}).length === 0 ? (
-          <p className="text-sm text-gray-400">El client encara no ha començat el formulari.</p>
+          <p className="text-sm text-[#6B8280]">El client encara no ha començat el formulari.</p>
         ) : veureRespostes ? (
           <FormCtx.Provider value={{ dades: s.f.dades, posa: () => {}, err: () => false, llegir: true }}>
             <fieldset disabled>{seccions.map((x) => <x.C key={x.num} />)}</fieldset>
           </FormCtx.Provider>
         ) : (
-          <p className="text-sm text-gray-500">{s.signat_at ? 'Respostes signades.' : 'Respostes desades pel client (encara no signades).'} Prem «Mostrar» per veure-les.</p>
+          <p className="text-sm text-[#4E6765]">{s.signat_at ? 'Respostes signades.' : 'Respostes desades pel client (encara no signades).'} Prem «Mostrar» per veure-les.</p>
         )}
       </Targeta>
 
@@ -499,7 +499,7 @@ const DetallKyc = ({ id, onTorna, rol }) => {
             </dl>
           ))}
           {s.consentiment && (
-            <p className="text-sm text-gray-700">Comunicacions comercials: <strong>{s.consentiment.consentiment_comercial ? 'autoritzades' : 'no autoritzades'}</strong>
+            <p className="text-sm text-[#2B4644]">Comunicacions comercials: <strong>{s.consentiment.consentiment_comercial ? 'autoritzades' : 'no autoritzades'}</strong>
               {client.consentiment_retirat_el && ` · retirada anotada el ${dataCurta(client.consentiment_retirat_el)}`}</p>
           )}
         </Targeta>
@@ -507,15 +507,15 @@ const DetallKyc = ({ id, onTorna, rol }) => {
 
       {(docsKyc.length > 0 || docsPdp.length > 0) && (
         <Targeta titol="Documents">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">KYC</p>
-          <div className="divide-y divide-gray-100 mb-3">{docsKyc.map((d) => <FilaDoc key={d.id} d={d} />)}</div>
+          <p className="text-xs font-semibold text-[#4E6765] uppercase tracking-wide">KYC</p>
+          <div className="divide-y divide-[#E4EEEC] mb-3">{docsKyc.map((d) => <FilaDoc key={d.id} d={d} />)}</div>
           {docsPdp.length > 0 && (
             <>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Protecció de dades</p>
-              <div className="divide-y divide-gray-100">{docsPdp.map((d) => <FilaDoc key={d.id} d={d} />)}</div>
+              <p className="text-xs font-semibold text-[#4E6765] uppercase tracking-wide">Protecció de dades</p>
+              <div className="divide-y divide-[#E4EEEC]">{docsPdp.map((d) => <FilaDoc key={d.id} d={d} />)}</div>
             </>
           )}
-          <p className="text-[11px] text-gray-400 mt-2">Les descàrregues són enllaços signats de 60 segons.</p>
+          <p className="text-[11px] text-[#6B8280] mt-2">Les descàrregues són enllaços signats de 60 segons.</p>
         </Targeta>
       )}
 

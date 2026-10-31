@@ -95,13 +95,13 @@ const LlistesPaisos = () => {
 
       <Targeta titol="Historial de canvis" accions={<Boto variant="secundari" onClick={() => setHistoric(!historic)}>{historic ? 'Amagar' : 'Mostrar'}</Boto>}>
         {historic && (
-          <div className="divide-y divide-gray-100 text-xs">
+          <div className="divide-y divide-[#E4EEEC] text-xs">
             {files.filter((f) => f.baixa_at).map((f) => (
-              <p key={f.id} className="py-1.5 text-gray-600">
+              <p key={f.id} className="py-1.5 text-[#4E6765]">
                 {f.llista} · {f.referencia} · {f.pais} {f.nom} · alta {dataCurta(f.alta_at)} · baixa {dataCurta(f.baixa_at)} ({f.motiu_baixa})
               </p>
             ))}
-            {files.every((f) => !f.baixa_at) && <p className="py-2 text-gray-400">Cap baixa registrada</p>}
+            {files.every((f) => !f.baixa_at) && <p className="py-2 text-[#6B8280]">Cap baixa registrada</p>}
           </div>
         )}
       </Targeta>

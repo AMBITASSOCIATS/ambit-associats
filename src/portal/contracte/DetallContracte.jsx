@@ -104,7 +104,7 @@ const DetallContracte = ({ id, onTorna, rol }) => {
     });
   };
 
-  if (!s) return <p className="text-sm text-gray-400">{error || 'Carregant...'}</p>;
+  if (!s) return <p className="text-sm text-[#6B8280]">{error || 'Carregant...'}</p>;
   const potEnllac = ['esborrany', 'enviat', 'parcialment_signat'].includes(s.status) && !!s.orig;
   const potAnullar = rol === 'ocic' && ['esborrany', 'enviat', 'parcialment_signat', 'pendent_ambit'].includes(s.status);
   const pdfSignat = s.docs.find((d) => d.kind === 'signat');
@@ -112,14 +112,14 @@ const DetallContracte = ({ id, onTorna, rol }) => {
 
   return (
     <div className="space-y-5">
-      <button onClick={() => onTorna()} className="text-sm text-[#009B9C] hover:underline">← Totes les sol·licituds</button>
+      <button onClick={() => onTorna()} className="text-sm text-[#007A7B] hover:underline">← Totes les sol·licituds</button>
 
       <Targeta>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs text-gray-400 mb-1">Contracte · pàgines afegides {s.template_version} · {IDIOMES[s.k.idioma]}</p>
-            <h2 className="text-lg font-bold text-gray-800">{s.k.titol}</h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[#6B8280] mb-1">Contracte · pàgines afegides {s.template_version} · {IDIOMES[s.k.idioma]}</p>
+            <h2 className="text-lg font-bold text-[#12302F]">{s.k.titol}</h2>
+            <p className="text-xs text-[#4E6765]">
               {s.clients.nom_mostrat} · {s.clients.party_type === 'pj' ? 'Persona jurídica' : 'Persona física'} · Referència:{' '}
               <span className="font-mono">{s.clients.referencia_client || 'sense assignar'}</span>
             </p>
@@ -156,33 +156,33 @@ const DetallContracte = ({ id, onTorna, rol }) => {
               <Boto onClick={pujaNou} disabled={ocupat || !nouPdf}>{ocupat ? 'Comprovant...' : 'Pujar el PDF original'}</Boto>
             </div>
           </div>
-        ) : <p className="text-sm text-gray-400">—</p>}
+        ) : <p className="text-sm text-[#6B8280]">—</p>}
       </Targeta>
 
       {/* Signants */}
       <Targeta titol="Signants del client">
-        <p className="text-xs text-gray-500 mb-3">
+        <p className="text-xs text-[#4E6765] mb-3">
           Cada signant té el seu enllaç i pot signar en qualsevol ordre. L'enllaç caduca als 7 dies i només serveix una vegada;
           si se'n genera un de nou, l'anterior del mateix signant deixa de funcionar.
         </p>
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-[#E4EEEC]">
           {s.signants.map((sg) => {
             const e = s.enllacos[sg.id];
             return (
               <div key={sg.id} className="py-3 flex flex-wrap items-start gap-4">
                 <div className="flex-1 min-w-[240px]">
-                  <p className="text-sm font-semibold text-gray-800">{sg.ordre}. {sg.nom}</p>
-                  <p className="text-xs text-gray-500">{sg.qualitat} · {sg.email}</p>
+                  <p className="text-sm font-semibold text-[#12302F]">{sg.ordre}. {sg.nom}</p>
+                  <p className="text-xs text-[#4E6765]">{sg.qualitat} · {sg.email}</p>
                   <p className="text-xs mt-1">
                     {sg.signat_at
                       ? <span className="text-green-700">Signat el {dataHora(sg.signat_at)} a {sg.lloc}</span>
                       : sg.acceptat_at
                         ? <span className="text-amber-700">Ha acceptat la signatura electrònica ({dataHora(sg.acceptat_at)}); pendent de signar</span>
-                        : <span className="text-gray-500">Pendent</span>}
-                    {!sg.signat_at && e && <span className="text-gray-400"> · enllaç vigent fins al {dataHora(e.expira_at)}</span>}
+                        : <span className="text-[#4E6765]">Pendent</span>}
+                    {!sg.signat_at && e && <span className="text-[#6B8280]"> · enllaç vigent fins al {dataHora(e.expira_at)}</span>}
                   </p>
                   {sg.signat_at && (
-                    <p className="text-[11px] text-gray-400 font-mono break-all mt-1">
+                    <p className="text-[11px] text-[#6B8280] font-mono break-all mt-1">
                       Acceptació {utc(sg.acceptat_at)} UTC · signatura {utc(sg.signat_at)} UTC · IP {sg.ip || '—'} · firma SHA-256 {sg.imatge_sha256}
                     </p>
                   )}
@@ -199,7 +199,7 @@ const DetallContracte = ({ id, onTorna, rol }) => {
       {/* Signatura d'ÀMBIT */}
       {s.status === 'pendent_ambit' && (
         <Targeta titol="Pendent de signatura d'ÀMBIT">
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-[#4E6765] mb-3">
             Han signat tots els signants del client. Falta la signatura d'ÀMBIT (Martín Paleari · Administrador solidari), que només
             pot fer mpaleari@ambit.ad amb la seva sessió. En signar, es genera el PDF final.
           </p>
@@ -212,7 +212,7 @@ const DetallContracte = ({ id, onTorna, rol }) => {
       {s.status === 'signat' && (
         <Targeta titol="Contracte signat">
           {s.cf && (
-            <p className="text-xs text-gray-500 mb-3">
+            <p className="text-xs text-[#4E6765] mb-3">
               Signat per ÀMBIT ({s.cf.nom} · {s.cf.carrec}) el {dataHora(s.cf.signat_at)}.
               Descarrega el PDF final i envia'n una còpia a cada signant.
             </p>
@@ -220,7 +220,7 @@ const DetallContracte = ({ id, onTorna, rol }) => {
           {pdfSignat ? (
             <div className="space-y-2">
               <Boto onClick={() => descarrega(pdfSignat)} disabled={ocupat}>Descarregar el PDF final</Boto>
-              <p className="text-[11px] text-gray-400 font-mono break-all">SHA-256 {pdfSignat.sha256}</p>
+              <p className="text-[11px] text-[#6B8280] font-mono break-all">SHA-256 {pdfSignat.sha256}</p>
             </div>
           ) : s.soc ? (
             <div className="space-y-2">
@@ -233,7 +233,7 @@ const DetallContracte = ({ id, onTorna, rol }) => {
 
       {potAnullar && (
         <Targeta titol="Anul·lar el contracte (només OCIC)">
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-[#4E6765] mb-3">
             Per canviar el contracte, s'anul·la i se'n crea un altre. Les signatures fetes es conserven. Un cop signat per totes les parts, ja no es pot anul·lar.
           </p>
           <div className="flex flex-wrap items-end gap-3">
@@ -244,7 +244,7 @@ const DetallContracte = ({ id, onTorna, rol }) => {
       )}
 
       <Targeta titol="Conservació">
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[#4E6765]">
           Mentre dura la relació amb el client i sis anys després (la fi de la relació la fixa l'OCIC a la pestanya Clients);
           després, bloqueig de tres anys i destrucció (pestanya Conservació).
         </p>
@@ -252,12 +252,12 @@ const DetallContracte = ({ id, onTorna, rol }) => {
 
       {s.docs.length > 0 && (
         <Targeta titol="Documents">
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-[#E4EEEC]">
             {s.docs.map((d) => (
               <div key={d.id} className="py-2.5 flex flex-wrap items-center gap-3">
                 <div className="flex-1 min-w-[200px]">
-                  <p className="text-sm text-gray-800">{NOM_DOC[d.kind] || d.kind}</p>
-                  <p className="text-[11px] text-gray-400 font-mono break-all">
+                  <p className="text-sm text-[#12302F]">{NOM_DOC[d.kind] || d.kind}</p>
+                  <p className="text-[11px] text-[#6B8280] font-mono break-all">
                     SHA-256 {d.sha256} · {(d.mida_bytes / 1024).toFixed(0)} KB · {dataHora(d.created_at)}
                   </p>
                 </div>

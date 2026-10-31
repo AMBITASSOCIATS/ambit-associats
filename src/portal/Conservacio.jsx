@@ -31,9 +31,9 @@ const Formulari = ({ titol, explicacio, ambAutoritat, boto, onEnvia, onTanca }) 
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <form onSubmit={envia} className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4">
-        <h3 className="text-lg font-bold text-gray-800">{titol}</h3>
-        <p className="text-xs text-gray-500">{explicacio}</p>
+      <form onSubmit={envia} className="bg-white rounded-2xl border border-[#D6E4E2] w-full max-w-md p-6 space-y-4">
+        <h3 className="font-display font-medium text-[20px] text-[#12302F]">{titol}</h3>
+        <p className="text-xs text-[#4E6765]">{explicacio}</p>
         {ambAutoritat && (
           <Entrada etiqueta="Autoritat requeridora" required value={autoritat} maxLength={200}
             onChange={(e) => setAutoritat(e.target.value)} placeholder="p. ex. Batllia d'Andorra" />
@@ -55,8 +55,8 @@ const DadesRequeriment = ({ dades, onTanca }) => {
   const { request: r, client: c, autoritzacio: a, signatura: s, documents, kyc, kyc_validacio: v, pdp_consentiment: pc } = dades;
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto space-y-4">
-        <h3 className="text-lg font-bold text-gray-800">Dades per requeriment d'autoritat</h3>
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto space-y-4">
+        <h3 className="font-display font-medium text-[20px] text-[#12302F]">Dades per requeriment d'autoritat</h3>
         <Avis tipus="info">
           Aquest accés ha quedat registrat a l'auditoria. Lliura només el que demana l'autoritat i no en guardis còpies.
           Els enllaços de descàrrega caduquen en 60 segons.
@@ -77,11 +77,11 @@ const DadesRequeriment = ({ dades, onTanca }) => {
           {pc && <Dada etiqueta="Comunicacions comercials">{pc.consentiment_comercial ? 'Autoritzades' : 'No autoritzades'}</Dada>}
         </dl>
         {documents?.length > 0 && (
-          <div className="divide-y divide-gray-100 border-t border-gray-100">
+          <div className="divide-y divide-[#E4EEEC] border-t border-[#E4EEEC]">
             {documents.map((d) => (
               <div key={d.id} className="py-2 flex items-center gap-3">
-                <span className="flex-1 text-xs text-gray-600 font-mono break-all">{d.kind} · SHA-256 {d.sha256}</span>
-                {d.url && <a href={d.url} target="_blank" rel="noopener noreferrer" className="text-xs text-[#009B9C] underline">Descarregar</a>}
+                <span className="flex-1 text-xs text-[#4E6765] font-mono break-all">{d.kind} · SHA-256 {d.sha256}</span>
+                {d.url && <a href={d.url} target="_blank" rel="noopener noreferrer" className="text-xs text-[#007A7B] underline">Descarregar</a>}
               </div>
             ))}
           </div>
@@ -149,24 +149,24 @@ const Conservacio = () => {
 
       <Targeta titol="Simulació del procés diari"
         accions={<Boto onClick={simula}>Simular ara</Boto>}>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[#4E6765]">
           Cada dia, a les 03:30 UTC, es bloquegen els expedients vençuts i es destrueixen els que han acabat el termini de
           bloqueig i no tenen cap retenció. La simulació mostra què passaria ara sense canviar res.
         </p>
         {simulacio && (
           <div className="grid md:grid-cols-2 gap-4 mt-4 text-sm">
             <div>
-              <p className="font-semibold text-gray-700 mb-1">Es bloquejarien ({simulacio.a_bloquejar.length})</p>
+              <p className="font-semibold text-[#2B4644] mb-1">Es bloquejarien ({simulacio.a_bloquejar.length})</p>
               {simulacio.a_bloquejar.map((x) => (
-                <p key={x.request_id} className="text-xs text-gray-600">
+                <p key={x.request_id} className="text-xs text-[#4E6765]">
                   <span className="font-mono">{x.referencia || curt(x.request_id)}</span> · {x.causa} · venç {dataCurta(x.vencut_el)}
                 </p>
               ))}
             </div>
             <div>
-              <p className="font-semibold text-gray-700 mb-1">Es destruirien ({simulacio.a_destruir.length})</p>
+              <p className="font-semibold text-[#2B4644] mb-1">Es destruirien ({simulacio.a_destruir.length})</p>
               {simulacio.a_destruir.map((x) => (
-                <p key={x.request_id} className="text-xs text-gray-600">
+                <p key={x.request_id} className="text-xs text-[#4E6765]">
                   <span className="font-mono">{x.referencia || curt(x.request_id)}</span> · bloquejat {dataCurta(x.bloquejat_at)}
                 </p>
               ))}
@@ -176,16 +176,16 @@ const Conservacio = () => {
       </Targeta>
 
       <Targeta titol={`Propers venciments, 90 dies (${propers.length})`}>
-        {propers.length === 0 ? <p className="text-sm text-gray-400">Cap venciment proper.</p> : (
-          <div className="divide-y divide-gray-100">
+        {propers.length === 0 ? <p className="text-sm text-[#6B8280]">Cap venciment proper.</p> : (
+          <div className="divide-y divide-[#E4EEEC]">
             {propers.map((p) => (
               <div key={p.request_id} className="py-2.5 flex flex-wrap items-center gap-3 text-sm">
                 <span className="flex-1 min-w-[200px]">
-                  {p.nom_mostrat} <span className="text-xs text-gray-400 font-mono">{p.referencia_client}</span>
+                  {p.nom_mostrat} <span className="text-xs text-[#6B8280] font-mono">{p.referencia_client}</span>
                 </span>
                 <EtiquetaEstat estat={p.status} />
-                <span className="text-xs text-gray-500 w-40">{p.causa}</span>
-                <span className={`text-xs w-44 ${new Date(p.vencut_el) <= ara ? 'text-amber-700 font-semibold' : 'text-gray-600'}`}>
+                <span className="text-xs text-[#4E6765] w-40">{p.causa}</span>
+                <span className={`text-xs w-44 ${new Date(p.vencut_el) <= ara ? 'text-amber-700 font-semibold' : 'text-[#4E6765]'}`}>
                   {new Date(p.vencut_el) <= ara ? `Vençut el ${dataCurta(p.vencut_el)} (es bloqueja aquesta nit)` : `Venç el ${dataCurta(p.vencut_el)}`}
                 </span>
               </div>
@@ -195,16 +195,16 @@ const Conservacio = () => {
       </Targeta>
 
       <Targeta titol={`Expedients bloquejats (${bloquejades.length})`}>
-        <p className="text-xs text-gray-500 mb-3">
+        <p className="text-xs text-[#4E6765] mb-3">
           Dades bloquejades: ningú les veu des del panell. Només es poden consultar per requeriment d'una autoritat.
         </p>
-        {bloquejades.length === 0 ? <p className="text-sm text-gray-400">Cap expedient bloquejat.</p> : (
-          <div className="divide-y divide-gray-100">
+        {bloquejades.length === 0 ? <p className="text-sm text-[#6B8280]">Cap expedient bloquejat.</p> : (
+          <div className="divide-y divide-[#E4EEEC]">
             {bloquejades.map((b) => (
               <div key={b.request_id} className="py-2.5 flex flex-wrap items-center gap-3 text-sm">
                 <span className="font-mono text-xs w-32">{b.referencia_client || curt(b.request_id)}</span>
                 <EtiquetaEstat estat={b.status} />
-                <span className="text-xs text-gray-500 flex-1 min-w-[220px]">
+                <span className="text-xs text-[#4E6765] flex-1 min-w-[220px]">
                   Bloquejat {dataCurta(b.bloquejat_at)} · es destruirà a partir del {dataCurta(b.destruir_despres_de)}
                   {b.retencio && <span className="ml-2 text-purple-700 font-semibold">Retingut</span>}
                 </span>
@@ -219,12 +219,12 @@ const Conservacio = () => {
       </Targeta>
 
       <Targeta titol={`Retencions actives (${retingudes.length})`}>
-        {retingudes.length === 0 ? <p className="text-sm text-gray-400">Cap retenció activa.</p> : (
-          <div className="divide-y divide-gray-100">
+        {retingudes.length === 0 ? <p className="text-sm text-[#6B8280]">Cap retenció activa.</p> : (
+          <div className="divide-y divide-[#E4EEEC]">
             {retingudes.map((b) => (
               <div key={b.request_id} className="py-2 text-sm">
                 <span className="font-mono text-xs">{b.referencia_client || curt(b.request_id)}</span>
-                <span className="text-xs text-gray-500"> · des del {dataCurta(b.retencio.activada_at)} · {b.retencio.motiu}</span>
+                <span className="text-xs text-[#4E6765]"> · des del {dataCurta(b.retencio.activada_at)} · {b.retencio.motiu}</span>
               </div>
             ))}
           </div>
@@ -232,10 +232,10 @@ const Conservacio = () => {
       </Targeta>
 
       <Targeta titol={`Historial de destruccions (${destruccions.length})`}>
-        {destruccions.length === 0 ? <p className="text-sm text-gray-400">Encara no s'ha destruït cap expedient.</p> : (
-          <div className="divide-y divide-gray-100">
+        {destruccions.length === 0 ? <p className="text-sm text-[#6B8280]">Encara no s'ha destruït cap expedient.</p> : (
+          <div className="divide-y divide-[#E4EEEC]">
             {destruccions.map((d) => (
-              <div key={d.id} className="py-2 text-xs text-gray-600 flex flex-wrap gap-3">
+              <div key={d.id} className="py-2 text-xs text-[#4E6765] flex flex-wrap gap-3">
                 <span className="w-32">{dataHora(d.at)}</span>
                 <span className="font-mono">{curt(d.entitat_id)}</span>
                 <span>bloquejat {dataCurta(d.detalls.bloquejat_at)}</span>

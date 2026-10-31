@@ -40,7 +40,7 @@ const Preomplir = ({ requestId, aut, onDesat }) => {
 
   return (
     <form onSubmit={desa} className="space-y-3">
-      <p className="text-xs text-gray-500">
+      <p className="text-xs text-[#4E6765]">
         Opcional. El client les veurà preomplertes i les podrà corregir. L'IBAN l'escriu sempre el client.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -144,20 +144,20 @@ const Detall = ({ id, onTorna, rol }) => {
     window.open(url, '_blank', 'noopener');
   });
 
-  if (!s) return <p className="text-sm text-gray-400">{error || 'Carregant...'}</p>;
+  if (!s) return <p className="text-sm text-[#6B8280]">{error || 'Carregant...'}</p>;
   const { aut, sig, clients: client } = s;
   const potEnllac = ['esborrany', 'enviat', 'en_curs'].includes(s.status);
 
   return (
     <div className="space-y-5">
-      <button onClick={onTorna} className="text-sm text-[#009B9C] hover:underline">← Totes les sol·licituds</button>
+      <button onClick={onTorna} className="text-sm text-[#007A7B] hover:underline">← Totes les sol·licituds</button>
 
       <Targeta>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs text-gray-400 mb-1">Autorització de càrrec en compte · {s.template_version}</p>
-            <h2 className="text-lg font-bold text-gray-800">{client.nom_mostrat}</h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[#6B8280] mb-1">Autorització de càrrec en compte · {s.template_version}</p>
+            <h2 className="text-lg font-bold text-[#12302F]">{client.nom_mostrat}</h2>
+            <p className="text-xs text-[#4E6765]">
               {client.party_type === 'pj' ? 'Persona jurídica' : 'Persona física'} · Referència:{' '}
               <span className="font-mono">{client.referencia_client || 'sense assignar'}</span>
             </p>
@@ -179,7 +179,7 @@ const Detall = ({ id, onTorna, rol }) => {
       {/* Accions segons l'estat */}
       {potEnllac && (
         <Targeta titol="Enllaç per al client">
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-[#4E6765] mb-3">
             {s.enllac
               ? `Hi ha un enllaç vigent fins al ${dataHora(s.enllac.expira_at)}. Si el generes de nou, l'anterior deixarà de funcionar.`
               : 'Genera l\'enllaç i envia\'l al client des del teu correu. Caduca als 7 dies i només serveix una vegada.'}
@@ -205,7 +205,7 @@ const Detall = ({ id, onTorna, rol }) => {
 
       {s.status === 'signat' && rol === 'ocic' && (
         <Targeta titol="Anul·lar l'autorització signada (només OCIC)">
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-[#4E6765] mb-3">
             Per a autoritzacions signades que no s'activaran (el client se n'ha fet enrere, dades de prova...). El document
             signat no es modifica; l'expedient seguirà els terminis de conservació de les anul·lades.
           </p>
@@ -233,7 +233,7 @@ const Detall = ({ id, onTorna, rol }) => {
         {s.status === 'esborrany' ? (
           <Preomplir requestId={id} aut={aut} onDesat={carrega} />
         ) : !aut ? (
-          <p className="text-sm text-gray-400">El client encara no ha omplert el formulari.</p>
+          <p className="text-sm text-[#6B8280]">El client encara no ha omplert el formulari.</p>
         ) : (
           <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Dada etiqueta="Titular">{aut.titular_nom}</Dada>
@@ -268,12 +268,12 @@ const Detall = ({ id, onTorna, rol }) => {
 
       {s.docs.length > 0 && (
         <Targeta titol="Documents">
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-[#E4EEEC]">
             {s.docs.map((d) => (
               <div key={d.id} className="py-2.5 flex flex-wrap items-center gap-3">
                 <div className="flex-1 min-w-[200px]">
-                  <p className="text-sm text-gray-800">{NOM_DOC[d.kind]}</p>
-                  <p className="text-[11px] text-gray-400 font-mono break-all">
+                  <p className="text-sm text-[#12302F]">{NOM_DOC[d.kind]}</p>
+                  <p className="text-[11px] text-[#6B8280] font-mono break-all">
                     SHA-256 {d.sha256} · {(d.mida_bytes / 1024).toFixed(0)} KB · {dataHora(d.created_at)}
                   </p>
                 </div>
@@ -303,7 +303,7 @@ const ObreSolicitud = ({ id, tipus, onObre, rol }) => {
       setT(data?.document_type || 'autoritzacio_carrec');
     });
   }, [id, tipus, onObre]);
-  if (!t) return <p className="text-sm text-gray-400">Carregant...</p>;
+  if (!t) return <p className="text-sm text-[#6B8280]">Carregant...</p>;
   if (esKyc(t)) return <DetallKyc key={id} id={id} onTorna={(nou) => onObre(nou || null)} rol={rol} />;
   if (esIrpf(t)) return <DetallIrpf key={id} id={id} onTorna={(nou) => onObre(nou || null)} rol={rol} />;
   if (esContracte(t)) return <DetallContracte key={id} id={id} onTorna={() => onObre(null)} rol={rol} />;
@@ -357,7 +357,7 @@ const Solicituds = ({ oberta, onObre, rol }) => {
       accions={
         <div className="flex gap-2">
           <input value={cerca} onChange={(e) => setCerca(e.target.value)} placeholder="Cercar client..."
-            className="w-48 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40" />
+            className="w-48 border border-[#C5D6D3] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
           <Selector value={filtreTipus} onChange={(e) => setFiltreTipus(e.target.value)}>
             <option value="tots">Tots els documents</option>
             <option value="autoritzacio_carrec">Autoritzacions de càrrec</option>
@@ -372,19 +372,19 @@ const Solicituds = ({ oberta, onObre, rol }) => {
         </div>
       }>
       {carregant ? (
-        <p className="text-sm text-gray-400 py-6 text-center">Carregant...</p>
+        <p className="text-sm text-[#6B8280] py-6 text-center">Carregant...</p>
       ) : filtrades.length === 0 ? (
-        <p className="text-sm text-gray-400 py-6 text-center">
+        <p className="text-sm text-[#6B8280] py-6 text-center">
           Cap sol·licitud. Crea'n una des de la pestanya Clients.
         </p>
       ) : (
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-[#E4EEEC]">
           {filtrades.map((s) => (
             <button key={s.id} onClick={() => onObre(s.id)}
-              className="w-full text-left py-3 flex flex-wrap items-center gap-4 hover:bg-gray-50 px-2 -mx-2 rounded-lg">
+              className="w-full text-left py-3 flex flex-wrap items-center gap-4 hover:bg-[#F4F8F7] px-2 -mx-2 rounded-lg">
               <div className="flex-1 min-w-[200px]">
-                <p className="text-sm font-semibold text-gray-800">{s.clients.nom_mostrat}</p>
-                <p className="text-xs text-gray-400">
+                <p className="text-sm font-semibold text-[#12302F]">{s.clients.nom_mostrat}</p>
+                <p className="text-xs text-[#6B8280]">
                   {TIPUS_DOCUMENT[s.document_type]}{titolContracte(s) && ` · ${titolContracte(s)}`}{perceptor(s) && ` · perceptor: ${perceptor(s)}`} · <span className="font-mono">{s.clients.referencia_client || 'sense referència'}</span> · creada {dataCurta(s.created_at)}
                   {s.signat_at && ` · signada ${dataCurta(s.signat_at)}`}
                 </p>

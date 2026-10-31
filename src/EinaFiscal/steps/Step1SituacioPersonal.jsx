@@ -4,7 +4,7 @@ import { IRPF } from '../engine/constants';
 
 const InputNum = ({ label, value, onChange, min = 0, hint = '' }) => (
   <div>
-    <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+    <label className="block text-xs font-medium text-[#4E6765] mb-1">{label}</label>
     <input
       type="number" onWheel={e => e.target.blur()}
       min={min}
@@ -12,21 +12,21 @@ const InputNum = ({ label, value, onChange, min = 0, hint = '' }) => (
       value={value === 0 ? '' : value}
       placeholder="0"
       onChange={e => { const v = e.target.value; onChange(v === '' ? 0 : parseFloat(v) || 0); }}
-      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
     />
-    {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
+    {hint && <p className="text-xs text-[#6B8280] mt-1">{hint}</p>}
   </div>
 );
 
 const InputText = ({ label, value, onChange, placeholder = '' }) => (
   <div>
-    <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+    <label className="block text-xs font-medium text-[#4E6765] mb-1">{label}</label>
     <input
       type="text"
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
     />
   </div>
 );
@@ -74,18 +74,18 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6">
         <div className="flex items-center gap-2 mb-5">
-          <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">1</span>
+          <span className="w-8 h-8 rounded-full bg-[#007A7B] text-white text-sm font-bold flex items-center justify-center">1</span>
           <div>
-            <h2 className="font-bold text-gray-800">Situació personal i familiar</h2>
-            <p className="text-xs text-gray-500">Formulari 300-A · Mínim personal i reduccions familiars</p>
+            <h2 className="font-bold text-[#12302F]">Situació personal i familiar</h2>
+            <p className="text-xs text-[#4E6765]">Formulari 300-A · Mínim personal i reduccions familiars</p>
           </div>
         </div>
 
         {/* Estat civil */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Estat civil</h3>
+          <h3 className="text-sm font-semibold text-[#2B4644] mb-3">Estat civil</h3>
           <div className="grid grid-cols-2 gap-3">
             {[
               { valor: 'casat', etiqueta: 'Casat/da o parella de fet' },
@@ -96,8 +96,8 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
                 onClick={() => update('estatCivil', opt.valor)}
                 className={`p-3 rounded-xl border-2 text-sm font-medium transition text-left ${
                   dades.estatCivil === opt.valor
-                    ? 'border-[#009B9C] bg-[#009B9C]/10 text-[#009B9C]'
-                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    ? 'border-[#007A7B] bg-[#007A7B]/10 text-[#007A7B]'
+                    : 'border-[#D6E4E2] text-[#4E6765] hover:border-[#C5D6D3]'
                 }`}
               >
                 {opt.etiqueta}
@@ -108,8 +108,8 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
 
         {/* Conjuge */}
         {dades.estatCivil === 'casat' && (
-          <div className="bg-blue-50 rounded-xl p-4 mb-6 space-y-4">
-            <h3 className="text-sm font-semibold text-blue-800">Dades del cònjuge / parella de fet</h3>
+          <div className="bg-[#EEF6F6] rounded-xl p-4 mb-6 space-y-4">
+            <h3 className="text-sm font-semibold text-[#12302F]">Dades del cònjuge / parella de fet</h3>
             <div className="grid grid-cols-2 gap-4">
               <InputText
                 label="Nom del cònjuge"
@@ -126,7 +126,7 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
 
             {/* Pregunta 1: percep rendes de la base general? */}
             <div>
-              <p className="text-xs font-medium text-blue-800 mb-2">
+              <p className="text-xs font-medium text-[#12302F] mb-2">
                 El cònjuge percep rendes de la base general (treball, activitats o capital immobiliari)?
               </p>
               <div className="flex gap-3">
@@ -145,8 +145,8 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
                     }}
                     className={`px-4 py-1.5 rounded-lg border text-xs font-semibold transition ${
                       dades.conjugePercepRendes === opt.val
-                        ? 'border-blue-600 bg-blue-600 text-white'
-                        : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                        ? 'border-[#007A7B] bg-[#007A7B] text-white'
+                        : 'border-[#C5D6D3] bg-white text-[#4E6765] hover:border-[#9FB3B0]'
                     }`}
                   >
                     {opt.label}
@@ -163,7 +163,7 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
             {/* Pregunta 2: rendes inferiors a 24.000 €? */}
             {dades.conjugePercepRendes === true && (
               <div>
-                <p className="text-xs font-medium text-blue-800 mb-2">
+                <p className="text-xs font-medium text-[#12302F] mb-2">
                   Les rendes del cònjuge són inferiors a 24.000 € bruts?
                 </p>
                 <div className="flex gap-3">
@@ -181,8 +181,8 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
                       }}
                       className={`px-4 py-1.5 rounded-lg border text-xs font-semibold transition ${
                         dades.conjugeRendesInf24k === opt.val
-                          ? 'border-blue-600 bg-blue-600 text-white'
-                          : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                          ? 'border-[#007A7B] bg-[#007A7B] text-white'
+                          : 'border-[#C5D6D3] bg-white text-[#4E6765] hover:border-[#9FB3B0]'
                       }`}
                     >
                       {opt.label}
@@ -238,14 +238,14 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
                     }}
                     hint="Calculat automàticament (3% brut, màx. 2.500 €) — editable"
                   />
-                  <div className="bg-white border border-gray-200 rounded-lg p-3 text-xs space-y-1.5">
-                    <div className="flex justify-between text-gray-600">
+                  <div className="bg-white border border-[#D6E4E2] rounded-lg p-3 text-xs space-y-1.5">
+                    <div className="flex justify-between text-[#4E6765]">
                       <span>Renda neta del cònjuge:</span>
-                      <span className="font-bold text-gray-800">
+                      <span className="font-bold text-[#12302F]">
                         {rendaNeta.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €
                       </span>
                     </div>
-                    <div className="flex justify-between text-[#009B9C] font-semibold border-t border-gray-100 pt-1.5">
+                    <div className="flex justify-between text-[#007A7B] font-semibold border-t border-[#E4EEEC] pt-1.5">
                       <span>Mínim personal exempt resultant:</span>
                       <span>{minimResultant.toLocaleString('ca-AD')} €</span>
                     </div>
@@ -263,9 +263,9 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
               type="checkbox"
               checked={dades.obligatDiscapacitat}
               onChange={e => update('obligatDiscapacitat', e.target.checked)}
-              className="w-4 h-4 rounded accent-[#009B9C]"
+              className="w-4 h-4 rounded accent-[#007A7B]"
             />
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-[#2B4644]">
               Discapacitat reconeguda per CONAVA (mínim personal 30.000 euros) — Art. 35.1 Llei 5/2014
             </span>
           </label>
@@ -273,27 +273,27 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
       </div>
 
       {/* Descendents */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-800 text-sm">Descendents a carrec</h3>
+          <h3 className="font-semibold text-[#12302F] text-sm">Descendents a carrec</h3>
           <button
             onClick={addDescendent}
-            className="text-xs bg-[#009B9C] text-white px-3 py-1.5 rounded-lg hover:bg-[#007A7B] transition"
+            className="text-xs bg-[#007A7B] text-white px-3 py-1.5 rounded-lg hover:bg-[#00676A] transition"
           >
             + Afegir descendent
           </button>
         </div>
-        <p className="text-xs text-gray-500 mb-4">
+        <p className="text-xs text-[#4E6765] mb-4">
           Fills menors de 25 anys que conviuen amb l'obligat tributari. Reducció: 1.000 euros per descendent. Font: Art. 35.2.a Llei 5/2014.
         </p>
         {dades.descendents.length === 0 && (
-          <p className="text-sm text-gray-400 text-center py-3">Cap descendent afegit</p>
+          <p className="text-sm text-[#6B8280] text-center py-3">Cap descendent afegit</p>
         )}
         {dades.descendents.map((d, i) => (
-          <div key={d.id} className="bg-gray-50 rounded-xl p-4 mb-3">
+          <div key={d.id} className="bg-[#F4F8F7] rounded-xl p-4 mb-3">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-gray-600">Descendent {i + 1}</span>
-              <button onClick={() => removeDescendent(d.id)} className="text-gray-400 hover:text-red-500 text-xs">Eliminar</button>
+              <span className="text-xs font-semibold text-[#4E6765]">Descendent {i + 1}</span>
+              <button onClick={() => removeDescendent(d.id)} className="text-[#6B8280] hover:text-red-500 text-xs">Eliminar</button>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <InputText label="Nom" value={d.nom} onChange={v => updateDescendent(d.id, 'nom', v)} />
@@ -302,8 +302,8 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
               <InputNum label={`Rendes anuals del descendent (€) — límit SMI ${SMI_ANUAL.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €`} value={d.rendesAnuals || 0} onChange={v => updateDescendent(d.id, 'rendesAnuals', v)} />
               <InputNum label="Matrícules ensenyament superior (euros, màx. 300 euros)" value={d.matricules} onChange={v => updateDescendent(d.id, 'matricules', v)} />
               <div className="flex items-center gap-2 pt-5">
-                <input type="checkbox" checked={d.discapacitat} onChange={e => updateDescendent(d.id, 'discapacitat', e.target.checked)} className="w-4 h-4 accent-[#009B9C]" />
-                <span className="text-xs text-gray-600">Discapacitat reconeguda</span>
+                <input type="checkbox" checked={d.discapacitat} onChange={e => updateDescendent(d.id, 'discapacitat', e.target.checked)} className="w-4 h-4 accent-[#007A7B]" />
+                <span className="text-xs text-[#4E6765]">Discapacitat reconeguda</span>
               </div>
             </div>
             {/* Avisos de validació */}
@@ -332,35 +332,35 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
       </div>
 
       {/* Ascendents */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-800 text-sm">Ascendents a carrec</h3>
+          <h3 className="font-semibold text-[#12302F] text-sm">Ascendents a carrec</h3>
           <button
             onClick={addAscendent}
-            className="text-xs bg-[#009B9C] text-white px-3 py-1.5 rounded-lg hover:bg-[#007A7B] transition"
+            className="text-xs bg-[#007A7B] text-white px-3 py-1.5 rounded-lg hover:bg-[#00676A] transition"
           >
             + Afegir ascendent
           </button>
         </div>
-        <p className="text-xs text-gray-500 mb-4">
+        <p className="text-xs text-[#4E6765] mb-4">
           Ascendents majors de 65 anys que conviuen amb l'obligat tributari. Reducció: 1.000 euros per ascendent. Font: Art. 35.2.b Llei 5/2014.
         </p>
         {dades.ascendents.length === 0 && (
-          <p className="text-sm text-gray-400 text-center py-3">Cap ascendent afegit</p>
+          <p className="text-sm text-[#6B8280] text-center py-3">Cap ascendent afegit</p>
         )}
         {dades.ascendents.map((a, i) => (
-          <div key={a.id} className="bg-gray-50 rounded-xl p-4 mb-3">
+          <div key={a.id} className="bg-[#F4F8F7] rounded-xl p-4 mb-3">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-gray-600">Ascendent {i + 1}</span>
-              <button onClick={() => removeAscendent(a.id)} className="text-gray-400 hover:text-red-500 text-xs">Eliminar</button>
+              <span className="text-xs font-semibold text-[#4E6765]">Ascendent {i + 1}</span>
+              <button onClick={() => removeAscendent(a.id)} className="text-[#6B8280] hover:text-red-500 text-xs">Eliminar</button>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <InputText label="Nom" value={a.nom} onChange={v => updateAscendent(a.id, 'nom', v)} />
               <InputText label="NRT" value={a.nrt || ''} onChange={v => updateAscendent(a.id, 'nrt', v)} placeholder="F-XXXXXX-X" />
               <InputNum label="Any de naixement" value={a.anyNaixement} onChange={v => updateAscendent(a.id, 'anyNaixement', v)} min={1900} />
               <div className="flex items-center gap-2 pt-5">
-                <input type="checkbox" checked={a.discapacitat} onChange={e => updateAscendent(a.id, 'discapacitat', e.target.checked)} className="w-4 h-4 accent-[#009B9C]" />
-                <span className="text-xs text-gray-600">Discapacitat reconeguda</span>
+                <input type="checkbox" checked={a.discapacitat} onChange={e => updateAscendent(a.id, 'discapacitat', e.target.checked)} className="w-4 h-4 accent-[#007A7B]" />
+                <span className="text-xs text-[#4E6765]">Discapacitat reconeguda</span>
               </div>
             </div>
           </div>
@@ -369,9 +369,9 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
 
       {/* Progenitors amb dret a reducció familiar */}
       {(dades.descendents.length > 0 || dades.ascendents.length > 0) && (
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <h3 className="font-semibold text-gray-800 text-sm mb-2">Progenitors amb dret a la reducció familiar</h3>
-          <p className="text-xs text-gray-500 mb-4">
+        <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6">
+          <h3 className="font-semibold text-[#12302F] text-sm mb-2">Progenitors amb dret a la reducció familiar</h3>
+          <p className="text-xs text-[#4E6765] mb-4">
             Si les mateixes persones a càrrec donen dret a reducció a dos progenitors (custòdia compartida o convivència amb ambdós pares), els 1.000 € per persona es reparteixen entre ambdós. Art. 35.2 Llei 5/2014.
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -384,8 +384,8 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
                 onClick={() => update('numProgenitorsReduccio', opt.val)}
                 className={`p-3 rounded-xl border-2 text-sm font-medium transition text-left ${
                   (dades.numProgenitorsReduccio || 1) === opt.val
-                    ? 'border-[#009B9C] bg-[#009B9C]/10 text-[#009B9C]'
-                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    ? 'border-[#007A7B] bg-[#007A7B]/10 text-[#007A7B]'
+                    : 'border-[#D6E4E2] text-[#4E6765] hover:border-[#C5D6D3]'
                 }`}
               >
                 <div className="font-bold">{opt.label}</div>
@@ -397,26 +397,26 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
       )}
 
       {/* Seccio 2 del 300-A: Reduccions economiques (habitatge, pensions, compensatories) */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm overflow-hidden">
         <button
           onClick={() => setShowEconomiques(!showEconomiques)}
-          className="w-full flex items-center justify-between px-6 py-4 bg-gray-50 hover:bg-gray-100 text-left transition border-b border-gray-200"
+          className="w-full flex items-center justify-between px-6 py-4 bg-[#F4F8F7] hover:bg-[#EAF2F0] text-left transition border-b border-[#D6E4E2]"
         >
           <div>
-            <span className="font-semibold text-sm text-gray-800">
+            <span className="font-semibold text-sm text-[#12302F]">
               Dades econòmiques (300-A sec.2) — Reduccions
             </span>
-            <p className="text-xs text-gray-500 mt-0.5">Habitatge habitual, plans de pensions, pensions compensatòries</p>
+            <p className="text-xs text-[#4E6765] mt-0.5">Habitatge habitual, plans de pensions, pensions compensatòries</p>
           </div>
-          <span className="text-gray-400 font-bold text-lg">{showEconomiques ? '-' : '+'}</span>
+          <span className="text-[#6B8280] font-bold text-lg">{showEconomiques ? '-' : '+'}</span>
         </button>
 
         {showEconomiques && (
           <div className="p-6 space-y-6">
             {/* 2.1 Inversió en habitatge habitual (Art. 38) */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs font-bold flex items-center justify-center">A</span>
+              <h3 className="text-sm font-semibold text-[#2B4644] mb-3 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-[#EAF2F0] text-[#4E6765] text-xs font-bold flex items-center justify-center">A</span>
                 2.1 Inversió en habitatge habitual (Art. 38) — casella 6
               </h3>
               <InputNum
@@ -425,7 +425,7 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
                 onChange={v => update('quotesHabitatge', v)}
                 hint={`Reducció: 50% de les quantitats satisfetes (màx. ${IRPF.RED_HABITATGE_MAX ? IRPF.RED_HABITATGE_MAX.toLocaleString('ca-AD') : '5.000'} euros/any) — Art. 38 Llei 5/2014`}
               />
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-[#4E6765] mt-2">
                 Inclou les despeses originades per l'adquisició a càrrec de l'adquirent i, en cas de finançament per tercers, l'amortització, els interessos i les restants despeses associades al préstec (art. 38.1).
               </p>
               {(dades.quotesHabitatge || 0) > 0 && (
@@ -440,8 +440,8 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
 
             {/* 2.2 Inversió en habitatge de lloguer a preu assequible (Art. 38 bis) */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs font-bold flex items-center justify-center">B</span>
+              <h3 className="text-sm font-semibold text-[#2B4644] mb-3 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-[#EAF2F0] text-[#4E6765] text-xs font-bold flex items-center justify-center">B</span>
                 2.2 Inversió en habitatge de lloguer a preu assequible (Art. 38 bis) — casella 7
               </h3>
               <InputNum
@@ -450,7 +450,7 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
                 onChange={v => update('quotesLloguerAssequible', v)}
                 hint={`Reducció: 50% de les quantitats satisfetes (màx. ${IRPF.RED_LLOGUER_ASSEQUIBLE_MAX ? IRPF.RED_LLOGUER_ASSEQUIBLE_MAX.toLocaleString('ca-AD') : '5.000'} euros/any) — Art. 38 bis Llei 5/2014`}
               />
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-[#4E6765] mt-2">
                 Per a l'adquisició d'un immoble destinat al mercat de lloguer per a residència habitual i permanent a preu assequible. Inclou les despeses originades per l'adquisició a càrrec de l'adquirent i, en cas de finançament per tercers, l'amortització, els interessos i les restants despeses associades al préstec (art. 38 bis).
               </p>
               {(dades.quotesLloguerAssequible || 0) > 0 && (
@@ -465,8 +465,8 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
 
             {/* Plans de pensions */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs font-bold flex items-center justify-center">C</span>
+              <h3 className="text-sm font-semibold text-[#2B4644] mb-3 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-[#EAF2F0] text-[#4E6765] text-xs font-bold flex items-center justify-center">C</span>
                 2.3 Reducció per plans de pensions (Art. 39) — casella 8
               </h3>
               <div className="grid grid-cols-2 gap-4">
@@ -483,7 +483,7 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
                   hint="Contribució imputada a l'obligat tributari"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-[#4E6765] mt-2">
                 Els plans i instruments han de complir les característiques establertes reglamentàriament. La contribució de l'empresa només es computa si s'ha imputat fiscalment a l'obligat tributari (art. 39.1).
               </p>
               {((dades.aportacioPensions || 0) + (dades.contribucioPensions || 0)) > 0 && (
@@ -495,8 +495,8 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
 
             {/* Pensions compensatories */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs font-bold flex items-center justify-center">D</span>
+              <h3 className="text-sm font-semibold text-[#2B4644] mb-3 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-[#EAF2F0] text-[#4E6765] text-xs font-bold flex items-center justify-center">D</span>
                 2.4 Pensions compensatòries i anualitats per aliments — casella 9
               </h3>
               <div className="grid grid-cols-2 gap-4">
@@ -513,16 +513,16 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
                   hint="Import satisfet per resolució judicial — Art. 39.2 Llei 5/2014"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-[#4E6765] mt-2">
                 Cal que se satisfacin d'acord amb la legislació civil aplicable, en compliment d'una resolució judicial o en execució d'un conveni regulador homologat judicialment o protocol·litzat notarialment (art. 39.2).
               </p>
             </div>
 
             {/* Resum reduccions sec.2 */}
             {(redHabitatge + redPensions + (dades.pensionsCompensatories || 0) + (dades.anualitatAliments || 0)) > 0 && (
-              <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-3 text-xs">
-                <p className="font-semibold text-[#009B9C] mb-2">Resum reduccions 300-A sec.2</p>
-                <div className="space-y-1 text-gray-700">
+              <div className="bg-[#007A7B]/5 border border-[#007A7B]/20 rounded-xl p-3 text-xs">
+                <p className="font-semibold text-[#007A7B] mb-2">Resum reduccions 300-A sec.2</p>
+                <div className="space-y-1 text-[#2B4644]">
                   {redHabitatge > 0 && (
                     <div className="flex justify-between">
                       <span>Reducció habitatge (Art. 38):</span>
@@ -547,7 +547,7 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
                       <span className="font-bold">{(dades.anualitatAliments || 0).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</span>
                     </div>
                   )}
-                  <div className="flex justify-between font-bold text-gray-800 border-t pt-1 mt-1">
+                  <div className="flex justify-between font-bold text-[#12302F] border-t pt-1 mt-1">
                     <span>Total reduccions 300-A sec.2:</span>
                     <span>{(redHabitatge + redPensions + (dades.pensionsCompensatories || 0) + (dades.anualitatAliments || 0)).toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</span>
                   </div>
@@ -559,9 +559,9 @@ const Step1SituacioPersonal = ({ dades, update, resultat }) => {
       </div>
 
       {/* Resum situacio personal */}
-      <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-4 text-sm">
-        <h4 className="font-semibold text-[#009B9C] mb-2">Resum — Mínim personal aplicable</h4>
-        <div className="space-y-1 text-xs text-gray-700">
+      <div className="bg-[#007A7B]/5 border border-[#007A7B]/20 rounded-xl p-4 text-sm">
+        <h4 className="font-semibold text-[#007A7B] mb-2">Resum — Mínim personal aplicable</h4>
+        <div className="space-y-1 text-xs text-[#2B4644]">
           {dades.obligatDiscapacitat ? (
             <p>Mínim personal: <strong>30.000 €</strong> (discapacitat — Art. 35.1)</p>
           ) : dades.estatCivil === 'casat' ? (

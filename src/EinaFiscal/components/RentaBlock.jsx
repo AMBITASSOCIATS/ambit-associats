@@ -2,18 +2,18 @@
 import React from 'react';
 
 const RentaBlock = ({ titol, numero, children, onEliminar }) => (
-  <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 mb-4">
+  <div className="bg-white rounded-xl border border-[#D6E4E2] shadow-sm p-5 mb-4">
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-2">
-        <span className="w-7 h-7 rounded-full bg-[#009B9C] text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+        <span className="w-7 h-7 rounded-full bg-[#007A7B] text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
           {numero}
         </span>
-        <h4 className="font-semibold text-gray-800 text-sm">{titol}</h4>
+        <h4 className="font-semibold text-[#12302F] text-sm">{titol}</h4>
       </div>
       {onEliminar && (
         <button
           onClick={onEliminar}
-          className="text-gray-400 hover:text-red-500 transition text-sm px-2 py-1 rounded hover:bg-red-50"
+          className="text-[#6B8280] hover:text-red-500 transition text-sm px-2 py-1 rounded hover:bg-red-50"
           title="Eliminar"
         >
           ✕

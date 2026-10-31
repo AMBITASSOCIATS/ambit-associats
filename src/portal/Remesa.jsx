@@ -50,7 +50,7 @@ const Remesa = ({ onObreSolicitud }) => {
   return (
     <Targeta titol={`Autoritzacions actives (${files.length})`}
       accions={<Boto onClick={exporta} disabled={exportant || files.length === 0}>{exportant ? 'Exportant...' : 'Exportar CSV'}</Boto>}>
-      <p className="text-xs text-gray-500 mb-4">
+      <p className="text-xs text-[#4E6765] mb-4">
         El fitxer CSV conté la referència, el titular, l'entitat i l'IBAN complet. Guarda'l en un lloc segur i
         esborra'l quan ja no el necessitis.
       </p>
@@ -59,14 +59,14 @@ const Remesa = ({ onObreSolicitud }) => {
         <Avis tipus="ok">{ok}</Avis>
       </div>
       {carregant ? (
-        <p className="text-sm text-gray-400 py-6 text-center">Carregant...</p>
+        <p className="text-sm text-[#6B8280] py-6 text-center">Carregant...</p>
       ) : files.length === 0 ? (
-        <p className="text-sm text-gray-400 py-6 text-center">Cap autorització activa</p>
+        <p className="text-sm text-[#6B8280] py-6 text-center">Cap autorització activa</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-[11px] uppercase tracking-wide text-gray-500 border-b border-gray-200">
+              <tr className="text-left text-[11px] uppercase tracking-wide text-[#4E6765] border-b border-[#D6E4E2]">
                 <th className="py-2 pr-4">Referència</th>
                 <th className="py-2 pr-4">Titular</th>
                 <th className="py-2 pr-4">Entitat</th>
@@ -74,11 +74,11 @@ const Remesa = ({ onObreSolicitud }) => {
                 <th className="py-2">Alta</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-[#E4EEEC]">
               {files.map((f) => {
                 const a = f.autoritzacions_carrec?.[0] || f.autoritzacions_carrec || {};
                 return (
-                  <tr key={f.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => onObreSolicitud(f.id)}>
+                  <tr key={f.id} className="hover:bg-[#F4F8F7] cursor-pointer" onClick={() => onObreSolicitud(f.id)}>
                     <td className="py-2 pr-4 font-mono text-xs">{f.clients.referencia_client}</td>
                     <td className="py-2 pr-4">{a.titular_nom}</td>
                     <td className="py-2 pr-4">{ENTITATS[a.entitat]}</td>

@@ -65,28 +65,28 @@ const Registre = () => {
         <Entrada etiqueta="Identificador" value={filtres.id} onChange={f('id')} placeholder="uuid" />
       </div>
 
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-[#E4EEEC]">
         {files.map((r) => (
           <div key={r.id} className="py-2">
             <button className="w-full text-left flex flex-wrap items-center gap-3 text-xs" onClick={() => setObert(obert === r.id ? null : r.id)}>
-              <span className="text-gray-500 w-32">{dataHora(r.at)}</span>
+              <span className="text-[#4E6765] w-32">{dataHora(r.at)}</span>
               <span className="font-semibold w-16">{r.accio}</span>
               <span className="w-40">{r.entitat}</span>
-              <span className="flex-1 text-gray-500 truncate">
+              <span className="flex-1 text-[#4E6765] truncate">
                 {r.actor ? personal[r.actor] || r.actor : 'client / sistema'}
                 {r.ip && ` · ${r.ip}`}
               </span>
-              <span className="text-[#009B9C]">{obert === r.id ? '▲' : '▼'}</span>
+              <span className="text-[#007A7B]">{obert === r.id ? '▲' : '▼'}</span>
             </button>
             {obert === r.id && (
-              <pre className="mt-2 bg-gray-50 border border-gray-200 rounded-lg p-3 text-[11px] overflow-x-auto whitespace-pre-wrap break-all">
+              <pre className="mt-2 bg-[#F4F8F7] border border-[#D6E4E2] rounded-lg p-3 text-[11px] overflow-x-auto whitespace-pre-wrap break-all">
                 {JSON.stringify({ entitat_id: r.entitat_id, user_agent: r.user_agent, ...r.detalls }, null, 2)}
               </pre>
             )}
           </div>
         ))}
       </div>
-      {!carregant && files.length === 0 && <p className="text-sm text-gray-400 py-6 text-center">Cap registre</p>}
+      {!carregant && files.length === 0 && <p className="text-sm text-[#6B8280] py-6 text-center">Cap registre</p>}
       {hiHaMes && (
         <div className="mt-4 text-center">
           <Boto variant="secundari" disabled={carregant} onClick={() => carrega(files.length)}>Carregar-ne més</Boto>

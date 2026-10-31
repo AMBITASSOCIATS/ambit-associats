@@ -27,13 +27,13 @@ const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
-        <button onClick={onCancelar} className="text-[#009B9C] text-sm mb-4 hover:underline block">
+    <div className="min-h-screen bg-[#F4F8F7] flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] w-full max-w-lg p-6">
+        <button onClick={onCancelar} className="text-[#007A7B] text-sm mb-4 hover:underline block">
           ← Zona Professionals
         </button>
-        <h3 className="text-lg font-bold text-gray-800 mb-1">⚙️ Configuració de la capçalera</h3>
-        <p className="text-xs text-gray-500 mb-5">Aquestes dades apareixeran a la capçalera dels informes PDF generats. Si no s'omple, s'usaran les dades d'ÀMBIT Associats per defecte.</p>
+        <h3 className="font-display font-medium text-[20px] text-[#12302F] mb-1">⚙️ Configuració de la capçalera</h3>
+        <p className="text-xs text-[#4E6765] mb-5">Aquestes dades apareixeran a la capçalera dels informes PDF generats. Si no s'omple, s'usaran les dades d'ÀMBIT Associats per defecte.</p>
         <div className="space-y-3">
           {[
             { key: 'nom', label: 'Nom empresa / Professional', placeholder: 'Ex: Assessoria López, S.L.' },
@@ -45,19 +45,19 @@ const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
             { key: 'web', label: 'Web', placeholder: 'Ex: www.empresa.ad' },
           ].map(f => (
             <div key={f.key}>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">{f.label}</label>
+              <label className="block text-xs font-semibold text-[#4E6765] mb-1">{f.label}</label>
               <input
                 type="text"
                 value={form[f.key]}
                 onChange={e => set(f.key, e.target.value)}
                 placeholder={f.placeholder}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+                className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
               />
             </div>
           ))}
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-2">Color de l'informe</label>
+          <label className="block text-xs font-semibold text-[#4E6765] mb-2">Color de l'informe</label>
           <div className="flex flex-wrap gap-2">
             {[
               { nom: 'Verd ÀMBIT', valor: '#009B9C' },
@@ -74,13 +74,13 @@ const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
                 onClick={() => set('color', c.valor)}
                 title={c.nom}
                 className={`w-8 h-8 rounded-full border-4 transition ${
-                  form.color === c.valor ? 'border-gray-800 scale-110' : 'border-transparent hover:border-gray-400'
+                  form.color === c.valor ? 'border-gray-800 scale-110' : 'border-transparent hover:border-[#9FB3B0]'
                 }`}
                 style={{ backgroundColor: c.valor }}
               />
             ))}
           </div>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-[#6B8280] mt-1">
             Color per defecte: Verd ÀMBIT
           </p>
         </div>
@@ -92,15 +92,15 @@ const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
               finally { setDesant(false); }
             }}
             disabled={desant}
-            className="flex-1 bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold py-2.5 rounded-xl transition text-sm disabled:opacity-50"
+            className="flex-1 bg-[#007A7B] hover:bg-[#00676A] text-white font-semibold py-2.5 rounded-full transition text-sm disabled:opacity-50"
           >
             {desant ? 'Desant...' : 'Desar configuració'}
           </button>
-          <button onClick={onCancelar} className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition text-sm">
+          <button onClick={onCancelar} className="px-4 py-2.5 bg-[#EAF2F0] hover:bg-[#DCE9E6] text-[#2B4644] font-semibold rounded-xl transition text-sm">
             Cancel·lar
           </button>
         </div>
-        <p className="text-xs text-gray-400 mt-3 text-center">Deixa els camps en blanc per usar les dades d'ÀMBIT Associats per defecte.</p>
+        <p className="text-xs text-[#6B8280] mt-3 text-center">Deixa els camps en blanc per usar les dades d'ÀMBIT Associats per defecte.</p>
       </div>
     </div>
   );
@@ -456,32 +456,32 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
 
   if (vistaActual === 'canviarContrasenya') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+      <div className="min-h-screen bg-[#F4F8F7] flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl border border-[#D6E4E2] w-full max-w-sm p-6">
           <button
             onClick={() => setVistaActual('zona')}
-            className="text-[#009B9C] text-sm mb-4 hover:underline block"
+            className="text-[#007A7B] text-sm mb-4 hover:underline block"
           >
             ← Zona Professionals
           </button>
-          <h3 className="text-lg font-bold text-gray-800 mb-4">🔑 Canviar contrasenya</h3>
+          <h3 className="font-display font-medium text-[20px] text-[#12302F] mb-4">🔑 Canviar contrasenya</h3>
           <form onSubmit={canviarContrasenya} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Nova contrasenya</label>
-              <input type="password" value={novaContrasenya} onChange={e => setNovaContrasenya(e.target.value)} required minLength={8} placeholder="Mínim 8 caràcters" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40" />
+              <label className="block text-xs font-semibold text-[#4E6765] mb-1">Nova contrasenya</label>
+              <input type="password" value={novaContrasenya} onChange={e => setNovaContrasenya(e.target.value)} required minLength={8} placeholder="Mínim 8 caràcters" className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Confirmar nova contrasenya</label>
-              <input type="password" value={confirmarContrasenya} onChange={e => setConfirmarContrasenya(e.target.value)} required placeholder="Repeteix la nova contrasenya" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40" />
+              <label className="block text-xs font-semibold text-[#4E6765] mb-1">Confirmar nova contrasenya</label>
+              <input type="password" value={confirmarContrasenya} onChange={e => setConfirmarContrasenya(e.target.value)} required placeholder="Repeteix la nova contrasenya" className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
             </div>
             {errorContrasenya && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-xs text-red-700">⚠️ {errorContrasenya}</div>
             )}
             <div className="flex gap-3 pt-1">
-              <button type="submit" disabled={carregantContrasenya} className="flex-1 bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold py-2.5 rounded-xl transition text-sm disabled:opacity-50">
+              <button type="submit" disabled={carregantContrasenya} className="flex-1 bg-[#007A7B] hover:bg-[#00676A] text-white font-semibold py-2.5 rounded-full transition text-sm disabled:opacity-50">
                 {carregantContrasenya ? 'Verificant...' : 'Guardar'}
               </button>
-              <button type="button" onClick={() => setVistaActual('zona')} className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition text-sm">
+              <button type="button" onClick={() => setVistaActual('zona')} className="px-4 py-2.5 bg-[#EAF2F0] hover:bg-[#DCE9E6] text-[#2B4644] font-semibold rounded-xl transition text-sm">
                 Cancel·lar
               </button>
             </div>
