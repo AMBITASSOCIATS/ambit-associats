@@ -90,6 +90,47 @@ const Topo = ({ etiquetes }) => {
   );
 };
 
+// Equip del despatx: fitxa breu a la portada i pàgina de perfil
+const EQUIP = [
+  {
+    id: "martin-paleari",
+    nom: "Martín Paleari",
+    foto: "/equip/martin-paleari.jpg",
+    carrec: { ca: "Soci director", es: "Socio director", en: "Managing Partner", fr: "Associé directeur" },
+    resum: {
+      ca: "Fiscalitat i comptabilitat d'empreses i professionals a Andorra. Més de vint anys d'experiència.",
+      es: "Fiscalidad y contabilidad de empresas y profesionales en Andorra. Más de veinte años de experiencia.",
+      en: "Tax and accounting for companies and professionals in Andorra. More than twenty years of experience.",
+      fr: "Fiscalité et comptabilité des entreprises et des professionnels en Andorre. Plus de vingt ans d'expérience.",
+    },
+    bio: {
+      ca: [
+        "Martín és soci director d'ÀMBIT Associats, el despatx que dirigeix juntament amb Mariona del Soto a Escaldes-Engordany. S'ocupa principalment de l'àrea fiscal i comptable: impost sobre societats, IRPF, IGI, comptabilitat i tancaments anuals de societats i professionals que operen a Andorra.",
+        "Fa més de vint anys que es dedica a l'assessorament d'empreses. Va iniciar la seva trajectòria a l'Argentina el 2005 i des del 2019 exerceix a Andorra, on acompanya tant empresaris que s'instal·len al Principat com societats ja en funcionament que cerquen una gestió fiscal ordenada i segura. Treballa sovint amb estructures internacionals i situacions transfrontereres.",
+        "Té formació en comptabilitat, administració i economia, amb estudis universitaris d'Administració d'Empreses a la Universitat Nacional de Rosario.",
+      ],
+      es: [
+        "Martín es socio director de ÀMBIT Associats, la asesoría que dirige junto con Mariona del Soto en Escaldes-Engordany. Se ocupa sobre todo del área fiscal y contable del despacho: impuesto sobre sociedades, IRPF, IGI, contabilidad y cierres anuales de sociedades y profesionales que operan en Andorra.",
+        "Lleva más de veinte años en el asesoramiento a empresas. Empezó su trayectoria en Argentina en 2005 y desde 2019 ejerce en Andorra, donde acompaña tanto a empresarios que se instalan en el Principado como a sociedades ya en marcha que buscan una gestión fiscal ordenada y segura. Trabaja a menudo con estructuras internacionales y situaciones transfronterizas.",
+        "Tiene formación en contabilidad, administración y economía, con estudios universitarios en Administración de Empresas en la Universidad Nacional de Rosario.",
+      ],
+      en: [
+        "Martín is Managing Partner of ÀMBIT Associats, the firm he runs with Mariona del Soto in Escaldes-Engordany. He mainly handles the firm's tax and accounting work: corporate income tax, personal income tax (IRPF), IGI, bookkeeping and year-end closing for companies and professionals operating in Andorra.",
+        "He has more than twenty years of experience advising businesses. He began his career in Argentina in 2005 and has practised in Andorra since 2019, where he supports both entrepreneurs settling in the Principality and established companies looking for orderly and reliable tax management. He often works with international structures and cross-border situations.",
+        "He has a background in accounting, business administration and economics, including university studies in Business Administration at the Universidad Nacional de Rosario.",
+      ],
+      fr: [
+        "Martín est associé directeur d'ÀMBIT Associats, le cabinet qu'il dirige avec Mariona del Soto à Escaldes-Engordany. Il se consacre principalement au pôle fiscal et comptable : impôt sur les sociétés, IRPF, IGI, comptabilité et clôtures annuelles de sociétés et de professionnels établis en Andorre.",
+        "Il conseille des entreprises depuis plus de vingt ans. Il a débuté sa carrière en Argentine en 2005 et exerce en Andorre depuis 2019, où il accompagne aussi bien des entrepreneurs qui s'installent dans la Principauté que des sociétés déjà en activité à la recherche d'une gestion fiscale rigoureuse et sûre. Il intervient souvent sur des structures internationales et des situations transfrontalières.",
+        "Il a une formation en comptabilité, administration et économie, avec des études universitaires en administration des entreprises à l'Université nationale de Rosario.",
+      ],
+    },
+    idiomes: { ca: "Català, castellà i anglès", es: "Catalán, castellano e inglés", en: "Catalan, Spanish and English", fr: "Catalan, espagnol et anglais" },
+    email: "mpaleari@ambit.ad",
+    telefon: "+376 655 382",
+  },
+];
+
 // Selector d'idiomes
 const languages = [
   { code: "ca", name: "Català" },
@@ -142,6 +183,7 @@ const translations = {
       pdfmd: "PDF a text",
       blog: "Blog",
       contacte: "Contacte",
+      equip: "L'equip",
       eines: "Eines",
       articles: "Articles",
       consulta: "Consulta gratuïta",
@@ -204,6 +246,7 @@ const translations = {
       pdfmd: "PDF a texto",
       blog: "Blog",
       contacte: "Contacto",
+      equip: "El equipo",
       eines: "Herramientas",
       articles: "Artículos",
       consulta: "Consulta gratuita",
@@ -266,6 +309,7 @@ const translations = {
       pdfmd: "PDF to text",
       blog: "Blog",
       contacte: "Contact",
+      equip: "Our team",
       eines: "Tools",
       articles: "Articles",
       consulta: "Free consultation",
@@ -328,6 +372,7 @@ const translations = {
       pdfmd: "PDF en texte",
       blog: "Blog",
       contacte: "Contact",
+      equip: "L'équipe",
       eines: "Outils",
       articles: "Articles",
       consulta: "Consultation gratuite",
@@ -991,6 +1036,7 @@ const App = () => {
   const [language, setLanguage] = useState("ca");
   const [currentService, setCurrentService] = useState(null);
   const [currentBlogPost, setCurrentBlogPost] = useState(null);
+  const [currentMembre, setCurrentMembre] = useState(null);
   const [showIrpf, setShowIrpf] = useState(false);
   const [showEinaFiscal, setShowEinaFiscal] = useState(false);
   const [showCalendari, setShowCalendari] = useState(false);
@@ -1013,6 +1059,8 @@ const App = () => {
       window.history.pushState({ vista: 'calendari' }, '');
     } else if (showPdfMd) {
       window.history.pushState({ vista: 'pdfmd' }, '');
+    } else if (currentMembre) {
+      window.history.pushState({ vista: 'membre', id: currentMembre }, '');
     } else if (currentBlogPost) {
       window.history.pushState({ vista: 'blog', slug: currentBlogPost.slug }, '');
     } else if (currentService) {
@@ -1020,17 +1068,18 @@ const App = () => {
     } else {
       window.history.pushState({ vista: 'home' }, '');
     }
-  }, [showEinaFiscal, showIrpf, showCalendari, showPdfMd, currentBlogPost, currentService]);
+  }, [showEinaFiscal, showIrpf, showCalendari, showPdfMd, currentBlogPost, currentService, currentMembre]);
 
-  // ── En obrir un article o un servei, començar per dalt ───────────────────
+  // ── En obrir un article, un servei o un perfil, començar per dalt ────────
   useEffect(() => {
-    if (currentBlogPost || currentService) window.scrollTo(0, 0);
-  }, [currentBlogPost, currentService]);
+    if (currentBlogPost || currentService || currentMembre) window.scrollTo(0, 0);
+  }, [currentBlogPost, currentService, currentMembre]);
 
   // ── Historial navegador: gestionar fletxa enrere ─────────────────────────
   useEffect(() => {
     const handlePopState = (e) => {
       const vista = e.state?.vista;
+      setCurrentMembre(vista === 'membre' ? e.state.id : null);
       if (vista === 'home' || !vista) {
         setShowEinaFiscal(false);
         setShowIrpf(false);
@@ -1102,6 +1151,7 @@ const App = () => {
   const tornaInici = () => {
     setCurrentService(null);
     setCurrentBlogPost(null);
+    setCurrentMembre(null);
     setMenuOpen(false);
     window.scrollTo(0, 0);
   };
@@ -1140,9 +1190,10 @@ const App = () => {
     setMenuOpen(false);
     setServicesDropdown(false);
     const desplaca = () => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    if (currentService || currentBlogPost) {
+    if (currentService || currentBlogPost || currentMembre) {
       setCurrentService(null);
       setCurrentBlogPost(null);
+      setCurrentMembre(null);
       setTimeout(desplaca, 50);
     } else {
       desplaca();
@@ -1174,7 +1225,7 @@ const App = () => {
     <div className="bg-white text-gray-800 min-h-screen flex flex-col font-text">
       {/* Franja de la vall: capçalera i, a la portada, el hero */}
       <div className="relative isolate overflow-hidden bg-[#007A7B] text-white">
-        <Topo etiquetes={!currentService && !currentBlogPost} />
+        <Topo etiquetes={!currentService && !currentBlogPost && !currentMembre} />
         <header className="max-w-6xl mx-auto px-5 md:px-10">
           {/* Línia d'utilitats: idiomes, accés del personal i Zona Professionals */}
           <div className="hidden lg:flex justify-end items-center gap-5 pt-3 text-[13px] text-[#BFE4E4]">
@@ -1236,6 +1287,7 @@ const App = () => {
               </div>
               <button onClick={() => anarA("eines")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.eines}</button>
               <button onClick={() => anarA("blog")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.articles}</button>
+              <button onClick={() => anarA("equip")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.equip}</button>
               <button onClick={() => anarA("contact")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.contacte}</button>
             </nav>
             <button
@@ -1271,6 +1323,7 @@ const App = () => {
               )}
               <button onClick={() => anarA("eines")} className="text-left py-2">{t.nav?.eines}</button>
               <button onClick={() => anarA("blog")} className="text-left py-2">{t.nav?.articles}</button>
+              <button onClick={() => anarA("equip")} className="text-left py-2">{t.nav?.equip}</button>
               <button onClick={() => anarA("contact")} className="text-left py-2">{t.nav?.contacte}</button>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-3 pt-4 mt-2 border-t border-white/25 text-sm">
                 {languages.map((lang) => (
@@ -1292,7 +1345,7 @@ const App = () => {
           )}
         </header>
 
-        {!currentService && !currentBlogPost && (
+        {!currentService && !currentBlogPost && !currentMembre && (
           <section>
             <div className="max-w-6xl mx-auto px-5 md:px-10 pt-9 pb-10 md:pt-20 md:pb-14 grid gap-6 md:grid-cols-[1fr_auto] md:items-end md:gap-10">
               <div className="grid gap-6">
@@ -1376,7 +1429,7 @@ const App = () => {
         <Serralada />
       </div>
 
-      {!currentService && !currentBlogPost ? (
+      {!currentService && !currentBlogPost && !currentMembre ? (
         <>
 
 {/* Serveis */}
@@ -1610,6 +1663,39 @@ const App = () => {
             </div>
           </section>
 
+          {/* L'equip */}
+          <section id="equip" className="bg-white">
+            <div className="max-w-6xl mx-auto px-5 md:px-10 py-14 md:py-20 grid gap-7 md:gap-9">
+              <h2 className="font-display font-medium text-[30px] md:text-[40px] leading-[1.12] tracking-[-0.015em] text-[#12302F]">{t.nav?.equip}</h2>
+              <div className="grid md:grid-cols-2 md:gap-x-12">
+                {EQUIP.map((membre) => (
+                  <button
+                    key={membre.id}
+                    onClick={() => setCurrentMembre(membre.id)}
+                    className="group text-left flex items-center gap-5 py-5 border-t border-[#D6E4E2]"
+                  >
+                    <img
+                      src={membre.foto}
+                      alt={membre.nom}
+                      width="720"
+                      height="946"
+                      loading="lazy"
+                      className="w-[88px] md:w-[104px] h-auto rounded-xl shrink-0"
+                    />
+                    <span className="grid gap-1 min-w-0">
+                      <span className="font-display font-medium text-[21px] text-[#12302F] group-hover:text-[#007A7B] transition-colors">{membre.nom}</span>
+                      <span className="text-sm font-semibold text-[#007A7B]">{membre.carrec[language]}</span>
+                      <span className="text-[15px] leading-relaxed text-[#4E6765]">{membre.resum[language]}</span>
+                      <span className="text-sm font-semibold text-[#007A7B] underline underline-offset-4 decoration-[#007A7B]/40 group-hover:decoration-[#007A7B]">
+                        {{ ca: "Veure el perfil", es: "Ver el perfil", en: "View profile", fr: "Voir le profil" }[language]}
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
+
           {/* Contacte */}
           <section id="contact" className="relative isolate overflow-hidden bg-[#007A7B] text-white">
             <Topo />
@@ -1676,6 +1762,91 @@ const App = () => {
             <Serralada fons="#F4F8F7" id="serralada-contacte" />
           </section>
         </>
+      ) : currentMembre ? (
+        /* Pàgina de perfil d'un membre de l'equip */
+        (() => {
+          const membre = EQUIP.find((m) => m.id === currentMembre) || EQUIP[0];
+          return (
+            <section className="flex-1 bg-white">
+              <div className="max-w-6xl mx-auto px-5 md:px-10 py-10 md:py-16">
+                <button
+                  onClick={() => anarA("equip")}
+                  className="text-[15px] font-semibold text-[#007A7B] hover:underline underline-offset-4"
+                >
+                  ← {{ ca: "Torna a l'equip", es: "Volver al equipo", en: "Back to the team", fr: "Retour à l'équipe" }[language]}
+                </button>
+                <div className="mt-8 md:mt-10 grid gap-8 md:grid-cols-[minmax(220px,300px)_1fr] md:gap-14 md:items-start">
+                  <img
+                    src={membre.foto}
+                    alt={membre.nom}
+                    width="720"
+                    height="946"
+                    className="w-full max-w-[300px] h-auto rounded-2xl"
+                  />
+                  <div className="grid gap-5 max-w-[62ch]">
+                    <div className="grid gap-1">
+                      <h1 className="font-display font-medium text-[32px] md:text-[44px] leading-[1.1] tracking-[-0.015em] text-[#12302F]">{membre.nom}</h1>
+                      <p className="text-[15px] font-semibold text-[#007A7B]">{membre.carrec[language]}</p>
+                    </div>
+                    <div className="grid gap-4 text-[17px] leading-relaxed text-[#2B4644]">
+                      {membre.bio[language].map((text, i) => <p key={i}>{text}</p>)}
+                    </div>
+                    <dl className="grid gap-3 sm:grid-cols-3 pt-5 border-t border-[#D6E4E2] text-[15px]">
+                      <div>
+                        <dt className="text-[13px] text-[#4E6765]">{{ ca: "Idiomes", es: "Idiomas", en: "Languages", fr: "Langues" }[language]}</dt>
+                        <dd className="text-[#12302F]">{membre.idiomes[language]}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-[13px] text-[#4E6765]">{t.form.email}</dt>
+                        <dd><a href={`mailto:${membre.email}`} className="text-[#007A7B] hover:underline underline-offset-4">{membre.email}</a></dd>
+                      </div>
+                      <div>
+                        <dt className="text-[13px] text-[#4E6765]">{t.form.phone}</dt>
+                        <dd><a href={`tel:${membre.telefon.replace(/\s/g, "")}`} className="text-[#007A7B] hover:underline underline-offset-4">{membre.telefon}</a></dd>
+                      </div>
+                    </dl>
+                  </div>
+                </div>
+
+                {/* Crida a l'acció */}
+                <div className="relative isolate overflow-hidden mt-14 rounded-2xl bg-[#007A7B] text-white">
+                  <Topo />
+                  <div className="px-6 py-8 md:px-10 md:py-10 grid gap-5 md:grid-cols-[1fr_auto] md:items-center md:gap-10">
+                    <div className="grid gap-2">
+                      <h2 className="font-display font-medium text-[24px] md:text-[28px] leading-tight">
+                        {{
+                          ca: "Parlem del teu cas",
+                          es: "Hablemos de tu caso",
+                          en: "Let's talk about your case",
+                          fr: "Parlons de votre situation",
+                        }[language]}
+                      </h2>
+                      <p className="text-[15px] leading-relaxed text-[#D2ECEC] max-w-[52ch]">
+                        {{
+                          ca: "La primera consulta és gratuïta. Explica'ns què necessites i et respondrem aviat.",
+                          es: "La primera consulta es gratuita. Cuéntanos qué necesitas y te responderemos pronto.",
+                          en: "The first consultation is free. Tell us what you need and we'll get back to you soon.",
+                          fr: "La première consultation est gratuite. Dites-nous ce dont vous avez besoin et nous vous répondrons rapidement.",
+                        }[language]}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => anarA("contact")}
+                      className="justify-self-start bg-white text-[#00676A] font-semibold text-base px-6 py-3.5 rounded-full hover:bg-[#E8F6F6] transition whitespace-nowrap"
+                    >
+                      {{
+                        ca: "Demana una consulta gratuïta",
+                        es: "Solicita una consulta gratuita",
+                        en: "Request a free consultation",
+                        fr: "Demandez une consultation gratuite",
+                      }[language]}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          );
+        })()
       ) : currentBlogPost ? (
         /* Vista detallada d'un article del blog */
         <section className="flex-1 bg-white">
