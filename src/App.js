@@ -1285,9 +1285,9 @@ const App = () => {
                   </div>
                 )}
               </div>
-              <button onClick={() => anarA("equip")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.equip}</button>
               <button onClick={() => anarA("eines")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.eines}</button>
               <button onClick={() => anarA("blog")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.articles}</button>
+              <button onClick={() => anarA("equip")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.equip}</button>
               <button onClick={() => anarA("contact")} className="py-1 border-b border-transparent hover:border-white/70">{t.nav?.contacte}</button>
             </nav>
             <button
@@ -1321,9 +1321,9 @@ const App = () => {
                   ))}
                 </div>
               )}
-              <button onClick={() => anarA("equip")} className="text-left py-2">{t.nav?.equip}</button>
               <button onClick={() => anarA("eines")} className="text-left py-2">{t.nav?.eines}</button>
               <button onClick={() => anarA("blog")} className="text-left py-2">{t.nav?.articles}</button>
+              <button onClick={() => anarA("equip")} className="text-left py-2">{t.nav?.equip}</button>
               <button onClick={() => anarA("contact")} className="text-left py-2">{t.nav?.contacte}</button>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-3 pt-4 mt-2 border-t border-white/25 text-sm">
                 {languages.map((lang) => (
@@ -1456,39 +1456,6 @@ const App = () => {
                     <span className="font-display font-medium text-[21px] text-[#12302F] group-hover:text-[#007A7B] transition-colors">{service.title}</span>
                     <span className="text-[15px] leading-relaxed text-[#4E6765]">
                       {(details[service.id]?.items || []).slice(0, 3).join(" ")}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* L'equip */}
-          <section id="equip" className="bg-white border-t border-[#D6E4E2]">
-            <div className="max-w-6xl mx-auto px-5 md:px-10 py-14 md:py-20 grid gap-7 md:gap-9">
-              <h2 className="font-display font-medium text-[30px] md:text-[40px] leading-[1.12] tracking-[-0.015em] text-[#12302F]">{t.nav?.equip}</h2>
-              <div className="grid md:grid-cols-2 md:gap-x-12">
-                {EQUIP.map((membre) => (
-                  <button
-                    key={membre.id}
-                    onClick={() => setCurrentMembre(membre.id)}
-                    className="group text-left flex items-center gap-5 py-5 border-t border-[#D6E4E2]"
-                  >
-                    <img
-                      src={membre.foto}
-                      alt={membre.nom}
-                      width="720"
-                      height="946"
-                      loading="lazy"
-                      className="w-[88px] md:w-[104px] h-auto rounded-xl shrink-0"
-                    />
-                    <span className="grid gap-1 min-w-0">
-                      <span className="font-display font-medium text-[21px] text-[#12302F] group-hover:text-[#007A7B] transition-colors">{membre.nom}</span>
-                      <span className="text-sm font-semibold text-[#007A7B]">{membre.carrec[language]}</span>
-                      <span className="text-[15px] leading-relaxed text-[#4E6765]">{membre.resum[language]}</span>
-                      <span className="text-sm font-semibold text-[#007A7B] underline underline-offset-4 decoration-[#007A7B]/40 group-hover:decoration-[#007A7B]">
-                        {{ ca: "Veure el perfil", es: "Ver el perfil", en: "View profile", fr: "Voir le profil" }[language]}
-                      </span>
                     </span>
                   </button>
                 ))}
@@ -1692,6 +1659,39 @@ const App = () => {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            </div>
+          </section>
+
+          {/* L'equip */}
+          <section id="equip" className="bg-white">
+            <div className="max-w-6xl mx-auto px-5 md:px-10 py-14 md:py-20 grid gap-7 md:gap-9">
+              <h2 className="font-display font-medium text-[30px] md:text-[40px] leading-[1.12] tracking-[-0.015em] text-[#12302F]">{t.nav?.equip}</h2>
+              <div className="grid md:grid-cols-2 md:gap-x-12">
+                {EQUIP.map((membre) => (
+                  <button
+                    key={membre.id}
+                    onClick={() => setCurrentMembre(membre.id)}
+                    className="group text-left flex items-center gap-5 py-5 border-t border-[#D6E4E2]"
+                  >
+                    <img
+                      src={membre.foto}
+                      alt={membre.nom}
+                      width="720"
+                      height="946"
+                      loading="lazy"
+                      className="w-[88px] md:w-[104px] h-auto rounded-xl shrink-0"
+                    />
+                    <span className="grid gap-1 min-w-0">
+                      <span className="font-display font-medium text-[21px] text-[#12302F] group-hover:text-[#007A7B] transition-colors">{membre.nom}</span>
+                      <span className="text-sm font-semibold text-[#007A7B]">{membre.carrec[language]}</span>
+                      <span className="text-[15px] leading-relaxed text-[#4E6765]">{membre.resum[language]}</span>
+                      <span className="text-sm font-semibold text-[#007A7B] underline underline-offset-4 decoration-[#007A7B]/40 group-hover:decoration-[#007A7B]">
+                        {{ ca: "Veure el perfil", es: "Ver el perfil", en: "View profile", fr: "Voir le profil" }[language]}
+                      </span>
+                    </span>
+                  </button>
+                ))}
               </div>
             </div>
           </section>
