@@ -112,9 +112,9 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient =
   }, [dades, exercici]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F4F8F7]">
       {/* Capcalera */}
-      <header className="bg-gradient-to-r from-[#007A7B] to-[#009B9C] text-white py-4 px-4 no-print">
+      <header className="bg-[#007A7B] text-white py-4 px-4 no-print">
         <div className="container mx-auto max-w-7xl flex items-center justify-between">
           <div>
             <button
@@ -131,7 +131,7 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient =
             >
               ← Tornar a la web
             </button>
-            <h1 className="text-xl font-bold">Eina Fiscal IRPF Andorra {exercici}</h1>
+            <h1 className="font-display font-medium text-[20px]">Eina Fiscal IRPF Andorra {exercici}</h1>
             <p className="text-white/80 text-xs">
               Llei 5/2014 · L2023005 · L2025005 · Reglament 29/12/2023
             </p>
@@ -165,14 +165,14 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient =
             >
               {exercicisClient.length > 0
                 ? exercicisClient.map(ex => (
-                    <option key={ex.id} value={ex.id} className="text-gray-800">{ex.exercici}</option>
+                    <option key={ex.id} value={ex.id} className="text-[#12302F]">{ex.exercici}</option>
                   ))
-                : <option value={declaracioId || ''} className="text-gray-800">{exercici}</option>}
+                : <option value={declaracioId || ''} className="text-[#12302F]">{exercici}</option>}
             </select>
             {onDesar && (
               <button
                 onClick={() => onDesar(dades, clientNom, clientNRT, exercici)}
-                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-lg px-3 py-2 text-sm transition flex items-center gap-1"
+                className="border border-white/40 hover:bg-white/10 text-white rounded-full px-3 py-2 text-sm transition flex items-center gap-1"
               >
                 💾 Desar
               </button>
@@ -185,7 +185,7 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient =
             {onAdminPanel && (
               <button
                 onClick={onAdminPanel}
-                className="relative bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-lg px-3 py-2 text-sm transition"
+                className="relative border border-white/40 hover:bg-white/10 text-white rounded-full px-3 py-2 text-sm transition"
               >
                 ⚙️ Administració
                 {pendents > 0 && (
@@ -198,7 +198,7 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient =
             {onLogout && (
               <button
                 onClick={onLogout}
-                className="bg-white/10 hover:bg-white/20 text-white/80 hover:text-white border border-white/20 rounded-lg px-3 py-2 text-sm transition"
+                className="border border-white/40 hover:bg-white/10 text-white rounded-full px-3 py-2 text-sm transition"
               >
                 Tancar sessió
               </button>
@@ -281,11 +281,11 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient =
           <button
             onClick={() => setPas(p => Math.max(1, p - 1))}
             disabled={pas === 1}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition"
+            className="px-6 py-2 border border-[#C5D6D3] rounded-lg text-[#4E6765] hover:bg-[#EAF2F0] disabled:opacity-40 transition"
           >
             Anterior
           </button>
-          <span className="text-sm text-gray-500 self-center">
+          <span className="text-sm text-[#4E6765] self-center">
             Pas {pas} de {STEPS.length} — {STEPS[pas - 1]?.formulari}
           </span>
           <button
@@ -295,7 +295,7 @@ const EinaFiscal = ({ onBack, declaracioId, declaracioInicial, exercicisClient =
               setPas(p => Math.min(STEPS.length, p + 1));
             }}
             disabled={pas === STEPS.length}
-            className="px-6 py-2 bg-[#009B9C] text-white rounded-lg font-semibold hover:bg-[#007A7B] disabled:opacity-40 transition"
+            className="px-6 py-2 bg-[#007A7B] text-white rounded-lg font-semibold hover:bg-[#00676A] disabled:opacity-40 transition"
           >
             Seguent
           </button>

@@ -43,7 +43,7 @@ const Exercici = ({ fila, onDesat }) => {
   };
   return (
     <Targeta titol={`Exercici ${fila.exercici}`}
-      accions={<span className="text-[11px] text-gray-400">Darrer canvi {dataHora(fila.updated_at)}</span>}>
+      accions={<span className="text-[11px] text-[#6B8280]">Darrer canvi {dataHora(fila.updated_at)}</span>}>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
         {CAMPS.map(([k, nom]) => (
           <Entrada key={k} etiqueta={nom} inputMode="decimal" value={v[k]} onChange={(e) => setV({ ...v, [k]: e.target.value })} />
@@ -84,7 +84,7 @@ const ParametresIrpf = () => {
   return (
     <div className="space-y-6">
       <Targeta titol="Paràmetres del càlcul de la retenció de l'IRPF">
-        <p className="text-xs text-gray-500 mb-3">
+        <p className="text-xs text-[#4E6765] mb-3">
           Rendes del treball no cotitzades (art. 24.1 del Reglament). Els paràmetres de cada exercici es fan servir per calcular el
           percentatge de les comunicacions amb data d'efectes d'aquell any. Cada càlcul en desa una còpia: editar-los no canvia els
           càlculs ja fets. Reviseu sobretot el salari mínim interprofessional de cada any.

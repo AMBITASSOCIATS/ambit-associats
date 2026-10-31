@@ -233,8 +233,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
 
   if (!resultat) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center">
-        <p className="text-gray-500">Introdueix dades als passos anteriors per generar la liquidació.</p>
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6 text-center">
+        <p className="text-[#4E6765]">Introdueix dades als passos anteriors per generar la liquidació.</p>
       </div>
     );
   }
@@ -345,17 +345,17 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
       {/* ── VISTA PANTALLA (no s'imprimeix) ────────────────────────────────── */}
       <div className="no-print">
         {/* Capçalera del pas */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-4">
+        <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6 mb-4">
           <div className="flex items-center gap-2 mb-4">
-            <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">10</span>
+            <span className="w-8 h-8 rounded-full bg-[#007A7B] text-white text-sm font-bold flex items-center justify-center">10</span>
             <div>
-              <h2 className="font-bold text-gray-800">Liquidació i informe — Formulari 300-L</h2>
-              <p className="text-xs text-gray-500">Resum complet de la liquidació IRPF {exercici}</p>
+              <h2 className="font-bold text-[#12302F]">Liquidació i informe — Formulari 300-L</h2>
+              <p className="text-xs text-[#4E6765]">Resum complet de la liquidació IRPF {exercici}</p>
             </div>
           </div>
 
           {(clientNom || clientNRT) && (
-            <div className="bg-gray-50 rounded-xl px-4 py-2 text-sm text-gray-600 mb-4">
+            <div className="bg-[#F4F8F7] rounded-xl px-4 py-2 text-sm text-[#4E6765] mb-4">
               {clientNom && <span><strong>Client:</strong> {clientNom}</span>}
               {clientNRT && <span className="ml-4"><strong>NRT:</strong> {clientNRT}</span>}
               <span className="ml-4"><strong>Exercici:</strong> {exercici}</span>
@@ -363,58 +363,58 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
           )}
 
           {/* Configuració de l'informe */}
-          <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 mb-4">
-            <p className="text-xs font-semibold text-gray-600 mb-3">⚙️ Configuració de l'informe — Blocs a mostrar</p>
+          <div className="bg-[#F4F8F7] rounded-xl border border-[#D6E4E2] p-4 mb-4">
+            <p className="text-xs font-semibold text-[#4E6765] mb-3">⚙️ Configuració de l'informe — Blocs a mostrar</p>
             <div className="flex flex-wrap gap-3">
               {tensTreball && (
-                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
-                  <input type="checkbox" checked={!blocsExclosos.treball} onChange={() => toggleBloc('treball')} className="accent-[#009B9C]" />
+                <label className="flex items-center gap-2 text-xs text-[#4E6765] cursor-pointer">
+                  <input type="checkbox" checked={!blocsExclosos.treball} onChange={() => toggleBloc('treball')} className="accent-[#007A7B]" />
                   Rendes del treball
                 </label>
               )}
               {tensActivitats && (
-                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
-                  <input type="checkbox" checked={!blocsExclosos.activitats} onChange={() => toggleBloc('activitats')} className="accent-[#009B9C]" />
+                <label className="flex items-center gap-2 text-xs text-[#4E6765] cursor-pointer">
+                  <input type="checkbox" checked={!blocsExclosos.activitats} onChange={() => toggleBloc('activitats')} className="accent-[#007A7B]" />
                   Activitats econòmiques
                 </label>
               )}
               {tensImmobles && (
-                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
-                  <input type="checkbox" checked={!blocsExclosos.immobiliari} onChange={() => toggleBloc('immobiliari')} className="accent-[#009B9C]" />
+                <label className="flex items-center gap-2 text-xs text-[#4E6765] cursor-pointer">
+                  <input type="checkbox" checked={!blocsExclosos.immobiliari} onChange={() => toggleBloc('immobiliari')} className="accent-[#007A7B]" />
                   Capital immobiliari
                 </label>
               )}
               {tensMobiliaris && (
-                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
-                  <input type="checkbox" checked={!blocsExclosos.mobiliari} onChange={() => toggleBloc('mobiliari')} className="accent-[#009B9C]" />
+                <label className="flex items-center gap-2 text-xs text-[#4E6765] cursor-pointer">
+                  <input type="checkbox" checked={!blocsExclosos.mobiliari} onChange={() => toggleBloc('mobiliari')} className="accent-[#007A7B]" />
                   Capital mobiliari
                 </label>
               )}
               {tensTransmissions && (
-                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
-                  <input type="checkbox" checked={!blocsExclosos.transmissions} onChange={() => toggleBloc('transmissions')} className="accent-[#009B9C]" />
+                <label className="flex items-center gap-2 text-xs text-[#4E6765] cursor-pointer">
+                  <input type="checkbox" checked={!blocsExclosos.transmissions} onChange={() => toggleBloc('transmissions')} className="accent-[#007A7B]" />
                   Guanys i pèrdues de capital
                 </label>
               )}
               {tensDDI && (
-                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
-                  <input type="checkbox" checked={!blocsExclosos.ddi} onChange={() => toggleBloc('ddi')} className="accent-[#009B9C]" />
+                <label className="flex items-center gap-2 text-xs text-[#4E6765] cursor-pointer">
+                  <input type="checkbox" checked={!blocsExclosos.ddi} onChange={() => toggleBloc('ddi')} className="accent-[#007A7B]" />
                   Deducció doble imposició (DDI)
                 </label>
               )}
             </div>
-            <p className="text-xs text-gray-400 mt-2">Els blocs desmarcats no apareixeran al PDF però el càlcul 300-L no canvia.</p>
+            <p className="text-xs text-[#6B8280] mt-2">Els blocs desmarcats no apareixeran al PDF però el càlcul 300-L no canvia.</p>
           </div>
 
           {/* Resum 300-L en pantalla */}
           <div className="space-y-1">
             {caselles.map((c, i) => (
-              <div key={i} className={`flex items-center justify-between py-2 px-3 rounded-lg ${c.destacat ? 'bg-[#009B9C]/10 font-semibold' : 'hover:bg-gray-50'}`}>
+              <div key={i} className={`flex items-center justify-between py-2 px-3 rounded-lg ${c.destacat ? 'bg-[#007A7B]/10 font-semibold' : 'hover:bg-[#F4F8F7]'}`}>
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-xs text-gray-500 w-16 text-right flex-shrink-0">{c.casella}</span>
-                  <span className={`text-sm ${c.destacat ? 'text-gray-800' : 'text-gray-600'}`}>{t(c.descripcioKey, 'CA')}</span>
+                  <span className="font-mono text-xs text-[#4E6765] w-16 text-right flex-shrink-0">{c.casella}</span>
+                  <span className={`text-sm ${c.destacat ? 'text-[#12302F]' : 'text-[#4E6765]'}`}>{t(c.descripcioKey, 'CA')}</span>
                 </div>
-                <span className={`font-mono text-sm font-semibold flex-shrink-0 ml-4 ${c.destacat ? 'text-[#009B9C]' : typeof c.valor === 'number' && c.valor < 0 ? 'text-red-500' : 'text-gray-800'}`}>
+                <span className={`font-mono text-sm font-semibold flex-shrink-0 ml-4 ${c.destacat ? 'text-[#007A7B]' : typeof c.valor === 'number' && c.valor < 0 ? 'text-red-500' : 'text-[#12302F]'}`}>
                   {fmt(c.valor)}
                 </span>
               </div>
@@ -423,23 +423,23 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         </div>
 
         {/* Resultat final */}
-        <div className={`rounded-2xl p-6 text-center ${r.resultatDeclaracio > 0 ? 'bg-red-50 border-2 border-red-300' : r.resultatDeclaracio < 0 ? 'bg-green-50 border-2 border-green-300' : 'bg-gray-50 border-2 border-gray-200'}`}>
-          <p className="text-sm font-semibold text-gray-600 mb-2">RESULTAT DE LA DECLARACIÓ</p>
-          <p className={`text-3xl font-bold mb-2 ${r.resultatDeclaracio > 0 ? 'text-red-600' : r.resultatDeclaracio < 0 ? 'text-green-600' : 'text-gray-700'}`}>
+        <div className={`rounded-2xl p-6 text-center ${r.resultatDeclaracio > 0 ? 'bg-red-50 border-2 border-red-300' : r.resultatDeclaracio < 0 ? 'bg-green-50 border-2 border-green-300' : 'bg-[#F4F8F7] border-2 border-[#D6E4E2]'}`}>
+          <p className="text-sm font-semibold text-[#4E6765] mb-2">RESULTAT DE LA DECLARACIÓ</p>
+          <p className={`text-3xl font-bold mb-2 ${r.resultatDeclaracio > 0 ? 'text-red-600' : r.resultatDeclaracio < 0 ? 'text-green-600' : 'text-[#2B4644]'}`}>
             {fmt(Math.abs(r.resultatDeclaracio))}
           </p>
-          <p className={`text-lg font-semibold ${r.resultatDeclaracio > 0 ? 'text-red-700' : r.resultatDeclaracio < 0 ? 'text-green-700' : 'text-gray-600'}`}>
+          <p className={`text-lg font-semibold ${r.resultatDeclaracio > 0 ? 'text-red-700' : r.resultatDeclaracio < 0 ? 'text-green-700' : 'text-[#4E6765]'}`}>
             {r.resultatDeclaracio > 0 ? 'A INGRESSAR' : r.resultatDeclaracio < 0 ? 'A RETORNAR' : 'RESULTAT ZERO'}
           </p>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-[#4E6765] mt-2">
             Tipus efectiu: <strong>{fmtPct(r.tipusEfectiu)}</strong> · Quota final: <strong>{fmt(r.quotaFinal)}</strong>
             {(r.pagamentACompte || 0) > 0 && <> · Pag. fraccionat (320): <strong>{fmt(r.pagamentACompte)}</strong></>}
           </p>
         </div>
 
         {/* Selector d'idioma de l'informe */}
-        <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 mb-4">
-          <p className="text-xs font-semibold text-gray-600 mb-3">🌐 Idioma de l'informe</p>
+        <div className="bg-[#F4F8F7] rounded-xl border border-[#D6E4E2] p-4 mb-4">
+          <p className="text-xs font-semibold text-[#4E6765] mb-3">🌐 Idioma de l'informe</p>
           <div className="flex gap-2 flex-wrap">
             {Object.entries(PDF_LANGS).map(([codi, nom]) => (
               <button
@@ -447,8 +447,8 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
                 onClick={() => setIdiomaInforme(codi)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
                   idiomaInforme === codi
-                    ? 'bg-[#009B9C] text-white'
-                    : 'bg-white border border-gray-300 text-gray-600 hover:border-[#009B9C]'
+                    ? 'bg-[#007A7B] text-white'
+                    : 'bg-white border border-[#C5D6D3] text-[#4E6765] hover:border-[#007A7B]'
                 }`}
               >
                 {codi === 'CA' ? '🇦🇩' : codi === 'ES' ? '🇪🇸' : codi === 'FR' ? '🇫🇷' : '🇬🇧'} {nom}
@@ -460,7 +460,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
         {/* Botó generar informe */}
         <button
           onClick={handlePrint}
-          className="w-full bg-[#009B9C] hover:bg-[#007A7B] text-white font-semibold py-4 px-6 rounded-xl transition flex items-center justify-center gap-3 text-base shadow-lg"
+          className="w-full bg-[#007A7B] hover:bg-[#00676A] text-white font-semibold py-4 px-6 rounded-xl transition flex items-center justify-center gap-3 text-base shadow-lg"
         >
           <span className="text-xl">🖨️</span>
           <div className="text-left">
@@ -468,7 +468,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             <div className="text-xs font-normal opacity-80">PDF complet amb portada, detall de rendes i liquidació 300-L</div>
           </div>
         </button>
-        <p className="text-xs text-gray-400 text-center mt-2">
+        <p className="text-xs text-[#6B8280] text-center mt-2">
           Al diàleg d'impressió, seleccioneu "Desar com a PDF". Recomanem orientació vertical, mida A4.
         </p>
         {estat === 'finalitzada' ? (
@@ -480,7 +480,7 @@ const Step9Liquidacio = ({ dades, resultat, clientNom, clientNRT, exercici, onFi
             {onReobrir && (
               <button
                 onClick={onReobrir}
-                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-xl transition flex items-center justify-center gap-3 text-sm"
+                className="w-full bg-[#EAF2F0] hover:bg-[#DCE9E6] text-[#2B4644] font-semibold py-3 px-6 rounded-xl transition flex items-center justify-center gap-3 text-sm"
               >
                 <span>✏️</span>
                 <div className="text-left">

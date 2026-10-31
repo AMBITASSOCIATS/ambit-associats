@@ -41,7 +41,7 @@ const calcularRendaNetaImmoble = (immoble, exercici) => {
 
 const InputNum = ({ label, value, onChange, min = 0, hint = '' }) => (
   <div>
-    <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+    <label className="block text-xs font-medium text-[#4E6765] mb-1">{label}</label>
     <input
       type="number" onWheel={e => e.target.blur()}
       min={min}
@@ -49,9 +49,9 @@ const InputNum = ({ label, value, onChange, min = 0, hint = '' }) => (
       value={value === 0 ? '' : value}
       placeholder="0"
       onChange={e => { const v = e.target.value; onChange(v === '' ? 0 : parseFloat(v) || 0); }}
-      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
     />
-    {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
+    {hint && <p className="text-xs text-[#6B8280] mt-1">{hint}</p>}
   </div>
 );
 
@@ -77,13 +77,13 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar, exercici }) => {
     >
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Descripcio de l'immoble</label>
+          <label className="block text-xs font-medium text-[#4E6765] mb-1">Descripcio de l'immoble</label>
           <input
             type="text"
             value={immoble.descripcio}
             onChange={e => update('descripcio', e.target.value)}
             placeholder="Ex: Pis carrer Major 5, Escaldes"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+            className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
           />
         </div>
 
@@ -94,11 +94,11 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar, exercici }) => {
         />
 
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Metode de despeses</label>
+          <label className="block text-xs font-medium text-[#4E6765] mb-1">Metode de despeses</label>
           <select
             value={immoble.tipusDeterminacio}
             onChange={e => update('tipusDeterminacio', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+            className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
           >
             <option value="directa">Despeses reals (directa)</option>
             <option value="forfetaria">Forfetari (40% / 50%)</option>
@@ -110,9 +110,9 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar, exercici }) => {
             type="checkbox"
             checked={immoble.esHabitatgeAssequible}
             onChange={e => update('esHabitatgeAssequible', e.target.checked)}
-            className="w-4 h-4 accent-[#009B9C]"
+            className="w-4 h-4 accent-[#007A7B]"
           />
-          <span className="text-xs text-gray-600">
+          <span className="text-xs text-[#4E6765]">
             Habitatge llogat com a residència habitual i permanent (renda &lt; {llindarEurosM2(exercici)} €/m² i ≤ 1.250 €/mes) → increment de {Math.round(incrementForfetari(exercici) * 100)}% al percentatge forfetari — Art. 21.2 Llei 5/2014
           </span>
         </div>
@@ -147,21 +147,21 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar, exercici }) => {
         )}
 
         {immoble.tipusDeterminacio === 'directa' && (
-          <div className="col-span-2 mt-1 border-t border-gray-100 pt-3">
+          <div className="col-span-2 mt-1 border-t border-[#E4EEEC] pt-3">
             <label className="flex items-center gap-2 cursor-pointer mb-2">
               <input
                 type="checkbox"
                 checked={immoble.aplicarReduccioHabitatge}
                 onChange={e => update('aplicarReduccioHabitatge', e.target.checked)}
-                className="w-4 h-4 accent-[#009B9C]"
+                className="w-4 h-4 accent-[#007A7B]"
               />
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-[#2B4644]">
                 Aplicar reduccio per arrendament d'habitatge
               </span>
             </label>
             {immoble.aplicarReduccioHabitatge && (
               <div className="ml-6">
-                <p className="text-xs text-gray-500 mb-2">
+                <p className="text-xs text-[#4E6765] mb-2">
                   Reducció del 10% dels ingressos íntegres procedents de l'arrendament d'habitatge destinat a residència habitual i permanent del llogater, situat a Andorra. Només s'aplica als habitatges amb una renda inferior a {llindarEurosM2(exercici)} €/m² i un import total no superior a 1.250 €/mes; s'exclou de la base del 10% la repercussió de despeses de subministraments. La base no pot quedar negativa. Introduïu l'import de la reducció (10% dels ingressos que compleixin els requisits), tal com figura al 300-B. Font: Guia IRPF 2025, ap. 7.4 · L2025005.
                 </p>
                 <InputNum
@@ -194,7 +194,7 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar, exercici }) => {
       )}
 
       {immoble.ingressosIntegres > 0 && immoble.tipusDeterminacio === 'directa' && (
-        <div className="mt-3 bg-blue-50 rounded-lg p-3 text-xs text-blue-700">
+        <div className="mt-3 bg-[#EEF6F6] rounded-lg p-3 text-xs text-[#00676A]">
           <strong>Comparativa metodes:</strong>
           <div className="grid grid-cols-2 gap-2 mt-1">
             <span>Renda neta directa: <strong>{rendaDirecta.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong></span>
@@ -207,13 +207,13 @@ const ImmobleForm = ({ immoble, index, onUpdate, onEliminar, exercici }) => {
         </div>
       )}
 
-      <div className="mt-3 bg-gray-50 rounded-lg p-3 text-xs">
-        <span className="font-medium text-gray-600">Renda neta: </span>
-        <span className={`font-bold ${rendaNeta >= 0 ? 'text-gray-800' : 'text-red-600'}`}>
+      <div className="mt-3 bg-[#F4F8F7] rounded-lg p-3 text-xs">
+        <span className="font-medium text-[#4E6765]">Renda neta: </span>
+        <span className={`font-bold ${rendaNeta >= 0 ? 'text-[#12302F]' : 'text-red-600'}`}>
           {rendaNeta.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros
         </span>
         {pct !== null && (
-          <span className="text-gray-400 ml-2">(despeses forfetaries: {(pct * 100).toFixed(0)}% = {despeses.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros)</span>
+          <span className="text-[#6B8280] ml-2">(despeses forfetaries: {(pct * 100).toFixed(0)}% = {despeses.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros)</span>
         )}
       </div>
     </RentaBlock>
@@ -240,34 +240,34 @@ const Step4Immobiliari = ({ dades, update, exercici }) => {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">4</span>
+            <span className="w-8 h-8 rounded-full bg-[#007A7B] text-white text-sm font-bold flex items-center justify-center">4</span>
             <div>
-              <h2 className="font-bold text-gray-800">Capital immobiliari</h2>
-              <p className="text-xs text-gray-500">Formulari 300-B sec.2 · Art. 20-22 Llei 5/2014</p>
+              <h2 className="font-bold text-[#12302F]">Capital immobiliari</h2>
+              <p className="text-xs text-[#4E6765]">Formulari 300-B sec.2 · Art. 20-22 Llei 5/2014</p>
             </div>
           </div>
           <button
             onClick={addImmoble}
-            className="text-sm bg-[#009B9C] text-white px-4 py-2 rounded-xl hover:bg-[#007A7B] transition font-medium"
+            className="text-sm bg-[#007A7B] text-white px-4 py-2 rounded-xl hover:bg-[#00676A] transition font-medium"
           >
             + Afegir immoble
           </button>
         </div>
 
         {dades.immobles.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-[#6B8280]">
             <p className="text-sm">Cap immoble afegit.</p>
             <p className="text-xs mt-1">Afegiu els immobles arrendats per l'obligat tributari.</p>
           </div>
         )}
 
         {dades.immobles.length === 1 && (
-          <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-3 text-sm">
-            <span className="font-semibold text-[#009B9C]">Total renda neta immobiliaria: </span>
-            <span className={`font-bold ${totalRenda >= 0 ? 'text-gray-800' : 'text-red-600'}`}>
+          <div className="bg-[#007A7B]/5 border border-[#007A7B]/20 rounded-xl p-3 text-sm">
+            <span className="font-semibold text-[#007A7B]">Total renda neta immobiliaria: </span>
+            <span className={`font-bold ${totalRenda >= 0 ? 'text-[#12302F]' : 'text-red-600'}`}>
               {totalRenda.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros
             </span>
           </div>
@@ -312,54 +312,54 @@ const Step4Immobiliari = ({ dades, update, exercici }) => {
             ['Altres despeses fiscalment deduïbles', c.altresDespeses],
           ];
           return (
-            <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-3 text-sm">
-              <p className="font-semibold text-[#009B9C] mb-2">Resum capital immobiliari — tots els immobles</p>
+            <div className="bg-[#007A7B]/5 border border-[#007A7B]/20 rounded-xl p-3 text-sm">
+              <p className="font-semibold text-[#007A7B] mb-2">Resum capital immobiliari — tots els immobles</p>
               <div className="space-y-1 text-xs">
-                <div className="flex justify-between text-gray-700">
+                <div className="flex justify-between text-[#2B4644]">
                   <span>Total ingressos íntegres</span>
                   <span className="font-mono">{f(totalIngressos)} €</span>
                 </div>
                 {conceptes.map(([label, val]) => val > 0 && (
-                  <div key={label} className="flex justify-between text-gray-500">
+                  <div key={label} className="flex justify-between text-[#4E6765]">
                     <span>  − {label}</span>
                     <span className="font-mono text-red-600">−{f(val)} €</span>
                   </div>
                 ))}
                 {teForfet && totalDespesesForfet > 0 && (
-                  <div className="flex justify-between text-gray-500">
+                  <div className="flex justify-between text-[#4E6765]">
                     <span>  − Despeses (mètode forfetari 40/{Math.round(pctForfetari({ esHabitatgeAssequible: true }, exercici) * 100)}%)</span>
                     <span className="font-mono text-red-600">−{f(totalDespesesForfet)} €</span>
                   </div>
                 )}
                 {totalDespeses > 0 && (
-                  <div className="flex justify-between text-gray-600 font-semibold border-t border-[#009B9C]/20 pt-1 mt-1">
+                  <div className="flex justify-between text-[#4E6765] font-semibold border-t border-[#007A7B]/20 pt-1 mt-1">
                     <span>Total despeses deduïbles</span>
                     <span className="font-mono text-red-600">−{f(totalDespeses)} €</span>
                   </div>
                 )}
                 {totalReduccio > 0 && (
-                  <div className="flex justify-between text-gray-500">
+                  <div className="flex justify-between text-[#4E6765]">
                     <span>  − Reducció per arrendament d'habitatge</span>
                     <span className="font-mono text-red-600">−{f(totalReduccio)} €</span>
                   </div>
                 )}
-                <div className="flex justify-between font-bold text-[#009B9C] border-t-2 border-[#009B9C] pt-1 mt-1">
+                <div className="flex justify-between font-bold text-[#007A7B] border-t-2 border-[#007A7B] pt-1 mt-1">
                   <span>Total renda neta immobiliària</span>
                   <span className="font-mono">{f(totalRenda)} €</span>
                 </div>
                 {(totalImpostComunal > 0 || totalRetencions > 0) && (
-                  <div className="border-t border-gray-200 pt-1 mt-2 space-y-1">
+                  <div className="border-t border-[#D6E4E2] pt-1 mt-2 space-y-1">
                     {totalImpostComunal > 0 && (
                       <>
-                        <div className="flex justify-between text-gray-500">
+                        <div className="flex justify-between text-[#4E6765]">
                           <span>Total impost comunal arrendaments</span>
                           <span className="font-mono">{f(totalImpostComunal)} €</span>
                         </div>
-                        <p className="text-[11px] text-gray-400 italic">Es dedueix de la quota (Art. 47) — NO minora la renda neta</p>
+                        <p className="text-[11px] text-[#6B8280] italic">Es dedueix de la quota (Art. 47) — NO minora la renda neta</p>
                       </>
                     )}
                     {totalRetencions > 0 && (
-                      <div className="flex justify-between text-gray-500">
+                      <div className="flex justify-between text-[#4E6765]">
                         <span>Total retencions practicades</span>
                         <span className="font-mono">{f(totalRetencions)} €</span>
                       </div>

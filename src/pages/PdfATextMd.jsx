@@ -6,12 +6,11 @@ import * as pdfjsLib from 'pdfjs-dist';
 // Worker servit localment des de public/ (NO CDN). Compatible amb Create React App.
 pdfjsLib.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.min.js`;
 
-const ACCENT = '#009B9C';
-const ACCENT_DARK = '#007D7E';
+const ACCENT = '#007A7B';
 
 const UI = {
   ca: {
-    tornar: '← Tornar',
+    tornar: '← Torna a les eines',
     titol: 'Converteix un PDF en text (.md)',
     subtitol: "Arrossega un PDF i descarrega't el text net, a punt per enganxar a Claude o qualsevol IA sense topar amb el límit de pàgines.",
     dropBig: 'Arrossega el PDF aquí',
@@ -40,7 +39,7 @@ const UI = {
     peu: 'Servei gratuït · ÀMBIT Associats',
   },
   es: {
-    tornar: '← Volver',
+    tornar: '← Volver a las herramientas',
     titol: 'Convierte un PDF en texto (.md)',
     subtitol: 'Arrastra un PDF y descárgate el texto limpio, listo para pegar en Claude o cualquier IA sin toparte con el límite de páginas.',
     dropBig: 'Arrastra el PDF aquí',
@@ -69,7 +68,7 @@ const UI = {
     peu: 'Servicio gratuito · ÀMBIT Associats',
   },
   en: {
-    tornar: '← Back',
+    tornar: '← Back to tools',
     titol: 'Convert a PDF into text (.md)',
     subtitol: 'Drag a PDF and download clean text, ready to paste into Claude or any AI without hitting the page limit.',
     dropBig: 'Drag the PDF here',
@@ -98,7 +97,7 @@ const UI = {
     peu: 'Free service · ÀMBIT Associats',
   },
   fr: {
-    tornar: '← Retour',
+    tornar: '← Retour aux outils',
     titol: 'Convertissez un PDF en texte (.md)',
     subtitol: "Glissez un PDF et téléchargez le texte propre, prêt à coller dans Claude ou n'importe quelle IA sans buter sur la limite de pages.",
     dropBig: 'Glissez le PDF ici',
@@ -150,7 +149,7 @@ async function readPage(pdf, num) {
 }
 
 const PdfATextMd = ({ onBack, language: langProp = 'ca' }) => {
-  const [idiomaActiu, setIdiomaActiu] = useState(['ca', 'es', 'en', 'fr'].includes(langProp) ? langProp : 'ca');
+  const idiomaActiu = ['ca', 'es', 'en', 'fr'].includes(langProp) ? langProp : 'ca';
   const t = UI[idiomaActiu];
 
   const [drag, setDrag] = useState(false);
@@ -216,139 +215,104 @@ const PdfATextMd = ({ onBack, language: langProp = 'ca' }) => {
   };
 
   return (
-    <div className="bg-[#F2F7F7] min-h-screen">
-      {/* Barra superior amb botó tornar */}
+    <div className="max-w-6xl mx-auto px-5 md:px-10 py-10 md:py-16">
       {onBack && (
-        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3">
-            <button onClick={onBack} className="text-sm text-gray-400 hover:text-gray-700 transition">
-              {t.tornar}
-            </button>
-          </div>
-        </div>
+        <button onClick={onBack} className="text-[15px] font-semibold text-[#007A7B] hover:underline underline-offset-4">
+          {t.tornar}
+        </button>
       )}
 
-      {/* Hero institucional */}
-      <div style={{ backgroundColor: ACCENT }} className="w-full py-12 px-6 text-center">
-        <div className="flex justify-center mb-5">
-          <img src="/ÀMBIT Associats.png" alt="ÀMBIT Associats" className="h-14 w-auto" />
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3 max-w-2xl mx-auto">{t.titol}</h1>
-        <p className="text-white/85 text-sm max-w-xl mx-auto mb-6 leading-relaxed">{t.subtitol}</p>
-        <div className="flex justify-center gap-2">
-          {['ca', 'es', 'en', 'fr'].map((lang) => (
-            <button
-              key={lang}
-              onClick={() => setIdiomaActiu(lang)}
-              className={`px-3 py-1 text-xs font-medium rounded border transition ${
-                idiomaActiu === lang ? 'bg-white border-white' : 'bg-transparent text-white border-white/40 hover:bg-white/10'
-              }`}
-              style={idiomaActiu === lang ? { color: ACCENT_DARK } : undefined}
-            >
-              {lang.toUpperCase()}
-            </button>
-          ))}
-        </div>
+      {/* Títol */}
+      <div className="mt-8 md:mt-10 grid gap-3 max-w-[62ch]">
+        <h1 className="font-display font-medium text-[32px] md:text-[44px] leading-[1.1] tracking-[-0.015em] text-[#12302F]">{t.titol}</h1>
+        <p className="text-[17px] leading-relaxed text-[#2B4644]">{t.subtitol}</p>
       </div>
 
       {/* Cos */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-
-        {/* Drop zone */}
-        <div
-          role="button"
-          tabIndex={0}
-          aria-label={t.dropBig}
-          onClick={() => fileInputRef.current?.click()}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
-          onDragEnter={(e) => { e.preventDefault(); setDrag(true); }}
-          onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
-          onDragLeave={(e) => { e.preventDefault(); setDrag(false); }}
-          onDrop={onDrop}
-          className="rounded-2xl bg-white text-center cursor-pointer transition px-6 py-12 outline-none"
-          style={{
-            border: `2px dashed ${drag ? ACCENT : '#BFD9D9'}`,
-            backgroundColor: drag ? '#E0F3F3' : '#FFFFFF',
-          }}
-        >
-          <svg className="mx-auto mb-4" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M12 16V4" /><path d="m7 9 5-5 5 5" /><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
-          </svg>
-          <p className="text-lg font-semibold text-gray-800 mb-1">{t.dropBig}</p>
-          <p className="text-sm text-gray-500">
-            {t.dropSmall} <span className="underline" style={{ color: ACCENT }}>{t.browse}</span>
-          </p>
-          <input ref={fileInputRef} type="file" accept="application/pdf,.pdf" hidden
-            onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); }} />
-        </div>
-
-        {/* Privacitat */}
-        <div className="flex items-center justify-center gap-2 mt-4 text-xs text-gray-500">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2F7A57" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
-          <span>{t.privacitat}</span>
-        </div>
-
-        {/* Estat */}
-        {status && (
-          <p className="mt-4 text-sm text-center" style={{ color: status.kind === 'err' ? '#B23A3A' : ACCENT_DARK }}>
-            {status.msg}
-          </p>
-        )}
-
-        {/* Avís d'escaneig */}
-        {showNote && (
-          <div className="mt-4 flex items-start gap-3 rounded-xl px-4 py-3 text-sm" style={{ backgroundColor: '#FBF3E2', border: '1px solid #EAD9AE', borderLeft: '4px solid #9A6B12', color: '#5E4708' }}>
-            <svg width="18" height="18" className="flex-none mt-0.5" viewBox="0 0 24 24" fill="none" stroke="#9A6B12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+      <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_minmax(280px,360px)] lg:gap-12 lg:items-start">
+        <div className="min-w-0">
+          {/* Drop zone */}
+          <div
+            role="button"
+            tabIndex={0}
+            aria-label={t.dropBig}
+            onClick={() => fileInputRef.current?.click()}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
+            onDragEnter={(e) => { e.preventDefault(); setDrag(true); }}
+            onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+            onDragLeave={(e) => { e.preventDefault(); setDrag(false); }}
+            onDrop={onDrop}
+            className={`rounded-2xl text-center cursor-pointer transition px-6 py-14 border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-[#4DB6B7] ${
+              drag ? 'border-[#007A7B] bg-[#E8F6F6]' : 'border-[#BFD9D9] bg-[#F4F8F7] hover:border-[#4DB6B7]'
+            }`}
+          >
+            <svg className="mx-auto mb-4" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 16V4" /><path d="m7 9 5-5 5 5" /><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
             </svg>
-            <span>{t.avisEscaneig}</span>
+            <p className="font-display font-medium text-[21px] text-[#12302F] mb-1">{t.dropBig}</p>
+            <p className="text-[15px] text-[#4E6765]">
+              {t.dropSmall} <span className="font-semibold text-[#007A7B] underline underline-offset-4">{t.browse}</span>
+            </p>
+            <input ref={fileInputRef} type="file" accept="application/pdf,.pdf" hidden
+              onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); }} />
           </div>
-        )}
 
-        {/* Resultat */}
-        {result && (
-          <div className="mt-7">
-            <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
-              <div className="min-w-0">
-                <div className="font-semibold text-sm text-gray-800 truncate">{result.name}</div>
-                <div className="text-xs text-gray-500">{result.meta}</div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={copia} className="text-sm font-semibold rounded-lg px-4 py-2 bg-white transition"
-                  style={{ color: ACCENT_DARK, border: `1px solid ${ACCENT}` }}>
-                  {copiat ? t.copiat : t.copia}
-                </button>
-                <button onClick={descarrega} className="text-sm font-semibold rounded-lg px-4 py-2 text-white transition"
-                  style={{ backgroundColor: ACCENT, border: `1px solid ${ACCENT}` }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = ACCENT_DARK)}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = ACCENT)}>
-                  {t.descarrega}
-                </button>
-              </div>
-            </div>
-            <textarea ref={outRef} readOnly spellCheck={false} value={result.md}
-              className="w-full h-80 rounded-xl border border-gray-300 bg-white p-3 text-xs font-mono text-gray-700 focus:outline-none focus:ring-2"
-              style={{ '--tw-ring-color': ACCENT }} />
+          {/* Privacitat */}
+          <div className="flex items-center gap-2 mt-4 text-sm text-[#4E6765]">
+            <svg width="16" height="16" className="flex-none" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <span>{t.privacitat}</span>
           </div>
-        )}
+
+          {/* Estat */}
+          {status && (
+            <p className={`mt-4 text-[15px] font-medium ${status.kind === 'err' ? 'text-[#B23A3A]' : 'text-[#00676A]'}`}>
+              {status.msg}
+            </p>
+          )}
+
+          {/* Avís d'escaneig */}
+          {showNote && (
+            <div className="mt-4 flex items-start gap-3 rounded-xl px-4 py-3 text-sm bg-[#FBF3E2] border border-[#EAD9AE] border-l-4 border-l-[#9A6B12] text-[#5E4708]">
+              <svg width="18" height="18" className="flex-none mt-0.5" viewBox="0 0 24 24" fill="none" stroke="#9A6B12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <span>{t.avisEscaneig}</span>
+            </div>
+          )}
+
+          {/* Resultat */}
+          {result && (
+            <div className="mt-7">
+              <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
+                <div className="min-w-0">
+                  <div className="font-semibold text-[15px] text-[#12302F] truncate">{result.name}</div>
+                  <div className="text-sm text-[#4E6765] tabular-nums">{result.meta}</div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={copia} className="text-sm font-semibold rounded-full px-5 py-2.5 bg-white text-[#007A7B] border border-[#007A7B] hover:bg-[#E8F6F6] transition">
+                    {copiat ? t.copiat : t.copia}
+                  </button>
+                  <button onClick={descarrega} className="text-sm font-semibold rounded-full px-5 py-2.5 text-white bg-[#007A7B] border border-[#007A7B] hover:bg-[#00676A] transition">
+                    {t.descarrega}
+                  </button>
+                </div>
+              </div>
+              <textarea ref={outRef} readOnly spellCheck={false} value={result.md}
+                className="w-full h-80 rounded-xl border border-[#C5D6D3] bg-white p-3 text-xs font-mono text-[#2B4644] focus:outline-none focus:ring-2 focus:ring-[#4DB6B7]" />
+            </div>
+          )}
+        </div>
 
         {/* Panell d'avisos (sempre visible) */}
-        <section aria-label={t.avisosTitol} className="mt-8 rounded-xl border border-gray-200 bg-white p-5">
-          <h2 className="flex items-center gap-2 text-sm font-bold text-gray-800 mb-3">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
-            </svg>
-            {t.avisosTitol}
-          </h2>
-          <ul className="list-disc pl-5 space-y-1.5 text-xs text-gray-600 leading-relaxed">
+        <aside aria-label={t.avisosTitol} className="rounded-2xl bg-[#F4F8F7] p-6">
+          <h2 className="font-display font-medium text-[19px] text-[#12302F] mb-3">{t.avisosTitol}</h2>
+          <ul className="list-disc pl-5 space-y-2 text-sm text-[#2B4644] leading-relaxed marker:text-[#4DB6B7]">
             {t.avisos.map((a, i) => <li key={i}>{a}</li>)}
           </ul>
-        </section>
-
-        {/* Peu de la secció */}
-        <p className="text-center text-xs text-gray-400 mt-8">{t.peu}</p>
+          <p className="mt-5 pt-4 border-t border-[#D6E4E2] text-sm text-[#4E6765]">{t.peu}</p>
+        </aside>
       </div>
     </div>
   );

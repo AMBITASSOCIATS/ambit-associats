@@ -105,7 +105,7 @@ const UI = {
     tots: "Tots els sectors",
     cols: { data: "Data", dia: "Dia", festivitat: "Festivitat", ambit: "Àmbit", detall: "Detall / Parròquia" },
     font: "Font: Butlletí Oficial del Principat d'Andorra (BOPA). Decret 340/2025, de l'1-10-2025, del Govern d'Andorra, i edictes dels comuns publicats entre novembre i desembre del 2025.",
-    tornar: "← Tornar",
+    tornar: "← Torna a les eines",
   },
   es: {
     titol: "Calendario laboral de Andorra 2026",
@@ -116,7 +116,7 @@ const UI = {
     tots: "Todos los sectores",
     cols: { data: "Fecha", dia: "Día", festivitat: "Festividad", ambit: "Ámbito", detall: "Detalle / Parroquia" },
     font: "Fuente: Boletín Oficial del Principado de Andorra (BOPA). Decreto 340/2025, de 1-10-2025, del Gobierno de Andorra, y edictos de los comunes publicados entre noviembre y diciembre de 2025.",
-    tornar: "← Volver",
+    tornar: "← Volver a las herramientas",
   },
   en: {
     titol: "Andorra Labour Calendar 2026",
@@ -127,7 +127,7 @@ const UI = {
     tots: "All sectors",
     cols: { data: "Date", dia: "Day", festivitat: "Holiday", ambit: "Scope", detall: "Detail / Parish" },
     font: "Source: Official Gazette of the Principality of Andorra (BOPA). Decree 340/2025, dated 01-10-2025, of the Andorran Government, and edicts from the parish councils published between November and December 2025.",
-    tornar: "← Back",
+    tornar: "← Back to tools",
   },
   fr: {
     titol: "Calendrier du travail d'Andorre 2026",
@@ -138,13 +138,12 @@ const UI = {
     tots: "Tous les secteurs",
     cols: { data: "Date", dia: "Jour", festivitat: "Fête", ambit: "Portée", detall: "Détail / Paroisse" },
     font: "Source : Journal officiel de la Principauté d'Andorre (BOPA). Décret 340/2025 du 1er octobre 2025 du Gouvernement andorran, et édits des comuns publiés entre novembre et décembre 2025.",
-    tornar: "← Retour",
+    tornar: "← Retour aux outils",
   },
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
-const CalendariLaboral = ({ onBack, language: langProp = 'ca' }) => {
-  const [idiomaActiu, setIdiomaActiu] = useState(langProp);
+const CalendariLaboral = ({ onBack, language: idiomaActiu = 'ca' }) => {
   const [filtreActiu, setFiltreActiu] = useState('totes');
 
   const t = UI[idiomaActiu];
@@ -177,181 +176,110 @@ const CalendariLaboral = ({ onBack, language: langProp = 'ca' }) => {
     return f.parroquia;
   };
 
-  return (
-    <div className="bg-white min-h-screen">
+  const filtre = (valor) =>
+    `px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap border transition ${
+      filtreActiu === valor
+        ? 'bg-[#007A7B] text-white border-[#007A7B]'
+        : 'bg-white text-[#2B4644] border-[#D6E4E2] hover:border-[#4DB6B7] hover:text-[#12302F]'
+    }`;
 
-      {/* ── Botó enrere sticky (només si hi ha onBack) ──────────────────── */}
+  return (
+    <div className="max-w-6xl mx-auto px-5 md:px-10 py-10 md:py-16">
       {onBack && (
-        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3">
-            <button
-              onClick={onBack}
-              className="text-sm text-gray-400 hover:text-gray-700 transition"
-            >
-              {t.tornar}
-            </button>
-          </div>
-        </div>
+        <button
+          onClick={onBack}
+          className="text-[15px] font-semibold text-[#007A7B] hover:underline underline-offset-4"
+        >
+          {t.tornar}
+        </button>
       )}
 
-      {/* ── Hero institucional ───────────────────────────────────────────── */}
-      <div style={{ backgroundColor: '#1A9E8F' }} className="w-full py-14 px-6 text-center">
-        <div className="flex justify-center mb-5">
-          <img src="/ÀMBIT Associats.png" alt="ÀMBIT Associats" className="h-16 w-auto" />
-        </div>
-        <h1 className="text-3xl font-bold text-white mb-3">{t.titol}</h1>
-        <p className="text-teal-100 text-sm max-w-xl mx-auto mb-6 leading-relaxed">{t.intro}</p>
-
-        {/* Selector d'idioma */}
-        <div className="flex justify-center gap-2">
-          {['ca', 'es', 'en', 'fr'].map(lang => (
-            <button
-              key={lang}
-              onClick={() => setIdiomaActiu(lang)}
-              className={`px-3 py-1 text-xs font-medium rounded border transition ${
-                idiomaActiu === lang
-                  ? 'bg-white text-teal-700 border-white'
-                  : 'bg-transparent text-white border-white/40 hover:bg-white/10'
-              }`}
-            >
-              {lang.toUpperCase()}
-            </button>
-          ))}
-        </div>
+      {/* ── Títol ──────────────────────────────────────────────────────── */}
+      <div className="mt-8 md:mt-10 grid gap-3 max-w-[62ch]">
+        <h1 className="font-display font-medium text-[32px] md:text-[44px] leading-[1.1] tracking-[-0.015em] text-[#12302F]">{t.titol}</h1>
+        <p className="text-[17px] leading-relaxed text-[#2B4644]">{t.intro}</p>
       </div>
 
-      {/* ── Cos principal ────────────────────────────────────────────────── */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+      {/* ── Barra de filtres ─────────────────────────────────────────────── */}
+      <div className="flex flex-wrap gap-2 mt-10 mb-6">
+        <button onClick={() => setFiltreActiu('totes')} className={filtre('totes')}>{t.totes}</button>
+        <button onClick={() => setFiltreActiu('nacional')} className={filtre('nacional')}>{t.nacional}</button>
+        {PARROQUIES.map(p => (
+          <button key={p} onClick={() => setFiltreActiu(p)} className={filtre(p)}>{p}</button>
+        ))}
+      </div>
 
-        {/* ── Barra de filtres ──────────────────────────────────────────── */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {/* Totes */}
-          <button
-            onClick={() => setFiltreActiu('totes')}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition ${
-              filtreActiu === 'totes'
-                ? 'bg-teal-600 text-white border-teal-600'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:text-gray-800'
-            }`}
-          >
-            {t.totes}
-          </button>
-
-          {/* Nacional */}
-          <button
-            onClick={() => setFiltreActiu('nacional')}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition ${
-              filtreActiu === 'nacional'
-                ? 'bg-teal-600 text-white border-teal-600'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:text-gray-800'
-            }`}
-          >
-            {t.nacional}
-          </button>
-
-          {/* Parròquies */}
-          {PARROQUIES.map(p => (
-            <button
-              key={p}
-              onClick={() => setFiltreActiu(p)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition ${
-                filtreActiu === p
-                  ? 'bg-teal-600 text-white border-teal-600'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:text-gray-800'
-              }`}
-            >
-              {p}
-            </button>
-          ))}
-        </div>
-
-        {/* ── Taula ────────────────────────────────────────────────────── */}
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="min-w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap w-28">
-                  {t.cols.data}
-                </th>
-                <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap w-24 hidden sm:table-cell">
-                  {t.cols.dia}
-                </th>
-                <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t.cols.festivitat}
-                </th>
-                <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap w-28">
-                  {t.cols.ambit}
-                </th>
-                <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
-                  {t.cols.detall}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, i) => {
-                if (row.type === 'header') {
-                  return (
-                    <tr key={`mes-${row.mes}-${i}`} className="bg-gray-50">
-                      <td
-                        colSpan={5}
-                        className="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        {MESOS[row.mes - 1]}
-                      </td>
-                    </tr>
-                  );
-                }
-
-                const { f } = row;
+      {/* ── Taula ────────────────────────────────────────────────────────── */}
+      <div className="overflow-x-auto rounded-xl border border-[#D6E4E2]">
+        <table className="min-w-full text-[15px] border-collapse">
+          <thead>
+            <tr className="bg-[#F4F8F7] border-b border-[#D6E4E2] text-left text-[13px] font-semibold text-[#4E6765]">
+              <th className="px-4 py-3 whitespace-nowrap w-28">{t.cols.data}</th>
+              <th className="px-4 py-3 whitespace-nowrap w-24 hidden sm:table-cell">{t.cols.dia}</th>
+              <th className="px-4 py-3">{t.cols.festivitat}</th>
+              <th className="px-4 py-3 whitespace-nowrap w-28">{t.cols.ambit}</th>
+              <th className="px-4 py-3 hidden md:table-cell">{t.cols.detall}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => {
+              if (row.type === 'header') {
                 return (
-                  <tr
-                    key={`${f.mes}-${f.dia}-${f.parroquia}-${i}`}
-                    className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
-                  >
-                    {/* Data */}
-                    <td className="px-3 py-2.5 text-gray-500 tabular-nums whitespace-nowrap text-sm">
-                      {f.dia} {MESOS[f.mes - 1]}
-                    </td>
-
-                    {/* Dia de la setmana */}
-                    <td className="px-3 py-2.5 text-gray-400 whitespace-nowrap text-sm hidden sm:table-cell">
-                      {nomDia(f.mes, f.dia)}
-                    </td>
-
-                    {/* Nom de la festivitat */}
-                    <td className="px-3 py-2.5 text-gray-800 font-medium text-sm">
-                      {f.nom}
-                    </td>
-
-                    {/* Badge àmbit */}
-                    <td className="px-3 py-2.5">
-                      {f.tipus === 'nacional' ? (
-                        <span className="inline-block bg-teal-50 text-teal-700 px-2 py-0.5 rounded text-xs font-medium">
-                          {t.nacional}
-                        </span>
-                      ) : (
-                        <span className="inline-block bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-medium">
-                          {t.parroquial}
-                        </span>
-                      )}
-                    </td>
-
-                    {/* Detall */}
-                    <td className="px-3 py-2.5 text-gray-400 text-xs hidden md:table-cell">
-                      {detallText(f)}
+                  <tr key={`mes-${row.mes}-${i}`}>
+                    <td colSpan={5} className="px-4 pt-6 pb-2 font-display font-medium text-[18px] text-[#12302F] border-b border-[#D6E4E2]">
+                      {MESOS[row.mes - 1]}
                     </td>
                   </tr>
                 );
-              })}
-            </tbody>
-          </table>
-        </div>
+              }
 
-        {/* ── Nota de font ─────────────────────────────────────────────── */}
-        <div className="mt-6 pt-4 border-t border-gray-100">
-          <p className="text-xs text-gray-400 italic">{t.font}</p>
-        </div>
+              const { f } = row;
+              return (
+                <tr
+                  key={`${f.mes}-${f.dia}-${f.parroquia}-${i}`}
+                  className="border-b border-[#E4EEEC] last:border-0 hover:bg-[#F4F8F7] transition-colors"
+                >
+                  {/* Data */}
+                  <td className="px-4 py-3 text-[#2B4644] tabular-nums whitespace-nowrap">
+                    {f.dia} {MESOS[f.mes - 1]}
+                  </td>
+
+                  {/* Dia de la setmana */}
+                  <td className="px-4 py-3 text-[#4E6765] whitespace-nowrap hidden sm:table-cell">
+                    {nomDia(f.mes, f.dia)}
+                  </td>
+
+                  {/* Nom de la festivitat */}
+                  <td className="px-4 py-3 text-[#12302F] font-medium">
+                    {f.nom}
+                  </td>
+
+                  {/* Àmbit */}
+                  <td className="px-4 py-3">
+                    {f.tipus === 'nacional' ? (
+                      <span className="inline-block bg-[#E8F6F6] text-[#00676A] px-2.5 py-0.5 rounded-full text-[13px] font-semibold">
+                        {t.nacional}
+                      </span>
+                    ) : (
+                      <span className="inline-block bg-[#F1F4F3] text-[#4E6765] px-2.5 py-0.5 rounded-full text-[13px] font-semibold">
+                        {t.parroquial}
+                      </span>
+                    )}
+                  </td>
+
+                  {/* Detall */}
+                  <td className="px-4 py-3 text-[#4E6765] text-sm hidden md:table-cell">
+                    {detallText(f)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
+
+      {/* ── Nota de font ───────────────────────────────────────────────────── */}
+      <p className="mt-6 text-sm leading-relaxed text-[#4E6765] max-w-[80ch]">{t.font}</p>
     </div>
   );
 };

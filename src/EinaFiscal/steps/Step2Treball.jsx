@@ -47,7 +47,7 @@ const DEFAULT_FONT_TREBALL = {
 
 const InputNum = ({ label, value, onChange, min = 0, className = '' }) => (
   <div className={className}>
-    <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+    <label className="block text-xs font-medium text-[#4E6765] mb-1">{label}</label>
     <input
       type="number" onWheel={e => e.target.blur()}
       min={min}
@@ -55,7 +55,7 @@ const InputNum = ({ label, value, onChange, min = 0, className = '' }) => (
       value={value === 0 ? '' : value}
       placeholder="0"
       onChange={e => { const v = e.target.value; onChange(v === '' ? 0 : parseFloat(v) || 0); }}
-      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
     />
   </div>
 );
@@ -116,30 +116,30 @@ const FontTreball = ({ font, index, onUpdate, onUpdateFields, onEliminar }) => {
     >
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Descripció (empresa / entitat)</label>
+          <label className="block text-xs font-medium text-[#4E6765] mb-1">Descripció (empresa / entitat)</label>
           <input
             type="text"
             value={font.descripcio}
             onChange={e => update('descripcio', e.target.value)}
             placeholder="Ex: Empresa ABC SL, Pensió CASS..."
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+            className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
           />
         </div>
 
         <div className="col-span-2">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Tipus de renda</label>
+          <label className="block text-xs font-medium text-[#4E6765] mb-1">Tipus de renda</label>
           <select
             value={font.tipus}
             onChange={e => update('tipus', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+            className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
           >
             {TIPUS_TREBALL.map(t => (
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </select>
           {font.tipus === 'PENSIO_PRIVADA' && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mt-1">
-              <p className="text-xs text-blue-700">
+            <div className="bg-[#EEF6F6] border border-[#CFE3E1] rounded-lg px-3 py-2 mt-1">
+              <p className="text-xs text-[#00676A]">
                 ℹ️ <strong>Pensió privada o estrangera</strong> — S'inclou a la casella "Rendes no sotmeses a cotització a la CASS" del 300-B. No aplica la deducció del 3% d'altres despeses (Art. 13.2.b Llei 5/2014). Sense cotitzacions CASS.
               </p>
             </div>
@@ -217,9 +217,9 @@ const FontTreball = ({ font, index, onUpdate, onUpdateFields, onEliminar }) => {
               type="checkbox"
               checked={font.esPensionista}
               onChange={e => update('esPensionista', e.target.checked)}
-              className="w-4 h-4 accent-[#009B9C]"
+              className="w-4 h-4 accent-[#007A7B]"
             />
-            <span className="text-xs text-gray-600">Pensionista CASS</span>
+            <span className="text-xs text-[#4E6765]">Pensionista CASS</span>
           </div>
         )}
 
@@ -234,7 +234,7 @@ const FontTreball = ({ font, index, onUpdate, onUpdateFields, onEliminar }) => {
                 onUpdateFields(font.id, changes);
               }}
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-[#6B8280] mt-1">
               Import retingut per la CASS de la pensió mensual en concepte de cotització de salut. Figura al resum anual de prestacions de la CASS. Redueix la renda neta.
             </p>
             {!(font.cotitzacionsCASS > 0) && (
@@ -268,9 +268,9 @@ const FontTreball = ({ font, index, onUpdate, onUpdateFields, onEliminar }) => {
               type="checkbox"
               checked={font.compleixRequisitsExempcio || false}
               onChange={e => update('compleixRequisitsExempcio', e.target.checked)}
-              className="w-4 h-4 accent-[#009B9C]"
+              className="w-4 h-4 accent-[#007A7B]"
             />
-            <span className="text-xs text-gray-600">Compleix requisits d'exempció (Art. 16 Reglament 29/12/2023)</span>
+            <span className="text-xs text-[#4E6765]">Compleix requisits d'exempció (Art. 16 Reglament 29/12/2023)</span>
           </div>
         )}
 
@@ -280,31 +280,31 @@ const FontTreball = ({ font, index, onUpdate, onUpdateFields, onEliminar }) => {
               type="checkbox"
               checked={font.compleixRequisitsExempcio || false}
               onChange={e => update('compleixRequisitsExempcio', e.target.checked)}
-              className="w-4 h-4 accent-[#009B9C]"
+              className="w-4 h-4 accent-[#007A7B]"
             />
-            <span className="text-xs text-gray-600">Premi exempt (Art. 17 Reglament 29/12/2023)</span>
+            <span className="text-xs text-[#4E6765]">Premi exempt (Art. 17 Reglament 29/12/2023)</span>
           </div>
         )}
       </div>
 
       {/* Càlcul reducció pensionista */}
       {font.esPensionista && anysTotalsEfectius > 0 && font.tipus !== 'PENSIO_CASS' && (
-        <div className="bg-blue-50 rounded-lg p-3 text-sm mt-3">
-          <p className="font-medium text-blue-800">Reducció per pensionista CASS:</p>
-          <p className="text-blue-600 text-xs">
+        <div className="bg-[#EEF6F6] rounded-lg p-3 text-sm mt-3">
+          <p className="font-medium text-[#12302F]">Reducció per pensionista CASS:</p>
+          <p className="text-[#007A7B] text-xs">
             {anysTotalsEfectius} anys × 1% = {Math.min(anysTotalsEfectius, 30)}%
             {' '}→ Reducció: {(calcularNetaEstimada() * Math.min(anysTotalsEfectius * 0.01, 0.30)).toFixed(2)} €
           </p>
-          <p className="text-blue-500 text-xs">Font: Guia IRPF 2025 §6.2</p>
+          <p className="text-[#4E6765] text-xs">Font: Guia IRPF 2025 §6.2</p>
         </div>
       )}
 
       {/* Estimació renda gravada */}
-      <div className="bg-gray-50 rounded-lg p-3 text-xs mt-3">
-        <span className="font-medium text-gray-600">Import gravat estimat: </span>
-        <span className="font-bold text-gray-800">{calcularNetaEstimada().toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €</span>
+      <div className="bg-[#F4F8F7] rounded-lg p-3 text-xs mt-3">
+        <span className="font-medium text-[#4E6765]">Import gravat estimat: </span>
+        <span className="font-bold text-[#12302F]">{calcularNetaEstimada().toLocaleString('ca-AD', { minimumFractionDigits: 2 })} €</span>
         {(font.tipus === 'SALARI_GENERAL' || font.tipus === 'ADMINISTRADOR' || font.tipus === 'ALTRES_TREBALL') && (
-          <span className="text-gray-400 ml-2">(brut gravat − CASS − 3% altres despeses)</span>
+          <span className="text-[#6B8280] ml-2">(brut gravat − CASS − 3% altres despeses)</span>
         )}
       </div>
 
@@ -341,29 +341,29 @@ const Step2Treball = ({ dades, update, mostrarErrorCASS = false }) => {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">2</span>
+            <span className="w-8 h-8 rounded-full bg-[#007A7B] text-white text-sm font-bold flex items-center justify-center">2</span>
             <div>
-              <h2 className="font-bold text-gray-800">Rendes del treball</h2>
-              <p className="text-xs text-gray-500">Formulari 300-B sec.1 · Art. 10-13 Llei 5/2014</p>
+              <h2 className="font-bold text-[#12302F]">Rendes del treball</h2>
+              <p className="text-xs text-[#4E6765]">Formulari 300-B sec.1 · Art. 10-13 Llei 5/2014</p>
             </div>
           </div>
           <button
             onClick={addFont}
-            className="text-sm bg-[#009B9C] text-white px-4 py-2 rounded-xl hover:bg-[#007A7B] transition font-medium"
+            className="text-sm bg-[#007A7B] text-white px-4 py-2 rounded-xl hover:bg-[#00676A] transition font-medium"
           >
             + Afegir font de renda
           </button>
         </div>
 
-        <div className="bg-blue-50 rounded-xl p-3 text-xs text-blue-700 mb-4">
+        <div className="bg-[#EEF6F6] rounded-xl p-3 text-xs text-[#00676A] mb-4">
           <strong>Despeses deduïbles:</strong> Cotitzacions CASS a càrrec del treballador + 3% d'altres despeses (màx. 2.500 €). Font: Art. 13 Llei 5/2014 + Guia IRPF 2025 §6.2.
         </div>
 
         {dades.rendesTreball.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-[#6B8280]">
             <p className="text-sm">Cap renda del treball afegida.</p>
             <p className="text-xs mt-1">Feu clic a "+ Afegir font de renda" per afegir salaris, pensions, indemnitzacions, etc.</p>
           </div>
@@ -416,33 +416,33 @@ const Step2Treball = ({ dades, update, mostrarErrorCASS = false }) => {
         const rendaNeta = calcularIRPFDetallat(dades).rendaTreball;
         const fmt = n => (n || 0).toLocaleString('ca-AD', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
         return (
-          <div className="bg-white rounded-2xl border-2 border-[#009B9C] shadow-sm p-6">
-            <h3 className="font-bold text-gray-800 mb-3 text-sm">Resum rendes del treball</h3>
+          <div className="bg-white rounded-2xl border-2 border-[#007A7B] shadow-sm p-6">
+            <h3 className="font-bold text-[#12302F] mb-3 text-sm">Resum rendes del treball</h3>
             <div className="space-y-1.5 text-sm">
-              <div className="flex justify-between py-1.5 border-b border-gray-100">
-                <span className="text-gray-600 font-medium">TOTAL Ingressos bruts</span>
-                <span className="font-mono font-semibold text-gray-800">{fmt(totalBrut)}</span>
+              <div className="flex justify-between py-1.5 border-b border-[#E4EEEC]">
+                <span className="text-[#4E6765] font-medium">TOTAL Ingressos bruts</span>
+                <span className="font-mono font-semibold text-[#12302F]">{fmt(totalBrut)}</span>
               </div>
               {totalCASS > 0 && (
-                <div className="flex justify-between py-1.5 border-b border-gray-100">
-                  <span className="text-gray-600">− Total cotitzacions CASS</span>
+                <div className="flex justify-between py-1.5 border-b border-[#E4EEEC]">
+                  <span className="text-[#4E6765]">− Total cotitzacions CASS</span>
                   <span className="font-mono text-red-500">{fmt(-totalCASS)}</span>
                 </div>
               )}
               {altresDespesesTotal > 0 && (
-                <div className="flex justify-between py-1.5 border-b border-gray-100">
-                  <span className="text-gray-600">
+                <div className="flex justify-between py-1.5 border-b border-[#E4EEEC]">
+                  <span className="text-[#4E6765]">
                     − Total altres despeses (3%, màx. 2.500 €)
-                    <span className="block text-xs text-gray-400">Aplicat sobre {fmt(totalGravat3pct)} de rendes ordinàries (Art. 13.2.b)</span>
+                    <span className="block text-xs text-[#6B8280]">Aplicat sobre {fmt(totalGravat3pct)} de rendes ordinàries (Art. 13.2.b)</span>
                   </span>
                   <span className="font-mono text-red-500">{fmt(-altresDespesesTotal)}</span>
                 </div>
               )}
-              <div className="flex justify-between py-2 px-3 mt-2 bg-[#009B9C]/10 rounded-lg">
-                <span className="font-bold text-gray-800">= RENDA NETA DEL TREBALL</span>
-                <span className="font-mono font-bold text-[#009B9C]">{fmt(rendaNeta)}</span>
+              <div className="flex justify-between py-2 px-3 mt-2 bg-[#007A7B]/10 rounded-lg">
+                <span className="font-bold text-[#12302F]">= RENDA NETA DEL TREBALL</span>
+                <span className="font-mono font-bold text-[#007A7B]">{fmt(rendaNeta)}</span>
               </div>
-              <p className="text-xs text-gray-400 mt-1">Import que s'integra a la Base de Tributació General (BTG) · Casella 300-B</p>
+              <p className="text-xs text-[#6B8280] mt-1">Import que s'integra a la Base de Tributació General (BTG) · Casella 300-B</p>
             </div>
           </div>
         );

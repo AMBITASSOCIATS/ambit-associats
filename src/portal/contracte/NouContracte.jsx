@@ -55,7 +55,7 @@ const NouContracte = ({ client, onCreat, onCancel }) => {
   };
 
   return (
-    <form onSubmit={crea} className="w-full border border-[#009B9C]/30 bg-[#009B9C]/5 rounded-lg p-4 space-y-3">
+    <form onSubmit={crea} className="w-full border border-[#007A7B]/30 bg-[#007A7B]/5 rounded-lg p-4 space-y-3">
       <p className="text-xs font-bold text-[#007A7B]">Nou contracte per signar</p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Entrada etiqueta="Títol del contracte" required maxLength={300} value={titol} className="md:col-span-2"
@@ -66,16 +66,16 @@ const NouContracte = ({ client, onCreat, onCancel }) => {
         </Selector>
       </div>
       <label className="block">
-        <span className="block text-xs font-semibold text-gray-600 mb-1">Contracte en PDF (màxim 20 MB, sense contrasenya)</span>
+        <span className="block text-xs font-semibold text-[#4E6765] mb-1">Contracte en PDF (màxim 20 MB, sense contrasenya)</span>
         <input type="file" accept="application/pdf" onChange={(e) => triaFitxer(e.target.files?.[0] || null)}
-          className="block w-full text-sm text-gray-700 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-[#009B9C] file:text-white file:text-xs file:font-semibold" />
-        <span className="block text-[11px] text-gray-400 mt-1">
+          className="block w-full text-sm text-[#2B4644] file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-[#007A7B] file:text-white file:text-xs file:font-semibold" />
+        <span className="block text-[11px] text-[#6B8280] mt-1">
           L'original es desa sense modificar. No es pot substituir: si cal canviar-lo, s'anul·la el contracte i se'n crea un altre.
         </span>
       </label>
 
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-gray-600">Signants del client</p>
+        <p className="text-xs font-semibold text-[#4E6765]">Signants del client</p>
         {signants.map((s, i) => (
           <div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-end">
             <Entrada etiqueta={`${i + 1}. Nom i cognoms`} required value={s.nom} maxLength={200} className="md:col-span-3"
@@ -93,7 +93,7 @@ const NouContracte = ({ client, onCreat, onCancel }) => {
           </div>
         ))}
         {signants.length < 20 && (
-          <button type="button" className="text-xs text-[#009B9C] hover:underline" onClick={() => setSignants([...signants, buit()])}>
+          <button type="button" className="text-xs text-[#007A7B] hover:underline" onClick={() => setSignants([...signants, buit()])}>
             + Afegir un altre signant
           </button>
         )}

@@ -157,7 +157,7 @@ const analisiValors = (tipusElement, guanyNet, participacioPct, anysPropieta, ex
 
 const InputNum = ({ label, value, onChange, min = 0 }) => (
   <div>
-    <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+    <label className="block text-xs font-medium text-[#4E6765] mb-1">{label}</label>
     <input
       type="number" onWheel={e => e.target.blur()}
       min={min}
@@ -165,7 +165,7 @@ const InputNum = ({ label, value, onChange, min = 0 }) => (
       value={value === 0 ? '' : value}
       placeholder="0"
       onChange={e => { const v = e.target.value; onChange(v === '' ? 0 : parseFloat(v) || 0); }}
-      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
     />
   </div>
 );
@@ -195,22 +195,22 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar, exercici = 2025 }
     >
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Descripcio del be transmes</label>
+          <label className="block text-xs font-medium text-[#4E6765] mb-1">Descripcio del be transmes</label>
           <input
             type="text"
             value={trans.descripcio}
             onChange={e => update('descripcio', e.target.value)}
             placeholder="Ex: Pis carrer X, Accions empresa Y, Participacio fons Z..."
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+            className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
           />
         </div>
 
         <div className="col-span-2">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Tipus d'element (codi 300-E)</label>
+          <label className="block text-xs font-medium text-[#4E6765] mb-1">Tipus d'element (codi 300-E)</label>
           <select
             value={trans.tipusElement}
             onChange={e => update('tipusElement', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+            className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
           >
             {TIPUS_ELEMENT_300E.map(t => (
               <option key={t.value} value={t.value}>{t.label}</option>
@@ -222,18 +222,18 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar, exercici = 2025 }
           <>
             <div className="col-span-2 flex flex-wrap gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={trans.esHabitatgeHabitual} onChange={e => update('esHabitatgeHabitual', e.target.checked)} className="w-4 h-4 accent-[#009B9C]" />
-                <span className="text-xs text-gray-600">Habitatge habitual</span>
+                <input type="checkbox" checked={trans.esHabitatgeHabitual} onChange={e => update('esHabitatgeHabitual', e.target.checked)} className="w-4 h-4 accent-[#007A7B]" />
+                <span className="text-xs text-[#4E6765]">Habitatge habitual</span>
               </label>
               {trans.esHabitatgeHabitual && (
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={trans.reinverteix} onChange={e => update('reinverteix', e.target.checked)} className="w-4 h-4 accent-[#009B9C]" />
-                  <span className="text-xs text-gray-600">Reinverteix en nou habitatge habitual (Art. 5.r)</span>
+                  <input type="checkbox" checked={trans.reinverteix} onChange={e => update('reinverteix', e.target.checked)} className="w-4 h-4 accent-[#007A7B]" />
+                  <span className="text-xs text-[#4E6765]">Reinverteix en nou habitatge habitual (Art. 5.r)</span>
                 </label>
               )}
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={trans.aplicarCoeficients} onChange={e => update('aplicarCoeficients', e.target.checked)} className="w-4 h-4 accent-[#009B9C]" />
-                <span className="text-xs text-gray-600">Aplicar coeficients d'actualitzacio (Art. 26.2)</span>
+                <input type="checkbox" checked={trans.aplicarCoeficients} onChange={e => update('aplicarCoeficients', e.target.checked)} className="w-4 h-4 accent-[#007A7B]" />
+                <span className="text-xs text-[#4E6765]">Aplicar coeficients d'actualitzacio (Art. 26.2)</span>
               </label>
             </div>
           </>
@@ -247,27 +247,27 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar, exercici = 2025 }
         )}
 
         {(trans.tipusElement === 'COT' || trans.tipusElement === 'NCT') && (
-          <div className="col-span-2 mt-1 bg-blue-50 rounded-lg p-3">
-            <p className="text-xs font-medium text-blue-800 mb-2">Analisi addicional per a valors</p>
+          <div className="col-span-2 mt-1 bg-[#EEF6F6] rounded-lg p-3">
+            <p className="text-xs font-medium text-[#12302F] mb-2">Analisi addicional per a valors</p>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-gray-600">Participacio en el capital (%)</label>
+                <label className="text-xs text-[#4E6765]">Participacio en el capital (%)</label>
                 <input
                   type="number" onWheel={e => e.target.blur()} min="0" max="100" step="0.01"
                   value={trans.participacioPct === 0 ? '' : trans.participacioPct}
                   placeholder="0"
                   onChange={e => { const v = e.target.value; update('participacioPct', v === '' ? 0 : parseFloat(v) || 0); }}
-                  className="w-full border border-gray-200 rounded px-2 py-1 text-xs mt-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                  className="w-full border border-[#D6E4E2] rounded px-2 py-1 text-xs mt-1 focus:outline-none focus:ring-1 focus:ring-[#007A7B]"
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-600">Anys de tinenca</label>
+                <label className="text-xs text-[#4E6765]">Anys de tinenca</label>
                 <input
                   type="number" onWheel={e => e.target.blur()} min="0" step="1"
                   value={trans.anysPropieta === 0 ? '' : trans.anysPropieta}
                   placeholder="0"
                   onChange={e => { const v = e.target.value; update('anysPropieta', v === '' ? 0 : parseInt(v) || 0); }}
-                  className="w-full border border-gray-200 rounded px-2 py-1 text-xs mt-1 focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                  className="w-full border border-[#D6E4E2] rounded px-2 py-1 text-xs mt-1 focus:outline-none focus:ring-1 focus:ring-[#007A7B]"
                 />
               </div>
             </div>
@@ -280,9 +280,9 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar, exercici = 2025 }
               type="checkbox"
               checked={trans.esDevolucioCapital || false}
               onChange={e => update({ esDevolucioCapital: e.target.checked })}
-              className="w-4 h-4 accent-[#009B9C]"
+              className="w-4 h-4 accent-[#007A7B]"
             />
-            <label className="text-xs text-gray-600">
+            <label className="text-xs text-[#4E6765]">
               Devolució de capital no subjecta (Art. 27.3 Llei 5/2014) — no genera guany ni pèrdua
             </label>
           </div>
@@ -302,16 +302,16 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar, exercici = 2025 }
       </div>
 
       {trans.tipusElement === 'IMM' && trans.aplicarCoeficients && anysPropieta >= 0 && (
-        <div className="mt-3 bg-blue-50 rounded-lg p-3 text-xs text-blue-700">
+        <div className="mt-3 bg-[#EEF6F6] rounded-lg p-3 text-xs text-[#00676A]">
           Coeficient d'actualitzacio aplicat: <strong>{coefAplicat.toFixed(2)}</strong> (immoble en propietat durant <strong>{anysPropieta} anys</strong>).
           Valor d'adquisicio actualitzat: <strong>{valorAdqActualitzat.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros</strong>.
           Font: Art. 26.2 Llei 5/2014.
         </div>
       )}
 
-      <div className="mt-3 bg-gray-50 rounded-lg p-3 text-xs">
-        <span className="font-medium text-gray-600">Guany net calculat: </span>
-        <span className={`font-bold ${guanyNet >= 0 ? 'text-gray-800' : 'text-red-600'}`}>
+      <div className="mt-3 bg-[#F4F8F7] rounded-lg p-3 text-xs">
+        <span className="font-medium text-[#4E6765]">Guany net calculat: </span>
+        <span className={`font-bold ${guanyNet >= 0 ? 'text-[#12302F]' : 'text-red-600'}`}>
           {guanyNet.toLocaleString('ca-AD', { minimumFractionDigits: 2 })} euros
         </span>
       </div>
@@ -335,7 +335,7 @@ const TransmissioForm = ({ trans, index, onUpdate, onEliminar, exercici = 2025 }
           {trans.exempta && (
             <>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
+                <label className="block text-xs font-medium text-[#4E6765] mb-1">
                   Guany / pèrdua real obtinguda (€) — no computarà a la base de l'estalvi
                 </label>
                 <input
@@ -412,55 +412,55 @@ const Step6GuanysCapital = ({ dades, update }) => {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6">
         <div className="flex items-center gap-2 mb-4">
-          <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">6</span>
+          <span className="w-8 h-8 rounded-full bg-[#007A7B] text-white text-sm font-bold flex items-center justify-center">6</span>
           <div>
-            <h2 className="font-bold text-gray-800">Guanys i perdues de capital</h2>
-            <p className="text-xs text-gray-500">Formulari 300-E · Art. 30-32 Llei 5/2014</p>
+            <h2 className="font-bold text-[#12302F]">Guanys i perdues de capital</h2>
+            <p className="text-xs text-[#4E6765]">Formulari 300-E · Art. 30-32 Llei 5/2014</p>
           </div>
         </div>
 
         {/* Seccio 1 del 300-E: Guanys/perdues no derivats de transmissio */}
-        <div className="mb-5 border border-gray-200 rounded-xl overflow-hidden">
-          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
+        <div className="mb-5 border border-[#D6E4E2] rounded-xl overflow-hidden">
+          <div className="bg-[#F4F8F7] px-4 py-2 border-b border-[#D6E4E2] flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-gray-700">
+              <h3 className="text-sm font-semibold text-[#2B4644]">
                 Seccio 1 — Variacions patrimonials no derivades de transmissio (300-E sec.1)
               </h3>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-[#4E6765] mt-0.5">
                 Opcions i derivats, premis no exempts, i altres guanys/pèrdues no generats per transmissió
               </p>
             </div>
             <button
               onClick={addRendaSense}
-              className="text-xs bg-[#009B9C] text-white px-3 py-1.5 rounded-lg hover:bg-[#007A7B] transition font-medium whitespace-nowrap"
+              className="text-xs bg-[#007A7B] text-white px-3 py-1.5 rounded-lg hover:bg-[#00676A] transition font-medium whitespace-nowrap"
             >
               + Afegir variació
             </button>
           </div>
           <div className="p-4 space-y-3">
             {rendesSenseTransmissio.length === 0 && (
-              <p className="text-xs text-gray-400 text-center py-2">Cap renda sense transmissió afegida.</p>
+              <p className="text-xs text-[#6B8280] text-center py-2">Cap renda sense transmissió afegida.</p>
             )}
             {rendesSenseTransmissio.map((r, i) => (
-              <div key={r.id} className="grid grid-cols-12 gap-2 items-start border border-gray-100 rounded-lg p-2">
+              <div key={r.id} className="grid grid-cols-12 gap-2 items-start border border-[#E4EEEC] rounded-lg p-2">
                 <div className="col-span-4">
-                  <label className="block text-xs text-gray-500 mb-1">Concepte de la variació</label>
+                  <label className="block text-xs text-[#4E6765] mb-1">Concepte de la variació</label>
                   <input
                     type="text"
                     value={r.descripcio}
                     onChange={e => updateRendaSense(r.id, 'descripcio', e.target.value)}
                     placeholder="Ex: Rescat pla de pensions, indemnització, premi…"
-                    className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                    className="w-full border border-[#D6E4E2] rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#007A7B]"
                   />
                 </div>
                 <div className="col-span-3">
-                  <label className="block text-xs text-gray-500 mb-1">Tipus</label>
+                  <label className="block text-xs text-[#4E6765] mb-1">Tipus</label>
                   <select
                     value={r.tipusRenda}
                     onChange={e => updateRendaSense(r.id, 'tipusRenda', e.target.value)}
-                    className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                    className="w-full border border-[#D6E4E2] rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#007A7B]"
                   >
                     <option value="">—</option>
                     {TIPUS_RENDA_SENSE_TRANSMISSIO.map(t => (
@@ -469,34 +469,34 @@ const Step6GuanysCapital = ({ dades, update }) => {
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-xs text-gray-500 mb-1">Data</label>
+                  <label className="block text-xs text-[#4E6765] mb-1">Data</label>
                   <input
                     type="date"
                     value={r.data}
                     onChange={e => updateRendaSense(r.id, 'data', e.target.value)}
-                    className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                    className="w-full border border-[#D6E4E2] rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#007A7B]"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-xs text-gray-500 mb-1">Resultat (€)</label>
+                  <label className="block text-xs text-[#4E6765] mb-1">Resultat (€)</label>
                   <input
                     type="number" onWheel={e => e.target.blur()} step="0.01"
                     value={r.resultat === 0 ? '' : r.resultat}
                     placeholder="0"
                     onChange={e => { const v = e.target.value; updateRendaSense(r.id, 'resultat', v === '' ? 0 : parseFloat(v) || 0); }}
-                    className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                    className="w-full border border-[#D6E4E2] rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#007A7B]"
                   />
-                  <span className="block text-[10px] text-gray-400 mt-0.5">+ guany / − pèrdua</span>
+                  <span className="block text-[10px] text-[#6B8280] mt-0.5">+ guany / − pèrdua</span>
                 </div>
                 <div className="col-span-1 flex items-end h-full">
-                  <button onClick={() => removeRendaSense(r.id)} className="text-gray-400 hover:text-red-500 text-xs pb-1">✕</button>
+                  <button onClick={() => removeRendaSense(r.id)} className="text-[#6B8280] hover:text-red-500 text-xs pb-1">✕</button>
                 </div>
               </div>
             ))}
             {rendesSenseTransmissio.length > 0 && (
-              <div className="bg-gray-50 rounded-lg p-3 text-sm flex justify-between">
+              <div className="bg-[#F4F8F7] rounded-lg p-3 text-sm flex justify-between">
                 <span className="font-medium">Variació patrimonial neta (secció 1):</span>
-                <span className={`font-mono ${totalSenseTransmissio >= 0 ? 'text-[#009B9C]' : 'text-red-600'}`}>
+                <span className={`font-mono ${totalSenseTransmissio >= 0 ? 'text-[#007A7B]' : 'text-red-600'}`}>
                   {totalSenseTransmissio.toFixed(2)} €
                 </span>
               </div>
@@ -505,25 +505,25 @@ const Step6GuanysCapital = ({ dades, update }) => {
         </div>
 
         {/* Seccio 2 del 300-E: Guanys/perdues derivats de transmissio patrimonial */}
-        <div className="border border-gray-200 rounded-xl overflow-hidden">
-          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
+        <div className="border border-[#D6E4E2] rounded-xl overflow-hidden">
+          <div className="bg-[#F4F8F7] px-4 py-2 border-b border-[#D6E4E2] flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-gray-700">
+              <h3 className="text-sm font-semibold text-[#2B4644]">
                 Secció 2 — Guanys i pèrdues derivats de transmissió patrimonial (300-E sec.2)
               </h3>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-[#4E6765] mt-0.5">
                 Transmissions d'immobles, accions, fons d'inversió i altres elements patrimonials
               </p>
             </div>
             <button
               onClick={addTransmissio}
-              className="text-xs bg-[#009B9C] text-white px-3 py-1.5 rounded-lg hover:bg-[#007A7B] transition font-medium whitespace-nowrap"
+              className="text-xs bg-[#007A7B] text-white px-3 py-1.5 rounded-lg hover:bg-[#00676A] transition font-medium whitespace-nowrap"
             >
               + Afegir transmissió
             </button>
           </div>
           {dades.transmissions.length === 0 && (
-            <div className="text-center py-4 text-gray-400">
+            <div className="text-center py-4 text-[#6B8280]">
               <p className="text-sm">Cap transmissió afegida.</p>
               <p className="text-xs mt-1">Afegiu les transmissions d'immobles, accions, fons d'inversió, etc.</p>
             </div>

@@ -104,7 +104,7 @@ const Num = ({ value, onChange, className = '' }) => (
       const v = e.target.value;
       onChange(v === '' ? 0 : parseFloat(v) || 0);
     }}
-    className={`border border-gray-200 rounded px-2 py-1 text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#009B9C] w-full ${className}`}
+    className={`border border-[#D6E4E2] rounded px-2 py-1 text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#007A7B] w-full ${className}`}
   />
 );
 
@@ -113,14 +113,14 @@ const Num = ({ value, onChange, className = '' }) => (
 // ─────────────────────────────────────────────────────────────────────────────
 
 const Fila = ({ label, camp, columnes, onUpdateColumna, bold = false, readOnly = false, values = null }) => (
-  <tr className={`border-b border-gray-100 ${bold ? 'bg-gray-50' : ''}`}>
-    <td className={`py-1.5 px-3 text-xs ${bold ? 'font-semibold text-gray-800' : 'text-gray-600'} w-1/2`}>
+  <tr className={`border-b border-[#E4EEEC] ${bold ? 'bg-[#F4F8F7]' : ''}`}>
+    <td className={`py-1.5 px-3 text-xs ${bold ? 'font-semibold text-[#12302F]' : 'text-[#4E6765]'} w-1/2`}>
       {label}
     </td>
     {columnes.map((col, idx) => (
       <td key={idx} className="py-1 px-1 text-right">
         {readOnly ? (
-          <span className={`text-xs font-semibold px-2 ${bold ? 'text-[#009B9C]' : 'text-gray-800'}`}>
+          <span className={`text-xs font-semibold px-2 ${bold ? 'text-[#007A7B]' : 'text-[#12302F]'}`}>
             {fmt(values ? values[idx] : 0)} €
           </span>
         ) : (
@@ -177,23 +177,23 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
   const isDirect = activitat.tipusDeterminacio === 'directa';
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm overflow-hidden">
       {/* Capçalera */}
       <div
-        className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100 cursor-pointer"
+        className="flex items-center justify-between px-5 py-3 bg-[#F4F8F7] border-b border-[#E4EEEC] cursor-pointer"
         onClick={() => setExpandida(!expandida)}
       >
         <div className="flex items-center gap-3">
-          <span className="w-7 h-7 rounded-full bg-[#009B9C] text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+          <span className="w-7 h-7 rounded-full bg-[#007A7B] text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
             {index + 1}
           </span>
           <div>
-            <span className="font-semibold text-sm text-gray-800">
+            <span className="font-semibold text-sm text-[#12302F]">
               Activitat {index + 1}
               {cols[0]?.caea ? ` — CAEA ${cols[0].caea}` : ''}
             </span>
-            <span className="ml-3 text-xs text-gray-500">
-              Renda neta: <span className={`font-bold ${rn >= 0 ? 'text-[#009B9C]' : 'text-red-600'}`}>{fmt(rn)} €</span>
+            <span className="ml-3 text-xs text-[#4E6765]">
+              Renda neta: <span className={`font-bold ${rn >= 0 ? 'text-[#007A7B]' : 'text-red-600'}`}>{fmt(rn)} €</span>
             </span>
           </div>
         </div>
@@ -204,7 +204,7 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
           >
             Eliminar
           </button>
-          <span className="text-gray-400 text-sm">{expandida ? '▲' : '▼'}</span>
+          <span className="text-[#6B8280] text-sm">{expandida ? '▲' : '▼'}</span>
         </div>
       </div>
 
@@ -214,7 +214,7 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
           {/* Tipus d'activitat + mètode de determinació */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#4E6765] mb-1">
                 Tipus d'activitat
               </label>
               <div className="flex flex-wrap gap-2">
@@ -225,15 +225,15 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
                       name={`tipus-${activitat.id}`}
                       checked={activitat.tipusActivitat === t.value}
                       onChange={() => updateCamp('tipusActivitat', t.value)}
-                      className="accent-[#009B9C]"
+                      className="accent-[#007A7B]"
                     />
-                    <span className="text-xs text-gray-700">{t.label}</span>
+                    <span className="text-xs text-[#2B4644]">{t.label}</span>
                   </label>
                 ))}
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#4E6765] mb-1">
                 Mètode de determinació
               </label>
               <div className="flex gap-4">
@@ -243,9 +243,9 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
                     name={`metode-${activitat.id}`}
                     checked={activitat.tipusDeterminacio === 'directa'}
                     onChange={() => updateCamp('tipusDeterminacio', 'directa')}
-                    className="accent-[#009B9C]"
+                    className="accent-[#007A7B]"
                   />
-                  <span className="text-xs text-gray-700">Determinació directa</span>
+                  <span className="text-xs text-[#2B4644]">Determinació directa</span>
                 </label>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
@@ -253,20 +253,20 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
                     name={`metode-${activitat.id}`}
                     checked={activitat.tipusDeterminacio === 'objectiva'}
                     onChange={() => updateCamp('tipusDeterminacio', 'objectiva')}
-                    className="accent-[#009B9C]"
+                    className="accent-[#007A7B]"
                   />
-                  <span className="text-xs text-gray-700">Determinació objectiva</span>
+                  <span className="text-xs text-[#2B4644]">Determinació objectiva</span>
                 </label>
               </div>
             </div>
           </div>
 
           {/* Capçalera de les columnes CAEA */}
-          <div className="border border-gray-200 rounded-xl overflow-hidden">
+          <div className="border border-[#D6E4E2] rounded-xl overflow-hidden">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-[#009B9C]/10">
-                  <th className="text-left py-2 px-3 text-xs font-semibold text-gray-700 w-1/2">
+                <tr className="bg-[#007A7B]/10">
+                  <th className="text-left py-2 px-3 text-xs font-semibold text-[#2B4644] w-1/2">
                     {isDirect ? '1. Determinació directa' : '2. Determinació objectiva'}
                   </th>
                   {cols.map((col, idx) => (
@@ -277,7 +277,7 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
                           value={col.caea}
                           onChange={(e) => updateColumna(idx, 'caea', e.target.value)}
                           placeholder="CAEA"
-                          className="border border-gray-300 rounded px-2 py-1 text-xs text-center w-20 focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                          className="border border-[#C5D6D3] rounded px-2 py-1 text-xs text-center w-20 focus:outline-none focus:ring-1 focus:ring-[#007A7B]"
                         />
                         {cols.length > 1 && (
                           <button
@@ -300,8 +300,8 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
                 {isDirect ? (
                   <>
                     {/* INGRESSOS */}
-                    <tr className="bg-gray-50">
-                      <td colSpan={4} className="py-1.5 px-3 text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                    <tr className="bg-[#F4F8F7]">
+                      <td colSpan={4} className="py-1.5 px-3 text-xs font-semibold text-[#2B4644] uppercase tracking-wide">
                         Ingressos computables
                       </td>
                     </tr>
@@ -318,8 +318,8 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
                     />
 
                     {/* DESPESES */}
-                    <tr className="bg-gray-50">
-                      <td colSpan={4} className="py-1.5 px-3 text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                    <tr className="bg-[#F4F8F7]">
+                      <td colSpan={4} className="py-1.5 px-3 text-xs font-semibold text-[#2B4644] uppercase tracking-wide">
                         Despeses fiscalment deduïbles
                       </td>
                     </tr>
@@ -346,14 +346,14 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
                   <>
                     {/* MÈTODE OBJECTIU */}
                     <Fila label="Ingressos computables" camp="ingressosComputables" columnes={cols} onUpdateColumna={updateColumna} />
-                    <tr className="border-b border-gray-100">
-                      <td className="py-1.5 px-3 text-xs text-gray-600">Percentatge de despeses fiscalment deduïbles</td>
+                    <tr className="border-b border-[#E4EEEC]">
+                      <td className="py-1.5 px-3 text-xs text-[#4E6765]">Percentatge de despeses fiscalment deduïbles</td>
                       {cols.map((col, idx) => (
                         <td key={idx} className="py-1 px-1">
                           <select
                             value={col.percentatgeDespeses}
                             onChange={(e) => updateColumna(idx, 'percentatgeDespeses', parseInt(e.target.value))}
-                            className="border border-gray-200 rounded px-1 py-1 text-xs w-full focus:outline-none focus:ring-1 focus:ring-[#009B9C]"
+                            className="border border-[#D6E4E2] rounded px-1 py-1 text-xs w-full focus:outline-none focus:ring-1 focus:ring-[#007A7B]"
                           >
                             {PCT_OBJECTIU.map((p) => (
                               <option key={p.value} value={p.value}>{p.value}%</option>
@@ -380,9 +380,9 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
                       onUpdateColumna={updateColumna}
                     />
                     {/* Total rendiment net objectiu */}
-                    <tr className="bg-[#009B9C]/5">
-                      <td className="py-1.5 px-3 text-xs font-semibold text-gray-700">Rendiment net d'activitats econòmiques</td>
-                      <td colSpan={3} className="py-1.5 px-3 text-right text-xs font-bold text-[#009B9C]">
+                    <tr className="bg-[#007A7B]/5">
+                      <td className="py-1.5 px-3 text-xs font-semibold text-[#2B4644]">Rendiment net d'activitats econòmiques</td>
+                      <td colSpan={3} className="py-1.5 px-3 text-right text-xs font-bold text-[#007A7B]">
                         {fmt(cols.reduce((a, col) => a + (col.ingressosComputables || 0) - (col.ingressosComputables || 0) * ((col.percentatgeDespeses || 40) / 100), 0))} €
                       </td>
                     </tr>
@@ -390,8 +390,8 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
                 )}
 
                 {/* RESULTAT EXTRAORDINARI (comú als dos mètodes) */}
-                <tr className="border-b border-gray-100 bg-amber-50/40">
-                  <td className="py-1.5 px-3 text-xs text-gray-600">
+                <tr className="border-b border-[#E4EEEC] bg-amber-50/40">
+                  <td className="py-1.5 px-3 text-xs text-[#4E6765]">
                     Resultats extraordinaris per la transmissió d'actius fixos afectes a l'activitat
                   </td>
                   <td colSpan={3} className="py-1 px-2">
@@ -408,9 +408,9 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
           {/* Reducció per arrendament d'habitatges */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#4E6765] mb-1">
                 Reducció per arrendament d'habitatges (€)
-                <span className="ml-1 text-gray-400 font-normal">Art. 8.3 — 10% dels ingressos d'habitatge a preu assequible</span>
+                <span className="ml-1 text-[#6B8280] font-normal">Art. 8.3 — 10% dels ingressos d'habitatge a preu assequible</span>
               </label>
               <Num
                 value={activitat.reduccioArrendament || 0}
@@ -418,23 +418,23 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#4E6765] mb-1">
                 Retencions i ingressos a compte (300-C)
               </label>
               <Num
                 value={activitat.retencions || 0}
                 onChange={(v) => updateCamp('retencions', v)}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-[#4E6765] mt-1">
                 Import retingut pel pagador sobre les rendes d'activitat econòmica.
                 No confondre amb el pagament fraccionat (Formulari 320), que es consigna al Pas 8.
                 Nota: al Govern d'Andorra, el pagament fraccionat apareix al 300-C però es gestiona separadament mitjançant el Formulari 320.
               </p>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#4E6765] mb-1">
                 Impost comunal de radicació pagat (€)
-                <span className="ml-1 text-gray-400 font-normal">Art. 47 — deduïble de la quota</span>
+                <span className="ml-1 text-[#6B8280] font-normal">Art. 47 — deduïble de la quota</span>
               </label>
               <Num
                 value={activitat.impostRadicacio || 0}
@@ -444,11 +444,11 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
           </div>
 
           {/* Renda neta final */}
-          <div className={`rounded-xl p-4 flex items-center justify-between ${rn >= 0 ? 'bg-[#009B9C]/10 border border-[#009B9C]/20' : 'bg-red-50 border border-red-200'}`}>
-            <span className="font-semibold text-sm text-gray-700">
+          <div className={`rounded-xl p-4 flex items-center justify-between ${rn >= 0 ? 'bg-[#007A7B]/10 border border-[#007A7B]/20' : 'bg-red-50 border border-red-200'}`}>
+            <span className="font-semibold text-sm text-[#2B4644]">
               Renda neta d'activitats econòmiques — casella (3)
             </span>
-            <span className={`text-xl font-bold ${rn >= 0 ? 'text-[#009B9C]' : 'text-red-600'}`}>
+            <span className={`text-xl font-bold ${rn >= 0 ? 'text-[#007A7B]' : 'text-red-600'}`}>
               {fmt(rn)} €
             </span>
           </div>
@@ -457,26 +457,26 @@ const ActivitatForm = ({ activitat, index, onUpdateTot, onEliminar }) => {
           {cols.length < 3 && (
             <button
               onClick={afegirColumna}
-              className="text-xs text-[#009B9C] hover:text-[#007A7B] border border-[#009B9C]/30 hover:border-[#009B9C] rounded-lg px-3 py-1.5 transition"
+              className="text-xs text-[#007A7B] hover:text-[#007A7B] border border-[#007A7B]/30 hover:border-[#007A7B] rounded-lg px-3 py-1.5 transition"
             >
               + Afegir CAEA addicional ({cols.length}/3)
             </button>
           )}
 
           {/* Opció pagament fraccionat */}
-          <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-600">
+          <label className="flex items-center gap-2 cursor-pointer text-xs text-[#4E6765]">
             <input
               type="checkbox"
               checked={activitat.opcioFraccionat}
               onChange={(e) => updateCamp('opcioFraccionat', e.target.checked)}
-              className="accent-[#009B9C] w-4 h-4"
+              className="accent-[#007A7B] w-4 h-4"
             />
             Sol·licitar que l'Administració efectuï d'ofici la liquidació i domiciliació del pagament fraccionat
-            <span className="text-gray-400">(apartat 3 del 300-C)</span>
+            <span className="text-[#6B8280]">(apartat 3 del 300-C)</span>
           </label>
 
           {/* Nota informativa */}
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-700">
+          <div className="bg-[#EEF6F6] border border-[#E4EEEC] rounded-lg p-3 text-xs text-[#00676A]">
             <strong>ℹ️ Art. 14-19 Llei 5/2014:</strong> Les rendes netes d'activitats econòmiques formen part de la Base de Tributació General.
             El pagament fraccionat (5% sobre rendes netes any anterior o 50% sobre quota liquidació) es presenta al setembre (formulari 320).
           </div>
@@ -512,27 +512,27 @@ const Step3Activitat = ({ dades, update }) => {
   return (
     <div className="space-y-4">
       {/* Capçalera del pas */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">
+            <span className="w-8 h-8 rounded-full bg-[#007A7B] text-white text-sm font-bold flex items-center justify-center">
               3
             </span>
             <div>
-              <h2 className="font-bold text-gray-800">Activitats econòmiques</h2>
-              <p className="text-xs text-gray-500">Formulari 300-C · Art. 14-19 Llei 5/2014</p>
+              <h2 className="font-bold text-[#12302F]">Activitats econòmiques</h2>
+              <p className="text-xs text-[#4E6765]">Formulari 300-C · Art. 14-19 Llei 5/2014</p>
             </div>
           </div>
           <button
             onClick={addActivitat}
-            className="text-sm bg-[#009B9C] text-white px-4 py-2 rounded-xl hover:bg-[#007A7B] transition font-medium"
+            className="text-sm bg-[#007A7B] text-white px-4 py-2 rounded-xl hover:bg-[#00676A] transition font-medium"
           >
             + Afegir activitat
           </button>
         </div>
 
         {dades.activitats.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-[#6B8280]">
             <p className="text-sm">Cap activitat econòmica afegida.</p>
             <p className="text-xs mt-1">
               Incloeu aquí les rendes d'empresaris individuals, professionals liberals o arrendataris d'activitats.
@@ -542,15 +542,15 @@ const Step3Activitat = ({ dades, update }) => {
 
         {dades.activitats.length > 0 && (
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-3 text-sm">
-              <span className="font-semibold text-[#009B9C]">Total renda neta activitats (3): </span>
-              <span className={`font-bold ${totalRendaNeta >= 0 ? 'text-gray-800' : 'text-red-600'}`}>
+            <div className="bg-[#007A7B]/5 border border-[#007A7B]/20 rounded-xl p-3 text-sm">
+              <span className="font-semibold text-[#007A7B]">Total renda neta activitats (3): </span>
+              <span className={`font-bold ${totalRendaNeta >= 0 ? 'text-[#12302F]' : 'text-red-600'}`}>
                 {fmt(totalRendaNeta)} €
               </span>
             </div>
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm">
-              <span className="font-semibold text-gray-600">Total retencions: </span>
-              <span className="font-bold text-gray-800">{fmt(totalRetencions)} €</span>
+            <div className="bg-[#F4F8F7] border border-[#D6E4E2] rounded-xl p-3 text-sm">
+              <span className="font-semibold text-[#4E6765]">Total retencions: </span>
+              <span className="font-bold text-[#12302F]">{fmt(totalRetencions)} €</span>
             </div>
           </div>
         )}

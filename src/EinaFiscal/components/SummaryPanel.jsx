@@ -7,7 +7,7 @@ const fmt = n => {
 };
 
 const Row = ({ label, value, bold }) => (
-  <div className={`flex justify-between ${bold ? 'font-semibold text-gray-800' : 'text-gray-600'}`}>
+  <div className={`flex justify-between ${bold ? 'font-semibold text-[#12302F]' : 'text-[#4E6765]'}`}>
     <span>{label}</span>
     <span className="font-mono">{value}</span>
   </div>
@@ -15,12 +15,12 @@ const Row = ({ label, value, bold }) => (
 
 const SummaryPanel = ({ resultat, pas }) => {
   if (!resultat) return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow p-5 sticky top-20">
-      <div className="bg-gradient-to-r from-[#007A7B] to-[#009B9C] -mx-5 -mt-5 px-4 py-3 rounded-t-2xl mb-4">
+    <div className="bg-white rounded-2xl border border-[#E4EEEC] shadow p-5 sticky top-20">
+      <div className="bg-[#007A7B] -mx-5 -mt-5 px-4 py-3 rounded-t-2xl mb-4">
         <h3 className="font-bold text-sm text-white">Resum provisional</h3>
         <p className="text-white/70 text-xs">S'actualitza en temps real</p>
       </div>
-      <p className="text-gray-400 text-sm text-center py-4">
+      <p className="text-[#6B8280] text-sm text-center py-4">
         Introdueix dades per veure el resum
       </p>
     </div>
@@ -28,8 +28,8 @@ const SummaryPanel = ({ resultat, pas }) => {
 
   const r = resultat;
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow overflow-hidden sticky top-20">
-      <div className="bg-gradient-to-r from-[#007A7B] to-[#009B9C] px-4 py-3 text-white">
+    <div className="bg-white rounded-2xl border border-[#E4EEEC] shadow overflow-hidden sticky top-20">
+      <div className="bg-[#007A7B] px-4 py-3 text-white">
         <h3 className="font-bold text-sm">Resum provisional</h3>
         <p className="text-white/70 text-xs">S'actualitza en temps real</p>
       </div>
@@ -60,16 +60,16 @@ const SummaryPanel = ({ resultat, pas }) => {
             <Row label="Ded. anteriors 300-F (−)" value={`− ${fmt(r.deduccionsAnteriorsAplicades)}`} />
           )}
         </div>
-        <div className="mt-3 bg-[#009B9C]/10 rounded-xl p-3 text-center">
-          <p className="text-xs text-gray-500 mb-1">QUOTA FINAL</p>
-          <p className="text-2xl font-bold text-[#009B9C]">{fmt(r.quotaFinal)}</p>
-          <p className="text-xs text-gray-400">
+        <div className="mt-3 bg-[#007A7B]/10 rounded-xl p-3 text-center">
+          <p className="text-xs text-[#4E6765] mb-1">QUOTA FINAL</p>
+          <p className="text-2xl font-bold text-[#007A7B]">{fmt(r.quotaFinal)}</p>
+          <p className="text-xs text-[#6B8280]">
             Tipus efectiu: {((r.tipusEfectiu || 0) * 100).toFixed(2)}%
           </p>
         </div>
         {r.retencions > 0 && (
           <div className="text-center">
-            <p className="text-xs text-gray-500">Retencions: − {fmt(r.retencions)}</p>
+            <p className="text-xs text-[#4E6765]">Retencions: − {fmt(r.retencions)}</p>
             <p className={`font-bold ${r.resultatDeclaracio > 0 ? 'text-red-600' : 'text-green-600'}`}>
               {r.resultatDeclaracio > 0 ? 'A INGRESSAR' : 'A RETORNAR'}:&nbsp;
               {fmt(Math.abs(r.resultatDeclaracio))}
@@ -83,11 +83,11 @@ const SummaryPanel = ({ resultat, pas }) => {
             {[1,2,3,4,5,6,7,8,9,10].map(p => (
               <div
                 key={p}
-                className={`h-1 flex-1 rounded-full ${p <= pas ? 'bg-[#009B9C]' : 'bg-gray-200'}`}
+                className={`h-1 flex-1 rounded-full ${p <= pas ? 'bg-[#007A7B]' : 'bg-[#DCE9E6]'}`}
               />
             ))}
           </div>
-          <p className="text-xs text-gray-400 mt-1 text-center">Pas {pas} de 10</p>
+          <p className="text-xs text-[#6B8280] mt-1 text-center">Pas {pas} de 10</p>
         </div>
       )}
     </div>

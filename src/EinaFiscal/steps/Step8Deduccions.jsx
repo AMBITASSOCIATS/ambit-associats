@@ -25,8 +25,8 @@ const Num = ({ value, onChange, className = '', readOnly = false }) => (
       const v = e.target.value;
       onChange(v === '' ? 0 : parseFloat(v) || 0);
     }}
-    className={`border rounded px-2 py-1 text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#009B9C] w-full
-      ${readOnly ? 'bg-gray-50 text-gray-500 cursor-default' : 'border-gray-200'}
+    className={`border rounded px-2 py-1 text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#007A7B] w-full
+      ${readOnly ? 'bg-[#F4F8F7] text-[#4E6765] cursor-default' : 'border-[#D6E4E2]'}
       ${className}`}
   />
 );
@@ -53,37 +53,37 @@ const BlocDeducci = ({
   const teDeducci = (importGenerat || 0) > 0;
 
   return (
-    <div className={`border rounded-xl overflow-hidden ${teDeducci ? 'border-[#009B9C]/30' : 'border-gray-200'}`}>
+    <div className={`border rounded-xl overflow-hidden ${teDeducci ? 'border-[#007A7B]/30' : 'border-[#D6E4E2]'}`}>
       {/* Capçalera */}
       <div
         className={`flex items-center justify-between px-4 py-3 cursor-pointer transition
-          ${teDeducci ? 'bg-[#009B9C]/5 hover:bg-[#009B9C]/10' : 'bg-gray-50 hover:bg-gray-100'}`}
+          ${teDeducci ? 'bg-[#007A7B]/5 hover:bg-[#007A7B]/10' : 'bg-[#F4F8F7] hover:bg-[#EAF2F0]'}`}
         onClick={() => setExpandit(!expandit)}
       >
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${teDeducci ? 'bg-[#009B9C]' : 'bg-gray-300'}`} />
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${teDeducci ? 'bg-[#007A7B]' : 'bg-gray-300'}`} />
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm text-gray-800 truncate">{titol}</p>
-            <p className="text-xs text-gray-400">{referencia}</p>
+            <p className="font-semibold text-sm text-[#12302F] truncate">{titol}</p>
+            <p className="text-xs text-[#6B8280]">{referencia}</p>
           </div>
         </div>
         <div className="flex items-center gap-4 flex-shrink-0 ml-3">
           {teDeducci && (
-            <span className="text-xs font-semibold text-[#009B9C]">
+            <span className="text-xs font-semibold text-[#007A7B]">
               Generat: {fmt(importGenerat)} €
             </span>
           )}
-          <span className="text-gray-400 text-sm">{expandit ? '▲' : '▼'}</span>
+          <span className="text-[#6B8280] text-sm">{expandit ? '▲' : '▼'}</span>
         </div>
       </div>
 
       {expandit && (
-        <div className="p-4 space-y-4 border-t border-gray-100">
+        <div className="p-4 space-y-4 border-t border-[#E4EEEC]">
           {/* Descripció normativa */}
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-700">
+          <div className="bg-[#EEF6F6] border border-[#E4EEEC] rounded-lg p-3 text-xs text-[#00676A]">
             <p className="mb-1">{descripcio}</p>
             {limit && <p className="font-semibold mt-1">📌 Límit: {limit}</p>}
-            {nota && <p className="text-blue-500 mt-1 italic">{nota}</p>}
+            {nota && <p className="text-[#4E6765] mt-1 italic">{nota}</p>}
           </div>
 
           {/* Camps de càlcul específics */}
@@ -96,7 +96,7 @@ const BlocDeducci = ({
           {/* Resum import generat / aplicat / pendent */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
+              <label className="block text-xs font-medium text-[#4E6765] mb-1">
                 Import generat (€)
               </label>
               <Num
@@ -105,27 +105,27 @@ const BlocDeducci = ({
                 readOnly={readOnlyGenerat}
               />
               {readOnlyGenerat && (
-                <p className="text-xs text-gray-400 mt-0.5">Calculat automàticament</p>
+                <p className="text-xs text-[#6B8280] mt-0.5">Calculat automàticament</p>
               )}
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#4E6765] mb-1">
                 Import que s'aplica ara (€)
               </label>
               <Num
                 value={importAplicat || 0}
                 onChange={onChangeAplicat}
               />
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-[#6B8280] mt-0.5">
                 Màx. {fmt(importGenerat || 0)} €
               </p>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
+              <label className="block text-xs font-medium text-[#4E6765] mb-1">
                 Pendent exercicis futurs (€)
               </label>
               <div className={`border rounded px-2 py-1 text-xs text-right font-semibold
-                ${importPendent > 0 ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-gray-50 border-gray-200 text-gray-400'}`}>
+                ${importPendent > 0 ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-[#F4F8F7] border-[#D6E4E2] text-[#6B8280]'}`}>
                 {fmt(importPendent)} €
               </div>
               {importPendent > 0 && (
@@ -214,14 +214,14 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
   return (
     <div className="space-y-4">
       {/* Capçalera */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-6">
         <div className="flex items-center gap-2 mb-4">
-          <span className="w-8 h-8 rounded-full bg-[#009B9C] text-white text-sm font-bold flex items-center justify-center">
+          <span className="w-8 h-8 rounded-full bg-[#007A7B] text-white text-sm font-bold flex items-center justify-center">
             8
           </span>
           <div>
-            <h2 className="font-bold text-gray-800">Deduccions generades en l'exercici</h2>
-            <p className="text-xs text-gray-500">300-L sec.3 · Art. 47-49 Llei 5/2014</p>
+            <h2 className="font-bold text-[#12302F]">Deduccions generades en l'exercici</h2>
+            <p className="text-xs text-[#4E6765]">300-L sec.3 · Art. 47-49 Llei 5/2014</p>
           </div>
         </div>
 
@@ -234,21 +234,21 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
         {/* Resum total */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-[#009B9C]/5 border border-[#009B9C]/20 rounded-xl p-3">
-            <p className="text-xs text-gray-500 mb-1">Total deduccions generades</p>
-            <p className="text-lg font-bold text-[#009B9C]">{fmt(totalGenerat)} €</p>
+          <div className="bg-[#007A7B]/5 border border-[#007A7B]/20 rounded-xl p-3">
+            <p className="text-xs text-[#4E6765] mb-1">Total deduccions generades</p>
+            <p className="text-lg font-bold text-[#007A7B]">{fmt(totalGenerat)} €</p>
           </div>
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
-            <p className="text-xs text-gray-500 mb-1">Total que s'aplica en aquesta declaració</p>
-            <p className="text-lg font-bold text-gray-800">{fmt(totalAplicat)} €</p>
+          <div className="bg-[#F4F8F7] border border-[#D6E4E2] rounded-xl p-3">
+            <p className="text-xs text-[#4E6765] mb-1">Total que s'aplica en aquesta declaració</p>
+            <p className="text-lg font-bold text-[#12302F]">{fmt(totalAplicat)} €</p>
           </div>
         </div>
       </div>
 
       {/* ── DEDUCCIONS AUTOMÀTIQUES ─────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-        <h3 className="font-semibold text-sm text-gray-700 mb-3 flex items-center gap-2">
-          <span className="w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs flex items-center justify-center">A</span>
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-5">
+        <h3 className="font-semibold text-sm text-[#2B4644] mb-3 flex items-center gap-2">
+          <span className="w-5 h-5 rounded-full bg-[#DCE9E6] text-[#4E6765] text-xs flex items-center justify-center">A</span>
           Deduccions automàtiques (calculades dels passos anteriors)
         </h3>
         <div className="space-y-3">
@@ -287,12 +287,12 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
       {/* ── DEDUCCIONS VOLUNTÀRIES (no disponibles per a exercicis < 2024) ── */}
       {!es2023oAnterior && (
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-        <h3 className="font-semibold text-sm text-gray-700 mb-3 flex items-center gap-2">
-          <span className="w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs flex items-center justify-center">B</span>
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-5">
+        <h3 className="font-semibold text-sm text-[#2B4644] mb-3 flex items-center gap-2">
+          <span className="w-5 h-5 rounded-full bg-[#DCE9E6] text-[#4E6765] text-xs flex items-center justify-center">B</span>
           Deduccions per incentius fiscals (informar si aplica)
         </h3>
-        <p className="text-xs text-gray-400 mb-4">
+        <p className="text-xs text-[#6B8280] mb-4">
           Aquestes deduccions s'han de declarar per no perdre el dret a aplicar-les en exercicis futurs.
           Si no hi ha import generat, deixar a 0.
         </p>
@@ -314,20 +314,20 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
           >
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
+                <label className="block text-xs font-medium text-[#4E6765] mb-1">
                   Donatius generals (20%) — import del donatiu (€)
                 </label>
                 <Num value={d.donatiu20 || 0} onChange={(v) => upd('donatiu20', v)} />
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-xs text-[#6B8280] mt-0.5">
                   Deducció: {fmt(mecenatge20)} € (20%)
                 </p>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
+                <label className="block text-xs font-medium text-[#4E6765] mb-1">
                   Donatius fins a 100 € (90%) — import del donatiu (€)
                 </label>
                 <Num value={d.donatiu90 || 0} onChange={(v) => upd('donatiu90', Math.min(v, 100))} />
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-xs text-[#6B8280] mt-0.5">
                   Màx. 100 €. Deducció: {fmt(mecenatge90)} € (90%)
                 </p>
               </div>
@@ -348,11 +348,11 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
             readOnlyGenerat={true}
           >
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#4E6765] mb-1">
                 Valor de les aportacions realitzades (€)
               </label>
               <Num value={d.aportacionsProjectes || 0} onChange={(v) => upd('aportacionsProjectes', v)} />
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-[#6B8280] mt-0.5">
                 Deducció generada: {fmt(dedProjectes)} € (75% × {fmt(d.aportacionsProjectes || 0)} €)
               </p>
             </div>
@@ -374,22 +374,22 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
             <div className="space-y-3">
               {/* Treballadors no inscrits */}
               <div>
-                <p className="text-xs font-semibold text-gray-700 mb-2">
+                <p className="text-xs font-semibold text-[#2B4644] mb-2">
                   Treballadors no inscrits al Servei d'Ocupació — 1.000 €/treballador
                 </p>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Plantilla mitjana any anterior</label>
+                    <label className="block text-xs text-[#4E6765] mb-1">Plantilla mitjana any anterior</label>
                     <Num value={d.plantillaNIAnterior || 0} onChange={(v) => upd('plantillaNIAnterior', v)} />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Plantilla mitjana any declarat</label>
+                    <label className="block text-xs text-[#4E6765] mb-1">Plantilla mitjana any declarat</label>
                     <Num value={d.plantillaNIActual || 0} onChange={(v) => upd('plantillaNIActual', v)} />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Increment</label>
+                    <label className="block text-xs text-[#4E6765] mb-1">Increment</label>
                     <div className={`border rounded px-2 py-1 text-xs text-right font-semibold
-                      ${incrementNoInscrits > 0 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-gray-50 border-gray-200 text-gray-400'}`}>
+                      ${incrementNoInscrits > 0 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-[#F4F8F7] border-[#D6E4E2] text-[#6B8280]'}`}>
                       {incrementNoInscrits > 0 ? `+${incrementNoInscrits}` : '0'} → {fmt(incrementNoInscrits * 1000)} €
                     </div>
                   </div>
@@ -398,22 +398,22 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
               {/* Treballadors inscrits normals */}
               <div>
-                <p className="text-xs font-semibold text-gray-700 mb-2">
+                <p className="text-xs font-semibold text-[#2B4644] mb-2">
                   Treballadors inscrits SOC (25-55 anys, sense discapacitat) — 3.500 €/treballador
                 </p>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Any anterior</label>
+                    <label className="block text-xs text-[#4E6765] mb-1">Any anterior</label>
                     <Num value={d.plantillaINAnterior || 0} onChange={(v) => upd('plantillaINAnterior', v)} />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Any declarat</label>
+                    <label className="block text-xs text-[#4E6765] mb-1">Any declarat</label>
                     <Num value={d.plantillaINActual || 0} onChange={(v) => upd('plantillaINActual', v)} />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Increment</label>
+                    <label className="block text-xs text-[#4E6765] mb-1">Increment</label>
                     <div className={`border rounded px-2 py-1 text-xs text-right font-semibold
-                      ${incrementInscritsNormal > 0 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-gray-50 border-gray-200 text-gray-400'}`}>
+                      ${incrementInscritsNormal > 0 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-[#F4F8F7] border-[#D6E4E2] text-[#6B8280]'}`}>
                       {incrementInscritsNormal > 0 ? `+${incrementInscritsNormal}` : '0'} → {fmt(incrementInscritsNormal * 3500)} €
                     </div>
                   </div>
@@ -422,22 +422,22 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
 
               {/* Treballadors inscrits especials */}
               <div>
-                <p className="text-xs font-semibold text-gray-700 mb-2">
+                <p className="text-xs font-semibold text-[#2B4644] mb-2">
                   Treballadors inscrits SOC (&lt;25 anys, &gt;55 anys o discapacitat) — 3.500 €/treballador
                 </p>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Any anterior</label>
+                    <label className="block text-xs text-[#4E6765] mb-1">Any anterior</label>
                     <Num value={d.plantillaIEAnterior || 0} onChange={(v) => upd('plantillaIEAnterior', v)} />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Any declarat</label>
+                    <label className="block text-xs text-[#4E6765] mb-1">Any declarat</label>
                     <Num value={d.plantillaIEActual || 0} onChange={(v) => upd('plantillaIEActual', v)} />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Increment</label>
+                    <label className="block text-xs text-[#4E6765] mb-1">Increment</label>
                     <div className={`border rounded px-2 py-1 text-xs text-right font-semibold
-                      ${incrementInscritsEspecial > 0 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-gray-50 border-gray-200 text-gray-400'}`}>
+                      ${incrementInscritsEspecial > 0 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-[#F4F8F7] border-[#D6E4E2] text-[#6B8280]'}`}>
                       {incrementInscritsEspecial > 0 ? `+${incrementInscritsEspecial}` : '0'} → {fmt(incrementInscritsEspecial * 3500)} €
                     </div>
                   </div>
@@ -460,11 +460,11 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
             readOnlyGenerat={true}
           >
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#4E6765] mb-1">
                 Import de les inversions en digitalització (€)
               </label>
               <Num value={d.inversionsDigital || 0} onChange={(v) => upd('inversionsDigital', v)} />
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-[#6B8280] mt-0.5">
                 Deducció generada: {fmt(dedDigital)} € (2% × {fmt(d.inversionsDigital || 0)} €)
               </p>
             </div>
@@ -484,11 +484,11 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
             readOnlyGenerat={true}
           >
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-[#4E6765] mb-1">
                 Valor de les despeses o inversions de patrocini/esponsorització (€)
               </label>
               <Num value={d.despesesPatrocini || 0} onChange={(v) => upd('despesesPatrocini', v)} />
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-[#6B8280] mt-0.5">
                 Deducció generada: {fmt(dedPatrocini)} € (10% × {fmt(d.despesesPatrocini || 0)} €)
               </p>
             </div>
@@ -499,14 +499,14 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
       )}
 
       {/* ── PAGAMENT FRACCIONAT (FORMULARI 320) ──────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-        <h3 className="font-semibold text-sm text-gray-700 mb-1">💳 Pagament fraccionat ja realitzat (Formulari 320)</h3>
-        <p className="text-xs text-gray-500 mb-3">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-5">
+        <h3 className="font-semibold text-sm text-[#2B4644] mb-1">💳 Pagament fraccionat ja realitzat (Formulari 320)</h3>
+        <p className="text-xs text-[#4E6765] mb-3">
           Si heu presentat el Formulari 320 al setembre i heu ingressat un pagament fraccionat, introduïu l'import aquí.
-          Es restarà del resultat final de la declaració. <span className="text-gray-400">Art. 19 Reglament IRPF.</span>
+          Es restarà del resultat final de la declaració. <span className="text-[#6B8280]">Art. 19 Reglament IRPF.</span>
         </p>
         <div className="flex items-center gap-3">
-          <label className="text-xs font-semibold text-gray-600 whitespace-nowrap">Import pagament fraccionat (€)</label>
+          <label className="text-xs font-semibold text-[#4E6765] whitespace-nowrap">Import pagament fraccionat (€)</label>
           <div className="w-40">
             <Num
               value={dades.pagamentACompte || 0}
@@ -522,14 +522,14 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
       </div>
 
       {/* ── RESUM FINAL ─────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-        <h3 className="font-semibold text-sm text-gray-700 mb-3">Resum deduccions — impacte a la liquidació</h3>
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] shadow-sm p-5">
+        <h3 className="font-semibold text-sm text-[#2B4644] mb-3">Resum deduccions — impacte a la liquidació</h3>
         <table className="w-full text-xs">
           <thead>
-            <tr className="bg-gray-50">
-              <th className="text-left py-2 px-3 font-semibold text-gray-600">Deducció</th>
-              <th className="text-right py-2 px-3 font-semibold text-gray-600">Generada</th>
-              <th className="text-right py-2 px-3 font-semibold text-gray-600">S'aplica</th>
+            <tr className="bg-[#F4F8F7]">
+              <th className="text-left py-2 px-3 font-semibold text-[#4E6765]">Deducció</th>
+              <th className="text-right py-2 px-3 font-semibold text-[#4E6765]">Generada</th>
+              <th className="text-right py-2 px-3 font-semibold text-[#4E6765]">S'aplica</th>
               <th className="text-right py-2 px-3 font-semibold text-amber-600">Pendent</th>
             </tr>
           </thead>
@@ -544,20 +544,20 @@ const Step8Deduccions = ({ dades, update, resultat }) => {
               ['Digitalització (2%)', dedDigital, aplicatDigital, dedDigital - aplicatDigital],
               ['Patrocini i esponsorització (10%)', dedPatrocini, aplicatPatrocini, dedPatrocini - aplicatPatrocini],
             ].filter(r => r[1] > 0 || r[2] > 0).map(([label, gen, apl, pend], i) => (
-              <tr key={i} className={`border-b border-gray-100 ${i % 2 === 0 ? '' : 'bg-gray-50/50'}`}>
-                <td className="py-1.5 px-3 text-gray-700">{label}</td>
-                <td className="py-1.5 px-3 text-right font-mono text-gray-600">{fmt(gen)} €</td>
-                <td className="py-1.5 px-3 text-right font-mono font-semibold text-[#009B9C]">{fmt(apl)} €</td>
-                <td className={`py-1.5 px-3 text-right font-mono font-semibold ${pend > 0 ? 'text-amber-600' : 'text-gray-300'}`}>
+              <tr key={i} className={`border-b border-[#E4EEEC] ${i % 2 === 0 ? '' : 'bg-[#F4F8F7]/50'}`}>
+                <td className="py-1.5 px-3 text-[#2B4644]">{label}</td>
+                <td className="py-1.5 px-3 text-right font-mono text-[#4E6765]">{fmt(gen)} €</td>
+                <td className="py-1.5 px-3 text-right font-mono font-semibold text-[#007A7B]">{fmt(apl)} €</td>
+                <td className={`py-1.5 px-3 text-right font-mono font-semibold ${pend > 0 ? 'text-amber-600' : 'text-[#9FB3B0]'}`}>
                   {pend > 0 ? fmt(pend) + ' €' : '—'}
                 </td>
               </tr>
             ))}
-            <tr className="bg-gray-50 font-bold">
-              <td className="py-2 px-3 text-gray-800">TOTAL</td>
-              <td className="py-2 px-3 text-right font-mono text-gray-700">{fmt(totalGenerat)} €</td>
-              <td className="py-2 px-3 text-right font-mono text-[#009B9C]">{fmt(totalAplicat)} €</td>
-              <td className={`py-2 px-3 text-right font-mono ${totalGenerat - totalAplicat > 0 ? 'text-amber-600' : 'text-gray-300'}`}>
+            <tr className="bg-[#F4F8F7] font-bold">
+              <td className="py-2 px-3 text-[#12302F]">TOTAL</td>
+              <td className="py-2 px-3 text-right font-mono text-[#2B4644]">{fmt(totalGenerat)} €</td>
+              <td className="py-2 px-3 text-right font-mono text-[#007A7B]">{fmt(totalAplicat)} €</td>
+              <td className={`py-2 px-3 text-right font-mono ${totalGenerat - totalAplicat > 0 ? 'text-amber-600' : 'text-[#9FB3B0]'}`}>
                 {totalGenerat - totalAplicat > 0 ? fmt(totalGenerat - totalAplicat) + ' €' : '—'}
               </td>
             </tr>

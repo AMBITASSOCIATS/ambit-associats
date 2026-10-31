@@ -29,8 +29,8 @@ const uid = () => _uid++;
 
 const Tooltip = ({ text }) => (
   <span className="relative group ml-1 cursor-help">
-    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#009B9C] text-white text-xs font-bold select-none">?</span>
-    <span className="absolute z-50 left-6 top-0 w-64 text-xs bg-gray-800 text-white rounded-lg p-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-lg">
+    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#007A7B] text-white text-xs font-bold select-none">?</span>
+    <span className="absolute z-50 left-6 top-0 w-64 text-xs bg-[#12302F] text-white rounded-lg p-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-lg">
       {text}
     </span>
   </span>
@@ -38,7 +38,7 @@ const Tooltip = ({ text }) => (
 
 const Field = ({ label, name, value, onChange, placeholder = "0", tooltip, unit = "€", type = "number", min = "0" }) => (
   <div className="mb-3">
-    <label className="block text-sm font-medium text-gray-700 mb-1">
+    <label className="block text-sm font-medium text-[#2B4644] mb-1">
       {label}
       {tooltip && <Tooltip text={tooltip} />}
     </label>
@@ -50,10 +50,10 @@ const Field = ({ label, name, value, onChange, placeholder = "0", tooltip, unit 
         onChange={onChange}
         placeholder={placeholder}
         min={min}
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C] focus:border-transparent"
+        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B] focus:border-transparent"
       />
       {unit && (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B8280] text-sm pointer-events-none">
           {unit}
         </span>
       )}
@@ -69,9 +69,9 @@ const CheckField = ({ label, name, checked, onChange, tooltip }) => (
       name={name}
       checked={checked}
       onChange={onChange}
-      className="w-4 h-4 text-[#009B9C] border-gray-300 rounded focus:ring-[#009B9C]"
+      className="w-4 h-4 text-[#007A7B] border-[#C5D6D3] rounded focus:ring-[#007A7B]"
     />
-    <label htmlFor={name} className="ml-2 text-sm text-gray-700">
+    <label htmlFor={name} className="ml-2 text-sm text-[#2B4644]">
       {label}
       {tooltip && <Tooltip text={tooltip} />}
     </label>
@@ -79,32 +79,32 @@ const CheckField = ({ label, name, checked, onChange, tooltip }) => (
 );
 
 const Section = ({ title, Icon, open, onToggle, children, badge }) => (
-  <div className="border border-gray-200 rounded-xl mb-3 overflow-hidden">
+  <div className="border border-[#D6E4E2] rounded-xl mb-3 overflow-hidden">
     <button
       type="button"
       onClick={onToggle}
-      className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+      className="w-full flex items-center justify-between px-4 py-3.5 bg-white hover:bg-[#F4F8F7] transition-colors text-left"
     >
-      <span className="flex items-center gap-2 font-semibold text-gray-800 text-sm">
-        <span className="text-[#009B9C] flex-shrink-0"><Icon /></span>
+      <span className="flex items-center gap-2.5 font-display font-medium text-[#12302F] text-[17px]">
+        <span className="text-[#007A7B] flex-shrink-0"><Icon /></span>
         {title}
-        {badge && <span className="ml-2 text-xs bg-[#009B9C]/10 text-[#009B9C] rounded-full px-2 py-0.5 font-mono">{badge}</span>}
+        {badge && <span className="ml-2 text-xs bg-[#007A7B]/10 text-[#007A7B] rounded-full px-2 py-0.5 tabular-nums">{badge}</span>}
       </span>
-      <span className="text-[#009B9C] font-bold text-lg leading-none">{open ? "−" : "+"}</span>
+      <span className="text-[#007A7B] font-bold text-lg leading-none">{open ? "−" : "+"}</span>
     </button>
     {open && <div className="px-4 pt-3 pb-4 bg-white">{children}</div>}
   </div>
 );
 
 const ResultRow = ({ label, value, bold, highlight, indent, pctVal }) => (
-  <div className={`flex justify-between items-start py-1.5 ${indent ? "pl-4" : ""} ${highlight ? "bg-[#009B9C]/10 rounded-lg px-2 -mx-2" : ""} border-b border-gray-100 last:border-0`}>
-    <span className={`text-sm ${bold ? "font-bold text-gray-900" : "text-gray-600"}`}>{label}</span>
+  <div className={`flex justify-between items-start py-1.5 ${indent ? "pl-4" : ""} ${highlight ? "bg-[#007A7B]/10 rounded-lg px-2 -mx-2" : ""} border-b border-[#E4EEEC] last:border-0`}>
+    <span className={`text-sm ${bold ? "font-bold text-[#12302F]" : "text-[#4E6765]"}`}>{label}</span>
     <div className="text-right">
-      <span className={`text-sm font-mono ${bold ? "font-bold text-gray-900" : "text-gray-700"} ${highlight ? "text-[#009B9C] font-bold text-base" : ""}`}>
+      <span className={`text-sm tabular-nums ${bold ? "font-bold text-[#12302F]" : "text-[#2B4644]"} ${highlight ? "text-[#007A7B] font-bold text-base" : ""}`}>
         {value}
       </span>
       {pctVal !== undefined && (
-        <div className="text-xs text-gray-400 font-mono">{pctVal}</div>
+        <div className="text-xs text-[#6B8280] tabular-nums">{pctVal}</div>
       )}
     </div>
   </div>
@@ -112,15 +112,15 @@ const ResultRow = ({ label, value, bold, highlight, indent, pctVal }) => (
 
 const InformeRow = ({ casella, descripcio, valor, bold, separator }) => (
   <>
-    {separator && <div className="border-t border-gray-200 my-2" />}
+    {separator && <div className="border-t border-[#D6E4E2] my-2" />}
     <div className={`flex items-center py-1.5 gap-3 ${bold ? "font-bold" : ""}`}>
       {casella ? (
-        <span className="w-16 flex-shrink-0 text-xs bg-gray-100 text-gray-600 rounded px-1.5 py-0.5 text-center font-mono">{casella}</span>
+        <span className="w-16 flex-shrink-0 text-xs bg-[#EAF2F0] text-[#4E6765] rounded px-1.5 py-0.5 text-center tabular-nums">{casella}</span>
       ) : (
         <span className="w-16 flex-shrink-0" />
       )}
-      <span className={`flex-1 text-sm ${bold ? "text-gray-900" : "text-gray-600"}`}>{descripcio}</span>
-      <span className={`text-sm font-mono text-right ${bold ? "text-gray-900" : "text-gray-700"}`}>{valor}</span>
+      <span className={`flex-1 text-sm ${bold ? "text-[#12302F]" : "text-[#4E6765]"}`}>{descripcio}</span>
+      <span className={`text-sm tabular-nums text-right ${bold ? "text-[#12302F]" : "text-[#2B4644]"}`}>{valor}</span>
     </div>
   </>
 );
@@ -128,11 +128,11 @@ const InformeRow = ({ casella, descripcio, valor, bold, separator }) => (
 // Millora F — fila d'anàlisi d'exempcions
 const ExRow = ({ label, value, highlight, bold, art }) => (
   <div className={`flex justify-between items-center py-1 ${bold ? "font-semibold" : ""}`}>
-    <span className={`text-xs ${bold ? "text-gray-800" : "text-gray-600"} flex-1`}>
+    <span className={`text-xs ${bold ? "text-[#12302F]" : "text-[#4E6765]"} flex-1`}>
       {label}
-      {art && <span className="ml-1 text-[#009B9C] font-mono text-xs">({art})</span>}
+      {art && <span className="ml-1 text-[#007A7B] tabular-nums text-xs">({art})</span>}
     </span>
-    <span className={`text-xs font-mono ml-3 ${highlight === "green" ? "text-green-700 font-semibold" : highlight === "amber" ? "text-amber-700" : bold ? "text-gray-800" : "text-gray-700"}`}>
+    <span className={`text-xs tabular-nums ml-3 ${highlight === "green" ? "text-green-700 font-semibold" : highlight === "amber" ? "text-amber-700" : bold ? "text-[#12302F]" : "text-[#2B4644]"}`}>
       {value}
     </span>
   </div>
@@ -140,7 +140,7 @@ const ExRow = ({ label, value, highlight, bold, art }) => (
 
 const ExGroup = ({ title, children }) => (
   <div className="mb-4">
-    <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 border-b border-gray-100 pb-1">{title}</div>
+    <div className="text-[13px] font-semibold text-[#4E6765] mb-2 border-b border-[#E4EEEC] pb-1">{title}</div>
     {children}
   </div>
 );
@@ -148,9 +148,9 @@ const ExGroup = ({ title, children }) => (
 // ── Components per a files múltiples (Millora E) ──────────────────────────────
 
 const RowCard = ({ index, total, onRemove, children }) => (
-  <div className="border border-gray-200 rounded-lg p-3 mb-2 bg-gray-50 relative">
+  <div className="border border-[#D6E4E2] rounded-lg p-3 mb-2 bg-[#F4F8F7] relative">
     <div className="flex items-center justify-between mb-2">
-      <span className="text-xs text-gray-500 font-medium">#{index + 1}</span>
+      <span className="text-xs text-[#4E6765] font-medium">#{index + 1}</span>
       {total > 1 && (
         <button
           type="button"
@@ -169,16 +169,16 @@ const AddRowBtn = ({ onClick, label }) => (
   <button
     type="button"
     onClick={onClick}
-    className="w-full py-2 border-2 border-dashed border-[#009B9C]/40 rounded-lg text-[#009B9C] text-sm font-medium hover:border-[#009B9C] hover:bg-[#009B9C]/5 transition mt-1 mb-3"
+    className="w-full py-2 border-2 border-dashed border-[#007A7B]/40 rounded-lg text-[#007A7B] text-sm font-medium hover:border-[#007A7B] hover:bg-[#007A7B]/5 transition mt-1 mb-3"
   >
     + {label}
   </button>
 );
 
 const Subtotal = ({ label, value, warning }) => (
-  <div className={`rounded-lg px-3 py-2 text-sm flex justify-between items-center mt-1 mb-2 ${warning ? "bg-amber-50 border border-amber-200" : "bg-[#009B9C]/5 border border-[#009B9C]/20"}`}>
-    <span className={`text-xs font-medium ${warning ? "text-amber-700" : "text-[#009B9C]"}`}>{label}</span>
-    <span className={`font-mono font-semibold text-xs ${warning ? "text-amber-800" : "text-[#009B9C]"}`}>{value}</span>
+  <div className={`rounded-lg px-3 py-2 text-sm flex justify-between items-center mt-1 mb-2 ${warning ? "bg-amber-50 border border-amber-200" : "bg-[#007A7B]/5 border border-[#007A7B]/20"}`}>
+    <span className={`text-xs font-medium ${warning ? "text-amber-700" : "text-[#007A7B]"}`}>{label}</span>
+    <span className={`tabular-nums font-semibold text-xs ${warning ? "text-amber-800" : "text-[#007A7B]"}`}>{value}</span>
   </div>
 );
 
@@ -323,27 +323,23 @@ const IrpfCalculadora = ({ onBack }) => {
   const badgeRetencions = totRetencions > 0 ? `− ${fmt(totRetencions)}` : null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="max-w-6xl mx-auto px-5 md:px-10 py-10 md:py-16">
       {/* Capçalera */}
-      <div className="bg-[#009B9C] text-white py-6 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <button onClick={onBack} className="text-white/80 hover:text-white text-sm mb-3 flex items-center gap-1">
-            ← Tornar a la web
-          </button>
-          <h1 className="text-2xl md:text-3xl font-bold mb-1">Calculadora IRPF Andorra 2025</h1>
-          <p className="text-white/90 text-sm">Llei 5/2014 · L2023005 · L2025005 · Guia pràctica Govern d'Andorra</p>
-          <div className="mt-3 bg-white/20 rounded-lg px-4 py-2 text-sm">
-            ⚠️ Eina orientativa. Per a una liquidació oficial consulteu un assessor fiscal o el{" "}
-            <a href="https://www.impostos.ad" target="_blank" rel="noopener noreferrer" className="underline">Ministeri de Finances d'Andorra</a>.
-          </div>
-          <div className="mt-2 text-xs text-white/80">
-            📅 Termini presentació declaració: 1 d'abril – 30 de setembre de 2026
-          </div>
-        </div>
+      <button onClick={onBack} className="text-[15px] font-semibold text-[#007A7B] hover:underline underline-offset-4 print:hidden">
+        ← Torna a les eines
+      </button>
+      <div className="mt-8 md:mt-10 grid gap-3 max-w-[66ch]">
+        <h1 className="font-display font-medium text-[32px] md:text-[44px] leading-[1.1] tracking-[-0.015em] text-[#12302F]">Calculadora IRPF Andorra 2025</h1>
+        <p className="text-[15px] text-[#4E6765]">Llei 5/2014 · L2023005 · L2025005 · Guia pràctica Govern d'Andorra</p>
+        <p className="mt-2 border-l-4 border-[#4DB6B7] bg-[#F4F8F7] rounded-r-lg px-4 py-3 text-[15px] leading-relaxed text-[#2B4644]">
+          Eina orientativa. Per a una liquidació oficial consulteu un assessor fiscal o el{" "}
+          <a href="https://www.impostos.ad" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#007A7B] underline underline-offset-4">Ministeri de Finances d'Andorra</a>.
+          <span className="block mt-1 text-sm text-[#4E6765]">Termini de presentació de la declaració: de l'1 d'abril al 30 de setembre de 2026.</span>
+        </p>
       </div>
 
-      <div className="container mx-auto max-w-6xl px-4 py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
+      <div className="mt-10">
+        <div className="flex flex-col lg:flex-row gap-8">
 
           {/* ─── Formulari ─── */}
           <div className="flex-1 min-w-0">
@@ -354,8 +350,8 @@ const IrpfCalculadora = ({ onBack }) => {
                 tooltip="Incrementa el mínim personal a 40.000 €. El cònjuge no ha de tenir rendes generals iguals o superiors a 24.000 €." />
 
               {form.conjugeACarrec && (
-                <div className="ml-6 mt-1 mb-3 bg-blue-50 rounded-lg p-3">
-                  <p className="text-xs text-blue-700 mb-2 font-medium">El cònjuge percep rendes de la base general?</p>
+                <div className="ml-6 mt-1 mb-3 bg-[#EEF6F6] rounded-lg p-3">
+                  <p className="text-xs text-[#00676A] mb-2 font-medium">El cònjuge percep rendes de la base general?</p>
                   <Field
                     label="Import de les rendes generals del cònjuge"
                     name="rendesConjuge"
@@ -375,7 +371,7 @@ const IrpfCalculadora = ({ onBack }) => {
               <CheckField label="Discapacitat reconeguda per la Conava (obligat tributari)" name="obligatDiscapacitat" checked={form.obligatDiscapacitat} onChange={handleChange}
                 tooltip="Incrementa el mínim personal a 30.000 €. S'aplica quan el propi declarant té discapacitat reconeguda per la CONAVA." />
               {form.conjugeACarrec && form.obligatDiscapacitat && (
-                <div className="text-xs text-blue-700 bg-blue-50 rounded-lg p-2 mb-2">
+                <div className="text-xs text-[#00676A] bg-[#EEF6F6] rounded-lg p-2 mb-2">
                   ℹ️ Si hi ha cònjuge a càrrec, s'aplica el mínim de 40.000 € (prioritat sobre el de discapacitat).
                 </div>
               )}
@@ -399,29 +395,29 @@ const IrpfCalculadora = ({ onBack }) => {
               {form.treballadors.map((t, i) => (
                 <RowCard key={t.id} index={i} total={form.treballadors.length} onRemove={() => removeRow("treballadors", i)}>
                   <div className="mb-2">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Empresa / font de treball</label>
+                    <label className="block text-xs font-medium text-[#4E6765] mb-1">Empresa / font de treball</label>
                     <input
                       type="text"
                       value={t.descripcio}
                       onChange={(e) => handleArrayChange("treballadors", i, "descripcio", e.target.value)}
                       placeholder="p. ex. Empresa S.L."
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Salari brut anual (€)</label>
+                      <label className="block text-xs font-medium text-[#4E6765] mb-1">Salari brut anual (€)</label>
                       <input
                         type="number"
                         value={t.rendaBruta}
                         onChange={(e) => handleArrayChange("treballadors", i, "rendaBruta", e.target.value)}
                         placeholder="0"
                         min="0"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                      <label className="block text-xs font-medium text-[#4E6765] mb-1">
                         Cotitzacions CASS (€)
                         <Tooltip text="Import real de les cotitzacions a la CASS deduïdes del salari (aprox. 6,5% del brut com a referència orientativa)." />
                       </label>
@@ -431,12 +427,12 @@ const IrpfCalculadora = ({ onBack }) => {
                         onChange={(e) => handleArrayChange("treballadors", i, "cotitzacionsCASS", e.target.value)}
                         placeholder="0"
                         min="0"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                       />
                     </div>
                   </div>
                   {num(t.rendaBruta) > 0 && (
-                    <div className="mt-2 text-xs text-gray-500">
+                    <div className="mt-2 text-xs text-[#4E6765]">
                       Altres despeses (3%): {fmt(Math.min(num(t.rendaBruta) * 0.03, 2500 * (i === 0 ? 1 : 0)))} · Net estimat: {fmt(Math.max(0, num(t.rendaBruta) - num(t.cotitzacionsCASS) - Math.min(num(t.rendaBruta) * 0.03, 2500)))}
                     </div>
                   )}
@@ -460,29 +456,29 @@ const IrpfCalculadora = ({ onBack }) => {
               {form.activitats.map((a, i) => (
                 <RowCard key={a.id} index={i} total={form.activitats.length} onRemove={() => removeRow("activitats", i)}>
                   <div className="mb-2">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Activitat / professió</label>
+                    <label className="block text-xs font-medium text-[#4E6765] mb-1">Activitat / professió</label>
                     <input
                       type="text"
                       value={a.descripcio}
                       onChange={(e) => handleArrayChange("activitats", i, "descripcio", e.target.value)}
                       placeholder="p. ex. Consultant independent"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Ingressos bruts (€)</label>
+                      <label className="block text-xs font-medium text-[#4E6765] mb-1">Ingressos bruts (€)</label>
                       <input
                         type="number"
                         value={a.ingressos}
                         onChange={(e) => handleArrayChange("activitats", i, "ingressos", e.target.value)}
                         placeholder="0"
                         min="0"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                      <label className="block text-xs font-medium text-[#4E6765] mb-1">
                         Despeses deduïbles (€)
                         <Tooltip text="Despeses necessàries per obtenir els ingressos: subministraments, lloguer oficina, materials, quotes CASS autònom, etc." />
                       </label>
@@ -492,12 +488,12 @@ const IrpfCalculadora = ({ onBack }) => {
                         onChange={(e) => handleArrayChange("activitats", i, "despeses", e.target.value)}
                         placeholder="0"
                         min="0"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                       />
                     </div>
                   </div>
                   {(num(a.ingressos) > 0 || num(a.despeses) > 0) && (
-                    <div className="mt-2 text-xs text-gray-500">
+                    <div className="mt-2 text-xs text-[#4E6765]">
                       Resultat net: {fmt(Math.max(0, num(a.ingressos) - num(a.despeses)))}
                     </div>
                   )}
@@ -514,29 +510,29 @@ const IrpfCalculadora = ({ onBack }) => {
               {form.immobles.map((im, i) => (
                 <RowCard key={im.id} index={i} total={form.immobles.length} onRemove={() => removeRow("immobles", i)}>
                   <div className="mb-2">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Immoble / propietat</label>
+                    <label className="block text-xs font-medium text-[#4E6765] mb-1">Immoble / propietat</label>
                     <input
                       type="text"
                       value={im.descripcio}
                       onChange={(e) => handleArrayChange("immobles", i, "descripcio", e.target.value)}
                       placeholder="p. ex. Pis Escaldes, Local comercial..."
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Ingressos per lloguer (€)</label>
+                      <label className="block text-xs font-medium text-[#4E6765] mb-1">Ingressos per lloguer (€)</label>
                       <input
                         type="number"
                         value={im.ingressos}
                         onChange={(e) => handleArrayChange("immobles", i, "ingressos", e.target.value)}
                         placeholder="0"
                         min="0"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                      <label className="block text-xs font-medium text-[#4E6765] mb-1">
                         Despeses deduïbles (€)
                         <Tooltip text="Amortitzacions, interessos hipotecaris, conservació, tributs, assegurances i subministraments de l'immoble." />
                       </label>
@@ -546,12 +542,12 @@ const IrpfCalculadora = ({ onBack }) => {
                         onChange={(e) => handleArrayChange("immobles", i, "despeses", e.target.value)}
                         placeholder="0"
                         min="0"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                       />
                     </div>
                   </div>
                   {(num(im.ingressos) > 0 || num(im.despeses) > 0) && (
-                    <div className="mt-2 text-xs text-gray-500">
+                    <div className="mt-2 text-xs text-[#4E6765]">
                       Renda neta: {fmt(Math.max(0, num(im.ingressos) - num(im.despeses)))}
                     </div>
                   )}
@@ -570,39 +566,39 @@ const IrpfCalculadora = ({ onBack }) => {
               {form.rendesMobiliaries.map((rm, i) => (
                 <RowCard key={rm.id} index={i} total={form.rendesMobiliaries.length} onRemove={() => removeRow("rendesMobiliaries", i)}>
                   <div className="mb-2">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Tipus de renda</label>
+                    <label className="block text-xs font-medium text-[#4E6765] mb-1">Tipus de renda</label>
                     <select
                       value={rm.tipus}
                       onChange={(e) => handleArrayChange("rendesMobiliaries", i, "tipus", e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C] bg-white"
+                      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B] bg-white"
                     >
                       {TIPUS_MOBILIARI.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                     </select>
                   </div>
                   <div className="mb-2">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Descripció (opcional)</label>
+                    <label className="block text-xs font-medium text-[#4E6765] mb-1">Descripció (opcional)</label>
                     <input
                       type="text"
                       value={rm.descripcio}
                       onChange={(e) => handleArrayChange("rendesMobiliaries", i, "descripcio", e.target.value)}
                       placeholder="p. ex. Dividends Empresa SA, Dipòsit Banc Sabadell..."
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Ingressos bruts (€)</label>
+                      <label className="block text-xs font-medium text-[#4E6765] mb-1">Ingressos bruts (€)</label>
                       <input
                         type="number"
                         value={rm.ingressos}
                         onChange={(e) => handleArrayChange("rendesMobiliaries", i, "ingressos", e.target.value)}
                         placeholder="0"
                         min="0"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                      <label className="block text-xs font-medium text-[#4E6765] mb-1">
                         Despeses deduïbles (€)
                         <Tooltip text="Despeses de gestió i administració directament vinculades a l'obtenció dels rendiments (comissions de custòdia, gestió de cartera, etc.)." />
                       </label>
@@ -612,12 +608,12 @@ const IrpfCalculadora = ({ onBack }) => {
                         onChange={(e) => handleArrayChange("rendesMobiliaries", i, "despeses", e.target.value)}
                         placeholder="0"
                         min="0"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                       />
                     </div>
                   </div>
                   {(num(rm.ingressos) > 0 || num(rm.despeses) > 0) && (
-                    <div className="mt-2 text-xs text-gray-500">
+                    <div className="mt-2 text-xs text-[#4E6765]">
                       Renda neta: {fmt(Math.max(0, num(rm.ingressos) - num(rm.despeses)))}
                     </div>
                   )}
@@ -650,40 +646,40 @@ const IrpfCalculadora = ({ onBack }) => {
               {form.operacionsCapital.map((op, i) => (
                 <RowCard key={op.id} index={i} total={form.operacionsCapital.length} onRemove={() => removeRow("operacionsCapital", i)}>
                   <div className="mb-2">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Operació / actiu</label>
+                    <label className="block text-xs font-medium text-[#4E6765] mb-1">Operació / actiu</label>
                     <input
                       type="text"
                       value={op.descripcio}
                       onChange={(e) => handleArrayChange("operacionsCapital", i, "descripcio", e.target.value)}
                       placeholder="p. ex. Venda pis, Venda accions XYZ..."
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                     />
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Preu venda (€)</label>
+                      <label className="block text-xs font-medium text-[#4E6765] mb-1">Preu venda (€)</label>
                       <input
                         type="number"
                         value={op.preuVenda}
                         onChange={(e) => handleArrayChange("operacionsCapital", i, "preuVenda", e.target.value)}
                         placeholder="0"
                         min="0"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Preu compra (€)</label>
+                      <label className="block text-xs font-medium text-[#4E6765] mb-1">Preu compra (€)</label>
                       <input
                         type="number"
                         value={op.preuCompra}
                         onChange={(e) => handleArrayChange("operacionsCapital", i, "preuCompra", e.target.value)}
                         placeholder="0"
                         min="0"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                      <label className="block text-xs font-medium text-[#4E6765] mb-1">
                         Despeses (€)
                         <Tooltip text="Despeses de compra i venda: notaria, registre, comissions, etc." />
                       </label>
@@ -693,7 +689,7 @@ const IrpfCalculadora = ({ onBack }) => {
                         onChange={(e) => handleArrayChange("operacionsCapital", i, "despeses", e.target.value)}
                         placeholder="0"
                         min="0"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                        className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                       />
                     </div>
                   </div>
@@ -702,7 +698,7 @@ const IrpfCalculadora = ({ onBack }) => {
                       {(() => {
                         const g = num(op.preuVenda) - num(op.preuCompra) - num(op.despeses);
                         return (
-                          <div className={`text-xs ${g >= 0 ? "text-gray-500" : "text-amber-700"}`}>
+                          <div className={`text-xs ${g >= 0 ? "text-[#4E6765]" : "text-amber-700"}`}>
                             {g >= 0 ? "Guany" : "Pèrdua"}: {fmt(g)}
                             {g < 0 && " (compensable 10 exercicis, Art. 32)"}
                           </div>
@@ -734,58 +730,58 @@ const IrpfCalculadora = ({ onBack }) => {
 
             {/* 8. Retencions i pagaments a compte */}
             <Section title="8. Retencions i pagaments a compte" Icon={IconReduccions} open={open.retencions} onToggle={() => toggle("retencions")} badge={badgeRetencions}>
-              <p className="text-xs text-gray-500 mb-3">
+              <p className="text-xs text-[#4E6765] mb-3">
                 Imports retinguts o pagats a compte durant l'any. Es dedueixen de la quota final per obtenir l'import a ingressar o a retornar.
               </p>
               {form.retencions.map((ret, i) => (
                 <RowCard key={ret.id} index={i} total={form.retencions.length} onRemove={() => removeRow("retencions", i)}>
                   <div className="mb-2">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Tipus</label>
+                    <label className="block text-xs font-medium text-[#4E6765] mb-1">Tipus</label>
                     <select
                       value={ret.tipus}
                       onChange={(e) => handleArrayChange("retencions", i, "tipus", e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C] bg-white"
+                      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B] bg-white"
                     >
                       {TIPUS_RETENCIO.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                     </select>
                   </div>
                   <div className="mb-2">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Descripció (opcional)</label>
+                    <label className="block text-xs font-medium text-[#4E6765] mb-1">Descripció (opcional)</label>
                     <input
                       type="text"
                       value={ret.descripcio}
                       onChange={(e) => handleArrayChange("retencions", i, "descripcio", e.target.value)}
                       placeholder="p. ex. Empresa SL - certificat de retencions 2025"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Import retingut / pagat (€)</label>
+                    <label className="block text-xs font-medium text-[#4E6765] mb-1">Import retingut / pagat (€)</label>
                     <input
                       type="number"
                       value={ret.import}
                       onChange={(e) => handleArrayChange("retencions", i, "import", e.target.value)}
                       placeholder="0"
                       min="0"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]"
+                      className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]"
                     />
                   </div>
                 </RowCard>
               ))}
               <AddRowBtn onClick={() => addRow("retencions", makeRetencio)} label="Afegir altra retenció o pagament a compte" />
               {totRetencions > 0 && (
-                <div className={`rounded-xl px-4 py-3 mt-2 border-2 ${aIngressar > 0 ? "bg-orange-50 border-orange-200" : aIngressar < 0 ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-200"}`}>
+                <div className={`rounded-xl px-4 py-3 mt-2 border-2 ${aIngressar > 0 ? "bg-orange-50 border-orange-200" : aIngressar < 0 ? "bg-green-50 border-green-200" : "bg-[#F4F8F7] border-[#D6E4E2]"}`}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-600">Quota final IRPF</span>
-                    <span className="font-mono font-semibold">{fmt(r.quotaFinal)}</span>
+                    <span className="text-[#4E6765]">Quota final IRPF</span>
+                    <span className="tabular-nums font-semibold">{fmt(r.quotaFinal)}</span>
                   </div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-600">Total retencions i pagaments a compte</span>
-                    <span className="font-mono font-semibold text-green-700">− {fmt(totRetencions)}</span>
+                    <span className="text-[#4E6765]">Total retencions i pagaments a compte</span>
+                    <span className="tabular-nums font-semibold text-green-700">− {fmt(totRetencions)}</span>
                   </div>
-                  <div className={`flex justify-between text-base font-bold border-t pt-2 ${aIngressar > 0 ? "text-orange-700 border-orange-200" : aIngressar < 0 ? "text-green-700 border-green-200" : "text-gray-700 border-gray-200"}`}>
+                  <div className={`flex justify-between text-base font-bold border-t pt-2 ${aIngressar > 0 ? "text-orange-700 border-orange-200" : aIngressar < 0 ? "text-green-700 border-green-200" : "text-[#2B4644] border-[#D6E4E2]"}`}>
                     <span>{aIngressar > 0 ? "A INGRESSAR" : aIngressar < 0 ? "A RETORNAR" : "RESULTAT ZERO"}</span>
-                    <span className="font-mono">{fmt(Math.abs(aIngressar))}</span>
+                    <span className="tabular-nums">{fmt(Math.abs(aIngressar))}</span>
                   </div>
                 </div>
               )}
@@ -795,7 +791,7 @@ const IrpfCalculadora = ({ onBack }) => {
             <button
               type="button"
               onClick={() => toggle("informe")}
-              className="w-full mt-2 py-2.5 rounded-lg bg-[#009B9C] text-white font-semibold text-sm hover:bg-[#007A7B] transition flex items-center justify-center gap-2"
+              className="w-full mt-2 py-3 rounded-full bg-[#007A7B] text-white font-semibold text-[15px] hover:bg-[#00676A] transition flex items-center justify-center gap-2"
             >
               <IconInforme />
               {open.informe ? "Tancar informe" : "Generar informe per a la declaració (300-L)"}
@@ -803,15 +799,15 @@ const IrpfCalculadora = ({ onBack }) => {
 
             {/* Informe 300-L */}
             {open.informe && (
-              <div id="informe-irpf" className="mt-3 bg-white rounded-xl border border-gray-200 overflow-hidden">
-                <div className="bg-gray-800 text-white px-5 py-3 flex justify-between items-center">
+              <div id="informe-irpf" className="mt-3 bg-white rounded-xl border border-[#D6E4E2] overflow-hidden">
+                <div className="bg-[#12302F] text-white px-5 py-3 flex justify-between items-center">
                   <div>
                     <div className="font-bold text-sm">INFORME IRPF 2025 — ÀMBIT Associats — ambit.ad</div>
-                    <div className="text-xs text-gray-400 mt-0.5">Generat: {new Date().toLocaleDateString("ca-AD")}</div>
+                    <div className="text-xs text-[#6B8280] mt-0.5">Generat: {new Date().toLocaleDateString("ca-AD")}</div>
                   </div>
                   <button
                     onClick={() => window.print()}
-                    className="bg-white text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-gray-100 transition"
+                    className="bg-white text-[#12302F] text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-[#EAF2F0] transition"
                   >
                     🖨️ Imprimir
                   </button>
@@ -821,13 +817,13 @@ const IrpfCalculadora = ({ onBack }) => {
                     Document orientatiu. Per a la declaració oficial: <a href="https://www.e-tramits.ad/tramits/impostos/irpf" target="_blank" rel="noopener noreferrer" className="underline">e-tramits.ad</a>
                   </div>
 
-                  <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Base de Tributació General</div>
+                  <div className="text-[13px] font-semibold text-[#4E6765] mb-2">Base de Tributació General</div>
                   <InformeRow casella="(1)" descripcio="Renda neta del treball" valor={fmt(r.rendaTreball)} />
                   <InformeRow casella="(2)" descripcio="Renda neta capital immobiliari" valor={fmt(engineInput.rendaImmobiliaria)} />
                   <InformeRow casella="(3)" descripcio="Renda neta activitats econòmiques" valor={fmt(engineInput.rendaActivitat)} />
                   <InformeRow descripcio="Base de Tributació General (BTG)" valor={fmt(r.baseTributacioGeneral)} bold separator />
 
-                  <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 mt-4">Reduccions generals</div>
+                  <div className="text-[13px] font-semibold text-[#4E6765] mb-2 mt-4">Reduccions generals</div>
                   <InformeRow descripcio="Mínim personal exempt" valor={fmt(r.minimPersonal)} />
                   <InformeRow casella="(5)" descripcio="Reducció per càrregues familiars" valor={fmt(r.reduccioFamiliar)} />
                   <InformeRow casella="(6)" descripcio="Reducció habitatge habitual (Art. 38)" valor={fmt(r.reduccioHabitatge)} />
@@ -835,14 +831,14 @@ const IrpfCalculadora = ({ onBack }) => {
                   <InformeRow casella="(8)" descripcio="Pensions compensatòries (Art. 39.2)" valor={fmt(r.pensionsCompensatories)} />
                   <InformeRow descripcio="Base de Liquidació General (BLG)" valor={fmt(r.baseLiquidacioGeneral)} bold separator />
 
-                  <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 mt-4">Base de Tributació de l'Estalvi</div>
+                  <div className="text-[13px] font-semibold text-[#4E6765] mb-2 mt-4">Base de Tributació de l'Estalvi</div>
                   <InformeRow casella="(9)" descripcio="Renda neta capital mobiliari" valor={fmt(Math.max(0, engineInput.rendaMobiliaria))} />
                   <InformeRow casella="(10)" descripcio="Guanys i pèrdues de capital" valor={fmt(engineInput.guanysCapital)} />
                   <InformeRow descripcio="Base de Tributació Estalvi (BTE)" valor={fmt(Math.max(0, r.baseTributacioEstalvi))} />
                   <InformeRow descripcio="Reducció mínim exempt estalvi (3.000 €)" valor={fmt(Math.min(3000, Math.max(0, r.baseTributacioEstalvi)))} />
                   <InformeRow descripcio="Base de Liquidació Estalvi (BLE)" valor={fmt(r.baseLiquidacioEstalvi)} bold separator />
 
-                  <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 mt-4">Liquidació</div>
+                  <div className="text-[13px] font-semibold text-[#4E6765] mb-2 mt-4">Liquidació</div>
                   <InformeRow casella="(12)" descripcio="Quota de tributació (10%)" valor={fmt(r.quotaTributacio)} />
                   <InformeRow casella="(13)" descripcio="Bonificació Art. 46 (−)" valor={r.bonificacio > 0 ? `− ${fmt(r.bonificacio)}` : fmt(0)} />
                   <InformeRow descripcio="Quota de liquidació" valor={fmt(r.quotaLiquidacio)} />
@@ -851,7 +847,7 @@ const IrpfCalculadora = ({ onBack }) => {
 
                   {totRetencions > 0 && (
                     <>
-                      <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 mt-4">Retencions i pagaments a compte</div>
+                      <div className="text-[13px] font-semibold text-[#4E6765] mb-2 mt-4">Retencions i pagaments a compte</div>
                       {form.retencions.filter(ret => num(ret.import) > 0).map((ret, i) => (
                         <InformeRow
                           key={ret.id}
@@ -877,7 +873,7 @@ const IrpfCalculadora = ({ onBack }) => {
             <button
               type="button"
               onClick={() => setForm(defaultForm)}
-              className="w-full mt-3 py-2 rounded-lg border border-gray-300 text-gray-600 text-sm hover:bg-gray-100 transition"
+              className="w-full mt-3 py-2.5 rounded-full border border-[#C5D6D3] text-[#4E6765] text-sm font-medium hover:bg-[#F4F8F7] transition"
             >
               Reiniciar tots els camps
             </button>
@@ -888,18 +884,18 @@ const IrpfCalculadora = ({ onBack }) => {
             <div className="lg:sticky lg:top-4 space-y-4">
 
               {/* Resultats principals */}
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                <div className="bg-[#009B9C] px-5 py-4 text-white">
-                  <h2 className="text-lg font-bold">Resultat estimat 2025</h2>
+              <div className="bg-white rounded-2xl border border-[#D6E4E2] overflow-hidden">
+                <div className="bg-[#007A7B] px-5 py-5 text-white">
+                  <h2 className="font-display font-medium text-[22px]">Resultat estimat 2025</h2>
                   <p className="text-xs text-white/80 mt-0.5">Exercici fiscal 2025 · Art. 43-46 Llei 5/2014</p>
                 </div>
 
                 <div className="px-5 py-4 space-y-0.5">
-                  <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 mt-1">Bases de Tributació</div>
+                  <div className="text-[13px] font-semibold text-[#4E6765] mb-2 mt-1">Bases de Tributació</div>
                   <ResultRow label="Base Tributació General (BTG)" value={fmt(r.baseTributacioGeneral)} />
                   <ResultRow label="Base Tributació Estalvi (BTE)" value={fmt(Math.max(0, r.baseTributacioEstalvi))} />
 
-                  <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 mt-4">Reduccions</div>
+                  <div className="text-[13px] font-semibold text-[#4E6765] mb-2 mt-4">Reduccions</div>
                   <ResultRow label="Mínim personal" value={fmt(r.minimPersonal)} indent />
                   {r.reduccioFamiliar > 0 && <ResultRow label="Reducció familiar" value={fmt(r.reduccioFamiliar)} indent />}
                   {r.reduccioHabitatge > 0 && <ResultRow label="Reducció habitatge (Art. 38)" value={fmt(r.reduccioHabitatge)} indent />}
@@ -907,11 +903,11 @@ const IrpfCalculadora = ({ onBack }) => {
                   {r.pensionsCompensatories > 0 && <ResultRow label="Pensions compensatòries" value={fmt(r.pensionsCompensatories)} indent />}
                   <ResultRow label="Total reduccions generals" value={fmt(r.totalReduccions)} bold />
 
-                  <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 mt-4">Bases de Liquidació</div>
+                  <div className="text-[13px] font-semibold text-[#4E6765] mb-2 mt-4">Bases de Liquidació</div>
                   <ResultRow label="Base Liquidació General (BLG)" value={fmt(r.baseLiquidacioGeneral)} />
                   <ResultRow label="Base Liquidació Estalvi (BLE)" value={fmt(r.baseLiquidacioEstalvi)} />
 
-                  <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 mt-4">Quotes</div>
+                  <div className="text-[13px] font-semibold text-[#4E6765] mb-2 mt-4">Quotes</div>
                   <ResultRow label="Quota de tributació (10%)" value={fmt(r.quotaTributacio)} />
                   {r.bonificacio > 0 && <ResultRow label="Bonificació Art. 46 (−)" value={`− ${fmt(r.bonificacio)}`} indent />}
                   <ResultRow label="Quota de liquidació" value={fmt(r.quotaLiquidacio)} />
@@ -931,23 +927,23 @@ const IrpfCalculadora = ({ onBack }) => {
 
                   {/* Retencions i resultat net */}
                   {totRetencions > 0 && (
-                    <div className={`rounded-xl px-4 py-3 mt-3 border-2 ${aIngressar > 0.005 ? "bg-orange-50 border-orange-300" : aIngressar < -0.005 ? "bg-green-50 border-green-300" : "bg-gray-50 border-gray-200"}`}>
-                      <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <div className={`rounded-xl px-4 py-3 mt-3 border-2 ${aIngressar > 0.005 ? "bg-orange-50 border-orange-300" : aIngressar < -0.005 ? "bg-green-50 border-green-300" : "bg-[#F4F8F7] border-[#D6E4E2]"}`}>
+                      <div className="flex justify-between text-xs text-[#4E6765] mb-1">
                         <span>Retencions i pagaments a compte</span>
-                        <span className="font-mono text-green-700 font-semibold">− {fmt(totRetencions)}</span>
+                        <span className="tabular-nums text-green-700 font-semibold">− {fmt(totRetencions)}</span>
                       </div>
-                      <div className={`flex justify-between font-bold text-sm pt-1 border-t ${aIngressar > 0.005 ? "text-orange-700 border-orange-200" : aIngressar < -0.005 ? "text-green-700 border-green-200" : "text-gray-700 border-gray-200"}`}>
+                      <div className={`flex justify-between font-bold text-sm pt-1 border-t ${aIngressar > 0.005 ? "text-orange-700 border-orange-200" : aIngressar < -0.005 ? "text-green-700 border-green-200" : "text-[#2B4644] border-[#D6E4E2]"}`}>
                         <span>{aIngressar > 0.005 ? "▲ A INGRESSAR" : aIngressar < -0.005 ? "▼ A RETORNAR" : "RESULTAT ZERO"}</span>
-                        <span className="font-mono">{fmt(Math.abs(aIngressar))}</span>
+                        <span className="tabular-nums">{fmt(Math.abs(aIngressar))}</span>
                       </div>
                     </div>
                   )}
 
                   {(engineInput.rendaActivitat > 0 || engineInput.rendaTreballIntegra > 50000) && (
-                    <div className="bg-blue-50 rounded-lg p-3 mt-3">
-                      <div className="text-xs text-blue-700 font-medium">Pagament fraccionat (setembre 2026)</div>
-                      <div className="text-sm font-bold text-blue-800 font-mono mt-0.5">{fmt(r.pagamentFraccionat)}</div>
-                      <div className="text-xs text-blue-600 mt-0.5">50% de la quota de liquidació</div>
+                    <div className="bg-[#EEF6F6] rounded-lg p-3 mt-3">
+                      <div className="text-xs text-[#00676A] font-medium">Pagament fraccionat (setembre 2026)</div>
+                      <div className="text-sm font-bold text-[#12302F] tabular-nums mt-0.5">{fmt(r.pagamentFraccionat)}</div>
+                      <div className="text-xs text-[#4E6765] mt-0.5">50% de la quota de liquidació</div>
                     </div>
                   )}
 
@@ -967,13 +963,13 @@ const IrpfCalculadora = ({ onBack }) => {
                     </div>
                   )}
 
-                  <div className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400 space-y-1">
+                  <div className="mt-4 pt-4 border-t border-[#E4EEEC] text-xs text-[#6B8280] space-y-1">
                     <p>* Resultat aproximat. No inclou situacions especials no previstes al formulari.</p>
                     <p>* Exercici fiscal 2025.</p>
                     <p className="pt-1">
-                      <a href="https://www.impostos.ad" target="_blank" rel="noopener noreferrer" className="text-[#009B9C] underline">impostos.ad</a>
+                      <a href="https://www.impostos.ad" target="_blank" rel="noopener noreferrer" className="text-[#007A7B] underline">impostos.ad</a>
                       {" · "}
-                      <a href="https://www.e-tramits.ad/tramits/impostos/irpf" target="_blank" rel="noopener noreferrer" className="text-[#009B9C] underline">Seu Electrònica IRPF</a>
+                      <a href="https://www.e-tramits.ad/tramits/impostos/irpf" target="_blank" rel="noopener noreferrer" className="text-[#007A7B] underline">Seu Electrònica IRPF</a>
                     </p>
                   </div>
                 </div>
@@ -981,22 +977,22 @@ const IrpfCalculadora = ({ onBack }) => {
 
               {/* Millora F — Anàlisi d'exempcions i deduccions */}
               {r.rendaTotal > 0 && (
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div className="bg-white rounded-2xl border border-[#D6E4E2] overflow-hidden">
                   <button
                     type="button"
                     onClick={() => toggle("exempcions")}
-                    className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition"
+                    className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#F4F8F7] transition"
                   >
-                    <span className="font-semibold text-gray-800 text-sm flex items-center gap-2">
-                      <span className="text-[#009B9C]">🔍</span>
+                    <span className="font-display font-medium text-[#12302F] text-[17px] flex items-center gap-2">
+                      <span className="text-[#007A7B]">🔍</span>
                       Anàlisi d'exempcions i deduccions
                     </span>
-                    <span className="text-[#009B9C] font-bold text-lg">{open.exempcions ? "−" : "+"}</span>
+                    <span className="text-[#007A7B] font-bold text-lg">{open.exempcions ? "−" : "+"}</span>
                   </button>
 
                   {open.exempcions && (
                     <div className="px-5 pb-5">
-                      <p className="text-xs text-gray-400 mb-4">Desglossament de les exempcions i reduccions aplicades al càlcul.</p>
+                      <p className="text-xs text-[#6B8280] mb-4">Desglossament de les exempcions i reduccions aplicades al càlcul.</p>
 
                       {/* Rendes del treball */}
                       {engineInput.rendaTreballIntegra > 0 && (
@@ -1102,7 +1098,7 @@ const IrpfCalculadora = ({ onBack }) => {
                       )}
 
                       {/* Estalvi total */}
-                      <div className="border-t border-gray-200 pt-3 mt-2">
+                      <div className="border-t border-[#D6E4E2] pt-3 mt-2">
                         <ExRow
                           label="Total estalviat per exempcions i reduccions"
                           value={fmt(r.totalReduccions + r.altresDespeses + r.redPensionistaCASS + Math.min(IRPF.MINIM_ESTALVI, Math.max(0, r.baseTributacioEstalvi)))}

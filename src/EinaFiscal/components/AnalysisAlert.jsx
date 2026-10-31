@@ -7,7 +7,7 @@ const AnalysisAlert = ({ analisi }) => {
   const colors = {
     success: 'bg-green-50 border-green-300 text-green-800',
     warning: 'bg-amber-50 border-amber-300 text-amber-800',
-    info: 'bg-blue-50 border-blue-300 text-blue-800',
+    info: 'bg-[#EEF6F6] border-blue-300 text-[#12302F]',
     error: 'bg-red-50 border-red-300 text-red-800',
   };
   const icons = {

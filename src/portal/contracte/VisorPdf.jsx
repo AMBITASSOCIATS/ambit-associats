@@ -31,13 +31,13 @@ const VisorPdf = ({ url, textPagina, textCarregant, textError, onLlegit }) => {
           canvas.width = vista.width;
           canvas.height = vista.height;
           canvas.style.width = '100%';
-          canvas.className = 'border border-gray-200 shadow-sm bg-white';
+          canvas.className = 'border border-[#D6E4E2] shadow-sm bg-white';
           const tp = textPagina(n, doc.numPages);
           canvas.setAttribute('aria-label', tp.ca);
           const marc = document.createElement('figure');
           marc.className = 'mb-4';
           const peu = document.createElement('figcaption');
-          peu.className = 'text-[11px] text-gray-400 text-center mt-1';
+          peu.className = 'text-[11px] text-[#6B8280] text-center mt-1';
           peu.textContent = tp.ca;
           if (tp.en) {
             const en = document.createElement('span');
@@ -62,8 +62,8 @@ const VisorPdf = ({ url, textPagina, textCarregant, textError, onLlegit }) => {
 
   return (
     <div>
-      <div ref={contenidor} className="max-h-[75vh] overflow-y-auto bg-gray-50 border border-gray-200 rounded-lg p-3" />
-      {estat === 'carregant' && <div className="text-xs text-gray-500 mt-2">{textCarregant}{pagines ? ` (${pagines})` : ''}</div>}
+      <div ref={contenidor} className="max-h-[75vh] overflow-y-auto bg-[#F4F8F7] border border-[#D6E4E2] rounded-lg p-3" />
+      {estat === 'carregant' && <div className="text-xs text-[#4E6765] mt-2">{textCarregant}{pagines ? ` (${pagines})` : ''}</div>}
       {estat === 'error' && <div className="text-sm text-red-600 mt-2">{textError}</div>}
     </div>
   );

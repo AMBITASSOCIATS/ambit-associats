@@ -15,6 +15,8 @@ import { useAuth } from '../auth/AuthContext';
 import PaginaLogin from '../auth/PaginaLogin';
 import PaginaAccesDenegat from '../auth/PaginaAccesDenegat';
 import PanellMaestro from '../auth/PanellMaestro';
+import MarcAcces from '../auth/MarcAcces';
+import CapcaleraEina, { botoCapcalera } from '../auth/CapcaleraEina';
 
 const AUTODESAT_MS = 30000; // autodesat cada 30 segons
 
@@ -25,13 +27,13 @@ const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
-        <button onClick={onCancelar} className="text-[#009B9C] text-sm mb-4 hover:underline block">
+    <div className="min-h-screen bg-[#F4F8F7] flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl border border-[#D6E4E2] w-full max-w-lg p-6">
+        <button onClick={onCancelar} className="text-[#007A7B] text-sm mb-4 hover:underline block">
           ← Zona Professionals
         </button>
-        <h3 className="text-lg font-bold text-gray-800 mb-1">⚙️ Configuració de la capçalera</h3>
-        <p className="text-xs text-gray-500 mb-5">Aquestes dades apareixeran a la capçalera dels informes PDF generats. Si no s'omple, s'usaran les dades d'ÀMBIT Associats per defecte.</p>
+        <h3 className="font-display font-medium text-[20px] text-[#12302F] mb-1">⚙️ Configuració de la capçalera</h3>
+        <p className="text-xs text-[#4E6765] mb-5">Aquestes dades apareixeran a la capçalera dels informes PDF generats. Si no s'omple, s'usaran les dades d'ÀMBIT Associats per defecte.</p>
         <div className="space-y-3">
           {[
             { key: 'nom', label: 'Nom empresa / Professional', placeholder: 'Ex: Assessoria López, S.L.' },
@@ -43,19 +45,19 @@ const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
             { key: 'web', label: 'Web', placeholder: 'Ex: www.empresa.ad' },
           ].map(f => (
             <div key={f.key}>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">{f.label}</label>
+              <label className="block text-xs font-semibold text-[#4E6765] mb-1">{f.label}</label>
               <input
                 type="text"
                 value={form[f.key]}
                 onChange={e => set(f.key, e.target.value)}
                 placeholder={f.placeholder}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40"
+                className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
               />
             </div>
           ))}
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-2">Color de l'informe</label>
+          <label className="block text-xs font-semibold text-[#4E6765] mb-2">Color de l'informe</label>
           <div className="flex flex-wrap gap-2">
             {[
               { nom: 'Verd ÀMBIT', valor: '#009B9C' },
@@ -72,13 +74,13 @@ const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
                 onClick={() => set('color', c.valor)}
                 title={c.nom}
                 className={`w-8 h-8 rounded-full border-4 transition ${
-                  form.color === c.valor ? 'border-gray-800 scale-110' : 'border-transparent hover:border-gray-400'
+                  form.color === c.valor ? 'border-gray-800 scale-110' : 'border-transparent hover:border-[#9FB3B0]'
                 }`}
                 style={{ backgroundColor: c.valor }}
               />
             ))}
           </div>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-[#6B8280] mt-1">
             Color per defecte: Verd ÀMBIT
           </p>
         </div>
@@ -90,15 +92,15 @@ const ConfiguracioCapcalera = ({ valorsInicials, onDesar, onCancelar }) => {
               finally { setDesant(false); }
             }}
             disabled={desant}
-            className="flex-1 bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold py-2.5 rounded-xl transition text-sm disabled:opacity-50"
+            className="flex-1 bg-[#007A7B] hover:bg-[#00676A] text-white font-semibold py-2.5 rounded-full transition text-sm disabled:opacity-50"
           >
             {desant ? 'Desant...' : 'Desar configuració'}
           </button>
-          <button onClick={onCancelar} className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition text-sm">
+          <button onClick={onCancelar} className="px-4 py-2.5 bg-[#EAF2F0] hover:bg-[#DCE9E6] text-[#2B4644] font-semibold rounded-xl transition text-sm">
             Cancel·lar
           </button>
         </div>
-        <p className="text-xs text-gray-400 mt-3 text-center">Deixa els camps en blanc per usar les dades d'ÀMBIT Associats per defecte.</p>
+        <p className="text-xs text-[#6B8280] mt-3 text-center">Deixa els camps en blanc per usar les dades d'ÀMBIT Associats per defecte.</p>
       </div>
     </div>
   );
@@ -304,27 +306,21 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
 
   // ── Autenticació ─────────────────────────────────────────────────────────
   if (carregant) return (
-    <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center">
-      <div className="text-white text-center">
-        <div className="text-2xl font-bold mb-2">ÀMBIT Associats</div>
-        <div className="text-white/70 text-sm">Carregant...</div>
-      </div>
-    </div>
+    <MarcAcces onBack={onBack}>
+      <p className="text-[15px] text-[#4E6765]">Carregant...</p>
+    </MarcAcces>
   );
 
-  if (!user) return <PaginaLogin onLoginOk={() => {}} />;
+  if (!user) return <PaginaLogin onLoginOk={() => {}} onBack={onBack} />;
 
   // Si tenim user però encara no tenim perfil, mostrar carregant en lloc d'error
   if (!perfil) return (
-    <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center">
-      <div className="text-white text-center">
-        <div className="text-2xl font-bold mb-2">ÀMBIT Associats</div>
-        <div className="text-white/70 text-sm">Carregant perfil...</div>
-      </div>
-    </div>
+    <MarcAcces onBack={onBack}>
+      <p className="text-[15px] text-[#4E6765]">Carregant perfil...</p>
+    </MarcAcces>
   );
 
-  if (perfil.estat !== 'actiu') return <PaginaAccesDenegat />;
+  if (perfil.estat !== 'actiu') return <PaginaAccesDenegat onBack={onBack} />;
 
   if (mostrarPanellMaestro && esMaestro) return (
     <PanellMaestro onTancar={() => setMostrarPanellMaestro(false)} />
@@ -335,126 +331,85 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
     const teIrpf = esMaestro || (perfil.eines || []).includes('irpf');
     const teBretxa = esMaestro || (perfil.eines || []).includes('bretxa');
 
+    const targetaEina = (te) => `group text-left flex flex-col rounded-2xl border bg-white p-6 transition ${
+      te ? 'border-[#D6E4E2] hover:border-[#4DB6B7] cursor-pointer' : 'border-[#E4EEEC] opacity-60 cursor-not-allowed'
+    }`;
+    const etiquetaAcces = (te) => `text-[13px] font-semibold px-2.5 py-0.5 rounded-full ${te ? 'bg-[#E8F6F6] text-[#00676A]' : 'bg-[#F1F4F3] text-[#4E6765]'}`;
+
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C]">
-        {/* Capçalera */}
-        <header className="bg-black/20 px-6 py-4 flex items-center justify-between">
-          <div>
-            <button onClick={onBack} className="text-white/70 hover:text-white text-sm transition">
-              ← Tornar a la web
-            </button>
-            <h1 className="text-white font-bold text-xl mt-1">Zona Professionals</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            {user?.email && (
-              <span className="text-white/60 text-xs hidden md:inline">{user.email}</span>
-            )}
-            {esMaestro && (
-              <button
-                onClick={() => setMostrarPanellMaestro(true)}
-                className="relative text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition"
-              >
-                ⚙️ Administració
-                {pendents > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none">
-                    {pendents}
-                  </span>
-                )}
+      <div className="min-h-screen bg-[#F4F8F7] font-text text-[#12302F]">
+        <CapcaleraEina
+          titol="Zona Professionals"
+          subtitol={user?.email}
+          accions={
+            <>
+              <button onClick={onBack} className={botoCapcalera}>← Torna a la web</button>
+              {esMaestro && (
+                <button onClick={() => setMostrarPanellMaestro(true)} className={`relative ${botoCapcalera}`}>
+                  Administració
+                  {pendents > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none">
+                      {pendents}
+                    </span>
+                  )}
+                </button>
+              )}
+              <button onClick={() => { if (typeof onLogout === 'function') onLogout(); }} className={botoCapcalera}>
+                Tancar sessió
               </button>
-            )}
-            <button
-              onClick={() => { if (typeof onLogout === 'function') onLogout(); }}
-              className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition"
-            >
-              Tancar sessió
-            </button>
-          </div>
-        </header>
+            </>
+          }
+        />
 
         {/* Eines disponibles */}
-        <div className="container mx-auto max-w-4xl px-4 py-16">
-          <div className="text-center mb-12">
-            <span className="inline-flex items-center gap-2 bg-white/20 text-white text-xs font-semibold px-4 py-2 rounded-full border border-white/30 mb-4">
-              <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-              Accés exclusiu per a professionals
-            </span>
-            <h2 className="text-3xl font-bold text-white mb-3">Eines Professionals</h2>
-            <p className="text-white/70">Selecciona l'eina que vols utilitzar</p>
+        <div className="max-w-6xl mx-auto px-5 md:px-10 py-10 md:py-16">
+          <div className="grid gap-2 max-w-[62ch]">
+            <h2 className="font-display font-medium text-[30px] md:text-[40px] leading-[1.12] tracking-[-0.015em]">Eines professionals</h2>
+            <p className="text-[17px] text-[#2B4644]">Tria l'eina que vols fer servir.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-8 max-w-4xl">
             {/* Eina Fiscal IRPF */}
-            <button
-              onClick={() => teIrpf ? setVistaActual('irpf') : null}
-              disabled={!teIrpf}
-              className={`rounded-2xl p-7 border text-left flex flex-col transition-all duration-300 group ${
-                teIrpf
-                  ? 'bg-white/15 border-white/30 hover:bg-white/25 hover:border-white/50 cursor-pointer'
-                  : 'bg-white/5 border-white/10 cursor-not-allowed opacity-50'
-              }`}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 bg-[#009B9C] rounded-xl flex items-center justify-center">
+            <button onClick={() => teIrpf ? setVistaActual('irpf') : null} disabled={!teIrpf} className={targetaEina(teIrpf)}>
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="w-11 h-11 bg-[#007A7B] rounded-xl flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${teIrpf ? 'bg-teal-400 text-teal-900' : 'bg-white/20 text-white/60'}`}>
-                  {teIrpf ? 'Disponible' : 'Sense accés'}
-                </span>
+                <span className={etiquetaAcces(teIrpf)}>{teIrpf ? 'Disponible' : 'Sense accés'}</span>
               </div>
-              <h3 className="text-white font-bold text-lg mb-2">Eina Fiscal IRPF Andorra</h3>
-              <p className="text-white/60 text-sm flex-1 mb-4">Analitza i liquida l'IRPF andorrà amb referència legal de cada renda.</p>
-              {teIrpf && (
-                <span className="inline-flex items-center gap-2 text-teal-300 font-semibold text-sm">
-                  Accedir →
-                </span>
-              )}
+              <h3 className="font-display font-medium text-[21px] group-hover:text-[#007A7B] transition-colors">Eina Fiscal IRPF Andorra</h3>
+              <p className="text-[15px] leading-relaxed text-[#4E6765] flex-1 mt-1">Analitza i liquida l'IRPF andorrà amb referència legal de cada renda.</p>
+              {teIrpf && <span className="mt-4 text-sm font-semibold text-[#007A7B] underline underline-offset-4 decoration-[#007A7B]/40 group-hover:decoration-[#007A7B]">Obre l'eina</span>}
             </button>
 
             {/* Eina Bretxa de Gènere */}
-            <button
-              onClick={() => teBretxa ? window.open('https://bretxa-genere.onrender.com', '_blank') : null}
-              disabled={!teBretxa}
-              className={`rounded-2xl p-7 border text-left flex flex-col transition-all duration-300 group ${
-                teBretxa
-                  ? 'bg-white/15 border-white/30 hover:bg-white/25 hover:border-white/50 cursor-pointer'
-                  : 'bg-white/5 border-white/10 cursor-not-allowed opacity-50'
-              }`}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+            <button onClick={() => teBretxa ? window.open('https://bretxa-genere.onrender.com', '_blank') : null} disabled={!teBretxa} className={targetaEina(teBretxa)}>
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="w-11 h-11 bg-[#4DB6B7] rounded-xl flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
-                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${teBretxa ? 'bg-purple-400 text-purple-900' : 'bg-white/20 text-white/60'}`}>
-                  {teBretxa ? 'Disponible' : 'Sense accés'}
-                </span>
+                <span className={etiquetaAcces(teBretxa)}>{teBretxa ? 'Disponible' : 'Sense accés'}</span>
               </div>
-              <h3 className="text-white font-bold text-lg mb-2">Bretxa de Gènere</h3>
-              <p className="text-white/60 text-sm flex-1 mb-4">Calcula i genera l'informe de bretxa salarial de gènere segons la Llei 6/2022.</p>
-              {teBretxa && (
-                <span className="inline-flex items-center gap-2 text-purple-300 font-semibold text-sm">
-                  Accedir →
-                </span>
-              )}
+              <h3 className="font-display font-medium text-[21px] group-hover:text-[#007A7B] transition-colors">Bretxa de Gènere</h3>
+              <p className="text-[15px] leading-relaxed text-[#4E6765] flex-1 mt-1">Calcula i genera l'informe de bretxa salarial de gènere segons la Llei 6/2022.</p>
+              {teBretxa && <span className="mt-4 text-sm font-semibold text-[#007A7B] underline underline-offset-4 decoration-[#007A7B]/40 group-hover:decoration-[#007A7B]">Obre l'eina</span>}
             </button>
           </div>
 
-          {/* Botons inferiors */}
-          <div className="text-center mt-8 flex flex-wrap justify-center gap-3">
-            <button
-              onClick={() => setVistaActual('configuracio')}
-              className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition border border-white/20"
-            >
-              ⚙️ Configuració del perfil
+          {/* Compte */}
+          <div className="mt-10 pt-6 border-t border-[#D6E4E2] max-w-4xl flex flex-wrap gap-x-6 gap-y-2">
+            <button onClick={() => setVistaActual('configuracio')} className="text-sm font-semibold text-[#007A7B] hover:underline underline-offset-4">
+              Configuració del perfil
             </button>
             <button
               onClick={() => { setNovaContrasenya(''); setConfirmarContrasenya(''); setErrorContrasenya(''); setVistaActual('canviarContrasenya'); }}
-              className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition border border-white/20"
+              className="text-sm font-semibold text-[#007A7B] hover:underline underline-offset-4"
             >
-              🔑 Canviar contrasenya
+              Canviar contrasenya
             </button>
           </div>
         </div>
@@ -501,32 +456,32 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
 
   if (vistaActual === 'canviarContrasenya') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#007A7B] to-[#009B9C] flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+      <div className="min-h-screen bg-[#F4F8F7] flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl border border-[#D6E4E2] w-full max-w-sm p-6">
           <button
             onClick={() => setVistaActual('zona')}
-            className="text-[#009B9C] text-sm mb-4 hover:underline block"
+            className="text-[#007A7B] text-sm mb-4 hover:underline block"
           >
             ← Zona Professionals
           </button>
-          <h3 className="text-lg font-bold text-gray-800 mb-4">🔑 Canviar contrasenya</h3>
+          <h3 className="font-display font-medium text-[20px] text-[#12302F] mb-4">🔑 Canviar contrasenya</h3>
           <form onSubmit={canviarContrasenya} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Nova contrasenya</label>
-              <input type="password" value={novaContrasenya} onChange={e => setNovaContrasenya(e.target.value)} required minLength={8} placeholder="Mínim 8 caràcters" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40" />
+              <label className="block text-xs font-semibold text-[#4E6765] mb-1">Nova contrasenya</label>
+              <input type="password" value={novaContrasenya} onChange={e => setNovaContrasenya(e.target.value)} required minLength={8} placeholder="Mínim 8 caràcters" className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Confirmar nova contrasenya</label>
-              <input type="password" value={confirmarContrasenya} onChange={e => setConfirmarContrasenya(e.target.value)} required placeholder="Repeteix la nova contrasenya" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40" />
+              <label className="block text-xs font-semibold text-[#4E6765] mb-1">Confirmar nova contrasenya</label>
+              <input type="password" value={confirmarContrasenya} onChange={e => setConfirmarContrasenya(e.target.value)} required placeholder="Repeteix la nova contrasenya" className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
             </div>
             {errorContrasenya && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-xs text-red-700">⚠️ {errorContrasenya}</div>
             )}
             <div className="flex gap-3 pt-1">
-              <button type="submit" disabled={carregantContrasenya} className="flex-1 bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold py-2.5 rounded-xl transition text-sm disabled:opacity-50">
+              <button type="submit" disabled={carregantContrasenya} className="flex-1 bg-[#007A7B] hover:bg-[#00676A] text-white font-semibold py-2.5 rounded-full transition text-sm disabled:opacity-50">
                 {carregantContrasenya ? 'Verificant...' : 'Guardar'}
               </button>
-              <button type="button" onClick={() => setVistaActual('zona')} className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition text-sm">
+              <button type="button" onClick={() => setVistaActual('zona')} className="px-4 py-2.5 bg-[#EAF2F0] hover:bg-[#DCE9E6] text-[#2B4644] font-semibold rounded-xl transition text-sm">
                 Cancel·lar
               </button>
             </div>

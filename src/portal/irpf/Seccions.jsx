@@ -50,16 +50,16 @@ const Plegable = ({ num, t, teDades, children }) => {
       <Seccio num={num} ca={t.ca} en={t.en} />
       {!visible ? (
         <button type="button" onClick={() => setObert(true)}
-          className="text-sm font-semibold text-[#007A7B] border border-[#009B9C]/50 rounded-lg px-3 py-1.5 hover:bg-[#009B9C]/5">
+          className="text-sm font-semibold text-[#007A7B] border border-[#007A7B]/50 rounded-lg px-3 py-1.5 hover:bg-[#007A7B]/5">
           + Desplegar (opcional) / Expand (optional)
         </button>
       ) : (
         <>
           {llegir && !teDades
-            ? <p className="text-[13px] text-gray-500">{T.pdf.no_escau.ca} <span className="italic text-[11px]">/ {T.pdf.no_escau.en}</span></p>
+            ? <p className="text-[13px] text-[#4E6765]">{T.pdf.no_escau.ca} <span className="italic text-[11px]">/ {T.pdf.no_escau.en}</span></p>
             : children}
           {!llegir && !teDades && (
-            <button type="button" onClick={() => setObert(false)} className="mt-2 text-xs text-gray-500 hover:underline">Plegar / Collapse</button>
+            <button type="button" onClick={() => setObert(false)} className="mt-2 text-xs text-[#4E6765] hover:underline">Plegar / Collapse</button>
           )}
         </>
       )}
@@ -71,7 +71,7 @@ const Plegable = ({ num, t, teDades, children }) => {
 export const Introduccio = () => (
   <div className="mt-2">
     <p className="font-bold text-[15px] text-[#007A7B]">{T.subtitol.ca}</p>
-    <p className="italic text-xs text-gray-500 mb-3">{T.subtitol.en}</p>
+    <p className="italic text-xs text-[#4E6765] mb-3">{T.subtitol.en}</p>
     {T.introduccio.ca.map((p, i) => <Bilingue key={i} ca={p} en={T.introduccio.en[i]} className="mb-3" />)}
   </div>
 );
@@ -110,7 +110,7 @@ export const S2 = ({ pagador }) => {
   const S = T.s2;
   const fila = (t, v) => (
     <Fila ca={t.ca} en={t.en}>
-      <p className="bg-gray-50 border border-gray-200 rounded-sm px-3 py-2 text-[15px] text-gray-800">{v || '—'}</p>
+      <p className="bg-[#F4F8F7] border border-[#D6E4E2] rounded-lg px-3 py-2 text-[15px] text-[#12302F]">{v || '—'}</p>
     </Fila>
   );
   return (
@@ -179,7 +179,7 @@ const Persona = ({ cami, tipus, x }) => {
       <SiNo cami={`${cami}.discapacitat`} t={S5.discapacitat} si={SI} no={NO} />
       {tipus === 'ascendents' && <SiNo cami={`${cami}.dependencia`} t={T.s6.dependencia} si={SI} no={NO} />}
       <Text cami={`${cami}.persones`} t={tipus === 'descendents' ? S5.persones : { ca: majuscula(T.persones_dret.ca), en: T.persones_dret.en }} max={2} />
-      {tipus === 'descendents' && <p className="text-[11px] italic text-gray-500 sm:pl-60 -mt-1 mb-1">{S5.persones_ajuda.ca} / {S5.persones_ajuda.en}</p>}
+      {tipus === 'descendents' && <p className="text-[11px] italic text-[#4E6765] sm:pl-60 -mt-1 mb-1">{S5.persones_ajuda.ca} / {S5.persones_ajuda.en}</p>}
       {tipus === 'descendents' && <Import cami={`${cami}.matricules`} t={S5.matricules} />}
       <AvisEdat tipus={tipus} x={x} />
     </>

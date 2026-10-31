@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import T from './text-autoritzacio.json';
 import PD from './text-proteccio-dades.json';
-import logo from './logo-ambit.jpg';
+import MarcClient from '../MarcClient';
 import SignaturaCanvas from './SignaturaCanvas';
 import { formata, validaIban } from './iban';
 
@@ -31,16 +31,16 @@ const dataAvui = () => new Date().toLocaleDateString('ca-AD', { timeZone: 'Europ
 
 // ─── Peces visuals (mateix estil que el PDF) ────────────────────────────────
 const Seccio = ({ ca, en }) => (
-  <div className="flex items-baseline justify-between bg-[#009B9C] text-white px-3 py-1.5 mt-7 mb-2">
-    <span className="font-bold text-[15px]">{ca}</span>
+  <div className="flex items-baseline justify-between bg-[#007A7B] text-white rounded-md px-4 py-2 mt-8 mb-2">
+    <span className="font-display font-medium text-[16px]">{ca}</span>
     <span className="italic text-xs">{en}</span>
   </div>
 );
 
 const Etiqueta = ({ ca, en, obligatori, htmlFor }) => (
   <label htmlFor={htmlFor} className="block sm:w-56 sm:flex-shrink-0 mb-1 sm:mb-0">
-    <span className="font-bold text-[15px] text-gray-900">{obligatori && <span className="font-normal">* </span>}{ca}</span>
-    <span className="block italic text-[11px] text-gray-500 pl-3">{en}</span>
+    <span className="font-bold text-[15px] text-[#12302F]">{obligatori && <span className="font-normal">* </span>}{ca}</span>
+    <span className="block italic text-[11px] text-[#4E6765] pl-3">{en}</span>
   </label>
 );
 
@@ -51,42 +51,37 @@ const Camp = ({ id, ca, en, obligatori = true, children }) => (
   </div>
 );
 
-const estilEntrada = 'w-full bg-[#FBFAF1] border border-[#C2BD6B] rounded-sm px-3 py-2 text-[15px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40';
+const estilEntrada = 'w-full bg-[#F7FBFA] border border-[#B9D3CF] rounded-lg px-3 py-2 text-[15px] text-[#12302F] focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40';
 
 const Entrada = (props) => <input {...props} className={estilEntrada} />;
 
 const Bilingue = ({ ca, en, className = '' }) => (
   <div className={className}>
-    <p className="text-[15px] text-gray-900 text-justify leading-snug">{ca}</p>
-    <p className="text-xs italic text-gray-500 text-justify mt-1 leading-snug">{en}</p>
+    <p className="text-[15px] text-[#12302F] text-justify leading-snug">{ca}</p>
+    <p className="text-xs italic text-[#4E6765] text-justify mt-1 leading-snug">{en}</p>
   </div>
 );
 
 const Pantalla = ({ children }) => (
-  <div className="min-h-screen bg-gray-100 py-6 sm:py-10 px-3">
-    <div className="max-w-3xl mx-auto bg-white shadow-sm rounded-lg px-4 sm:px-10 py-8">
-      <header className="flex items-start justify-between gap-4 pb-4 border-b-2 border-[#009B9C]">
-        <img src={logo} alt="ÀMBIT Associats" className="h-12 sm:h-14 w-auto" />
-        <div className="text-right">
-          <h1 className="text-base sm:text-xl font-bold text-[#009B9C] leading-tight">{T.titol.ca}</h1>
-          <p className="text-xs sm:text-sm italic text-gray-500">{T.titol.en}</p>
-        </div>
+  <MarcClient>
+      <header className="pb-5 border-b border-[#D6E4E2]">
+        <h1 className="font-display font-medium text-[22px] sm:text-[28px] leading-tight text-[#12302F]">{T.titol.ca}</h1>
+        <p className="text-sm italic text-[#4E6765] mt-1">{T.titol.en}</p>
       </header>
       {children}
-      <footer className="mt-10 pt-3 border-t border-[#009B9C]/60 text-[10px] text-gray-500 leading-relaxed">
+      <footer className="mt-10 pt-4 border-t border-[#D6E4E2] text-[11px] text-[#4E6765] leading-relaxed">
         <p>{T.peu[0]}</p>
         <p>{T.peu[1]}</p>
       </footer>
-    </div>
-  </div>
+  </MarcClient>
 );
 
 const Missatge = ({ icona, ca, en, children }) => (
   <Pantalla>
     <div className="text-center py-12">
       <div className="text-5xl mb-4">{icona}</div>
-      <h2 className="text-xl font-bold text-gray-800">{ca}</h2>
-      <p className="text-sm italic text-gray-500 mt-1">{en}</p>
+      <h2 className="font-display font-medium text-[24px] text-[#12302F]">{ca}</h2>
+      <p className="text-sm italic text-[#4E6765] mt-1">{en}</p>
       {children}
     </div>
   </Pantalla>
@@ -139,34 +134,34 @@ const PaginaSignar = () => {
   }, []);
 
   if (estat === 'carregant') {
-    return <div className="min-h-screen flex items-center justify-center text-gray-400 text-sm">Carregant... / Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-[#6B8280] text-sm">Carregant... / Loading...</div>;
   }
   if (estat === 'invalid') {
     return (
       <Missatge icona="🔒" ca={errorInicial || 'Enllaç no vàlid o caducat'} en="Invalid or expired link">
-        <p className="text-sm text-gray-600 mt-6">
+        <p className="text-sm text-[#4E6765] mt-6">
           Si necessiteu un enllaç nou, contacteu amb nosaltres a{' '}
-          <a href="mailto:info@ambit.ad" className="text-[#009B9C] underline">info@ambit.ad</a> o al +376 655 382.
+          <a href="mailto:info@ambit.ad" className="text-[#007A7B] underline">info@ambit.ad</a> o al +376 655 382.
         </p>
-        <p className="text-xs italic text-gray-500 mt-1">If you need a new link, please contact us at info@ambit.ad or on +376 655 382.</p>
+        <p className="text-xs italic text-[#4E6765] mt-1">If you need a new link, please contact us at info@ambit.ad or on +376 655 382.</p>
       </Missatge>
     );
   }
   if (estat === 'fet') {
     return (
       <Missatge icona="✅" ca="Autorització signada" en="Authorisation signed">
-        <p className="text-sm text-gray-600 mt-6">Gràcies. Hem rebut la vostra autorització signada.</p>
-        <p className="text-xs italic text-gray-500">Thank you. We have received your signed authorisation.</p>
+        <p className="text-sm text-[#4E6765] mt-6">Gràcies. Hem rebut la vostra autorització signada.</p>
+        <p className="text-xs italic text-[#4E6765]">Thank you. We have received your signed authorisation.</p>
         {resultat?.url && (
           <a href={resultat.url} download={resultat.nom_fitxer}
-            className="inline-block mt-6 bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold px-6 py-3 rounded-xl text-sm">
+            className="inline-block mt-6 bg-[#007A7B] hover:bg-[#00676A] text-white font-semibold px-6 py-3 rounded-full text-sm">
             Descarregar el PDF / Download PDF
           </a>
         )}
-        <p className="text-xs text-gray-500 mt-4">
+        <p className="text-xs text-[#4E6765] mt-4">
           L'enllaç de descàrrega és vàlid durant 5 minuts. Si el necessiteu més endavant, demaneu-nos-en una còpia a info@ambit.ad.
         </p>
-        <p className="text-[11px] italic text-gray-400">
+        <p className="text-[11px] italic text-[#6B8280]">
           The download link is valid for 5 minutes. If you need it later, ask us for a copy at info@ambit.ad.
         </p>
       </Missatge>
@@ -234,9 +229,9 @@ const PaginaSignar = () => {
   return (
     <Pantalla>
       <form onSubmit={signa}>
-        <div className="mt-5 bg-[#009B9C]/5 border border-[#009B9C]/30 rounded-lg p-4 text-sm text-gray-700">
+        <div className="mt-5 bg-[#007A7B]/5 border border-[#007A7B]/30 rounded-lg p-4 text-sm text-[#2B4644]">
           <p><strong>{info.client_nom}</strong>: empleneu i signeu aquesta autorització. L'enllaç caduca el {expira}.</p>
-          <p className="text-xs italic text-gray-500 mt-1">Please complete and sign this authorisation. The link expires on {expira}.</p>
+          <p className="text-xs italic text-[#4E6765] mt-1">Please complete and sign this authorisation. The link expires on {expira}.</p>
         </div>
 
         {/* Creditor */}
@@ -244,15 +239,15 @@ const PaginaSignar = () => {
         <div className="divide-y divide-gray-200">
           {T.creditor.files.map((f) => (
             <div key={f.ca} className="sm:flex py-1.5 text-[15px]">
-              <span className="block sm:w-56 sm:flex-shrink-0 text-gray-900">{f.ca} <span className="italic text-[11px] text-gray-500">/ {f.en}</span></span>
-              <span className="block font-bold text-gray-900">{f.valor}</span>
+              <span className="block sm:w-56 sm:flex-shrink-0 text-[#12302F]">{f.ca} <span className="italic text-[11px] text-[#4E6765]">/ {f.en}</span></span>
+              <span className="block font-bold text-[#12302F]">{f.valor}</span>
             </div>
           ))}
         </div>
 
         {/* Titular */}
         <Seccio ca={T.titular.seccio.ca} en={T.titular.seccio.en} />
-        <p className="text-[11px] italic text-gray-500 mb-2">{T.titular.avis.ca}  /  {T.titular.avis.en}</p>
+        <p className="text-[11px] italic text-[#4E6765] mb-2">{T.titular.avis.ca}  /  {T.titular.avis.en}</p>
         <Camp id="tn" ca={T.titular.nom.ca} en={T.titular.nom.en}>
           <Entrada id="tn" required maxLength={200} autoComplete="name" value={d.titular_nom} onChange={canvi('titular_nom')} />
         </Camp>
@@ -273,19 +268,19 @@ const PaginaSignar = () => {
           <div className="flex flex-wrap gap-x-10 gap-y-2 pt-1" aria-live="polite">
             {[['andbank', 'Andbank'], ['creand', 'Creand'], ['morabanc', 'MoraBanc']].map(([k, nom]) => (
               <span key={k} className="flex items-center gap-2 text-[15px]">
-                <span className={`w-5 h-5 border border-[#C2BD6B] flex items-center justify-center text-[#007A7B] font-bold ${iban.entitat === k ? 'bg-[#009B9C]/10' : 'bg-white'}`}>
+                <span className={`w-5 h-5 border border-[#B9D3CF] flex items-center justify-center text-[#007A7B] font-bold ${iban.entitat === k ? 'bg-[#007A7B]/10' : 'bg-white'}`}>
                   {iban.entitat === k ? '✕' : ''}
                 </span>
                 {nom}
               </span>
             ))}
           </div>
-          <p className="text-[11px] text-gray-400 mt-1">Es marca sola segons l'IBAN. / Selected automatically from the IBAN.</p>
+          <p className="text-[11px] text-[#6B8280] mt-1">Es marca sola segons l'IBAN. / Selected automatically from the IBAN.</p>
         </Camp>
 
         {/* Client facturat */}
         <Seccio ca={T.facturat.seccio.ca} en={T.facturat.seccio.en} />
-        <p className="text-[11px] italic text-gray-500 mb-2">{T.facturat.avis.ca}  /  {T.facturat.avis.en}</p>
+        <p className="text-[11px] italic text-[#4E6765] mb-2">{T.facturat.avis.ca}  /  {T.facturat.avis.en}</p>
         <Camp id="cf" ca={T.facturat.nom.ca} en={T.facturat.nom.en} obligatori={false}>
           <Entrada id="cf" maxLength={200} value={d.client_facturat_nom} onChange={canvi('client_facturat_nom')} />
         </Camp>
@@ -298,19 +293,19 @@ const PaginaSignar = () => {
         <ol className="space-y-3">
           {T.condicions.punts.map((c, i) => (
             <li key={i} className="flex gap-2">
-              <span className="text-[15px] text-gray-900">{i + 1}.</span>
+              <span className="text-[15px] text-[#12302F]">{i + 1}.</span>
               <Bilingue ca={c.ca} en={c.en} className="flex-1" />
             </li>
           ))}
         </ol>
 
         {/* Informació sobre protecció de dades (art. 16 Llei 29/2021), abans de signar */}
-        <details className="mt-5 border border-[#009B9C]/40 rounded-lg">
+        <details className="mt-5 border border-[#007A7B]/40 rounded-lg">
           <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-[#007A7B]">
-            {PD.ca.titol} <span className="font-normal italic text-gray-500">/ {PD.en.titol}</span>
+            {PD.ca.titol} <span className="font-normal italic text-[#4E6765]">/ {PD.en.titol}</span>
           </summary>
           <div className="px-4 pb-4 space-y-4">
-            {[['ca', 'text-[15px] text-gray-900', 'font-bold'], ['en', 'text-xs italic text-gray-500', 'font-semibold']].map(([idioma, estil, negreta]) => (
+            {[['ca', 'text-[15px] text-[#12302F]', 'font-bold'], ['en', 'text-xs italic text-[#4E6765]', 'font-semibold']].map(([idioma, estil, negreta]) => (
               <div key={idioma} lang={idioma} className={`${estil} space-y-1.5 leading-snug`}>
                 <p className={negreta}>{PD[idioma].titol}</p>
                 {PD[idioma].punts.map((p) => {
@@ -328,7 +323,7 @@ const PaginaSignar = () => {
           <Entrada id="ll" required maxLength={100} value={d.lloc} onChange={canvi('lloc')} />
         </Camp>
         <Camp ca={T.signatura.data.ca} en={T.signatura.data.en}>
-          <p className="text-[15px] py-2">{dataAvui()} <span className="text-[11px] text-gray-400">(la posa el sistema / set by the system)</span></p>
+          <p className="text-[15px] py-2">{dataAvui()} <span className="text-[11px] text-[#6B8280]">(la posa el sistema / set by the system)</span></p>
         </Camp>
         <Camp id="sn" ca="Nom del signant" en="Name of the signatory">
           <Entrada id="sn" required maxLength={200} value={d.signatari_nom} onChange={canvi('signatari_nom')} />
@@ -342,11 +337,11 @@ const PaginaSignar = () => {
           <Camp ca="El signant és administrador?" en="Is the signatory a director?">
             <div className="flex flex-wrap gap-6 pt-1 text-[15px]">
               <label className="flex items-center gap-2">
-                <input type="radio" name="admin" checked={esAdmin === true} onChange={() => setEsAdmin(true)} className="accent-[#009B9C]" />
+                <input type="radio" name="admin" checked={esAdmin === true} onChange={() => setEsAdmin(true)} className="accent-[#007A7B]" />
                 Sí / Yes
               </label>
               <label className="flex items-center gap-2">
-                <input type="radio" name="admin" checked={esAdmin === false} onChange={() => setEsAdmin(false)} className="accent-[#009B9C]" />
+                <input type="radio" name="admin" checked={esAdmin === false} onChange={() => setEsAdmin(false)} className="accent-[#007A7B]" />
                 No, actua amb poder / No, acting under a power of attorney
               </label>
             </div>
@@ -357,9 +352,9 @@ const PaginaSignar = () => {
           <Camp id="po" ca="Poder del signant" en="Signatory's power of attorney">
             <input id="po" type="file" accept="application/pdf,image/jpeg,image/png"
               onChange={(e) => pujaPoder(e.target.files?.[0])}
-              className="block w-full text-sm text-gray-700 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-[#009B9C]/10 file:text-[#007A7B] file:font-semibold" />
-            <p className="text-[11px] text-gray-500 mt-1">PDF, JPG o PNG, màxim 20 MB. / PDF, JPG or PNG, up to 20 MB.</p>
-            {poder.pujant && <p className="text-xs text-gray-500 mt-1">Pujant... / Uploading...</p>}
+              className="block w-full text-sm text-[#2B4644] file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-[#007A7B]/10 file:text-[#007A7B] file:font-semibold" />
+            <p className="text-[11px] text-[#4E6765] mt-1">PDF, JPG o PNG, màxim 20 MB. / PDF, JPG or PNG, up to 20 MB.</p>
+            {poder.pujant && <p className="text-xs text-[#4E6765] mt-1">Pujant... / Uploading...</p>}
             {poder.path && <p className="text-xs text-green-700 mt-1">Fitxer adjuntat ✓ / File attached ✓</p>}
             {poder.error && <p className="text-xs text-red-600 mt-1">{poder.error}</p>}
           </Camp>
@@ -377,10 +372,10 @@ const PaginaSignar = () => {
         )}
 
         <button type="submit" disabled={signant || poder.pujant}
-          className="mt-6 w-full bg-[#009B9C] hover:bg-[#007A7B] text-white font-bold py-3.5 rounded-xl transition disabled:opacity-50">
+          className="mt-6 w-full bg-[#007A7B] hover:bg-[#00676A] text-white font-bold py-3.5 rounded-xl transition disabled:opacity-50">
           {signant ? 'Signant... / Signing...' : 'Signar l\'autorització / Sign the authorisation'}
         </button>
-        <p className="text-[11px] text-gray-500 text-center mt-2">
+        <p className="text-[11px] text-[#4E6765] text-center mt-2">
           En signar, s'enregistren la data i l'hora, l'adreça IP i el navegador com a evidència.
           <span className="italic block">When you sign, the date and time, IP address and browser are recorded as evidence.</span>
         </p>

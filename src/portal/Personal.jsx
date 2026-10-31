@@ -54,15 +54,15 @@ const Personal = ({ usuariActual }) => {
       </Targeta>
 
       <Targeta titol={`Personal del portal (${personal.length})`}>
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-[#E4EEEC]">
           {personal.map((p) => (
             <div key={p.user_id} className="py-3 flex flex-wrap items-center gap-4">
               <div className="flex-1 min-w-[200px]">
-                <p className="text-sm font-semibold text-gray-800">
+                <p className="text-sm font-semibold text-[#12302F]">
                   {p.email}
-                  {p.user_id === usuariActual && <span className="ml-2 text-[#009B9C] text-xs">(Tu)</span>}
+                  {p.user_id === usuariActual && <span className="ml-2 text-[#007A7B] text-xs">(Tu)</span>}
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-[#6B8280]">
                   {p.role === 'ocic' ? 'OCIC' : 'Gestor'} · {p.actiu ? 'actiu' : 'de baixa'} · des del {dataCurta(p.created_at)}
                 </p>
               </div>

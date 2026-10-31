@@ -27,7 +27,7 @@ const Referencia = ({ client, onDesat }) => {
   return (
     <div className="flex items-center gap-2">
       <input value={valor} maxLength={14} onChange={(e) => setValor(e.target.value)} placeholder="Sense referència"
-        className="w-36 border border-gray-300 rounded-lg px-2 py-1.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40" />
+        className="w-36 border border-[#C5D6D3] rounded-lg px-2 py-1.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
       {canviat && <Boto onClick={desa} disabled={desant}>{desant ? '...' : 'Desar'}</Boto>}
       {error && <span className="text-[11px] text-red-600">{error}</span>}
     </div>
@@ -73,7 +73,7 @@ const NovaIrpf = ({ client, onCreada, onCancel }) => {
   const pagadorComplet = pagador.denominacio.trim() && pagador.nrt.trim() && pagador.domicili.trim();
   const perceptorComplet = triat !== 'nou' || (nou.nom.trim() && nou.nrt.trim() && nou.inici_relacio && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(nou.email.trim()));
   return (
-    <form onSubmit={crea} className="w-full border border-[#009B9C]/30 bg-[#009B9C]/5 rounded-lg p-4 space-y-3">
+    <form onSubmit={crea} className="w-full border border-[#007A7B]/30 bg-[#007A7B]/5 rounded-lg p-4 space-y-3">
       <p className="text-xs font-bold text-[#007A7B]">Comunicació de dades al pagador (IRPF) · el client és el pagador</p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Entrada etiqueta="Pagador: denominació social" required value={pagador.denominacio} onChange={(e) => setPagador({ ...pagador, denominacio: e.target.value })} />
@@ -93,12 +93,12 @@ const NovaIrpf = ({ client, onCreada, onCancel }) => {
           <Entrada etiqueta="Correu del perceptor" type="email" required value={nou.email} onChange={(e) => setNou({ ...nou, email: e.target.value })} />
           <Entrada etiqueta={nou.relacio_laboral ? 'Inici de la relació laboral' : 'Data del primer pagament'} type="date" required value={nou.inici_relacio}
             onChange={(e) => setNou({ ...nou, inici_relacio: e.target.value })} ajuda="Termini de la comunicació inicial (arts. 31.a i 31.b)" />
-          <label className="md:col-span-2 flex items-center gap-2 text-xs text-gray-700">
-            <input type="checkbox" checked={!nou.relacio_laboral} onChange={(e) => setNou({ ...nou, relacio_laboral: !e.target.checked })} className="accent-[#009B9C]" />
+          <label className="md:col-span-2 flex items-center gap-2 text-xs text-[#2B4644]">
+            <input type="checkbox" checked={!nou.relacio_laboral} onChange={(e) => setNou({ ...nou, relacio_laboral: !e.target.checked })} className="accent-[#007A7B]" />
             Rendes que no són d'una relació laboral (s'indica la data del primer pagament)
           </label>
-          <label className="md:col-span-3 flex items-start gap-2 text-xs text-gray-700">
-            <input type="checkbox" checked={nou.es_representant} onChange={(e) => setNou({ ...nou, es_representant: e.target.checked })} className="accent-[#009B9C] mt-0.5" />
+          <label className="md:col-span-3 flex items-start gap-2 text-xs text-[#2B4644]">
+            <input type="checkbox" checked={nou.es_representant} onChange={(e) => setNou({ ...nou, es_representant: e.target.checked })} className="accent-[#007A7B] mt-0.5" />
             És el representant del pagador (p. ex. l'administrador únic): signarà també la recepció pel pagador, en la mateixa sessió.
           </label>
         </div>
@@ -131,18 +131,18 @@ const RelacioIConsentiment = ({ client, rol, onDesat }) => {
   };
   const vigent = client.consentiment_comercial === true && !client.consentiment_retirat_el;
   return (
-    <div className="w-full flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500 pl-1">
+    <div className="w-full flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#4E6765] pl-1">
       <span>
         Comunicacions comercials:{' '}
         {client.consentiment_comercial == null ? '—'
           : client.consentiment_retirat_el ? `retirat el ${dataCurta(client.consentiment_retirat_el)}`
             : client.consentiment_comercial ? `sí (des del ${dataCurta(client.consentiment_comercial_at)})` : 'no'}
       </span>
-      {vigent && !retirada && <button type="button" className="text-[#009B9C] hover:underline" onClick={() => setRetirada({ data: avui(), nota: '' })}>Anotar retirada</button>}
+      {vigent && !retirada && <button type="button" className="text-[#007A7B] hover:underline" onClick={() => setRetirada({ data: avui(), nota: '' })}>Anotar retirada</button>}
       {retirada && (
         <span className="flex flex-wrap items-center gap-2">
-          <input type="date" value={retirada.data} max={avui()} onChange={(e) => setRetirada({ ...retirada, data: e.target.value })} className="border border-gray-300 rounded px-2 py-1" />
-          <input value={retirada.nota} placeholder="Com ho ha comunicat (opcional)" maxLength={300} onChange={(e) => setRetirada({ ...retirada, nota: e.target.value })} className="border border-gray-300 rounded px-2 py-1 w-56" />
+          <input type="date" value={retirada.data} max={avui()} onChange={(e) => setRetirada({ ...retirada, data: e.target.value })} className="border border-[#C5D6D3] rounded px-2 py-1" />
+          <input value={retirada.nota} placeholder="Com ho ha comunicat (opcional)" maxLength={300} onChange={(e) => setRetirada({ ...retirada, nota: e.target.value })} className="border border-[#C5D6D3] rounded px-2 py-1 w-56" />
           <Boto onClick={desaRetirada}>Desar</Boto>
           <Boto variant="secundari" onClick={() => setRetirada(null)}>Cancel·lar</Boto>
         </span>
@@ -150,7 +150,7 @@ const RelacioIConsentiment = ({ client, rol, onDesat }) => {
       {rol === 'ocic' ? (
         <span className="flex items-center gap-2">
           Fi de la relació:
-          <input type="date" value={fi} max={avui()} onChange={(e) => setFi(e.target.value)} className="border border-gray-300 rounded px-2 py-1" />
+          <input type="date" value={fi} max={avui()} onChange={(e) => setFi(e.target.value)} className="border border-[#C5D6D3] rounded px-2 py-1" />
           {fi !== (client.data_fi_relacio || '') && <Boto onClick={desaFi}>Desar</Boto>}
         </span>
       ) : client.data_fi_relacio && <span>Fi de la relació: {dataCurta(client.data_fi_relacio)}</span>}
@@ -247,18 +247,18 @@ const Clients = ({ onObreSolicitud, rol }) => {
 
       <Targeta titol={`Clients (${clients.length})`}
         accions={<input value={cerca} onChange={(e) => setCerca(e.target.value)} placeholder="Cercar per nom o referència..."
-          className="w-64 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#009B9C]/40" />}>
+          className="w-64 border border-[#C5D6D3] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />}>
         {carregant ? (
-          <p className="text-sm text-gray-400 py-6 text-center">Carregant...</p>
+          <p className="text-sm text-[#6B8280] py-6 text-center">Carregant...</p>
         ) : filtrats.length === 0 ? (
-          <p className="text-sm text-gray-400 py-6 text-center">Cap client</p>
+          <p className="text-sm text-[#6B8280] py-6 text-center">Cap client</p>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-[#E4EEEC]">
             {filtrats.map((c) => (
               <div key={c.id} className="py-3 flex flex-wrap items-center gap-4">
                 <div className="flex-1 min-w-[200px]">
-                  <p className="text-sm font-semibold text-gray-800">{c.nom_mostrat}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-sm font-semibold text-[#12302F]">{c.nom_mostrat}</p>
+                  <p className="text-xs text-[#6B8280]">
                     {c.party_type === 'pj' ? 'Persona jurídica' : 'Persona física'} · alta {dataCurta(c.created_at)}
                     {c.requests?.length > 0 && ` · ${c.requests.filter((r) => r.document_type !== 'pdp').length} sol·licitud${c.requests.filter((r) => r.document_type !== 'pdp').length > 1 ? 's' : ''}`}
                   </p>
