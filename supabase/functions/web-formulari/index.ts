@@ -1,7 +1,8 @@
 // supabase/functions/web-formulari/index.ts
 //
 // Formularis públics de la web, sense sessió:
-// - tipus 'contacte': formulari de contacte (App.js) → public.missatges_contacte.
+// - tipus 'contacte': formulari de contacte (App.js) → public.missatges_contacte,
+//   que el personal llegeix al portal (pestanya «Missatges web»).
 // - tipus 'solicitud': sol·licitud d'accés a la Zona Professionals
 //   (PaginaLogin.jsx) → public.solicituds, que el maestro revisa al Panell Maestro.
 //
@@ -19,7 +20,7 @@ const FORMSPREE_BASE = Deno.env.get('FORMSPREE_BASE_URL') || 'https://formspree.
 const AVISOS: Record<'contacte' | 'solicitud', Record<string, string>> = {
   contacte: {
     _subject: 'Nou missatge de contacte a la web',
-    message: 'Hi ha un missatge nou al formulari de contacte de la web. Per privacitat, aquest avís no inclou cap dada: consulteu-lo a Supabase (taula missatges_contacte).',
+    message: 'Hi ha un missatge nou al formulari de contacte de la web. Per privacitat, aquest avís no inclou cap dada. Llegiu-lo al portal del personal: https://www.ambit.ad/portal?pestanya=missatges',
   },
   solicitud: {
     _subject: 'Nova sol·licitud d\'accés',

@@ -19,11 +19,13 @@ import RevisionsKyc from './RevisionsKyc';
 import LlistesPaisos from './LlistesPaisos';
 import ParametresIrpf from './ParametresIrpf';
 import DocumentsRebuts from './DocumentsRebuts';
+import MissatgesWeb from './MissatgesWeb';
 
 const PESTANYES = [
   { id: 'solicituds', nom: 'Sol·licituds' },
   { id: 'clients', nom: 'Clients' },
   { id: 'rebuts', nom: 'Documents rebuts' },
+  { id: 'missatges', nom: 'Missatges web' },
   { id: 'remesa', nom: 'Remesa' },
   { id: 'parametres_irpf', nom: 'Paràmetres IRPF' },
   { id: 'personal', nom: 'Personal', ocic: true },
@@ -77,7 +79,13 @@ const Login = () => {
 const PortalApp = () => {
   const { user, carregant, logout } = useAuth();
   const [rol, setRol] = useState(undefined); // undefined = comprovant, null = no és personal
-  const [pestanya, setPestanya] = useState('solicituds');
+  // /portal?pestanya=missatges (enllaç de l'avís per correu): obre aquesta
+  // pestanya en entrar. El paràmetre es treu de l'adreça.
+  const [pestanya, setPestanya] = useState(() => {
+    const p = new URLSearchParams(window.location.search).get('pestanya');
+    if (p) window.history.replaceState(null, '', window.location.pathname);
+    return PESTANYES.some((x) => x.id === p && !x.ocic) ? p : 'solicituds';
+  });
   const [solicitudOberta, setSolicitudOberta] = useState(null);
 
   useEffect(() => {
@@ -138,6 +146,7 @@ const PortalApp = () => {
         )}
         {pestanya === 'clients' && <Clients onObreSolicitud={obreSolicitud} rol={rol} />}
         {pestanya === 'rebuts' && <DocumentsRebuts rol={rol} />}
+        {pestanya === 'missatges' && <MissatgesWeb />}
         {pestanya === 'remesa' && <Remesa onObreSolicitud={obreSolicitud} />}
         {pestanya === 'parametres_irpf' && <ParametresIrpf />}
         {pestanya === 'personal' && rol === 'ocic' && <Personal usuariActual={user.id} />}
