@@ -19,7 +19,7 @@
 //             dada. El PDF final es genera quan signa ÀMBIT.
 // Els errors porten un codi perquè la pàgina els mostri en l'idioma del contracte.
 
-import { clientAdmin, deBase64, entrada, formatToken, ipClient, llegeixCos, serveix, sha256Hex, text } from '../_shared/portal.ts';
+import { clientAdmin, deBase64, empremtaIp, entrada, formatToken, ipClient, llegeixCos, serveix, sha256Hex, text } from '../_shared/portal.ts';
 import T from '../_shared/text-contracte.json' with { type: 'json' };
 
 const BUCKET = 'portal-docs';
@@ -77,7 +77,7 @@ serveix('portal-contracte', async (req) => {
   const portal = admin.schema('portal');
   const ip = ipClient(req);
   const userAgent = (req.headers.get('user-agent') || '').slice(0, 500) || null;
-  const clauIp = await sha256Hex(`portal-contracte:${ip || 'sense-ip'}`);
+  const clauIp = await empremtaIp('portal-contracte', ip);
 
   // 1. Límit de peticions per IP
   const { data: dinsLimit } = await portal.rpc('registra_intent', {

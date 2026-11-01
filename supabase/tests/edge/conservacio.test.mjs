@@ -117,7 +117,7 @@ const autoritzacioSignada = async (nom, referencia) => {
   const { data: sol } = await p.from('requests')
     .insert({ client_id: cli.id, document_type: 'autoritzacio_carrec', template_version: 'ABA-01 v1', idioma: 'ca' }).select('id').single();
   const e = await crida('portal-enllac', { request_id: sol.id }, { jwt: JWT_GESTOR });
-  const token = e.cos.enllac.split('/signar/')[1];
+  const token = e.cos.enllac.split('/signar#')[1];
   const s = await crida('portal-signar', {
     accio: 'signar', token, titular_nom: nom, titular_adreca: 'Carrer de la Prova, 3',
     titular_cp_poblacio: 'AD500 Andorra la Vella', iban: 'AD1200012030200359100100',

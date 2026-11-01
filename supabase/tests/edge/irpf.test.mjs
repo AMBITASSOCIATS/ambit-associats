@@ -161,7 +161,7 @@ const fitxers = async (requestId) => {
 };
 const enllac = async (requestId) => {
   const r = await crida('portal-enllac', { request_id: requestId }, { jwt: JWT_GESTOR });
-  return { ...r, token: r.cos.enllac?.split('/irpf/')[1] };
+  return { ...r, token: r.cos.enllac?.split('/irpf#')[1] };
 };
 const estat = async (id) => (await adminPortal.from('requests').select('status').eq('id', id).single()).data?.status;
 const desa = (b, nom) => { if (CARPETA_PDF) fs.writeFileSync(`${CARPETA_PDF}/${nom}`, b); return b; };
@@ -281,7 +281,7 @@ try {
   const idSolter = await crea({ nom: 'Jordi Solter Prova', nrt: 'F-100001-A', email: 'jordi.solter@test.local' });
   comprova(await estat(idSolter) === 'esborrany', 'El personal crea la comunicació des del client pagador');
   const e1 = await enllac(idSolter);
-  comprova(e1.status === 200 && e1.cos.destinatari === 'perceptor' && /\/irpf\/[A-Za-z0-9_-]{43}$/.test(e1.cos.enllac), 'Enllaç del perceptor /irpf/<token>');
+  comprova(e1.status === 200 && e1.cos.destinatari === 'perceptor' && /\/irpf#[A-Za-z0-9_-]{43}$/.test(e1.cos.enllac), 'Enllaç del perceptor /irpf#<token>');
   comprova(await estat(idSolter) === 'enviat', 'Enviada');
   const tok = e1.token;
 

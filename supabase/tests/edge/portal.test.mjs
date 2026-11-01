@@ -150,7 +150,7 @@ const creaSolicitud = async ({ tipus, nom, referencia = null, previ = null }) =>
 };
 const enllac = async (requestId, jwt = JWT_GESTOR) => {
   const r = await crida('portal-enllac', { request_id: requestId }, { jwt });
-  return { ...r, token: r.cos.enllac?.split('/signar/')[1] };
+  return { ...r, token: r.cos.enllac?.split('/signar#')[1] };
 };
 const estat = async (requestId) =>
   (await adminPortal.from('requests').select('status').eq('id', requestId).single()).data.status;
@@ -205,8 +205,8 @@ comprova((clientsWeb || []).length === 0, 'Usuari de la web no veu cap client de
 seccio('Enllaç: generar i regenerar');
 
 const e1 = await enllac(solA.requestId);
-comprova(e1.status === 200 && /^https:\/\/www\.ambit\.ad\/signar\/[A-Za-z0-9_-]{43}$/.test(e1.cos.enllac),
-  'Gestor genera l\'enllaç https://www.ambit.ad/signar/<token>');
+comprova(e1.status === 200 && /^https:\/\/www\.ambit\.ad\/signar#[A-Za-z0-9_-]{43}$/.test(e1.cos.enllac),
+  'Gestor genera l\'enllaç https://www.ambit.ad/signar#<token>');
 comprova((await estat(solA.requestId)) === 'enviat', 'Generar l\'enllaç passa esborrany → enviat');
 const dies = (new Date(e1.cos.expira_at) - Date.now()) / 86400000;
 comprova(dies > 6.99 && dies <= 7.001, 'L\'enllaç caduca als 7 dies');

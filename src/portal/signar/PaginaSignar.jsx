@@ -1,23 +1,24 @@
 // src/portal/signar/PaginaSignar.jsx
-// Pàgina pública del client: /signar/<token>. Sense compte.
+// Pàgina pública del client: /signar#<token> (o l'antic /signar/<token>). Sense compte.
 // Formulari de l'autorització de càrrec en compte amb el mateix contingut i
 // estil que el PDF (català amb l'anglès a sota). Els textos surten de
 // text-autoritzacio.json, idèntic al que fa servir el PDF del servidor.
 import React, { useEffect, useRef, useState } from 'react';
-import { supabase } from '../../supabaseClient';
+import { supabase, REGIO_FUNCIONS } from '../../supabaseClient';
 import T from './text-autoritzacio.json';
 import PD from './text-proteccio-dades.json';
 import MarcClient from '../MarcClient';
 import SignaturaCanvas from './SignaturaCanvas';
 import { formata, validaIban } from './iban';
+import { codiEnllac } from '../enllac';
 
 const MAX_ADJUNT = 20 * 1024 * 1024;
 const TIPUS_ADJUNT = ['application/pdf', 'image/jpeg', 'image/png'];
 
-const token = window.location.pathname.replace(/^\/signar\//, '').replace(/\/+$/, '');
+const token = codiEnllac('signar');
 
 const crida = async (body) => {
-  const { data, error } = await supabase.functions.invoke('portal-signar', { body: { token, ...body } });
+  const { data, error } = await supabase.functions.invoke('portal-signar', { body: { token, ...body }, region: REGIO_FUNCIONS });
   if (error) {
     const detall = await error.context?.json?.().catch(() => null);
     const e = new Error(detall?.error || 'No s\'ha pogut connectar. Torneu-ho a provar.');

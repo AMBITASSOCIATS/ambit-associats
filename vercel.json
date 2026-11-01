@@ -28,7 +28,7 @@
       ]
     },
     {
-      "source": "/signar/(.*)",
+      "source": "/signar(.*)",
       "headers": [
         {
           "key": "Referrer-Policy",
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "source": "/kyc/(.*)",
+      "source": "/kyc(.*)",
       "headers": [
         {
           "key": "Referrer-Policy",
@@ -62,7 +62,7 @@
       ]
     },
     {
-      "source": "/irpf/(.*)",
+      "source": "/irpf(.*)",
       "headers": [
         {
           "key": "Referrer-Policy",
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "source": "/contracte/(.*)",
+      "source": "/contracte(.*)",
       "headers": [
         {
           "key": "Referrer-Policy",
@@ -132,7 +132,15 @@
       "destination": "/index.html"
     },
     {
+      "source": "/signar",
+      "destination": "/index.html"
+    },
+    {
       "source": "/signar/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/kyc",
       "destination": "/index.html"
     },
     {
@@ -140,7 +148,15 @@
       "destination": "/index.html"
     },
     {
+      "source": "/irpf",
+      "destination": "/index.html"
+    },
+    {
       "source": "/irpf/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/contracte",
       "destination": "/index.html"
     },
     {

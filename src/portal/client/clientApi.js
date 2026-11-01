@@ -3,6 +3,7 @@
 // de la de la web i del portal del personal) i crides a les Edge Functions
 // portal-client-acces i portal-client-area.
 import { createClient } from '@supabase/supabase-js';
+import { REGIO_FUNCIONS } from '../../supabaseClient';
 import T from './text-area-client.json';
 
 export { T };
@@ -18,17 +19,19 @@ export const supabaseClient = createClient(process.env.REACT_APP_SUPABASE_URL, p
 });
 
 // Crida una Edge Function amb la sessió actual (o sense). Llança l'error del
-// servidor (català / anglès) amb l'estat i el motiu.
+// servidor (català / anglès) amb l'estat i el motiu. La regió va com a
+// capçalera i com a paràmetre, igual que ho fa functions.invoke().
 export const crida = async (funcio, body, jwt) => {
   const token = jwt || (await supabaseClient.auth.getSession()).data.session?.access_token || process.env.REACT_APP_SUPABASE_ANON_KEY;
   let r;
   try {
-    r = await fetch(`${process.env.REACT_APP_SUPABASE_URL}/functions/v1/${funcio}`, {
+    r = await fetch(`${process.env.REACT_APP_SUPABASE_URL}/functions/v1/${funcio}?forceFunctionRegion=${REGIO_FUNCIONS}`, {
       method: 'POST',
       headers: {
         apikey: process.env.REACT_APP_SUPABASE_ANON_KEY,
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
+        'x-region': REGIO_FUNCIONS,
       },
       body: JSON.stringify(body),
     });

@@ -277,11 +277,11 @@ const [sCa] = await signantsDe(ID_CA);
 const [sA, sB] = await signantsDe(ID_BI);
 const enllac = async (s) => personal({ accio: 'enllac', signant_id: s.id });
 const eCa = await enllac(sCa);
-comprova(eCa.status === 200 && /\/contracte\/[A-Za-z0-9_-]{43}$/.test(eCa.cos.enllac), 'Enllaç /contracte/<token>');
+comprova(eCa.status === 200 && /\/contracte#[A-Za-z0-9_-]{43}$/.test(eCa.cos.enllac), 'Enllaç /contracte#<token>');
 comprova(await estat(ID_CA) === 'enviat', 'Generar el primer enllaç passa esborrany → enviat');
 comprova(eCa.cos.email === 'carla@test.local' && eCa.cos.idioma === 'ca' && eCa.cos.titol === 'Contracte d\'arrendament de prova',
   'La resposta porta el correu, el títol i l\'idioma per preparar el correu');
-const tokenDe = (e) => e.cos.enllac.split('/contracte/')[1];
+const tokenDe = (e) => e.cos.enllac.split('/contracte#')[1];
 const TOK_CA = tokenDe(eCa);
 {
   const { data } = await adminPortal.from('access_tokens').select('token_hash').eq('signant_id', sCa.id);

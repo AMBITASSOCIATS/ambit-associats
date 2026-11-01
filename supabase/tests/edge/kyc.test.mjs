@@ -295,7 +295,7 @@ const dadesPj = {
 const creaKyc = async (clientId) => {
   const r = await personal({ accio: 'crea', client_id: clientId });
   const e = await crida('portal-enllac', { request_id: r.cos.request_id }, { jwt: JWT_GESTOR });
-  return { r, e, kycId: r.cos.request_id, token: e.cos.enllac?.split('/kyc/')[1] };
+  return { r, e, kycId: r.cos.request_id, token: e.cos.enllac?.split('/kyc#')[1] };
 };
 const signa = (token, dades, extra = {}, opts = {}) => kyc(token, {
   accio: 'signar', dades, lloc_kyc: 'Andorra la Vella', lloc_pdp: 'Andorra la Vella',
@@ -320,7 +320,7 @@ try {
   }
   const dup = await personal({ accio: 'crea', client_id: cliPf });
   comprova(dup.status === 409, 'No es pot crear un segon KYC mentre n\'hi ha un de pendent');
-  comprova(pf.e.status === 200 && /^https:\/\/www\.ambit\.ad\/kyc\/[A-Za-z0-9_-]{43}$/.test(pf.e.cos.enllac || ''), 'Un sol enllaç: https://www.ambit.ad/kyc/<token>');
+  comprova(pf.e.status === 200 && /^https:\/\/www\.ambit\.ad\/kyc#[A-Za-z0-9_-]{43}$/.test(pf.e.cos.enllac || ''), 'Un sol enllaç: https://www.ambit.ad/kyc#<token>');
   comprova((await estat(pf.kycId)) === 'enviat' && (await estat(pdpPf)) === 'enviat', 'Generar l\'enllaç passa el KYC i la PDP a enviat');
   {
     const { data } = await adminPortal.from('access_tokens').select('request_id').in('request_id', [pf.kycId, pdpPf]);
@@ -699,7 +699,7 @@ try {
   const cliAm = await nouClientPortal('pf', 'Jordi Prova Documentació', `KAM${String(sufix).slice(-8)}`);
   const rAm = await personal({ accio: 'crea', client_id: cliAm, documentacio: 'ambit' });
   const eAm = await crida('portal-enllac', { request_id: rAm.cos.request_id }, { jwt: JWT_GESTOR });
-  const am = { kycId: rAm.cos.request_id, token: eAm.cos.enllac?.split('/kyc/')[1] };
+  const am = { kycId: rAm.cos.request_id, token: eAm.cos.enllac?.split('/kyc#')[1] };
   {
     const { data: f } = await adminPortal.from('kyc_formularis').select('documentacio_ambit').eq('request_id', am.kycId).single();
     comprova(rAm.status === 200 && f.documentacio_ambit === true, 'El gestor crea el KYC amb "Documentació: ja la té ÀMBIT"');
@@ -830,7 +830,7 @@ try {
       'Formulari preomplert amb les dades del KYC validat, sense les declaracions (cal tornar-les a fer)');
   }
   const eRev = await crida('portal-enllac', { request_id: rev.cos.request_id }, { jwt: JWT_GESTOR });
-  const tRev = eRev.cos.enllac?.split('/kyc/')[1];
+  const tRev = eRev.cos.enllac?.split('/kyc#')[1];
   const oRev = await kyc(tRev, { accio: 'obrir' });
   const pendRev = (oRev.cos.documents?.pendents || []).map((x) => x.tipus).sort().join(',');
   comprova(oRev.status === 200 && oRev.cos.dades.identificacio.email === 'maria.prova@example.com' && pendRev === 'domicili,fons',

@@ -4,6 +4,7 @@ import EinaFiscalRouter from './EinaFiscal/EinaFiscalRouter';
 import CalendariLaboral from './pages/CalendariLaboral';
 import PdfATextMd from './pages/PdfATextMd';
 import { useAuth } from './auth/AuthContext';
+import { enviaFormulari } from './formulariWeb';
 
 
 // Serralada al peu de la franja: els antics triangles girats, amb la punta cap amunt.
@@ -171,6 +172,7 @@ const translations = {
       message: "Missatge",
       send: "Enviar missatge",
       success: "Missatge enviat. T'hi respondrem aviat.",
+      error: "No s'ha pogut enviar el missatge. Torna-ho a provar o escriu-nos a info@ambit.ad.",
     },
     blogTitle: "Recursos i articles",
     seoTitle: "Assessoria fiscal, comptable i mercantil a Andorra",
@@ -235,6 +237,7 @@ const translations = {
       message: "Mensaje",
       send: "Enviar mensaje",
       success: "Mensaje enviado. Te responderemos pronto.",
+      error: "No se ha podido enviar el mensaje. Vuelve a intentarlo o escríbenos a info@ambit.ad.",
     },
     blogTitle: "Recursos y artículos",
     seoTitle: "Asesoría fiscal, contable y mercantil en Andorra",
@@ -299,6 +302,7 @@ const translations = {
       message: "Message",
       send: "Send message",
       success: "Message sent. We'll get back to you soon!",
+      error: "The message could not be sent. Please try again or write to info@ambit.ad.",
     },
     blogTitle: "Resources and articles",
     seoTitle: "Tax, accounting and corporate advisory in Andorra",
@@ -363,6 +367,7 @@ const translations = {
       message: "Message",
       send: "Envoyer le message",
       success: "Message envoyé. Nous vous répondrons bientôt !",
+      error: "Le message n'a pas pu être envoyé. Réessayez ou écrivez-nous à info@ambit.ad.",
     },
     blogTitle: "Ressources et articles",
     seoTitle: "Conseil fiscal, comptable et commercial en Andorre",
@@ -1050,6 +1055,7 @@ const App = () => {
     return savedConsent === null;
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [contacte, setContacte] = useState(null); // null | 'enviant' | 'enviat' | 'error'
   const [servicesDropdown, setServicesDropdown] = useState(false);
   const { user, perfil, logout } = useAuth();
 
@@ -1173,6 +1179,29 @@ const App = () => {
     window.scrollTo(0, 0);
   };
 
+  // Formulari de contacte: es desa a Supabase (web-formulari); Formspree només
+  // rep un avís sense cap dada.
+  const enviaContacte = async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const camps = new FormData(form);
+    setContacte('enviant');
+    try {
+      await enviaFormulari({
+        tipus: 'contacte',
+        nom: camps.get('name'),
+        email: camps.get('email'),
+        telefon: camps.get('phone'),
+        missatge: camps.get('message'),
+        idioma: language,
+      });
+      form.reset();
+      setContacte('enviat');
+    } catch {
+      setContacte('error');
+    }
+  };
+
   // Obre una pàgina legal en una finestra nova
   const obreLegal = (key) => {
     const win = window.open("", "_blank");
@@ -1183,8 +1212,11 @@ const App = () => {
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>${t.legalTabs[key]} - ÀMBIT Associats</title>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <style>
+          /* El que aportava el Tailwind 2.2.19 de jsDelivr (el text legal no fa servir cap classe) */
+          *, ::before, ::after { box-sizing: border-box; }
+          body, h3, h4, p { margin: 0; }
+          h3, h4 { font-size: inherit; font-weight: inherit; }
           body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; padding: 2rem; }
           h3, h4 { color: #009B9C; }
           a { color: #009B9C; text-decoration: underline; }
@@ -1737,7 +1769,7 @@ const App = () => {
                   </div>
                 </dl>
               </div>
-              <form action="https://formspree.io/f/mdkdrkze" method="POST" className="grid gap-3">
+              <form onSubmit={enviaContacte} className="grid gap-3">
                 <label className="grid gap-1.5 text-sm font-medium text-[#E6F5F5]">
                   {t.form.name}
                   <input type="text" name="name" required className="w-full px-3.5 py-2.5 rounded-[10px] bg-white text-[#12302F] text-[15px] focus:outline-none focus-visible:ring-[3px] focus-visible:ring-[#4DB6B7]" />
@@ -1755,7 +1787,7 @@ const App = () => {
                   <textarea name="message" rows="4" required className="w-full px-3.5 py-2.5 rounded-[10px] bg-white text-[#12302F] text-[15px] focus:outline-none focus-visible:ring-[3px] focus-visible:ring-[#4DB6B7]"></textarea>
                 </label>
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-3 pt-1">
-                  <button type="submit" className="bg-white text-[#00676A] font-semibold text-base px-6 py-3 rounded-full hover:bg-[#E8F6F6] transition">
+                  <button type="submit" disabled={contacte === 'enviant'} className="bg-white text-[#00676A] font-semibold text-base px-6 py-3 rounded-full hover:bg-[#E8F6F6] transition disabled:opacity-60">
                     {t.form.send}
                   </button>
                   <a
@@ -1767,6 +1799,11 @@ const App = () => {
                     {t.whatsapp}
                   </a>
                 </div>
+                {(contacte === 'enviat' || contacte === 'error') && (
+                  <p role="status" className="text-[15px] font-medium text-white">
+                    {contacte === 'enviat' ? t.form.success : t.form.error}
+                  </p>
+                )}
               </form>
             </div>
             <Serralada fons="#F4F8F7" id="serralada-contacte" />

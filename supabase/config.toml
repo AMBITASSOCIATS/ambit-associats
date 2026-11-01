@@ -446,6 +446,10 @@ verify_jwt = true
 [functions.portal-client-personal]
 verify_jwt = true
 
+# Formularis públics de la web (contacte i sol·licitud d'accés): sense sessió.
+[functions.web-formulari]
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327
