@@ -31,6 +31,11 @@
 //      registre d'accessos (portal.client_destrueix_usuari) i, després, el
 //      compte d'Auth (Admin API).
 // També aquí, només els fitxers i comptes que la base dona per destruïbles.
+//
+// Formularis de la web (portal.purga_formularis_web):
+//   5. missatges de contacte de més de 12 mesos, sol·licituds d'accés
+//      rebutjades fa més de 12 mesos i límits de peticions (empremtes d'IP) de
+//      més d'un dia.
 
 import { clientAdmin, entrada, llegeixCos } from '../_shared/portal.ts';
 
@@ -58,7 +63,9 @@ Deno.serve(async (req) => {
     if (error) return resposta(500, { error: 'Error en la simulació' });
     const { data: client, error: errClient } = await portal.rpc('client_simula_conservacio');
     if (errClient) return resposta(500, { error: 'Error en la simulació' });
-    return resposta(200, { ok: true, simulacio: true, ...data, area_client: client });
+    const { data: web, error: errWeb } = await portal.rpc('purga_formularis_web', { p_simulacio: true });
+    if (errWeb) return resposta(500, { error: 'Error en la simulació' });
+    return resposta(200, { ok: true, simulacio: true, ...data, area_client: client, formularis_web: web });
   }
 
   // 1. Bloqueig
@@ -144,17 +151,25 @@ Deno.serve(async (req) => {
     if (errFi) errors.push({ request_id: userId, pas: 'compte' });
   }
 
+  // 5. Formularis de la web i límits de peticions
+  const { data: web, error: errWeb } = await portal.rpc('purga_formularis_web', { p_simulacio: false });
+  if (errWeb) {
+    console.error('purga_formularis_web', errWeb.code);
+    errors.push({ request_id: 'formularis-web', pas: 'purga' });
+  }
+
   const resum = {
     ok: errors.length === 0,
     simulacio: false,
     bloquejades: (bloquejades as unknown[]).length,
     destruides,
     area_client: { enviaments, usuaris },
+    formularis_web: web,
     errors,
   };
   console.log('portal-purga', JSON.stringify({
     bloquejades: resum.bloquejades, destruides: destruides.length,
-    enviaments: enviaments.length, usuaris: usuaris.length, errors: errors.length,
+    enviaments: enviaments.length, usuaris: usuaris.length, formularis_web: web, errors: errors.length,
   }));
   return resposta(errors.length ? 207 : 200, resum);
 });

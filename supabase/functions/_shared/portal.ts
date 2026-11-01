@@ -171,6 +171,27 @@ export const deBase64 = (b64: string): Uint8Array => {
 export const nouToken = (): string => base64url(crypto.getRandomValues(new Uint8Array(32)));
 export const formatToken = /^[A-Za-z0-9_-]{43}$/;
 
+// ─── Empremta de la IP (límit de peticions) ─────────────────────────────────
+// HMAC-SHA256 amb la clau secreta PORTAL_IP_HMAC_KEY (32 bytes en base64). Amb
+// un SHA-256 sense clau, la IP es podria recuperar provant totes les IPv4.
+
+let clauIpHmac: Promise<CryptoKey> | null = null;
+
+const clauIp = (): Promise<CryptoKey> => {
+  const b64 = Deno.env.get('PORTAL_IP_HMAC_KEY');
+  if (!b64) throw new Error('Falta PORTAL_IP_HMAC_KEY');
+  const crua = deBase64(b64.trim());
+  if (crua.length !== 32) throw new Error('PORTAL_IP_HMAC_KEY ha de tenir 32 bytes');
+  return crypto.subtle.importKey('raw', crua, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+};
+
+// context: nom de la funció, perquè una mateixa IP no tingui la mateixa empremta a totes
+export const empremtaIp = async (context: string, ip: string | null): Promise<string> => {
+  clauIpHmac ??= clauIp();
+  const firma = await crypto.subtle.sign('HMAC', await clauIpHmac, new TextEncoder().encode(`${context}:${ip || 'sense-ip'}`));
+  return aHex(new Uint8Array(firma));
+};
+
 // ─── IBAN andorrà ───────────────────────────────────────────────────────────
 
 export const ENTITATS: Record<string, 'andbank' | 'creand' | 'morabanc'> = {

@@ -14,7 +14,7 @@
 //               una URL de descàrrega.
 
 import {
-  aBytea, clientAdmin, deBase64, entrada, formatToken, ipClient, llegeixCos,
+  aBytea, clientAdmin, deBase64, empremtaIp, entrada, formatToken, ipClient, llegeixCos,
   provaFalla, serveix, sha256Hex, text, validaIban, xifraIban,
 } from '../_shared/portal.ts';
 import { generaPdf, VERSIO_PLANTILLA } from '../_shared/pdf.ts';
@@ -66,7 +66,7 @@ serveix('portal-signar', async (req) => {
   const portal = admin.schema('portal');
   const ip = ipClient(req);
   const userAgent = (req.headers.get('user-agent') || '').slice(0, 500) || null;
-  const clauIp = await sha256Hex(`portal-signar:${ip || 'sense-ip'}`);
+  const clauIp = await empremtaIp('portal-signar', ip);
 
   // 1. Límit de peticions per IP
   const { data: dinsLimit } = await portal.rpc('registra_intent', {

@@ -7,10 +7,10 @@
 //
 // Les dades es desen a Supabase i prou. Formspree només rep un avís sense cap
 // dada ("Nou missatge de contacte"); si falla, el formulari ja és vàlid.
-// Límit de peticions per IP (portal.registra_intent). Si el correu ja té una
+// Límit de peticions per IP (empremta HMAC, portal.registra_intent). Si el correu ja té una
 // sol·licitud, es respon igual que si fos nova, per no revelar qui n'ha fet.
 
-import { clientAdmin, entrada, ipClient, llegeixCos, serveix, sha256Hex, text } from '../_shared/portal.ts';
+import { clientAdmin, empremtaIp, entrada, ipClient, llegeixCos, serveix, text } from '../_shared/portal.ts';
 
 const MAX_PETICIONS = 5;
 const FINESTRA = 600;
@@ -62,7 +62,7 @@ serveix('web-formulari', async (req) => {
   const tipus = cos.tipus;
 
   const admin = clientAdmin();
-  const clauIp = await sha256Hex(`web-formulari:${ipClient(req) || 'sense-ip'}`);
+  const clauIp = await empremtaIp('web-formulari', ipClient(req));
   const { data: dinsLimit } = await admin.schema('portal').rpc('registra_intent', {
     p_clau: `web-formulari:${tipus}:${clauIp}`, p_maxim: MAX_PETICIONS, p_segons: FINESTRA,
   });

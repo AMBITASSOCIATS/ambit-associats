@@ -21,7 +21,7 @@
 //                l'apartat 12; genera la còpia final i la registra.
 // El PDF d'ÀMBIT amb el càlcul del percentatge no es lliura mai per aquí.
 
-import { clientAdmin, deBase64, entrada, formatToken, ipClient, llegeixCos, provaFalla, serveix, sha256Hex, text } from '../_shared/portal.ts';
+import { clientAdmin, deBase64, empremtaIp, entrada, formatToken, ipClient, llegeixCos, provaFalla, serveix, sha256Hex, text } from '../_shared/portal.ts';
 import { generaPdfIrpf } from '../_shared/pdf-irpf.ts';
 import { VERSIONS_ACCEPTADES, campsPendents, netejaDades } from '../_shared/irpf-regles.js';
 
@@ -91,7 +91,7 @@ serveix('portal-irpf', async (req) => {
   const portal = admin.schema('portal');
   const ip = ipClient(req);
   const userAgent = (req.headers.get('user-agent') || '').slice(0, 500) || null;
-  const clauIp = await sha256Hex(`portal-irpf:${ip || 'sense-ip'}`);
+  const clauIp = await empremtaIp('portal-irpf', ip);
 
   // 1. Límit de peticions per IP
   const { data: dinsLimit } = await portal.rpc('registra_intent', {

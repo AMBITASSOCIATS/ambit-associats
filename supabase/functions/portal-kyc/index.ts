@@ -23,7 +23,7 @@
 // Cap missatge al client no revela marques de risc ni motius de revisió
 // (art. 26 Llei 14/2017).
 
-import { clientAdmin, deBase64, entrada, formatToken, ipClient, llegeixCos, provaFalla, serveix, sha256Hex, text } from '../_shared/portal.ts';
+import { clientAdmin, deBase64, empremtaIp, entrada, formatToken, ipClient, llegeixCos, provaFalla, serveix, sha256Hex, text } from '../_shared/portal.ts';
 import { generaPdfKyc, generaPdfPdp } from '../_shared/pdf-kyc.ts';
 import { VERSIONS_ACCEPTADES, campsPendents, netejaDades, signant } from '../_shared/kyc-regles.js';
 import PAISOS from '../_shared/paisos.json' with { type: 'json' };
@@ -111,7 +111,7 @@ serveix('portal-kyc', async (req) => {
   const portal = admin.schema('portal');
   const ip = ipClient(req);
   const userAgent = (req.headers.get('user-agent') || '').slice(0, 500) || null;
-  const clauIp = await sha256Hex(`portal-kyc:${ip || 'sense-ip'}`);
+  const clauIp = await empremtaIp('portal-kyc', ip);
 
   // 1. Límit de peticions per IP
   const { data: dinsLimit } = await portal.rpc('registra_intent', {
