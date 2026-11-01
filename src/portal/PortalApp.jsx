@@ -6,6 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import MarcAcces from '../auth/MarcAcces';
+import CampContrasenya from '../auth/CampContrasenya';
 import CapcaleraEina, { botoCapcalera } from '../auth/CapcaleraEina';
 import { portal } from './portalApi';
 import Solicituds from './Solicituds';
@@ -60,7 +61,7 @@ const Login = () => {
         <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
           placeholder="Correu electrònic" autoComplete="username"
           className="w-full border border-[#C5D6D3] rounded-lg px-4 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-[#4DB6B7]/50 focus:border-[#007A7B]" />
-        <input type="password" required value={contrasenya} onChange={(e) => setContrasenya(e.target.value)}
+        <CampContrasenya required value={contrasenya} onChange={(e) => setContrasenya(e.target.value)}
           placeholder="Contrasenya" autoComplete="current-password"
           className="w-full border border-[#C5D6D3] rounded-lg px-4 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-[#4DB6B7]/50 focus:border-[#007A7B]" />
         {error && <p className="text-xs text-red-600">{error}</p>}

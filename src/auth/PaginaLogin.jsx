@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { supabase } from '../supabaseClient';
 import MarcAcces from './MarcAcces';
+import CampContrasenya from './CampContrasenya';
 
 // Mateix formulari de Formspree que el de contacte de la web (App.js)
 const FORMSPREE_URL = 'https://formspree.io/f/mdkdrkze';
@@ -158,8 +159,7 @@ const PaginaLogin = ({ onLoginOk, onBack }) => {
                 <label className="block text-[13px] font-semibold text-[#2B4644] mb-1.5">
                   Contrasenya
                 </label>
-                <input
-                  type="password"
+                <CampContrasenya
                   value={contrasenya}
                   onChange={e => setContrasenya(e.target.value)}
                   required

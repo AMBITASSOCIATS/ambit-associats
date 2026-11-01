@@ -2,6 +2,7 @@
 // Router intern: mostra la llista o el wizard segons l'estat
 // Substitueix l'import directe de EinaFiscal/index.jsx a App.js
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import CampContrasenya from '../auth/CampContrasenya';
 import LlistaDeclaracions from './LlistaDeclaracions';
 import EinaFiscal from './index';
 import {
@@ -468,11 +469,11 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
           <form onSubmit={canviarContrasenya} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-[#4E6765] mb-1">Nova contrasenya</label>
-              <input type="password" value={novaContrasenya} onChange={e => setNovaContrasenya(e.target.value)} required minLength={12} placeholder="Mínim 12 caràcters" className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
+              <CampContrasenya value={novaContrasenya} onChange={e => setNovaContrasenya(e.target.value)} required minLength={12} placeholder="Mínim 12 caràcters" className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
             </div>
             <div>
               <label className="block text-xs font-semibold text-[#4E6765] mb-1">Confirmar nova contrasenya</label>
-              <input type="password" value={confirmarContrasenya} onChange={e => setConfirmarContrasenya(e.target.value)} required placeholder="Repeteix la nova contrasenya" className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
+              <CampContrasenya value={confirmarContrasenya} onChange={e => setConfirmarContrasenya(e.target.value)} required placeholder="Repeteix la nova contrasenya" className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
             </div>
             {errorContrasenya && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-xs text-red-700">⚠️ {errorContrasenya}</div>

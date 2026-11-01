@@ -11,6 +11,8 @@ const P = {
   entrar: { ca: 'Entrar', en: 'Log in' },
   correu: { ca: 'Correu electrònic', en: 'Email address' },
   contrasenya: { ca: 'Contrasenya', en: 'Password' },
+  mostraContrasenya: { ca: 'Mostrar la contrasenya', en: 'Show password' },
+  amagaContrasenya: { ca: 'Amagar la contrasenya', en: 'Hide password' },
   codi: { ca: 'Codi de l\'aplicació d\'autenticació', en: 'Authenticator app code' },
   codiAjuda: { ca: 'Introduïu el codi de 6 xifres que mostra la vostra aplicació d\'autenticació.', en: 'Enter the 6-digit code shown in your authenticator app.' },
   verificar: { ca: 'Verificar', en: 'Verify' },
