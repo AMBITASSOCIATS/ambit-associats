@@ -10,8 +10,10 @@ import P from './text-pantalles';
 import { T, acces, area, desaSessio, supabaseClient, surt, ambNegreta } from './clientApi';
 import { EnviarDocuments, ElsMeusDocuments, ElsMeusEnviaments } from './Seccions';
 import { Bi, Boto, Camp, MissatgeError, estilCamp } from './peces';
+import CampContrasenya from '../../auth/CampContrasenya';
 
 const INACTIVITAT_MS = 30 * 60 * 1000;
+const ULL = { mostra: `${P.mostraContrasenya.ca} / ${P.mostraContrasenya.en}`, amaga: `${P.amagaContrasenya.ca} / ${P.amagaContrasenya.en}` };
 
 const Pantalla = ({ titol, accions, children, onCondicions, onPdp }) => (
   <MarcClient>
@@ -199,10 +201,10 @@ const Activacio = () => {
           <p className="text-sm text-[#2B4644]">{enllac.nom} · {enllac.email}</p>
           <div className="grid sm:grid-cols-2 gap-4">
             <Camp t={P.novaContrasenya} ajuda={P.contrasenyaAjuda}>
-              <input type="password" value={c1} onChange={(e) => setC1(e.target.value)} autoComplete="new-password" minLength={12} maxLength={72} required className={estilCamp} />
+              <CampContrasenya etiquetes={ULL} value={c1} onChange={(e) => setC1(e.target.value)} autoComplete="new-password" minLength={12} maxLength={72} required className={estilCamp} />
             </Camp>
             <Camp t={P.repeteix}>
-              <input type="password" value={c2} onChange={(e) => setC2(e.target.value)} autoComplete="new-password" minLength={12} maxLength={72} required className={estilCamp} />
+              <CampContrasenya etiquetes={ULL} value={c2} onChange={(e) => setC2(e.target.value)} autoComplete="new-password" minLength={12} maxLength={72} required className={estilCamp} />
             </Camp>
           </div>
           <div className="border border-[#D6E4E2] rounded-lg p-4 max-h-80 overflow-y-auto"><TextCondicions /></div>
@@ -281,7 +283,7 @@ const Entrada = ({ onEntrat, avis }) => {
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" required className={estilCamp} />
             </Camp>
             <Camp t={P.contrasenya}>
-              <input type="password" value={contrasenya} onChange={(e) => setContrasenya(e.target.value)} autoComplete="current-password" required className={estilCamp} />
+              <CampContrasenya etiquetes={ULL} value={contrasenya} onChange={(e) => setContrasenya(e.target.value)} autoComplete="current-password" required className={estilCamp} />
             </Camp>
             <MissatgeError missatge={error} />
             <Boto type="submit" disabled={ocupat}>{P.entrar.ca} / {P.entrar.en}</Boto>
