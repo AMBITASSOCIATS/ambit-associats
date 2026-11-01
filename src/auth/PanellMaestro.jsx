@@ -326,8 +326,8 @@ const actualitzar = async (id, canvis) => {
                     value={contrasenyaCrear}
                     onChange={e => setContrasenyaCrear(e.target.value)}
                     required
-                    minLength={8}
-                    placeholder="Mínim 8 caràcters"
+                    minLength={12}
+                    placeholder="Mínim 12 caràcters"
                     className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm
                                focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40"
                   />

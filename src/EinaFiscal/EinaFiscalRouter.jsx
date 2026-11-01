@@ -124,8 +124,8 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
   const canviarContrasenya = async (e) => {
     e.preventDefault();
     setErrorContrasenya('');
-    if (novaContrasenya.length < 8) {
-      setErrorContrasenya('La nova contrasenya ha de tenir mínim 8 caràcters.');
+    if (novaContrasenya.length < 12) {
+      setErrorContrasenya('La nova contrasenya ha de tenir mínim 12 caràcters.');
       return;
     }
     if (novaContrasenya !== confirmarContrasenya) {
@@ -468,7 +468,7 @@ const EinaFiscalRouter = ({ onBack, onLogout, onAdminPanel }) => {
           <form onSubmit={canviarContrasenya} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-[#4E6765] mb-1">Nova contrasenya</label>
-              <input type="password" value={novaContrasenya} onChange={e => setNovaContrasenya(e.target.value)} required minLength={8} placeholder="Mínim 8 caràcters" className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
+              <input type="password" value={novaContrasenya} onChange={e => setNovaContrasenya(e.target.value)} required minLength={12} placeholder="Mínim 12 caràcters" className="w-full border border-[#C5D6D3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#007A7B]/40" />
             </div>
             <div>
               <label className="block text-xs font-semibold text-[#4E6765] mb-1">Confirmar nova contrasenya</label>

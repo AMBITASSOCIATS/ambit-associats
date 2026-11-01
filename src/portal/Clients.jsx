@@ -1,12 +1,13 @@
 // src/portal/Clients.jsx
 // Clients del portal: llista, cerca, alta, referència (ABA-01, màx. 14 caràcters),
 // creació de sol·licituds (autorització de càrrec, KYC i protecció de dades,
-// comunicació de dades al pagador IRPF, contracte), fi de la relació (només OCIC) i
-// consentiment de comunicacions comercials.
+// comunicació de dades al pagador IRPF, contracte), fi de la relació (només OCIC),
+// consentiment de comunicacions comercials i usuaris de l'àrea de client.
 import React, { useEffect, useState } from 'react';
 import { portal, VERSIO_PLANTILLA, dataCurta, invoca } from './portalApi';
 import { Avis, Boto, Entrada, Selector, Targeta } from './ui';
 import NouContracte from './contracte/NouContracte';
+import UsuarisAreaClient from './UsuarisAreaClient';
 
 const Referencia = ({ client, onDesat }) => {
   const [valor, setValor] = useState(client.referencia_client || '');
@@ -219,6 +220,7 @@ const Clients = ({ onObreSolicitud, rol }) => {
 
   const [triaIrpf, setTriaIrpf] = useState(null);  // client per al qual es crea una comunicació IRPF
   const [triaContracte, setTriaContracte] = useState(null);  // client per al qual es crea un contracte
+  const [areaClient, setAreaClient] = useState(null);  // client amb els usuaris de l'àrea de client oberts
 
   const filtrats = clients.filter((c) => {
     if (!cerca) return true;
@@ -278,6 +280,10 @@ const Clients = ({ onObreSolicitud, rol }) => {
                 {triaIrpf === c.id && <NovaIrpf client={c} onCancel={() => setTriaIrpf(null)} onCreada={(id) => { setTriaIrpf(null); onObreSolicitud(id); }} />}
                 {triaContracte !== c.id && <Boto variant="secundari" onClick={() => setTriaContracte(c.id)}>+ Contracte</Boto>}
                 {triaContracte === c.id && <NouContracte client={c} onCancel={() => setTriaContracte(null)} onCreat={(id) => { setTriaContracte(null); onObreSolicitud(id); }} />}
+                <Boto variant="secundari" onClick={() => setAreaClient(areaClient === c.id ? null : c.id)}>
+                  {areaClient === c.id ? 'Tancar l\'àrea de client' : 'Àrea de client'}
+                </Boto>
+                {areaClient === c.id && <UsuarisAreaClient client={c} />}
                 <RelacioIConsentiment client={c} rol={rol} onDesat={carrega} />
               </div>
             ))}

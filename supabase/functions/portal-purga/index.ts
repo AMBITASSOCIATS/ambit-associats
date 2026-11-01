@@ -21,10 +21,21 @@
 // Idempotent: si falla a mitges, la propera execució acaba la feina. Esborrar
 // un fitxer que ja no hi és no falla, i la funció SQL no esborra cap fila
 // mentre quedi algun fitxer de la sol·licitud.
+//
+// Àrea de client (mateixa execució, després de les sol·licituds):
+//   3. fitxers dels enviaments vençuts (30 dies després d'arxivar-los i, en tot
+//      cas, 90 dies després de rebre'ls; pujades no acabades i rebutjats):
+//      s'esborren del bucket client-enviaments i en queda un registre mínim
+//      sense dades personals (portal.client_destrueix_enviament);
+//   4. usuaris revocats passat termini_revocats: se n'esborren les dades i el
+//      registre d'accessos (portal.client_destrueix_usuari) i, després, el
+//      compte d'Auth (Admin API).
+// També aquí, només els fitxers i comptes que la base dona per destruïbles.
 
 import { clientAdmin, entrada, llegeixCos } from '../_shared/portal.ts';
 
 const BUCKET = 'portal-docs';
+const BUCKET_CLIENT = 'client-enviaments';
 const LOT = 100;
 
 Deno.serve(async (req) => {
@@ -45,7 +56,9 @@ Deno.serve(async (req) => {
   if (simulacio) {
     const { data, error } = await portal.rpc('simula_conservacio');
     if (error) return resposta(500, { error: 'Error en la simulació' });
-    return resposta(200, { ok: true, simulacio: true, ...data });
+    const { data: client, error: errClient } = await portal.rpc('client_simula_conservacio');
+    if (errClient) return resposta(500, { error: 'Error en la simulació' });
+    return resposta(200, { ok: true, simulacio: true, ...data, area_client: client });
   }
 
   // 1. Bloqueig
@@ -86,13 +99,62 @@ Deno.serve(async (req) => {
     destruides.push(c.request_id);
   }
 
+  // 3. Àrea de client: fitxers dels enviaments
+  const enviaments: string[] = [];
+  const { data: aDestruir, error: errEnv } = await portal.rpc('client_enviaments_a_destruir');
+  if (errEnv) {
+    console.error('client_enviaments_a_destruir', errEnv.code);
+    errors.push({ request_id: 'area-client', pas: 'enviaments' });
+  }
+  for (const e of (aDestruir || []) as { enviament_id: string; fitxers: string[] }[]) {
+    let esborrats = true;
+    for (let i = 0; i < e.fitxers.length; i += LOT) {
+      const { error } = await admin.storage.from(BUCKET_CLIENT).remove(e.fitxers.slice(i, i + LOT));
+      if (error) { esborrats = false; break; }
+    }
+    const { error } = esborrats ? await portal.rpc('client_destrueix_enviament', { p_enviament_id: e.enviament_id }) : { error: true };
+    if (error) {
+      errors.push({ request_id: e.enviament_id, pas: esborrats ? 'enviament' : 'fitxers enviament' });
+      continue;
+    }
+    enviaments.push(e.enviament_id);
+  }
+
+  // 4. Àrea de client: usuaris revocats i, després, els seus comptes d'Auth
+  const usuaris: string[] = [];
+  const { data: revocats, error: errRev } = await portal.rpc('client_usuaris_a_destruir');
+  if (errRev) errors.push({ request_id: 'area-client', pas: 'usuaris' });
+  for (const u of (revocats || []) as { usuari_id: string }[]) {
+    const { error } = await portal.rpc('client_destrueix_usuari', { p_usuari_id: u.usuari_id });
+    if (error) {
+      console.error('client_destrueix_usuari', error.code);
+      errors.push({ request_id: u.usuari_id, pas: 'usuari' });
+      continue;
+    }
+    usuaris.push(u.usuari_id);
+  }
+  const { data: comptes } = await portal.rpc('client_comptes_pendents');
+  for (const userId of (comptes || []) as string[]) {
+    const { error } = await admin.auth.admin.deleteUser(userId);
+    if (error && error.status !== 404) {
+      errors.push({ request_id: userId, pas: 'compte' });
+      continue;
+    }
+    const { error: errFi } = await portal.rpc('client_compte_esborrat', { p_user_id: userId });
+    if (errFi) errors.push({ request_id: userId, pas: 'compte' });
+  }
+
   const resum = {
     ok: errors.length === 0,
     simulacio: false,
     bloquejades: (bloquejades as unknown[]).length,
     destruides,
+    area_client: { enviaments, usuaris },
     errors,
   };
-  console.log('portal-purga', JSON.stringify({ bloquejades: resum.bloquejades, destruides: destruides.length, errors: errors.length }));
+  console.log('portal-purga', JSON.stringify({
+    bloquejades: resum.bloquejades, destruides: destruides.length,
+    enviaments: enviaments.length, usuaris: usuaris.length, errors: errors.length,
+  }));
   return resposta(errors.length ? 207 : 200, resum);
 });

@@ -3,6 +3,7 @@
 import { supabase } from '../supabaseClient';
 import TK from './kyc/text-kyc.json';
 import TC from './contracte/text-contracte.json';
+import TAC from './client/text-area-client.json';
 
 export const portal = supabase.schema('portal');
 
@@ -181,5 +182,22 @@ export const missatgeEnllacContracte = ({ nom, titol, enllac, expira, idioma, em
     email: email || '',
     assumpte: bilingue ? `${ca.assumpte} / ${en.assumpte}` : ca.assumpte,
     cos: bilingue ? `${omple(ca.cos)}\n\n${omple(en.cos)}` : omple(ca.cos),
+  };
+};
+
+// ─── Àrea de client: correu d'invitació o de restabliment (text literal) ────
+// tipus: 'invitacio' o 'restabliment'. Català i, a sota, anglès.
+export const missatgeAreaClient = ({ tipus, nom, enllac, expira, email }) => {
+  const data = new Date(expira).toLocaleDateString('ca-AD', {
+    timeZone: 'Europe/Andorra', day: '2-digit', month: '2-digit', year: 'numeric',
+  });
+  const c = tipus === 'restabliment' ? TAC.correu_restabliment : TAC.correu_invitacio;
+  const omple = (t) => t.split('{nom}').join(nom).split('{enllaç}').join(enllac).split('{data}').join(data);
+  return {
+    titol: tipus === 'restabliment' ? 'Enllaç de restabliment de l\'accés' : 'Invitació a l\'àrea de client',
+    ajuda: 'Envia aquest missatge a l\'usuari des del teu correu. L\'enllaç és personal: no el comparteixis amb ningú més.',
+    email: email || '',
+    assumpte: c.assumpte,
+    cos: `${omple(c.ca)}\n\n${omple(c.en)}`,
   };
 };

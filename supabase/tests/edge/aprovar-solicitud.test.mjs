@@ -104,9 +104,18 @@ comprova(postBo.status === 400, 'Origen www.ambit.ad passa el filtre (arriba a v
 const { data: solEncara } = await admin.from('solicituds').select('id').eq('id', sol.id).maybeSingle();
 comprova(!!solEncara, 'La crida des d\'un origen desconegut no ha aprovat res');
 
-// 4. Aprovació correcta
+// 3c. La contrasenya ha de tenir almenys 12 caràcters
+const curta = await maestro.functions.invoke('aprovar-solicitud', {
+  body: { solicitud_id: sol.id, contrasenya: 'Nova-1234-l', eines: ['irpf'] },
+});
+const cosCurta = await curta.error?.context?.json?.().catch(() => ({}));
+comprova(curta.error?.context?.status === 400 && cosCurta?.error === 'La contrasenya ha de tenir almenys 12 caràcters',
+  'Contrasenya d\'11 caràcters rep 400');
+
+// 4. Aprovació correcta, amb una contrasenya de 12 caràcters exactes
+const NOVA = 'Nova-1234-lc';
 const r4 = await maestro.functions.invoke('aprovar-solicitud', {
-  body: { solicitud_id: sol.id, contrasenya: 'Nova-1234-local', eines: ['irpf', 'bretxa'] },
+  body: { solicitud_id: sol.id, contrasenya: NOVA, eines: ['irpf', 'bretxa'] },
 });
 comprova(r4.data?.ok === true, 'Maestro aprova la sol·licitud');
 
@@ -120,7 +129,7 @@ comprova(session?.user?.id === idMaestro && actual?.id === idMaestro,
 const nou = nouClient();
 const { data: login, error: errLogin } = await nou.auth.signInWithPassword({
   email: correus.nou,
-  password: 'Nova-1234-local',
+  password: NOVA,
 });
 comprova(!errLogin && !!login.user?.email_confirmed_at, 'El compte nou pot entrar i té el correu confirmat');
 
@@ -160,6 +169,15 @@ comprova((declBloq?.length ?? 0) === 0 && !!errInsBloq, 'Usuari bloquejat no lle
 // 13. L'usuari no es pot reactivar ell mateix
 const { error: errAuto } = await nou.from('profiles').update({ estat: 'actiu' }).eq('id', perfilNouId.id);
 comprova(!!errAuto, 'Usuari bloquejat no es pot reactivar ell mateix');
+
+// 14. Mínim del projecte (config.toml): 12 caràcters també per a Auth, que és
+//     qui valida el canvi de contrasenya de l'Eina Fiscal (auth.updateUser)
+const { error: errCrea11 } = await admin.auth.admin.createUser({ email: `curta-${sufix}@test.local`, password: 'Curta-12345', email_confirm: true });
+comprova(errCrea11?.code === 'weak_password', 'Auth rebutja crear un compte amb una contrasenya d\'11 caràcters');
+const { error: errCanvi11 } = await normal.auth.updateUser({ password: 'Canvi-12345' });
+comprova(errCanvi11?.code === 'weak_password', 'Auth rebutja canviar a una contrasenya d\'11 caràcters');
+const { error: errCanvi12 } = await normal.auth.updateUser({ password: 'Canvi-123456' });
+comprova(!errCanvi12, 'Auth accepta canviar a una contrasenya de 12 caràcters');
 
 console.log(fallades === 0 ? '\nTotes les proves han passat.' : `\n${fallades} prova(es) han fallat.`);
 process.exit(fallades === 0 ? 0 : 1);
