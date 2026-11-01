@@ -87,7 +87,7 @@ const png = (() => {
 
 try {
   const e = await crida('portal-enllac', { request_id: sol.id }, jwt);
-  const token = e.cos.enllac?.split('/signar/')[1];
+  const token = e.cos.enllac?.split('/signar#')[1];
   const s = await crida('portal-signar', {
     accio: 'signar', token, titular_nom: NOM, titular_adreca: 'Carrer de la Prova, 9',
     titular_cp_poblacio: 'AD500 Andorra la Vella', iban: IBAN,

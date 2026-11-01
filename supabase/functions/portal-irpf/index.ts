@@ -5,7 +5,7 @@
 // sempre el mateix ("enllaç no vàlid o caducat") sense dir si ha existit.
 // Limita els intents per IP (com portal-signar i portal-kyc).
 //
-// El mateix enllaç /irpf/<token> serveix per a dues persones, segons l'estat:
+// El mateix enllaç /irpf#<token> serveix per a dues persones, segons l'estat:
 //  · el perceptor (comunicació enviada o en curs):
 //      obrir     valida el token, passa a en_curs i retorna les respostes desades;
 //      desa      desada automàtica (es pot continuar més tard amb el mateix enllaç);

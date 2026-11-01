@@ -1,5 +1,6 @@
 // src/portal/contracte/PaginaContracte.jsx
-// Pàgina pública del signant d'un contracte: /contracte/<token>. Sense compte.
+// Pàgina pública del signant d'un contracte: /contracte#<token> (o l'antic
+// /contracte/<token>). Sense compte.
 // 1. Contracte complet dins del portal (totes les pàgines) i casella de lectura.
 // 2. Text íntegre de la clàusula addicional de signatura electrònica i casella
 //    d'acceptació prèvia; l'acceptació es registra amb la seva data i hora.
@@ -7,21 +8,22 @@
 // Idioma del contracte: 'ca' (només català) o 'ca_en' (català i, a sota,
 // l'anglès en cursiva). Tots els textos surten de text-contracte.json.
 import React, { useEffect, useRef, useState } from 'react';
-import { supabase } from '../../supabaseClient';
+import { supabase, REGIO_FUNCIONS } from '../../supabaseClient';
 import T from './text-contracte.json';
 import TK from '../kyc/text-kyc.json';
 import SignaturaCanvas from '../signar/SignaturaCanvas';
 import VisorPdf from './VisorPdf';
 import MarcClient from '../MarcClient';
+import { codiEnllac } from '../enllac';
 
-const token = window.location.pathname.replace(/^\/contracte\//, '').replace(/\/+$/, '');
+const token = codiEnllac('contracte');
 const P = T.pantalla;
 const omple = (t, v = {}) => Object.entries(v).reduce((s, [k, x]) => s.split(`{${k}}`).join(x), t);
 const dataCurta = (d) => new Date(d).toLocaleDateString('ca-AD', { timeZone: 'Europe/Andorra', day: '2-digit', month: '2-digit', year: 'numeric' });
 const hora = (d) => new Date(d).toLocaleTimeString('ca-AD', { timeZone: 'Europe/Andorra', hour: '2-digit', minute: '2-digit' });
 
 const crida = async (body) => {
-  const { data, error } = await supabase.functions.invoke('portal-contracte', { body: { token, ...body } });
+  const { data, error } = await supabase.functions.invoke('portal-contracte', { body: { token, ...body }, region: REGIO_FUNCIONS });
   if (error) {
     const detall = await error.context?.json?.().catch(() => null);
     const e = new Error(detall?.error || 'error');

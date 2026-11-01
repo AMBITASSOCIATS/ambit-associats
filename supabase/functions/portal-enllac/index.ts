@@ -8,9 +8,11 @@
 // - Si la sol·licitud és un esborrany, la passa a 'enviat' amb la sessió del
 //   personal (la base exigeix que aquest pas el faci el personal, no el servei).
 // - Regenerar revoca l'enllaç anterior. No es pot fer un cop signada.
+// - El token va després de «#» (/signar#<token>): el navegador no l'envia mai
+//   al servidor web. Les pàgines encara obren els enllaços antics (/signar/<token>).
 // - KYC i protecció de dades: el token va a la sol·licitud KYC i l'enllaç és
-//   /kyc/<token>; la PDP enllaçada també passa a 'enviat' (sessió del personal).
-// - Comunicació de dades al pagador (IRPF): l'enllaç és /irpf/<token>. Abans de
+//   /kyc#<token>; la PDP enllaçada també passa a 'enviat' (sessió del personal).
+// - Comunicació de dades al pagador (IRPF): l'enllaç és /irpf#<token>. Abans de
 //   signar, és el del perceptor; un cop signada pel perceptor, el del
 //   representant del pagador per a la recepció (apartat 12).
 
@@ -50,7 +52,7 @@ Deno.serve(async (req) => {
       console.error('irpf_crea_token_recepcio', errTok.code);
       return resposta(errTok.code === '42501' ? 403 : 409, { error: 'No s\'ha pogut generar l\'enllaç' });
     }
-    return resposta(200, { ok: true, enllac: `${BASE}/irpf/${token}`, expira_at: expira.toISOString(), destinatari: 'recepcio' });
+    return resposta(200, { ok: true, enllac: `${BASE}/irpf#${token}`, expira_at: expira.toISOString(), destinatari: 'recepcio' });
   }
 
   // Els contractes tenen un enllaç per signant (portal-contracte-personal)
@@ -102,7 +104,7 @@ Deno.serve(async (req) => {
 
   return resposta(200, {
     ok: true,
-    enllac: `${BASE}/${kyc ? 'kyc' : irpf ? 'irpf' : 'signar'}/${token}`,
+    enllac: `${BASE}/${kyc ? 'kyc' : irpf ? 'irpf' : 'signar'}#${token}`,
     expira_at: expira.toISOString(),
     ...(irpf ? { destinatari: 'perceptor' } : {}),
   });

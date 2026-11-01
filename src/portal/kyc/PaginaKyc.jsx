@@ -1,5 +1,5 @@
 // src/portal/kyc/PaginaKyc.jsx
-// Pàgina pública del client: /kyc/<token>. Sense compte.
+// Pàgina pública del client: /kyc#<token> (o l'antic /kyc/<token>). Sense compte.
 // 1. Formulari KYC per apartats, amb desada automàtica (es pot continuar més
 //    tard mentre l'enllaç sigui vigent).
 // 2. Documents per tipus; no es pot passar a signar si en falta cap d'obligatori.
@@ -9,23 +9,24 @@
 // 5. Dos PDF per descarregar (enllaços de curta durada).
 // Cap missatge no revela marques de risc ni motius de revisió (art. 26 Llei 14/2017).
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { supabase } from '../../supabaseClient';
+import { supabase, REGIO_FUNCIONS } from '../../supabaseClient';
 import T from './text-kyc.json';
 import { AVIS_25, campsPendents } from './kyc-regles';
 import { FormCtx, ambValor, Bilingue, Seccio } from './camps';
 import { SECCIONS_PF, SECCIONS_PJ } from './Seccions';
 import SignaturaCanvas from '../signar/SignaturaCanvas';
 import MarcClient from '../MarcClient';
+import { codiEnllac } from '../enllac';
 
 const MAX_ADJUNT = 20 * 1024 * 1024;
 const TIPUS_ADJUNT = ['application/pdf', 'image/jpeg', 'image/png'];
-const token = window.location.pathname.replace(/^\/kyc\//, '').replace(/\/+$/, '');
+const token = codiEnllac('kyc');
 const avui = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Andorra' });
 const dataCurta = (d) => new Date(d).toLocaleDateString('ca-AD', { timeZone: 'Europe/Andorra', day: '2-digit', month: '2-digit', year: 'numeric' });
 const hora = (d) => new Date(d).toLocaleTimeString('ca-AD', { timeZone: 'Europe/Andorra', hour: '2-digit', minute: '2-digit' });
 
 const crida = async (body) => {
-  const { data, error } = await supabase.functions.invoke('portal-kyc', { body: { token, ...body } });
+  const { data, error } = await supabase.functions.invoke('portal-kyc', { body: { token, ...body }, region: REGIO_FUNCIONS });
   if (error) {
     const detall = await error.context?.json?.().catch(() => null);
     const e = new Error(detall?.error || 'No s\'ha pogut connectar. Torneu-ho a provar. / Could not connect. Please try again.');

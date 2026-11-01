@@ -11,7 +11,7 @@
 //                     contrasenya, i que s'hi poden afegir les pàgines de
 //                     signatura sense modificar-lo; en calcula l'empremta i el
 //                     registra. L'original no se substitueix mai.
-//   enllac            (personal) enllaç d'un signant (/contracte/<token>). Si el
+//   enllac            (personal) enllaç d'un signant (/contracte#<token>). Si el
 //                     contracte és un esborrany, el passa a 'enviat' amb la
 //                     sessió del personal. Regenerar revoca l'anterior del
 //                     mateix signant.
@@ -152,7 +152,7 @@ serveix('portal-contracte-personal', async (req) => {
     if (errTok) return errorSql(errTok, 'contracte_crea_token');
     const { data: k } = await portal.from('contractes').select('titol, idioma').eq('request_id', sol.id).maybeSingle();
     return resposta(200, {
-      ok: true, enllac: `${BASE}/contracte/${token}`, expira_at: expira.toISOString(),
+      ok: true, enllac: `${BASE}/contracte#${token}`, expira_at: expira.toISOString(),
       nom: s.nom, email: s.email, titol: k?.titol ?? '', idioma: k?.idioma ?? 'ca',
     });
   }

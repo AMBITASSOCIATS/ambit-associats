@@ -17,7 +17,8 @@ const ORIGENS_PERMESOS = (Deno.env.get('ALLOWED_ORIGINS') || '')
 
 const capcaleresCors = (origen: string | null): Record<string, string> => ({
   ...(origen && ORIGENS_PERMESOS.includes(origen) ? { 'Access-Control-Allow-Origin': origen } : {}),
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  // x-region: el navegador demana sempre eu-west-1 (src/supabaseClient.js)
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-region',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Vary': 'Origin',
 });

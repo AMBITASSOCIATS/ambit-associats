@@ -1,6 +1,6 @@
 // src/portal/portalApi.js
 // Accés a l'esquema portal i a les Edge Functions del portal de signatura.
-import { supabase } from '../supabaseClient';
+import { supabase, REGIO_FUNCIONS } from '../supabaseClient';
 import TK from './kyc/text-kyc.json';
 import TC from './contracte/text-contracte.json';
 import TAC from './client/text-area-client.json';
@@ -11,7 +11,7 @@ export const VERSIO_PLANTILLA = 'ABA-01 v1';
 
 // Crida una Edge Function i retorna les dades, o llança l'error amb el missatge del servidor.
 export const invoca = async (funcio, body) => {
-  const { data, error } = await supabase.functions.invoke(funcio, { body });
+  const { data, error } = await supabase.functions.invoke(funcio, { body, region: REGIO_FUNCIONS });
   if (error) {
     const detall = await error.context?.json?.().catch(() => null);
     throw new Error(detall?.error || error.message);

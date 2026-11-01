@@ -1,6 +1,6 @@
 // src/auth/PanellMaestro.jsx
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { supabase, REGIO_FUNCIONS } from '../supabaseClient';
 import { useAuth } from './AuthContext';
 import ModalMissatge from './ModalMissatge';
 import CapcaleraEina, { botoCapcalera } from './CapcaleraEina';
@@ -149,6 +149,7 @@ const PanellMaestro = ({ onTancar }) => {
       // (Edge Function). La sessió del maestro no canvia.
       const { data, error } = await supabase.functions.invoke('aprovar-solicitud', {
         body: { solicitud_id: sol.id, contrasenya: contrasenyaCrear, eines: einesAprovades },
+        region: REGIO_FUNCIONS,
       });
       if (error) {
         const detall = await error.context?.json?.().catch(() => null);
