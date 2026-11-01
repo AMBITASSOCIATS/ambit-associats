@@ -188,6 +188,7 @@ const translations = {
       articles: "Articles",
       consulta: "Consulta gratuïta",
       menu: "Menú",
+      client: "Accés client",
       personal: "Accés del personal",
     },
     professionals: {
@@ -251,6 +252,7 @@ const translations = {
       articles: "Artículos",
       consulta: "Consulta gratuita",
       menu: "Menú",
+      client: "Acceso clientes",
       personal: "Acceso del personal",
     },
     professionals: {
@@ -314,6 +316,7 @@ const translations = {
       articles: "Articles",
       consulta: "Free consultation",
       menu: "Menu",
+      client: "Client access",
       personal: "Staff access",
     },
     professionals: {
@@ -377,6 +380,7 @@ const translations = {
       articles: "Articles",
       consulta: "Consultation gratuite",
       menu: "Menu",
+      client: "Accès client",
       personal: "Accès du personnel",
     },
     professionals: {
@@ -1226,7 +1230,7 @@ const App = () => {
       <div className="relative isolate overflow-hidden bg-[#007A7B] text-white print:hidden">
         <Topo etiquetes={!vistaInterior} />
         <header className="max-w-6xl mx-auto px-5 md:px-10">
-          {/* Línia d'utilitats: idiomes, accés del personal i Zona Professionals */}
+          {/* Línia d'utilitats: idiomes, accés client, accés del personal i Zona Professionals */}
           <div className="hidden lg:flex justify-end items-center gap-5 pt-3 text-[13px] text-[#BFE4E4]">
             <div className="flex items-center gap-1">
               {languages.map((lang) => (
@@ -1242,6 +1246,12 @@ const App = () => {
               ))}
             </div>
             <span className="h-3.5 border-l border-white/30" aria-hidden="true" />
+            <a href="/client" className="inline-flex items-center gap-1.5 hover:text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
+              {t.nav?.client}
+            </a>
             <a href="/portal" className="inline-flex items-center gap-1.5 hover:text-white">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
@@ -1338,6 +1348,7 @@ const App = () => {
               </div>
               <div className="flex flex-wrap items-center gap-x-5 gap-y-3 pt-3 text-sm">
                 <button onClick={() => { setShowEinaFiscal(true); setMenuOpen(false); }} className="text-[#BFE4E4] underline underline-offset-4">{t.nav?.professionals}</button>
+                <a href="/client" className="text-[#BFE4E4] underline underline-offset-4">{t.nav?.client}</a>
                 <a href="/portal" className="text-[#BFE4E4] underline underline-offset-4">{t.nav?.personal}</a>
               </div>
             </nav>
@@ -2055,6 +2066,7 @@ const App = () => {
                 {t.legalTabs[key]}
               </button>
             ))}
+            <a href="/client" className="text-[#12302F] hover:text-[#007A7B] hover:underline underline-offset-4">{t.nav?.client}</a>
             <a href="/portal" className="text-[#12302F] hover:text-[#007A7B] hover:underline underline-offset-4">{t.nav?.personal}</a>
           </nav>
         </div>

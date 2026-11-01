@@ -51,6 +51,8 @@ Per activar l'accés, obriu l'enllaç següent, creeu la vostra contrasenya i co
 
 L'enllaç és personal i d'un sol ús, i caduca el {data}. ÀMBIT Associats no us demanarà mai la contrasenya ni els codis del segon factor.
 
+Un cop activat l'accés, les properes vegades hi entrareu des de la web: aneu a www.ambit.ad i feu clic a «Accés client» (o obriu directament www.ambit.ad/client), i entreu amb el vostre correu, la contrasenya i el codi de l'aplicació d'autenticació.
+
 Per a qualsevol dubte, podeu contactar amb nosaltres a info@ambit.ad o al +376 655 382.
 
 Atentament,
@@ -67,6 +69,8 @@ To activate your access, open the following link, create your password and set u
 {enllaç}
 
 This link is personal, can only be used once and expires on {data}. ÀMBIT Associats will never ask for your password or second-factor codes.
+
+Once your access is activated, you will log in from our website next time: go to www.ambit.ad and click «Client access» (or open www.ambit.ad/client directly), then log in with your email address, your password and the code from your authenticator app.
 
 If you have any questions, please contact us at info@ambit.ad or on +376 655 382.
 
@@ -89,6 +93,8 @@ Tal com ens heu demanat, us enviem un enllaç per restablir l'accés a l'àrea d
 
 L'enllaç és personal i d'un sol ús, i caduca el {data}. Si no heu demanat aquest restabliment, poseu-vos en contacte amb nosaltres immediatament a info@ambit.ad o al +376 655 382.
 
+Un cop restablert l'accés, les properes vegades hi entrareu des de la web: aneu a www.ambit.ad i feu clic a «Accés client» (o obriu directament www.ambit.ad/client).
+
 Atentament,
 
 ÀMBIT Associats
@@ -101,6 +107,8 @@ As requested, please find below a link to reset your access to the ÀMBIT Associ
 {enllaç}
 
 This link is personal, can only be used once and expires on {data}. If you did not request this reset, please contact us immediately at info@ambit.ad or on +376 655 382.
+
+Once your access is restored, you will log in from our website next time: go to www.ambit.ad and click «Client access» (or open www.ambit.ad/client directly).
 
 Kind regards,
 
