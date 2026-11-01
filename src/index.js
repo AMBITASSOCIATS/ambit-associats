@@ -10,12 +10,14 @@ import reportWebVitals from './reportWebVitals';
 // de càrrec), /kyc/<token> (KYC i protecció de dades), per al client, i
 // /irpf/<token> (comunicació de dades al pagador), per al perceptor i el
 // representant del pagador, i /contracte/<token>, per a cada signant d'un contracte.
+// Àrea de client: /client (i /client/activar#<token>), amb una sessió pròpia.
 // Es carreguen a part perquè no pesin a la web.
 const PortalApp = lazy(() => import('./portal/PortalApp'));
 const PaginaSignar = lazy(() => import('./portal/signar/PaginaSignar'));
 const PaginaKyc = lazy(() => import('./portal/kyc/PaginaKyc'));
 const PaginaIrpf = lazy(() => import('./portal/irpf/PaginaIrpf'));
 const PaginaContracte = lazy(() => import('./portal/contracte/PaginaContracte'));
+const ClientApp = lazy(() => import('./portal/client/ClientApp'));
 
 const ruta = window.location.pathname;
 const contingut = ruta === '/portal' || ruta.startsWith('/portal/')
@@ -28,7 +30,9 @@ const contingut = ruta === '/portal' || ruta.startsWith('/portal/')
         ? <PaginaIrpf />
         : ruta.startsWith('/contracte/')
           ? <PaginaContracte />
-          : <AuthProvider><App /></AuthProvider>;
+          : ruta === '/client' || ruta.startsWith('/client/')
+            ? <ClientApp />
+            : <AuthProvider><App /></AuthProvider>;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

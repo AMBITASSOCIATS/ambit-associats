@@ -17,10 +17,12 @@ import Conservacio from './Conservacio';
 import RevisionsKyc from './RevisionsKyc';
 import LlistesPaisos from './LlistesPaisos';
 import ParametresIrpf from './ParametresIrpf';
+import DocumentsRebuts from './DocumentsRebuts';
 
 const PESTANYES = [
   { id: 'solicituds', nom: 'Sol·licituds' },
   { id: 'clients', nom: 'Clients' },
+  { id: 'rebuts', nom: 'Documents rebuts' },
   { id: 'remesa', nom: 'Remesa' },
   { id: 'parametres_irpf', nom: 'Paràmetres IRPF' },
   { id: 'personal', nom: 'Personal', ocic: true },
@@ -112,7 +114,7 @@ const PortalApp = () => {
     <div className="min-h-screen bg-[#F4F8F7] text-[#12302F]">
       <CapcaleraEina
         titol="Portal de signatura"
-        subtitol={`Autoritzacions de càrrec · KYC i protecció de dades · Comunicacions IRPF · Contractes · ${user.email} · ${rol === 'ocic' ? 'OCIC' : 'Gestor'}`}
+        subtitol={`Autoritzacions de càrrec · KYC i protecció de dades · Comunicacions IRPF · Contractes · Àrea de client · ${user.email} · ${rol === 'ocic' ? 'OCIC' : 'Gestor'}`}
         accions={<button onClick={logout} className={botoCapcalera}>Tancar sessió</button>}
       />
 
@@ -134,6 +136,7 @@ const PortalApp = () => {
           <Solicituds oberta={solicitudOberta} onObre={setSolicitudOberta} rol={rol} />
         )}
         {pestanya === 'clients' && <Clients onObreSolicitud={obreSolicitud} rol={rol} />}
+        {pestanya === 'rebuts' && <DocumentsRebuts rol={rol} />}
         {pestanya === 'remesa' && <Remesa onObreSolicitud={obreSolicitud} />}
         {pestanya === 'parametres_irpf' && <ParametresIrpf />}
         {pestanya === 'personal' && rol === 'ocic' && <Personal usuariActual={user.id} />}

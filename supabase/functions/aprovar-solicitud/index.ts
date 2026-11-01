@@ -77,8 +77,8 @@ Deno.serve(async (req) => {
   const { solicitud_id, contrasenya, eines } = body;
 
   if (!solicitud_id) return resposta(400, { error: 'Falta la sol·licitud' });
-  if (!contrasenya || contrasenya.length < 8) {
-    return resposta(400, { error: 'La contrasenya ha de tenir almenys 8 caràcters' });
+  if (!contrasenya || contrasenya.length < 12) {
+    return resposta(400, { error: 'La contrasenya ha de tenir almenys 12 caràcters' });
   }
   if (!Array.isArray(eines) || eines.length === 0 || !eines.every((e) => EINES_VALIDES.includes(e))) {
     return resposta(400, { error: 'Eines no vàlides' });
